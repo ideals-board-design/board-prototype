@@ -2,7 +2,6 @@
    Three types: horizontal · info · vertical
    Always renders <td> with inner wrapper (no display:flex on td itself) */
 
-import type { ReactNode } from 'react'
 import styles from './TableAvatarCell.module.css'
 
 /* ── Helpers ─────────────────────────────────────────────── */

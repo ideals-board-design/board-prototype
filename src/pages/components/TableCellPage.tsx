@@ -13,7 +13,7 @@ import { functional } from '../../icons/functional'
 import styles from './TableCellPage.module.css'
 
 const plusIcon        = actions.find(i => i.name === 'plus')!.svg
-const editIcon        = actions.find(i => i.name === 'edit-alt')!.svg
+
 const checkCircleIcon = condition.find(i => i.name === 'check-circle')!.svg
 const fileSignIcon    = files.find(i => i.name === 'file-signature')!.svg
 const filePlusIcon    = files.find(i => i.name === 'file-plus')!.svg

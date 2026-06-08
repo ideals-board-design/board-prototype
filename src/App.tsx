@@ -154,8 +154,8 @@ const nav = [
   },
 ]
 
-function NavItem({ id, label, active, indent, onClick }: {
-  id: Page; label: string; active: boolean; indent?: boolean; onClick: () => void
+function NavItem({ label, active, indent, onClick }: {
+  id?: Page; label: string; active: boolean; indent?: boolean; onClick: () => void
 }) {
   return (
     <button
@@ -190,7 +190,7 @@ export default function App() {
                 id={item.id}
                 label={item.label}
                 active={page === item.id}
-                indent={'indent' in item ? item.indent : false}
+                indent={false}
                 onClick={() => setPage(item.id)}
               />
             ))}

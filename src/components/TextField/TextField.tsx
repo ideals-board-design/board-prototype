@@ -8,7 +8,7 @@ const loaderSvg = condition.find(i => i.name === 'loader-round')!.svg
 export type TextFieldSize    = 's' | 'm' | 'l'
 export type TextFieldVariant = 'outline' | 'no-border'
 
-export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
   size?:     TextFieldSize
   variant?:  TextFieldVariant
   label?:    ReactNode

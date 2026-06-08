@@ -26,7 +26,7 @@ export default function EmptyStatePage() {
           description="Create your first item to get started."
           action={
             <>
-              <Button variant="primary" intent="brand" size="m">Create item</Button>
+              <Button variant="primary" size="m">Create item</Button>
               <Button variant="secondary" intent="neutral" size="m">Learn more</Button>
             </>
           }

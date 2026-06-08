@@ -4,21 +4,16 @@ import { Button } from '../../components/Button/Button'
 import type { ButtonVariant, ButtonSize, ButtonIntent } from '../../components/Button/Button'
 import { Tooltip } from '../../components/Tooltip/Tooltip'
 import { actions } from '../../icons/actions'
-import { arrows }  from '../../icons/arrows'
 import styles from './Buttons.module.css'
 
 /* ── DS Icons (always from src/icons/, never custom SVG) ─────────────────── */
 
-const plusSvg         = actions.find(i => i.name === 'plus')!.svg
-const arrowRightSvg   = arrows.find(i => i.name === 'arrow-right')!.svg
-const externalLinkSvg = actions.find(i => i.name === 'external-link-alt')!.svg
+const plusSvg = actions.find(i => i.name === 'plus')!.svg
 
 const DsIcon = ({ svg }: { svg: string }) => (
   <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} />
 )
-const IconPlus     = () => <DsIcon svg={plusSvg} />
-const IconArrow    = () => <DsIcon svg={arrowRightSvg} />
-const IconExternal = () => <DsIcon svg={externalLinkSvg} />
+const IconPlus = () => <DsIcon svg={plusSvg} />
 
 /* ── State definitions ────────────────────────────────────────────────────── */
 

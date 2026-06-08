@@ -50,7 +50,7 @@ export function SideNavUserItem({
   const [langOpen, setLangOpen] = useState(false)
   const [activeLang, setActiveLang] = useState('en')
   const rootRef        = useRef<HTMLDivElement>(null)
-  const langTimerRef   = useRef<ReturnType<typeof setTimeout>>()
+  const langTimerRef   = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   // Close on outside click
   useEffect(() => {

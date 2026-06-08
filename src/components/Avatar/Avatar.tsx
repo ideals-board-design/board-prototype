@@ -30,7 +30,7 @@ const sizeCls: Record<AvatarSize, string> = {
 }
 
 export function Avatar({
-  size     = 'md',
+  size     = 'm',
   type     = 'user',
   variant  = 'letters',
   color    = 'neutral',
