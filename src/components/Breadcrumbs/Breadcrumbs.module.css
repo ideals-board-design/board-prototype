@@ -1,0 +1,74 @@
+/* =============================================================================
+   Breadcrumbs
+   ============================================================================= */
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Sizes ───────────────────────────────────────────────────────────────── */
+
+.sizeL .crumb {
+  font-size: var(--text-lg);       /* 20px */
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-lg);
+  letter-spacing: var(--letter-spacing-heading);
+}
+
+.sizeM .crumb {
+  font-size: var(--text-base);     /* 15px */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  letter-spacing: var(--letter-spacing-body);
+}
+
+/* ── Crumb (shared base) ─────────────────────────────────────────────────── */
+
+.crumb {
+  font-family: var(--font-family);
+  color: var(--color-text-secondary);
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  transition: color var(--transition-fast);
+}
+
+.crumb:hover {
+  color: var(--color-text-primary);
+}
+
+/* Active (last item) — non-interactive */
+.crumb.active {
+  color: var(--color-text-primary);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ── Separator ───────────────────────────────────────────────────────────── */
+
+.separator {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--color-text-secondary);
+}
+
+.separatorIcon {
+  display: flex;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+}
+
+.separatorIcon svg {
+  width: 100%;
+  height: 100%;
+}

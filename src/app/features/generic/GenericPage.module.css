@@ -1,0 +1,23 @@
+/* GenericPage */
+
+.page {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--color-bg-surface);
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Body — centers EmptyState */
+.body {
+  flex: 1;
+  overflow-y: auto;
+}

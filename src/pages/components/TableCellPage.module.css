@@ -1,0 +1,96 @@
+/* TableCellPage */
+
+.page {
+  padding: var(--space-32) var(--space-40);
+  max-width: 900px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-32);
+}
+
+.sectionTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: var(--space-32) 0 var(--space-8);
+}
+
+.description {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-16);
+}
+
+/* ── Table wrapper ─────────────────────────────────────── */
+
+.tableWrap {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.row {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover td,
+.row:hover th {
+  background: var(--color-bg-hover);
+}
+
+/* Variant label column (showcase only) */
+.variantLabel {
+  padding: var(--space-14) var(--space-16);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  white-space: nowrap;
+  border-right: 1px solid var(--color-border);
+  width: 220px;
+}
+
+/* ── Full table demo ───────────────────────────────────── */
+
+.demoTableWrap {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+.demoTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+.demoTable thead tr {
+  background: var(--stone-200);
+}
+
+.demoRowOdd  { background: var(--stone-0); }
+.demoRowEven { background: var(--stone-100); }
+
+.demoRowOdd:hover,
+.demoRowEven:hover {
+  background: var(--color-bg-hover);
+}

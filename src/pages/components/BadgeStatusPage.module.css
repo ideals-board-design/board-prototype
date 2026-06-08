@@ -1,0 +1,119 @@
+.page {
+  padding: var(--space-40) var(--space-48);
+  max-width: 900px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-xl);
+  letter-spacing: var(--letter-spacing-heading);
+  margin-bottom: var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-40);
+  font-family: var(--font-family);
+}
+
+.sectionTitle {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  margin-top: var(--space-56);
+  margin-bottom: var(--space-20);
+}
+
+/* ── Types grid ────────────────────────────────────────────────────────── */
+
+.typeGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-24) var(--space-32);
+}
+
+.typeItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+.typeLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+}
+
+.typeUsage {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  opacity: 0.6;
+}
+
+/* ── With icons row ────────────────────────────────────────────────────── */
+
+.iconRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-24) var(--space-32);
+}
+
+.iconItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+
+/* ── Usage rules table ─────────────────────────────────────────────────── */
+
+.rulesTable {
+  border-collapse: collapse;
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  width: 100%;
+  max-width: 600px;
+}
+
+.rulesTable th {
+  text-align: left;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  padding: var(--space-8) var(--space-16);
+  border-bottom: 1px solid var(--stone-400);
+  padding-left: 0;
+}
+
+.rulesTable td {
+  padding: var(--space-12) var(--space-16);
+  border-bottom: 1px solid var(--stone-200);
+  vertical-align: middle;
+}
+
+.rulesTable td:first-child,
+.rulesTable th:first-child {
+  padding-left: 0;
+  width: 100px;
+}
+
+.rulesTable tr:last-child td {
+  border-bottom: none;
+}
+
+.typeCell {
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+}
+
+.examplesCell {
+  color: var(--color-text-secondary);
+}

@@ -1,0 +1,172 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-48);
+  padding: var(--space-48);
+  max-width: 960px;
+}
+
+.pageTitle {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.sectionTitle {
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+  align-items: flex-end;
+}
+
+.col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 360px;
+}
+
+.label {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ── Demo search ──────────────────────────────────────── */
+
+.demoSearch {
+  width: 360px;
+}
+
+/* ── Results table ────────────────────────────────────── */
+
+.tableWrap {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  /* Fixed height — intentionally hardcoded (not a token) to demonstrate
+     scrollable table behaviour in this demo */
+  height: 720px;
+  overflow-y: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Header — Medium Bold: text-base + font-weight-medium */
+.th {
+  padding: var(--space-10) var(--space-16);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  text-align: left;
+  background: var(--stone-100);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+}
+
+.thName { width: auto; }
+.thDate { width: 100px; }
+
+.tr {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.tr:hover {
+  background: var(--stone-100);
+}
+
+/* Content — Medium Default: text-base + font-weight-regular */
+.td {
+  padding: var(--space-10) var(--space-16);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  vertical-align: middle;
+}
+
+.tdDate {
+  white-space: nowrap;
+  color: var(--color-text-secondary);
+}
+
+/* ── Empty state ─────────────────────────────────────── */
+
+.noResults {
+  padding: var(--space-16);
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* ── Load more ───────────────────────────────────────── */
+
+.loadMoreBtn {
+  padding: var(--space-10) var(--space-16);
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--green-500);
+  background: none;
+  border: none;
+  border-top: 1px solid var(--color-border);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  -webkit-font-smoothing: antialiased;
+  transition: color var(--transition-fast);
+}
+
+.loadMoreBtn:hover {
+  color: var(--green-600);
+}
+
+/* ── Highlight marks ─────────────────────────────────── */
+
+/* All search matches — Figma: highlight/yellow-50 @ 40% opacity */
+.mark {
+  background-color: rgba(255, 244, 180, 0.4);
+  border-radius: 2px;
+  padding: 0 1px;
+  color: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+}
+
+/* Focused (current) match — full opacity */
+.markFocus {
+  background-color: #fff4b4;
+  border-radius: 2px;
+  padding: 0 1px;
+  color: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+}

@@ -1,0 +1,224 @@
+/* DatePicker — Figma node 24002-10435
+   Trigger mirrors Dropdown shell (same padding / border tokens).
+   Popover is a fixed-position portal stub. */
+
+/* ── Outer wrapper ────────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Label ────────────────────────────────────────── */
+
+.label {
+  display: block;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  cursor: default;
+}
+
+.sizeS .label { font-size: var(--text-sm); }
+.sizeM .label { font-size: var(--text-base); }
+.sizeL .label { font-size: var(--text-md); }
+
+/* ── Trigger (visual "field" box) ─────────────────── */
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  border-radius: var(--radius-sm);
+  background: var(--stone-0);
+  cursor: pointer;
+  outline: none;
+  transition:
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+/* Sizes — padding drives height (no explicit height) */
+.sizeS .trigger { padding: var(--space-6)  var(--space-12); }
+.sizeM .trigger { padding: var(--space-10) var(--space-16); }
+.sizeL .trigger { padding: var(--space-14) var(--space-16); }
+
+/* ── Outline variant ──────────────────────────────── */
+
+.outline .trigger {
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+}
+
+/* Hover — green border (not disabled, not error) */
+.outline.wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Open — green border */
+.outline.wrapper.isOpen:not(.isDisabled):not(.hasError) .trigger {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Focus ring (keyboard) */
+.trigger:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Error */
+.outline.wrapper.hasError .trigger {
+  box-shadow: inset 0 0 0 1px var(--color-border-error);
+}
+
+/* Disabled outline: stone-200 fill */
+.outline.wrapper.isDisabled .trigger {
+  background: var(--stone-200);
+}
+
+/* Disabled shared */
+.wrapper.isDisabled .trigger {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── No-border variant ────────────────────────────── */
+
+.noBorder {
+  width: fit-content;
+}
+
+.noBorder .trigger {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  gap: var(--space-4);
+}
+
+.noBorder.sizeS .trigger,
+.noBorder.sizeM .trigger,
+.noBorder.sizeL .trigger { padding: 0; }
+
+.noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
+.noBorder.isOpen:not(.isDisabled):not(.hasError) .trigger { box-shadow: none; }
+.noBorder.hasError .trigger { box-shadow: none; }
+
+.noBorder.isDisabled .trigger { background: transparent; }
+
+/* Editing state — green border like focus */
+.outline.wrapper.isEditing:not(.isDisabled) .trigger {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* ── Trigger text ─────────────────────────────────── */
+
+.triggerText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.isPlaceholder .triggerText {
+  color: var(--color-text-secondary);
+}
+
+.sizeS .triggerText { font-size: var(--text-sm); }
+.sizeM .triggerText { font-size: var(--text-base); }
+.sizeL .triggerText { font-size: var(--text-md); }
+
+/* ── Inline edit input ────────────────────────────── */
+
+.editInput {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  margin: 0;
+  font-family: var(--font-family);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  cursor: text;
+}
+
+.editInput::placeholder { color: var(--color-text-secondary); }
+
+.sizeS .editInput { font-size: var(--text-sm); }
+.sizeM .editInput { font-size: var(--text-base); }
+.sizeL .editInput { font-size: var(--text-md); }
+
+/* ── Calendar icon (right) ────────────────────────── */
+
+.calendarIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+
+.sizeS .calendarIcon { width: 16px; height: 16px; }
+.sizeM .calendarIcon,
+.sizeL .calendarIcon { width: 20px; height: 20px; }
+
+.calendarIcon svg { width: 100%; height: 100%; }
+
+/* ── Clear button ─────────────────────────────────── */
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  border-radius: var(--radius-xs);
+  transition: color var(--transition-fast);
+}
+
+.clearBtn:hover { color: var(--color-text-primary); }
+
+.clearBtnHidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.clearIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sizeS .clearBtn,
+.sizeS .clearIcon { width: 16px; height: 16px; }
+
+.sizeM .clearBtn,
+.sizeM .clearIcon,
+.sizeL .clearBtn,
+.sizeL .clearIcon { width: 20px; height: 20px; }
+
+.clearIcon svg { width: 100%; height: 100%; }
+
+/* ══════════════════════════════════════════════════
+   Popover — rendered via portal (position: fixed)
+   Stub: no calendar content yet.
+   ══════════════════════════════════════════════════ */
+
+.popover {
+  position: fixed;
+  z-index: 8000;
+  width: fit-content;
+}

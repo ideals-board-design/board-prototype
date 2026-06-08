@@ -1,0 +1,56 @@
+/* YearCell — Figma node 32250-2427 · 56×32px */
+
+.cell {
+  width: 56px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  box-sizing: border-box;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.year {
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Types ────────────────────────────────── */
+
+.typeDefault {
+  background: transparent;
+}
+
+.typeSelected {
+  background: var(--green-500);
+  border-radius: var(--radius-sm);
+}
+
+.typeSelected .year {
+  color: var(--color-text-inverse);
+}
+
+/* ── Hover ────────────────────────────────── */
+
+.typeDefault:hover:not(.isDisabled) {
+  background: var(--color-bg-hover);
+}
+
+.typeSelected:hover:not(.isDisabled) {
+  background: var(--green-600);
+}
+
+/* ── Disabled ─────────────────────────────── */
+
+.isDisabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}

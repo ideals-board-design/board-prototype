@@ -1,0 +1,50 @@
+/* Tooltip — Figma node 9801:63482
+   Portal-based: position:fixed escapes any overflow:hidden.
+   Anchor (left/top) is set via inline style from JS getBoundingClientRect().
+   Transform shifts the bubble to the correct side of the anchor point. */
+
+/* ── Trigger wrapper ─────────────────────────────── */
+.wrapper {
+  position: relative;
+  display: inline-flex;
+}
+
+/* ── Tooltip bubble (rendered in <body> via Portal) ─ */
+.tooltip {
+  position: fixed;
+  z-index: 9000;
+  pointer-events: none;
+
+  background: var(--stone-1000);
+  color: var(--color-text-inverse);
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-sm);
+
+  font-family: var(--font-family);
+  font-size: var(--text-sm);          /* 14px */
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-sm); /* 20px → total 28px */
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Position transforms ─────────────────────────────
+   Anchor (left/top) comes from JS.
+   Transform centers the bubble on the anchor and shifts it to the right side.
+   ─────────────────────────────────────────────────── */
+/* Anchor = horizontal center, top edge of trigger − gap */
+.top    { transform: translateX(-50%) translateY(-100%); }
+
+/* Anchor = horizontal center, bottom edge of trigger + gap */
+.bottom { transform: translateX(-50%); }
+
+/* Anchor = left edge of trigger − gap, vertical center */
+.left   { transform: translateX(-100%) translateY(-50%); }
+
+/* Anchor = right edge of trigger + gap, vertical center */
+.right  { transform: translateY(-50%); }
+
+/* ── Multi-line variant (document names, max 400px) ─ */
+.multiline {
+  white-space: normal;
+}

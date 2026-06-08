@@ -1,0 +1,98 @@
+/* Toast — Figma nodes 9829-100949, 34940-39518…39521 */
+
+/* ── Base ───────────────────────────────────────────────── */
+
+.toast {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-14) var(--space-16);   /* 14+14+20 = 48px single-line */
+  width: 400px;
+  box-sizing: border-box;
+  border-radius: var(--radius-sm);            /* 4px */
+  font-family: var(--font-family);
+}
+
+/* ── States — background ────────────────────────────────── */
+
+.success { background: var(--color-success-bg); }   /* green-25  */
+.info    { background: var(--color-info-bg);    }   /* blue-50   */
+.warning { background: var(--color-warning-bg); }   /* orange-50 */
+.error   { background: var(--color-error-bg);   }   /* red-50    */
+
+/* ── Left slot ──────────────────────────────────────────── */
+
+.left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── State icon ─────────────────────────────────────────── */
+
+.icon {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.icon svg { width: 20px; height: 20px; }
+
+.success .icon { color: var(--color-success-bold); }
+.info    .icon { color: var(--color-info-bold);    }
+.warning .icon { color: var(--color-warning-bold); }
+.error   .icon { color: var(--color-error-bold);   }
+
+/* ── Body ───────────────────────────────────────────────── */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);              /* texts → action: 8px */
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Texts (message + optional) ─────────────────────────── */
+
+.texts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);              /* message → optional: 4px */
+}
+
+/* ── Primary message (max 2 lines) ──────────────────────── */
+
+.message {
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Optional secondary text (max 3 lines) ──────────────── */
+
+.optional {
+  font-size: var(--text-sm);
+  line-height: var(--line-height-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Action slot ────────────────────────────────────────── */
+
+.action {
+  display: flex;
+}

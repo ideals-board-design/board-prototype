@@ -1,0 +1,91 @@
+.page {
+  padding: 40px 48px;
+  max-width: 960px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 4px;
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  margin: 0 0 40px;
+}
+
+.sectionTitle {
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  margin: 0 0 16px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-border-default);
+}
+
+.sectionTitle:first-of-type {
+  border-top: none;
+  padding-top: 0;
+}
+
+/* ── Sizes row ─────────────────────────────────────────────────────────── */
+
+.sizeRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 40px;
+  margin-bottom: 8px;
+}
+
+.sizeItem {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.label {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+}
+
+/* ── Variant rows ──────────────────────────────────────────────────────── */
+
+.variantRows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 8px;
+}
+
+.variantRow {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.rowLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-tertiary);
+  min-width: 80px;
+}
+
+/* ── Spec table ────────────────────────────────────────────────────────── */
+
+.specTable {
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+
+.specTable td {
+  padding: 6px 16px 6px 0;
+  vertical-align: top;
+}
+
+.specTable td:first-child {
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}

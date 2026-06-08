@@ -1,0 +1,157 @@
+/* =============================================================================
+   Segment Control
+   ============================================================================= */
+
+.root {
+  display: inline-flex;
+  align-items: stretch;
+}
+
+/* ── Item ────────────────────────────────────────────────────────────────── */
+
+.item {
+  /* Reset */
+  background: none;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+
+  /* Layout */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+
+  /* Border color variable — drives all border colors */
+  --b: var(--stone-500);
+
+  /* Background */
+  background: var(--stone-0);
+
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+/* Hover: unselected */
+.item:not(.selected):hover {
+  --b: var(--green-500);
+}
+
+/* Selected */
+.item.selected {
+  --b: var(--green-500);
+  background: var(--color-bg-selected);
+}
+
+/* Focus ring */
+.item:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+/* ── Radius ──────────────────────────────────────────────────────────────── */
+
+.roundLeft {
+  border-top-left-radius: var(--radius-sm);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.roundRight {
+  border-top-right-radius: var(--radius-sm);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+/* ── Border variants (box-shadow keeps height at 32/40/48px) ────────────── */
+
+/* First/Last: full border */
+.borderFull {
+  box-shadow: inset 0 0 0 1px var(--b);
+}
+
+/* Middle items: top + bottom only */
+.borderMiddle {
+  box-shadow:
+    inset 0 1px 0 0 var(--b),
+    inset 0 -1px 0 0 var(--b);
+}
+
+/* First item when right neighbor is selected: left + top + bottom */
+.borderNoRight {
+  box-shadow:
+    inset 1px 0 0 0 var(--b),
+    inset 0 1px 0 0 var(--b),
+    inset 0 -1px 0 0 var(--b);
+}
+
+/* Last item when left neighbor is selected: right + top + bottom */
+.borderNoLeft {
+  box-shadow:
+    inset -1px 0 0 0 var(--b),
+    inset 0 1px 0 0 var(--b),
+    inset 0 -1px 0 0 var(--b);
+}
+
+/* Selected: always full border */
+.borderSelected {
+  box-shadow: inset 0 0 0 1px var(--b);
+}
+
+/* ── Sizes ───────────────────────────────────────────────────────────────── */
+
+.sizeL {
+  min-width: 88px;
+  padding: var(--space-14) var(--space-24);
+  gap: var(--space-8);
+  font-size: var(--text-md);
+}
+
+.sizeM {
+  min-width: 80px;
+  padding: var(--space-10) var(--space-16);
+  gap: var(--space-8);
+  font-size: var(--text-base);
+}
+
+.sizeS {
+  min-width: 72px;
+  padding: var(--space-6) var(--space-12);
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+}
+
+/* ── Label ───────────────────────────────────────────────────────────────── */
+
+.label {
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  text-align: center;
+  white-space: nowrap;
+  flex: 1 0 0;
+  min-width: 1px;
+}
+
+/* ── Icon ────────────────────────────────────────────────────────────────── */
+
+.icon {
+  display: contents;
+}
+
+.icon svg {
+  color: var(--color-text-primary);
+  flex-shrink: 0;
+}
+
+.iconMd svg {
+  width: 20px;
+  height: 20px;
+}
+
+.iconSm svg {
+  width: 16px;
+  height: 16px;
+}

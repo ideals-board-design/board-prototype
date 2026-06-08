@@ -1,0 +1,93 @@
+.page {
+  padding: var(--space-40) var(--space-48);
+  max-width: 900px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-xl);
+  letter-spacing: var(--letter-spacing-heading);
+  margin-bottom: var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-40);
+  font-family: var(--font-family);
+}
+
+.sectionTitle {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  margin-top: var(--space-56);
+  margin-bottom: var(--space-20);
+}
+
+/* ── Variant grid ──────────────────────────────────────────────────────── */
+
+.variantGrid {
+  display: grid;
+  grid-template-columns: 56px repeat(6, 90px);
+  gap: var(--space-12) var(--space-8);
+  align-items: center;
+}
+
+.colLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rowLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  white-space: nowrap;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Dot ───────────────────────────────────────────────────────────────── */
+
+.dotRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.dotLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+}
+
+/* ── Usage examples ────────────────────────────────────────────────────── */
+
+.exampleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-24);
+}
+
+.exampleItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.exampleLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}

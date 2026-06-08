@@ -1,0 +1,12 @@
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  overflow: hidden;
+  display: flex;   /* full-page features control their own layout */
+  min-width: 0;
+}

@@ -1,0 +1,301 @@
+/* Search — Figma node 5761-10568
+   Mirrors Autocomplete/TextField visual patterns.
+   Border via box-shadow (no height impact). */
+
+/* ── Outer wrapper ───────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Label ───────────────────────────────────────── */
+
+.label {
+  display: block;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  cursor: default;
+}
+
+.sizeS .label { font-size: var(--text-sm); }
+.sizeM .label { font-size: var(--text-base); }
+.sizeL .label { font-size: var(--text-md); }
+
+/* ── Field box ───────────────────────────────────── */
+
+.field {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+  background: var(--stone-0);
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+  cursor: text;
+  transition:
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+/* Sizes — padding drives height */
+.sizeS .field { padding: var(--space-6)  var(--space-12); gap: var(--space-4); }
+.sizeM .field { padding: var(--space-10) var(--space-16); gap: var(--space-8); }
+.sizeL .field { padding: var(--space-14) var(--space-16); gap: var(--space-8); }
+
+/* Hover */
+.wrapper:not(.isDisabled) .field:hover {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Focused */
+.wrapper.isFocused:not(.isDisabled) .field {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Loading = focused border */
+.wrapper.isLoading:not(.isDisabled) .field {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Disabled */
+.wrapper.isDisabled .field {
+  background: var(--stone-200);
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Search icon ─────────────────────────────────── */
+
+.searchIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+
+.sizeS .searchIcon { width: 16px; height: 16px; }
+.sizeM .searchIcon,
+.sizeL .searchIcon { width: 20px; height: 20px; }
+
+.searchIcon svg { width: 100%; height: 100%; }
+
+/* ── Input ───────────────────────────────────────── */
+
+.input {
+  flex: 1 0 0;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+  cursor: text;
+}
+
+.sizeS .input { font-size: var(--text-sm); }
+.sizeM .input { font-size: var(--text-base); }
+.sizeL .input { font-size: var(--text-md); }
+
+.input::placeholder { color: var(--color-text-secondary); }
+
+/* ── Clear button ────────────────────────────────── */
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  border-radius: var(--radius-xs);
+  transition: color var(--transition-fast);
+}
+
+.clearBtn:hover { color: var(--color-text-primary); }
+
+.clearIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sizeS .clearBtn,
+.sizeS .clearIcon { width: 16px; height: 16px; }
+
+.sizeM .clearBtn,
+.sizeM .clearIcon,
+.sizeL .clearBtn,
+.sizeL .clearIcon { width: 20px; height: 20px; }
+
+.clearIcon svg { width: 100%; height: 100%; }
+
+/* ── Filter button ───────────────────────────────── */
+
+.filterBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  transition: color var(--transition-fast);
+}
+
+.filterBtn:hover { color: var(--color-text-primary); }
+
+/* filterBtnActive — no color change, dot indicator only */
+
+.filterIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sizeS .filterBtn,
+.sizeS .filterIcon { width: 16px; height: 16px; }
+
+.sizeM .filterBtn,
+.sizeM .filterIcon,
+.sizeL .filterBtn,
+.sizeL .filterIcon { width: 20px; height: 20px; }
+
+.filterIcon svg { width: 100%; height: 100%; }
+
+/* Indicator dot — 8×8px absolute, top-right corner */
+.filterDot {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--green-500);
+  border: 1.5px solid var(--stone-0);
+  pointer-events: none;
+}
+
+/* ── Counter navigation ──────────────────────────── */
+
+/* "1/2" counter text */
+.counter {
+  flex-shrink: 0;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+  padding: 0 var(--space-4);
+}
+
+.sizeS .counter { font-size: var(--text-xs); line-height: var(--line-height-xs); }
+.sizeM .counter,
+.sizeL .counter { font-size: var(--text-sm); line-height: var(--line-height-base); }
+
+/* Prev / Next buttons — same visual as clearBtn */
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-xs);
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  transition: color var(--transition-fast);
+}
+
+.navBtn:hover { color: var(--color-text-primary); }
+.navBtn:disabled { opacity: 0.4; cursor: default; }
+
+.navIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sizeS .navBtn,
+.sizeS .navIcon { width: 16px; height: 16px; }
+
+.sizeM .navBtn,
+.sizeM .navIcon,
+.sizeL .navBtn,
+.sizeL .navIcon { width: 20px; height: 20px; }
+
+.navIcon svg { width: 100%; height: 100%; }
+
+/* ── Helper text ─────────────────────────────────── */
+
+.helper {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.sizeS .helper { font-size: var(--text-xs); }
+.sizeM .helper { font-size: var(--text-sm); }
+.sizeL .helper { font-size: var(--text-base); }
+
+/* ═══════════════════════════════════════════════
+   Filter panel portal — position: fixed, right-aligned
+   ═══════════════════════════════════════════════ */
+
+.filterPanelPortal {
+  position: fixed;
+  z-index: 8000;
+}
+
+/* ═══════════════════════════════════════════════
+   Loading droplist — portal, position: fixed
+   ═══════════════════════════════════════════════ */
+
+.loadingDroplist {
+  position: fixed;
+  z-index: 8000;
+  background: var(--stone-0);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-100);
+}
+
+.sizeS .loadingDroplist,
+.loadingDroplist.sizeS { padding: var(--space-6)  var(--space-12); }
+.sizeM .loadingDroplist,
+.loadingDroplist.sizeM { padding: var(--space-10) var(--space-16); }
+.sizeL .loadingDroplist,
+.loadingDroplist.sizeL { padding: var(--space-14) var(--space-16); }
+
+.loadingText {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.sizeS .loadingText { font-size: var(--text-sm); }
+
+.loadingDroplist.sizeS .loadingText { font-size: var(--text-sm); }
+.loadingDroplist.sizeM .loadingText { font-size: var(--text-base); }
+.loadingDroplist.sizeL .loadingText { font-size: var(--text-md); }

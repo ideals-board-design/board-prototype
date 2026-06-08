@@ -1,0 +1,34 @@
+/* TableActionsCell — Figma node 31434-6276 / 35306-5625
+   DS Button handles button styling; only overlay positioning here */
+
+/* Sticky right column — 0 width, overlay extends leftward */
+.td {
+  position: sticky;
+  right: 0;
+  padding: 0;
+  vertical-align: middle;
+  width: 0;
+  z-index: 2;
+}
+
+/* Overlay — solid hover background to cover row content behind */
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-16);
+  padding: 0 var(--space-16);
+  height: var(--size-l);
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--color-bg-hover);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Visible state — driven by parent <tr> onMouseEnter/onMouseLeave */
+.innerVisible {
+  opacity: 1;
+  pointer-events: auto;
+}

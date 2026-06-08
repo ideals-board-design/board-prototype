@@ -1,0 +1,236 @@
+/* =============================================================================
+   Button — all tokens sourced from Figma variable defs (node 5761:13093)
+   ============================================================================= */
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  outline: none;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ── Sizes ───────────────────────────────────────────────────────────────── */
+
+.sizeS {
+  padding: var(--space-6) var(--space-12);  /* 6+20+6 = 32px */
+  font-size: var(--text-sm);   /* 14px */
+  gap: var(--space-4);
+}
+
+.sizeM {
+  padding: var(--space-10) var(--space-16); /* 10+20+10 = 40px */
+  font-size: var(--text-base); /* 15px */
+  gap: var(--space-8);
+}
+
+.sizeL {
+  padding: var(--space-14) var(--space-24); /* 14+20+14 = 48px */
+  font-size: var(--text-md);   /* 16px */
+  gap: var(--space-8);
+}
+
+/* Icon-only: square, no padding — explicit height keeps the square */
+.iconOnly.sizeS { width: var(--size-s); height: var(--size-s); padding: 0; }
+.iconOnly.sizeM { width: var(--size-m); height: var(--size-m); padding: 0; }
+.iconOnly.sizeL { width: var(--size-l); height: var(--size-l); padding: 0; }
+
+/* Icon wrapper — S: 16×16, M/L: 20×20 */
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sizeM .icon,
+.sizeL .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Spinner: S=16px, M/L=20px */
+.sizeM .spinner,
+.sizeL .spinner {
+  width: 20px;
+  height: 20px;
+}
+/* Primary + Secondary min-width per size (label + icon, loading — all non-icon-only) */
+.primary.sizeL:not(.iconOnly), .secondary.sizeL:not(.iconOnly) { min-width: 88px; }
+.primary.sizeM:not(.iconOnly), .secondary.sizeM:not(.iconOnly) { min-width: 80px; }
+.primary.sizeS:not(.iconOnly), .secondary.sizeS:not(.iconOnly) { min-width: 72px; }
+
+/* ── Primary ─────────────────────────────────────────────────────────────── */
+
+.primary {
+  background: var(--green-500);
+  color: var(--stone-0);
+}
+
+.primary:hover:not(:disabled):not([data-loading]),
+.primary[data-state="hover"]  { background: var(--green-600); }
+.primary:active:not(:disabled):not([data-loading]),
+.primary[data-state="active"] { background: var(--green-700); }
+
+/* Primary — Danger */
+.primary.danger { background: var(--red-500); }
+.primary.danger:hover:not(:disabled):not([data-loading]),
+.primary.danger[data-state="hover"]  { background: var(--red-600); }
+.primary.danger:active:not(:disabled):not([data-loading]),
+.primary.danger[data-state="active"] { background: var(--red-700); }
+
+/* ── Secondary ───────────────────────────────────────────────────────────── */
+
+.secondary {
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+}
+
+.secondary:hover:not(:disabled):not([data-loading]),
+.secondary[data-state="hover"]  { background: var(--color-bg-hover); }
+.secondary:active:not(:disabled):not([data-loading]),
+.secondary[data-state="active"] { background: var(--stone-400); }
+
+/* Secondary — Danger */
+.secondary.danger {
+  color: var(--red-600);
+  box-shadow: inset 0 0 0 1px var(--red-200);
+}
+.secondary.danger:hover:not(:disabled):not([data-loading]),
+.secondary.danger[data-state="hover"]  { background: var(--red-50); }
+.secondary.danger:active:not(:disabled):not([data-loading]),
+.secondary.danger[data-state="active"] { background: var(--red-100); }
+
+/* ── Tertiary ────────────────────────────────────────────────────────────── */
+
+.tertiary {
+  background: transparent;
+  color: var(--green-500);
+}
+
+.tertiary:hover:not(:disabled):not([data-loading]),
+.tertiary[data-state="hover"]  { color: var(--green-600); }
+.tertiary:active:not(:disabled):not([data-loading]),
+.tertiary[data-state="active"] { color: var(--green-700); }
+
+/* Tertiary — Neutral */
+.tertiary.neutral { color: var(--color-text-secondary); }
+.tertiary.neutral:hover:not(:disabled):not([data-loading]),
+.tertiary.neutral[data-state="hover"]  { color: var(--color-text-primary); }
+.tertiary.neutral:active:not(:disabled):not([data-loading]),
+.tertiary.neutral[data-state="active"] { color: var(--color-text-primary); }
+
+/* Tertiary — Danger */
+.tertiary.danger { color: var(--red-500); }
+.tertiary.danger:hover:not(:disabled):not([data-loading]),
+.tertiary.danger[data-state="hover"]  { color: var(--red-600); }
+.tertiary.danger:active:not(:disabled):not([data-loading]),
+.tertiary.danger[data-state="active"] { color: var(--red-700); }
+
+/* Tertiary — Info */
+.tertiary.info { color: var(--blue-500); }
+.tertiary.info:hover:not(:disabled):not([data-loading]),
+.tertiary.info[data-state="hover"]  { color: var(--blue-600); }
+.tertiary.info:active:not(:disabled):not([data-loading]),
+.tertiary.info[data-state="active"] { color: var(--blue-700); }
+
+/* Tertiary — Warning */
+.tertiary.warning { color: var(--orange-500); }
+.tertiary.warning:hover:not(:disabled):not([data-loading]),
+.tertiary.warning[data-state="hover"]  { color: var(--orange-600); }
+.tertiary.warning:active:not(:disabled):not([data-loading]),
+.tertiary.warning[data-state="active"] { color: var(--orange-700); }
+
+/* Tertiary label: content-sized visually; vertical padding + negative margin = hit area */
+.tertiary.sizeS:not(.iconOnly) { padding: var(--space-6) 0;  margin: calc(-1 * var(--space-6))  0; }
+.tertiary.sizeM:not(.iconOnly) { padding: var(--space-10) 0; margin: calc(-1 * var(--space-10)) 0; }
+.tertiary.sizeL:not(.iconOnly) { padding: var(--space-14) 0; margin: calc(-1 * var(--space-14)) 0; }
+
+/* Tertiary icon-only: 24×24 hit area + negative margin keeps layout at icon size */
+.tertiary.iconOnly.sizeS { width: 24px; height: 24px; margin: -4px; }
+.tertiary.iconOnly.sizeM { width: 24px; height: 24px; margin: -2px; }
+.tertiary.iconOnly.sizeL { width: 24px; height: 24px; margin: -2px; }
+
+/* ── Link ────────────────────────────────────────────────────────────────── */
+
+.link {
+  background: transparent;
+  color: var(--green-500);
+  font-weight: var(--font-weight-regular);
+  text-decoration: none;
+}
+
+/* External link: underline */
+.link.external {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.link:hover:not(:disabled):not([data-loading]),
+.link[data-state="hover"]  { color: var(--green-600); }
+.link:active:not(:disabled):not([data-loading]),
+.link[data-state="active"] { color: var(--green-700); }
+
+/* Link: content-sized visually; vertical padding + negative margin = hit area */
+.link.sizeS { padding: var(--space-6) 0;  margin: calc(-1 * var(--space-6))  0; }
+.link.sizeM { padding: var(--space-10) 0; margin: calc(-1 * var(--space-10)) 0; }
+.link.sizeL { padding: var(--space-14) 0; margin: calc(-1 * var(--space-14)) 0; }
+
+/* ── States ──────────────────────────────────────────────────────────────── */
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Loading: disabled+opacity inherited from :disabled; cursor overridden to wait */
+.button[data-loading] {
+  cursor: wait;
+}
+
+/* ── Spinner ─────────────────────────────────────────────────────────────── */
+
+/* Spinner: outer element is static (fixed bounding rect), inner SVG rotates */
+.spinner {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  display: flex;
+}
+
+.spinner svg {
+  width: 100%;
+  height: 100%;
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

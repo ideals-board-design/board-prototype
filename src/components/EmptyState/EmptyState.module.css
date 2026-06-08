@@ -1,0 +1,77 @@
+/* EmptyState */
+
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-24);
+  box-sizing: border-box;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-32);
+  max-width: 400px;
+  min-width: 320px;
+  width: 100%;
+}
+
+/* Illustration — all assets share viewBox="0 0 176 120" */
+.illustration {
+  display: block;
+  width: 176px;
+  height: 120px;
+  flex-shrink: 0;
+}
+
+.illustration svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Details block */
+.details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-24);
+  width: 100%;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  text-align: center;
+  width: 100%;
+}
+
+.title {
+  font-family: var(--font-family);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.description {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+}

@@ -1,0 +1,64 @@
+/* BadgeCounter — Figma node 9801-63513 */
+
+/* ── Badge (text variants) ──────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  min-width: var(--space-16);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+/* ── Variants ───────────────────────────────────────── */
+
+.new {
+  background: var(--red-500);
+  color: var(--stone-0);
+}
+
+.regular {
+  background: var(--red-50);
+  color: var(--red-500);
+}
+
+.primary {
+  background: var(--green-50);
+  color: var(--color-text-primary);
+}
+
+.secondary {
+  background: var(--stone-300);
+  color: var(--color-text-primary);
+}
+
+.inverted {
+  background: var(--stone-0);
+  color: var(--color-text-primary);
+}
+
+.disabled {
+  background: var(--stone-200);
+  color: var(--color-text-primary);
+  opacity: 0.4;
+}
+
+/* ── Dot variant ────────────────────────────────────── */
+
+.dot {
+  display: inline-block;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: 50%;
+  background: var(--green-500);
+  flex-shrink: 0;
+}

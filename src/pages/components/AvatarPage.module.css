@@ -1,0 +1,114 @@
+.page {
+  padding: var(--space-40) var(--space-48);
+  max-width: 900px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-xl);
+  letter-spacing: var(--letter-spacing-heading);
+  margin-bottom: var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-40);
+  font-family: var(--font-family);
+}
+
+.sectionTitle {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  margin-top: var(--space-56);
+  margin-bottom: var(--space-20);
+}
+
+.label {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  text-align: center;
+}
+
+/* ── Sizes row ─────────────────────────────────────────────────────────── */
+
+.sizeRow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-24);
+}
+
+.sizeItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* ── User variant grid (5 columns) ─────────────────────────────────────── */
+
+.variantGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 96px);
+  gap: var(--space-16) var(--space-24);
+  align-items: center;
+  justify-items: center;
+}
+
+.colLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ── Org variant grid (2 columns) ──────────────────────────────────────── */
+
+.variantGrid2 {
+  display: grid;
+  grid-template-columns: repeat(2, 96px);
+  gap: var(--space-16) var(--space-24);
+  align-items: center;
+  justify-items: center;
+}
+
+/* ── Group row ─────────────────────────────────────────────────────────── */
+
+.groupRow {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-24);
+}
+
+/* ── Spec table ────────────────────────────────────────────────────────── */
+
+.specTable {
+  border-collapse: collapse;
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.specTable td {
+  padding: var(--space-8) var(--space-16);
+  border-bottom: 1px solid var(--stone-200);
+  vertical-align: top;
+}
+
+.specTable td:first-child {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  padding-left: 0;
+  width: 200px;
+}
+
+.specTable tr:last-child td {
+  border-bottom: none;
+}

@@ -1,0 +1,159 @@
+/* DashboardPage — Table-based page template
+   Figma: 35354-11450 (default) · 35354-11460 (drawer open) */
+
+.page {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--color-bg-surface);
+}
+
+/* Content column */
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Toolbar — 88px (pad 24 + button 40 + pad 24) ────────── */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  flex-shrink: 0;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  width: 360px;
+  flex-shrink: 0;
+}
+
+/* ── Table scroll area — vertical only ───────────────────── */
+
+.tableScroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* ── Table container — 24px margin, horizontal scroll ───────
+   Scrolls only when Name column would shrink below 240px   */
+
+.tableCard {
+  margin: 0 var(--space-24) var(--space-24);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+/* ── Table ──────────────────────────────────────────────────
+   separate + border-spacing: 0  →  identical to collapse
+   but allows border-radius on cells (for rounded rows)     */
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  /* fixed layout: columns size from colgroup, not content — enables text truncation */
+  table-layout: fixed;
+  /* scroll threshold = Name min(240) + Status(168) + Created on(144)
+     below this the table overflows → scroll → sticky Name column freezes at 240px */
+  min-width: 552px;
+}
+
+/* Header row background */
+.table thead tr { background: var(--stone-200); }
+
+/* ── Sticky Name column ─────────────────────────────────────
+   Frozen at left: 0. Scrolls only when < 240px.
+   Each row state gets an explicit bg to cover cells behind. */
+
+/* Sticky Name column — min-width enforced via table min-width (552px) above.
+   With table-layout: fixed, cell min-width is ignored; the scroll threshold
+   on the table ensures this column never renders below 240px. */
+.table th:first-child,
+.table td:first-child {
+  position: sticky;
+  left: 0;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+
+.table th:first-child { z-index: 2; background: var(--stone-200); }
+.table td:first-child { z-index: 1; }
+
+/* Per-row backgrounds for the sticky column */
+.rowOdd  td:first-child { background: var(--stone-0); }
+.rowEven td:first-child { background: var(--stone-100); }
+.rowSelected td:first-child { background: var(--color-bg-selected); }
+
+.rowOdd:hover  td:first-child,
+.rowEven:hover td:first-child,
+.rowSelected:hover td:first-child { background: var(--color-bg-hover); }
+
+/* ── Row rounded corners — right side ──────────────────────
+   nth-last-child(2) = last visible column (before 0-width
+   TableActionsCell which is always last child)             */
+
+.table th:nth-last-child(2),
+.table td:nth-last-child(2) {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* Sticky actions header cell — matches thead bg */
+.actionsThSticky {
+  width: 0;
+  padding: 0;
+  position: sticky;
+  right: 0;
+  background: var(--stone-200);
+  z-index: 2;
+}
+
+/* ── Body rows ──────────────────────────────────────────────  */
+
+.rowOdd  { background: var(--stone-0);   cursor: pointer; }
+.rowEven { background: var(--stone-100); cursor: pointer; }
+.rowSelected { background: var(--color-bg-selected); }
+
+/* Hover overrides selected (rule comes after) */
+.rowOdd:hover,
+.rowEven:hover,
+.rowSelected:hover { background: var(--color-bg-hover); }
+
+/* ── Drawer — 460px ─────────────────────────────────────── */
+
+.drawer {
+  width: 460px;
+  flex-shrink: 0;
+  border-left: 1px solid var(--color-border);
+  background: var(--color-bg-surface);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.drawerBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-24);
+}
+
+.drawerPlaceholder {
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 20px;
+  margin: 0;
+}

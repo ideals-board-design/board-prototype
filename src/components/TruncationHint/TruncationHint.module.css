@@ -1,0 +1,40 @@
+/* TruncationHint */
+
+/* Wrapper — the truncated element itself.
+   Consumers add flex sizing via className (e.g. flex:1; min-width:0) */
+.wrapper {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: default;
+}
+
+/* ── Hint bubble ────────────────────────────────────────── */
+
+.hint {
+  position: fixed;
+  z-index: 9000;
+  pointer-events: none;
+
+  background: var(--stone-1000);
+  color: var(--color-text-inverse);
+  padding: var(--space-4) var(--space-12);
+  border-radius: var(--radius-sm);
+
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+
+  /* Text wraps to the next line when it fills the full width */
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* ── Position transforms — centered on anchor point ─────── */
+
+/* Below: anchor = bottom-center of trigger, hint top-center aligns */
+.bottom { transform: translateX(-50%); }
+
+/* Above: anchor = top-center of trigger, hint bottom-center aligns */
+.top    { transform: translateX(-50%) translateY(-100%); }

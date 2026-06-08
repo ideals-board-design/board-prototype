@@ -1,0 +1,201 @@
+/* TableCell / TableHeaderCell
+   td/th stay as table-cell display; inner div handles flex layout */
+
+/* ── Base table elements ─────────────────────────────────── */
+
+.th,
+.td {
+  padding: 0;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* ── Inner flex wrapper (shared) ─────────────────────────── */
+
+/* Fixed 48px height; flexbox centers content vertically */
+.inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: 0 var(--space-16);
+  height: 48px;
+}
+
+/* ── Header cell (th) ────────────────────────────────────── */
+
+.th {
+  text-align: left;
+}
+
+.headerInner {
+  /* header-specific overrides if needed */
+}
+
+.headerLabel {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* Count badge in header — white bg */
+.countBadgeHeader {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* Sortable th — whole cell is the click target */
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.sortIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Show sort icon on header row hover */
+.sortable:hover .sortIcon {
+  opacity: 1;
+}
+
+/* Always show when actively sorted */
+.sorted .sortIcon {
+  opacity: 1;
+  color: var(--color-text-primary);
+}
+
+/* ── Body cell (td) ──────────────────────────────────────── */
+
+/* Error state — red text */
+.error .label { color: var(--color-text-error); }
+.error .icon  { color: var(--color-text-error); }
+
+.secondary .inner {
+  color: var(--color-text-secondary);
+}
+
+.secondary .label {
+  color: var(--color-text-secondary);
+}
+
+/* Truncation — .inner needs overflow:hidden + min-width:0 when truncate=true */
+.innerTruncate {
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* Flex sizing passed to TruncationHint so it fills the inner flex container */
+.truncationHintFlex {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Text label */
+.label {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* Icon slot (20×20) */
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-primary);
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Badge counter in body — stone-300 bg */
+.countBadgeBody {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--stone-300);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* Status badge pill */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-2) var(--space-12);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* Dropdown trigger */
+.dropdownTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.chevron svg {
+  width: 100%;
+  height: 100%;
+}

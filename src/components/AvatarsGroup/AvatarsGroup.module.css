@@ -1,0 +1,69 @@
+/* =============================================================================
+   AvatarsGroup — tokens from Figma node 27111-11237
+   ============================================================================= */
+
+.group {
+  display: inline-flex;
+  align-items: center;
+  isolation: isolate;
+}
+
+/* ── Item shell ──────────────────────────────────────────────────────────── */
+
+.item {
+  position: relative;
+  border-radius: 50%;
+  border: 2px solid var(--stone-0);
+  flex-shrink: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Sizes (item dimensions + overlap) ───────────────────────────────────── */
+
+.sizeL .item { width: 40px; height: 40px; margin-right: -6px; }
+.sizeM .item { width: 32px; height: 32px; margin-right: -4px; }
+.sizeS .item { width: 24px; height: 24px; margin-right: -2px; }
+
+.item:last-child { margin-right: 0; }
+
+/* ── Variants ────────────────────────────────────────────────────────────── */
+
+/* Initials (neutral user avatar) */
+.letters { background: var(--stone-300); }
+
+/* Counter badge */
+.counter { background: var(--blue-500); }
+
+/* ── Photo ───────────────────────────────────────────────────────────────── */
+
+.img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Initials text ───────────────────────────────────────────────────────── */
+
+.initials {
+  font-family: var(--font-family);
+  font-weight: 400;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  letter-spacing: 0;
+}
+
+/* Letters: primary text */
+.letters .initials { color: var(--color-text-primary); }
+
+/* Counter: inverse (white) text */
+.counter .initials { color: var(--color-text-inverse); }
+
+/* Font size per group size */
+.sizeL .initials { font-size: var(--text-md);   } /* 16px */
+.sizeM .initials { font-size: var(--text-base); } /* 15px */
+.sizeS .initials { font-size: var(--text-sm);   } /* 14px */

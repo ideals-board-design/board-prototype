@@ -1,0 +1,85 @@
+.page {
+  padding: var(--space-40) var(--space-48);
+  max-width: 900px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-xl);
+  letter-spacing: var(--letter-spacing-heading);
+  margin-bottom: var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-40);
+  font-family: var(--font-family);
+}
+
+.sectionTitle {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  margin-top: var(--space-56);
+  margin-bottom: var(--space-8);
+}
+
+.subsectionTitle {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  margin-top: var(--space-32);
+  margin-bottom: var(--space-16);
+}
+
+/* Positions demo grid */
+.positionsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-16);
+  align-items: center;
+}
+
+.positionCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.positionLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+}
+
+/* Delay demo */
+.delayNote {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  margin-bottom: var(--space-16);
+}
+
+/* Spec table */
+.specTable {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: var(--space-8) var(--space-24);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+}
+
+.specLabel {
+  color: var(--color-text-secondary);
+}
+
+.specValue {
+  color: var(--color-text-primary);
+  font-weight: var(--font-weight-medium);
+}

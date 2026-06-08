@@ -1,0 +1,98 @@
+/* DateCell — Figma node 24002-7087
+   All cells are 32×32px. Type drives the visual variant.
+   Hover handled by CSS :hover + .isHover (forced state for showcase). */
+
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+
+.cell {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  border-radius: 0;
+  box-sizing: border-box;
+  transition: background var(--transition-fast);
+}
+
+/* ── Day label ────────────────────────────────────────────────────────────── */
+
+.day {
+  font-family: var(--font-family);
+  font-size: var(--text-sm);      /* 14px */
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);  /* 20px */
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════
+   Type variants — resting (Active) state
+   ═══════════════════════════════════════════ */
+
+/* Default — no background, no border */
+.typeDefault {}
+
+/* Date range — light green fill, no border-radius */
+.typeDateRange {
+  background: var(--color-bg-selected);   /* green-25 = #EBF8EF */
+}
+
+/* Selected — green-500 fill, 4px radius, inverse text */
+.typeSelected {
+  background: var(--green-500);
+  border-radius: var(--radius-sm);
+}
+
+.typeSelected .day {
+  color: var(--color-text-inverse);
+}
+
+/* Today — green-500 border, 4px radius, primary text */
+.typeToday {
+  border: 1px solid var(--green-500);
+  border-radius: var(--radius-sm);
+}
+
+/* ═══════════════════════════════════════════
+   Hover states
+   Applied by :hover and .isHover (forced)
+   ═══════════════════════════════════════════ */
+
+/* Default hover — stone-300 bg, 4px radius */
+.typeDefault:hover:not(.isDisabled),
+.typeDefault.isHover:not(.isDisabled) {
+  background: var(--color-bg-hover);
+  border-radius: var(--radius-sm);
+}
+
+/* Date range hover — green-50 bg */
+.typeDateRange:hover:not(.isDisabled),
+.typeDateRange.isHover:not(.isDisabled) {
+  background: var(--green-50);    /* #CBF1DA */
+}
+
+/* Selected hover — green-600 bg */
+.typeSelected:hover:not(.isDisabled),
+.typeSelected.isHover:not(.isDisabled) {
+  background: var(--green-600);
+}
+
+/* Today hover — stone-300 bg + green border */
+.typeToday:hover:not(.isDisabled),
+.typeToday.isHover:not(.isDisabled) {
+  background: var(--color-bg-hover);
+}
+
+/* ═══════════════════════════════════════════
+   Disabled state — opacity 0.4
+   ═══════════════════════════════════════════ */
+
+.isDisabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}

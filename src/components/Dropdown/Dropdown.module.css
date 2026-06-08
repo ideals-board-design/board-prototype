@@ -1,0 +1,544 @@
+/* Dropdown — Figma nodes 5761-13893, 34585-47936, 34585-47951, 34585-47959 */
+
+/* ── Outer wrapper ────────────────────────────────── */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Label ────────────────────────────────────────── */
+
+.label {
+  display: block;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  cursor: default;
+}
+
+.sizeS .label { font-size: var(--text-sm); }
+.sizeM .label { font-size: var(--text-base); }
+.sizeL .label { font-size: var(--text-md); }
+
+/* ── Trigger (visual "field" box) ─────────────────── */
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  border-radius: var(--radius-sm);
+  background: var(--stone-0);
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+  cursor: pointer;
+  outline: none;
+  transition:
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+  /* height via padding */
+}
+
+/* Sizes — padding drives height (no explicit height) */
+.sizeS .trigger { padding: var(--space-6)  var(--space-12); }
+.sizeM .trigger { padding: var(--space-10) var(--space-16); }
+.sizeL .trigger { padding: var(--space-14) var(--space-16); }
+
+/* Hover — green border (not disabled, not error) */
+.wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Open — green border (same as focus) */
+.wrapper.isOpen:not(.isDisabled):not(.hasError) .trigger {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Focus ring (keyboard) */
+.trigger:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Error */
+.wrapper.hasError .trigger {
+  box-shadow: inset 0 0 0 1px var(--color-border-error);
+}
+
+/* Disabled */
+.wrapper.isDisabled .trigger {
+  background: var(--stone-200);
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Trigger text ─────────────────────────────────── */
+
+.triggerText {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+/* Placeholder colour when no value is selected */
+.isPlaceholder .triggerText {
+  color: var(--color-text-secondary);
+}
+
+.sizeS .triggerText { font-size: var(--text-sm); }
+.sizeM .triggerText { font-size: var(--text-base); }
+.sizeL .triggerText { font-size: var(--text-md); }
+
+/* ── Secondary text ───────────────────────────────── */
+
+.secondaryText {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.sizeS .secondaryText { font-size: var(--text-sm); }
+.sizeM .secondaryText { font-size: var(--text-base); }
+.sizeL .secondaryText { font-size: var(--text-md); }
+
+/* ── Shared icon sizing ───────────────────────────── */
+
+.iconLeft,
+.chevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+
+.sizeS .iconLeft,
+.sizeS .chevron { width: 16px; height: 16px; }
+
+.sizeM .iconLeft,
+.sizeM .chevron,
+.sizeL .iconLeft,
+.sizeL .chevron { width: 20px; height: 20px; }
+
+.iconLeft svg,
+.chevron svg { width: 100%; height: 100%; }
+
+/* ── Display-only checkbox (inside droplist items) ── */
+
+/* 20×20 wrapper that matches DS checkbox click-area spec.
+   pointer-events: none so clicks fall through to the item div's onClick,
+   preventing the browser's <label>→<input> synthetic second click.  */
+.cbWrap {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Kill pointer events on the Checkbox subtree too (belt-and-suspenders) */
+.cbDisplay,
+.cbDisplay * {
+  pointer-events: none;
+}
+
+/* ── Clear button ─────────────────────────────────── */
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  border-radius: var(--radius-xs);
+  transition: color var(--transition-fast);
+}
+
+.clearBtn:hover { color: var(--color-text-primary); }
+
+/* Hidden state — space is reserved but button is invisible + non-interactive */
+.clearBtnHidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.clearIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sizeS .clearBtn,
+.sizeS .clearIcon { width: 16px; height: 16px; }
+
+.sizeM .clearBtn,
+.sizeM .clearIcon,
+.sizeL .clearBtn,
+.sizeL .clearIcon { width: 20px; height: 20px; }
+
+.clearIcon svg { width: 100%; height: 100%; }
+
+/* Hint row → see src/components/shared/HintRow.module.css */
+
+/* ═══════════════════════════════════════════════════
+   Droplist — rendered via portal (position: fixed)
+   ═══════════════════════════════════════════════════ */
+
+.droplist {
+  position: fixed;
+  z-index: 8000;
+  background: var(--stone-0);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-100);
+  max-height: 360px;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+/* ── Droplist items ───────────────────────────────── */
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  box-sizing: border-box;
+}
+
+/* Sizes — padding drives height, matches trigger */
+.sizeS .item { padding: var(--space-6)  var(--space-8); }
+.sizeM .item { padding: var(--space-10) var(--space-12); }
+.sizeL .item { padding: var(--space-14) var(--space-12); }
+
+/* States — apply to all items including selected */
+.item:hover  { background: var(--color-bg-hover); }  /* #ECEEF9 */
+.item:active { background: var(--color-border); }     /* #DEE0EB — stone-400 */
+
+/* Selected resting state only — hover/press reuse the same tokens above */
+.itemSelected { background: var(--color-bg-selected); }  /* #EBF8EF */
+
+/* ── Item label ───────────────────────────────────── */
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sizeS .itemLabel { font-size: var(--text-sm); }
+.sizeM .itemLabel { font-size: var(--text-base); }
+.sizeL .itemLabel { font-size: var(--text-md); }
+
+/* Delete item — red label */
+.itemDelete .itemLabel { color: var(--color-text-error); }
+
+/* ── Item icon (left) — Figma: 20×20, gap via parent flex ── */
+
+.itemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-icon-primary);
+}
+
+.sizeS .itemIcon { width: 16px; height: 16px; }
+.sizeM .itemIcon,
+.sizeL .itemIcon { width: 20px; height: 20px; }
+
+.itemIcon svg { width: 100%; height: 100%; }
+
+/* Delete item icon inherits red color from parent */
+.itemDelete .itemIcon { color: var(--color-text-error); }
+
+/* ── Item secondary text ──────────────────────────── */
+
+.itemSecondary {
+  flex-shrink: 0;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.sizeS .itemSecondary { font-size: var(--text-sm); }
+.sizeM .itemSecondary { font-size: var(--text-base); }
+.sizeL .itemSecondary { font-size: var(--text-md); }
+
+/* ── Group section label (type='group') ─────────────
+   Figma: pt=12, pb=8, px=12, 14px Regular secondary
+   Total height: 12 + 20 (line-height) + 8 = 40px     */
+
+.groupLabel {
+  padding: var(--space-12) var(--space-12) var(--space-8);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Divider line (type='divider' + before delete) ──
+   Figma: py=4px + 1px line = 8px total               */
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  margin: var(--space-4) var(--space-12);
+}
+
+/* ══════════════════════════════════════════════════
+   Sublist panel (hover-triggered nested droplist)
+   ══════════════════════════════════════════════════ */
+
+/* Rendered via portal, positioned to the right of the
+   hovered parent item. Inherits .droplist base styles. */
+
+.sublist {
+  width: max-content;
+  min-width: 160px;
+}
+
+/* Inline secondary text after label (e.g. "(English)") */
+
+.itemLabelInlineSecondary {
+  margin-left: var(--space-4);
+  color: var(--color-text-secondary);
+}
+
+/* Right-side chevron on sublist parent items */
+
+.sublistChevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--color-icon-primary);
+}
+
+.sizeS .sublistChevron { width: 16px; height: 16px; }
+.sizeM .sublistChevron,
+.sizeL .sublistChevron { width: 20px; height: 20px; }
+
+.sublistChevron svg { width: 100%; height: 100%; }
+
+/* ══════════════════════════════════════════════════
+   Tree structure items (mode="tree")
+   Figma nodes 26240-15772, 34585-48084
+   ══════════════════════════════════════════════════ */
+
+/* Tree item overrides left padding via --tree-pad-left CSS variable */
+.itemTree {
+  padding-left: var(--tree-pad-left, var(--space-12));
+}
+
+/* Override size-based padding-left for tree items (keep vertical padding) */
+.sizeS .itemTree { padding-left: var(--tree-pad-left, var(--space-8));  }
+.sizeM .itemTree { padding-left: var(--tree-pad-left, var(--space-12)); }
+.sizeL .itemTree { padding-left: var(--tree-pad-left, var(--space-12)); }
+
+/* Disabled tree item */
+.itemDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Expand / collapse chevron ────────────────────── */
+
+.treeChevron {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  border-radius: var(--radius-xs);
+  transition:
+    transform var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.treeChevron:hover { color: var(--color-text-primary); }
+
+.treeChevron span {
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+.treeChevron svg { width: 100%; height: 100%; }
+
+/* Rotated 90° when node is expanded */
+.treeChevronOpen { transform: rotate(90deg); }
+
+/* Spacer for leaf nodes — same 20px width as the chevron button,
+   keeps cbWrap at the same horizontal position as expandable siblings */
+.treeChevronPlaceholder {
+  width: 20px;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   Droplist inline search (Figma node 34655-10615)
+   Uses the Search component — shown when selectable options > SEARCH_THRESHOLD (5)
+   Container: 60px tall, Search input inset 12px top/sides, 8px bottom
+   (Negative margins expand to full droplist width, absorbing the 4px padding)
+   ══════════════════════════════════════════════════ */
+
+.droplistSearch {
+  position: sticky;
+  top: calc(-1 * var(--space-4));  /* compensate droplist padding-top */
+  z-index: 1;
+  background: var(--stone-0);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  /* Span full width, breaking out of the droplist's 4px padding */
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-4)) 0;
+  /* Figma M: 12px top + 40px input + 8px bottom, 12px sides */
+  /* total = 4(absorbed) + 12(visible) = 16px top/sides */
+  padding: var(--space-16) var(--space-16) var(--space-8);
+}
+
+/* ══════════════════════════════════════════════════
+   No-border variant (Figma node 27057-4660)
+   Trigger: no background, no border, content-width,
+   no padding — height = line-height (20px).
+   Resting = secondary colors; Hover = primary colors.
+   ══════════════════════════════════════════════════ */
+
+.noBorder {
+  width: fit-content;
+}
+
+.noBorder .trigger {
+  background: transparent;
+  box-shadow: none;
+  padding: 0;
+  gap: var(--space-4);
+}
+
+/* Override size-based padding */
+.noBorder.sizeS .trigger,
+.noBorder.sizeM .trigger,
+.noBorder.sizeL .trigger { padding: 0; }
+
+/* Override hover/open/error box-shadow from outline rules */
+.noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
+.noBorder.isOpen:not(.isDisabled):not(.hasError) .trigger { box-shadow: none; }
+.noBorder.hasError .trigger { box-shadow: none; }
+
+/* TriggerText: don't flex-grow (content-width). Color inherits base rules:
+   primary when value selected, secondary when placeholder (.isPlaceholder) */
+.noBorder .trigger .triggerText {
+  flex: 0 1 auto;
+}
+
+/* Resting: chevron and iconLeft always secondary */
+.noBorder .trigger .chevron,
+.noBorder .trigger .iconLeft { color: var(--color-icon-secondary); }
+
+/* Hover: text and icons go primary */
+.noBorder .trigger:hover .triggerText { color: var(--color-text-primary); }
+.noBorder .trigger:hover .chevron,
+.noBorder .trigger:hover .iconLeft { color: var(--color-icon-primary); }
+
+/* Disabled: keep transparent bg */
+.noBorder.isDisabled .trigger { background: transparent; }
+
+/* Droplist for no-border: content-width with a sensible minimum */
+.droplistNoBorder {
+  width: max-content;
+  min-width: 120px;
+}
+
+/* ── Item avatar (user & group droplist items) ────── */
+/* Always 24px regardless of item S / M / L size       */
+
+.itemAvatar {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.itemAvatarUser   { border-radius: 50%;  background: var(--stone-300); }
+.itemAvatarSquare { border-radius: var(--radius-sm); }
+.itemAvatarGroup  { background: var(--tag-kepeel); }
+.itemAvatarOrg    { background: var(--green-500); }
+
+.itemAvatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.itemAvatarInitials {
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+}
+
+.itemAvatarUser .itemAvatarInitials { color: var(--color-text-primary); }
+.itemAvatarGroup .itemAvatarInitials,
+.itemAvatarOrg   .itemAvatarInitials { color: var(--color-text-inverse); }
+
+/* Reduced vertical padding so avatar items stay at same total height as text items
+   S: 4+24+4=32px  M: 8+24+8=40px  L: 12+24+12=48px */
+.sizeS .itemHasAvatar { padding: var(--space-4)  var(--space-8);  }
+.sizeM .itemHasAvatar { padding: var(--space-8)  var(--space-12); }
+.sizeL .itemHasAvatar { padding: var(--space-12) var(--space-12); }
+
+/* ── No options ───────────────────────────────────── */
+
+.noOptions {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sizeS .noOptions { font-size: var(--text-sm);   padding: var(--space-6)  var(--space-8);  }
+.sizeM .noOptions { font-size: var(--text-base);  padding: var(--space-10) var(--space-12); }
+.sizeL .noOptions { font-size: var(--text-md);    padding: var(--space-14) var(--space-12); }

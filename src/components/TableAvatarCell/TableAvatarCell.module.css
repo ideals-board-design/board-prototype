@@ -1,0 +1,152 @@
+/* TableAvatarCell — Figma node 31434-6347 */
+
+/* ── Base td ────────────────────────────────────────────── */
+
+.td {
+  padding: 0;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* ── Shared inner flex wrapper ──────────────────────────── */
+
+.inner {
+  display: flex;
+  align-items: center;
+}
+
+/* ── Type: horizontal — 48px (12+24+12) */
+
+.innerHorizontal {
+  gap: var(--space-8);
+  padding: 0 var(--space-16);
+  height: 48px;
+}
+
+/* ── Type: info — 64px (Figma h-[64px]) */
+
+.innerInfo {
+  gap: var(--space-12);
+  padding: 0 var(--space-16);
+  height: var(--space-64);
+}
+
+/* ── Type: vertical — 80px (10+32+8+20+10) */
+
+.innerVertical {
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-10) var(--space-16);
+  height: 80px;
+}
+
+/* ── Avatar ─────────────────────────────────────────────── */
+
+.avatar {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--stone-300);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sizes */
+.avatarS { width: var(--space-24); height: var(--space-24); }
+.avatarM { width: var(--space-32); height: var(--space-32); }
+.avatarL { width: 40px; height: 40px; }
+
+/* Square shape (groups / workspaces) */
+.avatarSquare { border-radius: var(--radius-sm); }
+
+/* Photo */
+.avatarImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Initials */
+.avatarInitials {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+/* Inverse initials for coloured avatars */
+.avatarInitialsInverse {
+  color: var(--color-text-inverse);
+}
+
+/* Initials font-size per avatar size */
+.avatarS .avatarInitials { font-size: var(--text-sm);   } /* 14px */
+.avatarM .avatarInitials { font-size: var(--text-base); } /* 15px */
+.avatarL .avatarInitials { font-size: var(--text-md);   } /* 16px */
+
+/* ── Text elements ──────────────────────────────────────── */
+
+/* Horizontal: regular name */
+.nameText {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* Horizontal: "+N" overflow */
+.extra {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* Info: name (medium weight) */
+.nameBold {
+  display: block;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* Info: secondary text */
+.infoText {
+  display: block;
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+/* Vertical: centered name (medium weight, ellipsis) */
+.nameCenter {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  color: var(--color-text-primary);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 104px; /* 136px cell - 16px*2 padding */
+}
+
+/* Text block container (info type) */
+.textBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  min-width: 0;
+}

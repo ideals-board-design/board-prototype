@@ -1,0 +1,169 @@
+.page {
+  padding: var(--space-40) var(--space-48);
+  max-width: 900px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-xl);
+  letter-spacing: var(--letter-spacing-heading);
+  margin-bottom: var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-40);
+  font-family: var(--font-family);
+}
+
+.sectionTitle {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  margin-top: var(--space-56);
+  margin-bottom: var(--space-16);
+}
+
+.description {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  margin-bottom: var(--space-16);
+  margin-top: calc(-1 * var(--space-8));
+}
+
+/* ── States table ─────────────────────────────────── */
+
+.table {
+  display: grid;
+  grid-template-columns: 80px 240px;
+  gap: var(--space-12) var(--space-24);
+  align-items: start;
+}
+
+.rowLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  padding-top: 28px;
+}
+
+/* ── Sizes row ────────────────────────────────────── */
+
+.sizeRow {
+  display: flex;
+  gap: var(--space-24);
+  align-items: flex-start;
+}
+
+.sizeItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 220px;
+}
+
+/* ── Additional states grid ───────────────────────── */
+
+.additionalGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 240px);
+  gap: var(--space-24) var(--space-32);
+  align-items: start;
+}
+
+.additionalItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ── Live demo row ────────────────────────────────── */
+
+.demoRow {
+  display: flex;
+  gap: var(--space-32);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.demoRow > * {
+  width: 280px;
+}
+
+/* ── Date Cell grid ───────────────────────────────── */
+
+.yearCellGrid {
+  display: grid;
+  grid-template-columns: 72px repeat(2, 72px);
+  gap: var(--space-8) var(--space-24);
+  align-items: center;
+}
+
+.cellGrid {
+  display: grid;
+  grid-template-columns: 72px repeat(4, 72px);
+  gap: var(--space-8) var(--space-24);
+  align-items: center;
+}
+
+.colLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  text-align: center;
+}
+
+.cellRowLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  padding-top: 0;
+}
+
+.cellWrap {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Calendar row ─────────────────────────────────── */
+
+.calendarRow {
+  display: flex;
+  gap: var(--space-32);
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* ── Spec table ───────────────────────────────────── */
+
+.specTable {
+  border-collapse: collapse;
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.specTable td {
+  padding: var(--space-8) var(--space-16);
+  border-bottom: 1px solid var(--stone-200);
+  vertical-align: top;
+}
+
+.specTable td:first-child {
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  padding-left: 0;
+  width: 220px;
+}
+
+.specTable tr:last-child td {
+  border-bottom: none;
+}

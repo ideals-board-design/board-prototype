@@ -1,0 +1,102 @@
+/* =============================================================================
+   Tabs
+   ============================================================================= */
+
+.root {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Strip ───────────────────────────────────────────────────────────────── */
+
+.strip {
+  display: flex;
+  gap: var(--space-24);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ── Tab button ──────────────────────────────────────────────────────────── */
+
+.tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: var(--space-14) 0;
+  cursor: pointer;
+  background: none;
+  border: none;
+  outline: none;
+  gap: 0;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+  color: var(--color-text-secondary);
+}
+
+.tab.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Hover: unselected tab text brightens */
+.tab:not(.disabled):not(.selected):hover {
+  color: var(--color-text-primary);
+}
+
+/* Focus ring */
+.tab:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+/* Selected text color */
+.tab.selected {
+  color: var(--color-text-primary);
+}
+
+/* ── Inner layout row ────────────────────────────────────────────────────── */
+
+.layout {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* ── Label ───────────────────────────────────────────────────────────────── */
+
+.label {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  white-space: nowrap;
+}
+
+/* ── Icon ────────────────────────────────────────────────────────────────── */
+
+.icon {
+  display: contents;
+}
+
+.icon svg {
+  width: 20px;
+  height: 20px;
+  color: currentColor;
+  flex-shrink: 0;
+}
+
+/* ── Active indicator ────────────────────────────────────────────────────── */
+
+.indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--space-2);
+  background: transparent;
+  transition: background var(--transition-fast);
+}
+
+.tab.selected .indicator {
+  background: var(--color-brand);
+}

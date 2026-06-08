@@ -1,0 +1,92 @@
+/* =============================================================================
+   LAYER 2 — Semantic aliases (reference Layer 1 tokens only)
+   Components MUST use these — never use Layer 1 directly
+   ============================================================================= */
+
+:root {
+
+  /* ---------------------------------------------------------------------------
+     Text
+     --------------------------------------------------------------------------- */
+  --color-text-primary:   var(--stone-1000);   /* #1F2129 */
+  --color-text-secondary: var(--stone-800);    /* #5F616A */
+  --color-text-disabled:  var(--stone-500);    /* #BBBDC8 */
+  --color-text-inverse:   var(--stone-0);      /* #FFFFFF */
+  --color-text-brand:     var(--green-500);    /* #2C9C74 */
+  --color-text-error:     var(--red-600);      /* #DB2F1B */
+  --color-text-warning:   var(--orange-600);   /* #B87900 */
+  --color-text-success:   var(--green-600);    /* #1C8269 */
+  --color-text-info:      var(--blue-600);     /* #2977CC */
+
+  /* ---------------------------------------------------------------------------
+     Icon
+     --------------------------------------------------------------------------- */
+  --color-icon-primary:   var(--stone-1000);
+  --color-icon-secondary: var(--stone-800);
+  --color-icon-disabled:  var(--stone-500);
+  --color-icon-inverse:   var(--stone-0);
+  --color-icon-brand:     var(--green-500);
+
+  /* ---------------------------------------------------------------------------
+     Background
+     --------------------------------------------------------------------------- */
+  --color-bg-page:      var(--stone-100);    /* #FBFBFB */
+  --color-bg-surface:   var(--stone-0);      /* #FFFFFF */
+  --color-bg-hover:     var(--stone-300);    /* #ECEEF9 */
+  --color-bg-selected:  var(--green-25);     /* #EBF8EF */
+  --color-bg-disabled:  var(--stone-200);    /* #F7F7F7 */
+  --color-bg-overlay:   rgba(31, 33, 41, 0.6); /* stone-1000 at 60% */
+
+  /* ---------------------------------------------------------------------------
+     Brand / Primary action
+     --------------------------------------------------------------------------- */
+  --color-brand:         var(--green-500);   /* #2C9C74 — default */
+  --color-brand-hover:   var(--green-600);   /* #1C8269 — hover */
+  --color-brand-active:  var(--green-700);   /* #12695C — pressed */
+  --color-brand-subtle:  var(--green-25);    /* #EBF8EF — tinted bg */
+  --color-brand-light:   var(--green-50);    /* #CBF1DA */
+
+  /* ---------------------------------------------------------------------------
+     Border / Divider
+     --------------------------------------------------------------------------- */
+  --color-border:          var(--stone-400);   /* #DEE0EB */
+  --color-border-strong:   var(--stone-500);   /* #BBBDC8 */
+  --color-border-focus:    var(--green-500);   /* #2C9C74 */
+  --color-border-error:    var(--red-500);     /* #E95B4A */
+  --color-border-disabled: var(--stone-300);   /* #ECEEF9 */
+
+  /* ---------------------------------------------------------------------------
+     Semantic states
+     --------------------------------------------------------------------------- */
+  /* Success */
+  --color-success-bg:   var(--green-25);     /* #EBF8EF */
+  --color-success:      var(--green-500);    /* #2C9C74 */
+  --color-success-bold: var(--green-600);    /* #1C8269 */
+
+  /* Error */
+  --color-error-bg:     var(--red-50);       /* #FAD9D6 */
+  --color-error:        var(--red-500);      /* #E95B4A */
+  --color-error-bold:   var(--red-600);      /* #DB2F1B */
+
+  /* Warning */
+  --color-warning-bg:   var(--orange-50);    /* #FFEBD5 */
+  --color-warning:      var(--orange-500);   /* #D18A00 */
+  --color-warning-bold: var(--orange-600);   /* #B87900 */
+
+  /* Info */
+  --color-info-bg:      var(--blue-50);      /* #E6F2FD */
+  --color-info:         var(--blue-500);     /* #5DA3EF */
+  --color-info-bold:    var(--blue-600);     /* #2977CC */
+
+  /* Highlight */
+  --color-highlight-bg: var(--yellow-50);    /* #FFF4B4 */
+  --color-highlight:    var(--yellow-500);   /* #FFE448 */
+
+  /* ---------------------------------------------------------------------------
+     Component size scale
+     All interactive elements: S=32px, M=40px, L=48px
+     --------------------------------------------------------------------------- */
+  --size-s: 32px;
+  --size-m: 40px;
+  --size-l: 48px;
+}

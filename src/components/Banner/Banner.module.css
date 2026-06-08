@@ -1,0 +1,96 @@
+/* Banner — Figma node 14376-70685 */
+
+/* ── Base ───────────────────────────────────────────────── */
+
+.banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-14) var(--space-16);   /* L: 14+14+20 = 48px */
+  box-sizing: border-box;
+  font-family: var(--font-family);
+  min-height: var(--size-l);                  /* 48px */
+}
+
+/* ── Sizes ──────────────────────────────────────────────── */
+
+.m {
+  padding: var(--space-10) var(--space-16);   /* M: 10+10+20 = 40px */
+  min-height: var(--size-m);                  /* 40px */
+}
+
+/* ── Variants ───────────────────────────────────────────── */
+
+.rounded {
+  border-radius: var(--radius-sm);            /* 4px */
+}
+
+.inline {
+  border-radius: 0;
+}
+
+/* ── States — background ────────────────────────────────── */
+
+.infoPrimary   { background: var(--color-info-bg);     }   /* blue-50  */
+.infoSecondary { background: var(--stone-200);          }   /* #F7F7F7  */
+.success       { background: var(--color-success-bg);  }   /* green-25 */
+.error         { background: var(--color-error-bg);    }   /* red-50   */
+.warning       { background: var(--color-warning-bg);  }   /* orange-50*/
+
+/* ── Left slot ──────────────────────────────────────────── */
+
+.left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Icon ───────────────────────────────────────────────── */
+
+.icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+
+.icon svg { width: 20px; height: 20px; }
+
+.infoPrimary   .icon { color: var(--color-info-bold);     }
+.infoSecondary .icon { color: var(--color-icon-secondary); }
+.success       .icon { color: var(--color-success-bold);  }
+.error         .icon { color: var(--color-error-bold);    }
+.warning       .icon { color: var(--color-warning-bold);  }
+
+/* ── Message ────────────────────────────────────────────── */
+
+.message {
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* ── Right slot ─────────────────────────────────────────── */
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-shrink: 0;
+}
+
+.action {
+  display: flex;
+  align-items: center;
+}
+
+/* Dismiss button is a DS Button (tertiary/neutral/m) — no custom styles needed */

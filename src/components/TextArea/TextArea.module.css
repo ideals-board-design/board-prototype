@@ -1,0 +1,79 @@
+/* TextArea — Figma node 11436:129611 */
+
+/* ── Outer wrapper ──────────────────────────────── */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Label ──────────────────────────────────────── */
+.label {
+  display: block;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  cursor: default;
+}
+
+.sizeS .label { font-size: var(--text-sm); }
+.sizeM .label { font-size: var(--text-base); }
+.sizeL .label { font-size: var(--text-md); }
+
+/* ── Field box (visual border container) ────────── */
+.fieldWrapper {
+  border-radius: var(--radius-sm);  /* 4px */
+  background: var(--stone-0);
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+  transition:
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+  width: 100%;
+}
+
+/* Hover & focus: green (only when not disabled, not error) */
+.wrapper:not(.isDisabled):not(.hasError) .fieldWrapper:hover,
+.wrapper:not(.isDisabled):not(.hasError) .fieldWrapper:focus-within {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Error: always red */
+.wrapper.hasError .fieldWrapper {
+  box-shadow: inset 0 0 0 1px var(--red-500);
+}
+
+/* Disabled: stone-200 bg + reduced opacity */
+.wrapper.isDisabled .fieldWrapper {
+  background: var(--stone-200);
+  opacity: 0.4;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* ── Textarea element ───────────────────────────── */
+.textarea {
+  display: block;
+  width: 100%;
+  min-height: 96px;
+  box-sizing: border-box;
+  border: none;
+  outline: none;
+  background: transparent;
+  resize: vertical;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.sizeS .textarea { font-size: var(--text-sm);   padding: var(--space-6)  var(--space-12); }
+.sizeM .textarea { font-size: var(--text-base);  padding: var(--space-10) var(--space-16); }
+.sizeL .textarea { font-size: var(--text-md);    padding: var(--space-14) var(--space-16); }
+
+.textarea::placeholder { color: var(--color-text-secondary); }
+
+/* Hint row → see src/components/shared/HintRow.module.css */

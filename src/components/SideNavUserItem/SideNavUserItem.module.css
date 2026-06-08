@@ -1,0 +1,279 @@
+/* SideNavUserItem — Figma nodes 34960-1126/1128/1127 · 3194-1280 · 3194-1374 */
+
+/* ── Root ───────────────────────────────────────────────── */
+
+.root {
+  position: relative;
+  width: 100%;
+}
+
+/* ── Trigger ────────────────────────────────────────────── */
+
+.trigger {
+  display: flex;
+  width: 100%;
+  padding: 0 var(--space-4);
+  background: none;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.triggerInner {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-sm);
+  transition: background 150ms ease;
+}
+
+.trigger:hover .triggerInner,
+.triggerOpen .triggerInner {
+  background: var(--color-bg-hover);
+}
+
+.trigger:focus-visible .triggerInner {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+/* ── Text block ─────────────────────────────────────────── */
+
+.textBlock {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  text-align: left;
+}
+
+.triggerName {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.triggerEmail {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-xs);
+  color: var(--color-text-secondary);
+}
+
+/* ── Dropdown panel ─────────────────────────────────────── */
+
+.dropdown {
+  position: absolute;
+  left: var(--space-4);
+  bottom: calc(100% + var(--space-4));
+  width: 320px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  z-index: var(--z-dropdown, 200);
+  box-shadow: var(--shadow-100);
+}
+
+/* ── Shared item layout ─────────────────────────────────── */
+
+.item,
+.infoItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-8);
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+  text-align: left;
+}
+
+/* Interactive item resets */
+.item {
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.item:hover {
+  background: var(--color-bg-hover);
+}
+
+.item:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+.itemActive {
+  background: var(--color-bg-selected);
+}
+
+/* Danger variant (Log out) */
+.itemDanger .itemLabel {
+  color: var(--color-text-error);
+}
+
+/* ── 2FA banner — Figma 3196-1375 / 3196-1383 ──────────── */
+
+.twoFaBanner {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: var(--space-10);
+  padding: var(--space-10) var(--space-14);
+  border-radius: var(--radius-sm);
+  box-sizing: border-box;
+  cursor: default;
+  background: var(--color-bg-page);
+}
+
+.twoFaBannerWarning {
+  background: var(--color-warning-bg);
+}
+
+.twoFaIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.twoFaIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.twoFaIconGreen   { color: var(--color-icon-brand); }
+.twoFaIconWarning { color: var(--color-warning); }
+
+.twoFaLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.twoFaProtectBtn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-brand);
+  outline: none;
+}
+
+.twoFaProtectBtn:hover {
+  color: var(--color-brand-hover);
+}
+
+.twoFaProtectBtn:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+/* ── Icon ───────────────────────────────────────────────── */
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon-primary);
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.iconGreen {
+  color: var(--color-icon-brand);
+}
+
+.iconDanger {
+  color: var(--color-text-error);
+}
+
+/* ── Item label ─────────────────────────────────────────── */
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+/* ── Language item (has sublist) ────────────────────────── */
+
+.langItem {
+  position: relative;
+}
+
+/* Chevron for sublist */
+.chevronRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon-primary);
+}
+
+.chevronRight svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Language sublist ───────────────────────────────────── */
+
+.sublist {
+  position: absolute;
+  left: calc(100% + var(--space-4));
+  top: calc(-1 * var(--space-4));
+  width: 168px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  z-index: var(--z-dropdown, 200);
+  box-shadow: var(--shadow-100);
+}

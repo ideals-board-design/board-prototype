@@ -1,0 +1,44 @@
+/* DrawerHeader — Figma nodes 34916-4993, 34916-4994, 34916-4995 */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+  padding: var(--space-16) var(--space-24);
+  min-height: var(--space-56);
+  background: var(--color-bg-surface);
+  box-sizing: border-box;
+  font-family: var(--font-family);
+}
+
+/* ── Content (title + optional meta) ──────────────────── */
+
+.content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ── Title ─────────────────────────────────────────────── */
+
+.title {
+  font-size: 20px;
+  font-weight: var(--font-weight-medium);
+  line-height: 24px;
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  word-break: break-word;
+}
+
+/* ── Meta row (type + badge) ───────────────────────────── */
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* Close and type buttons — DS Button variant="tertiary" intent="neutral" handles all states */

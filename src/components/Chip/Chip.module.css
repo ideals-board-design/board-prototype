@@ -1,0 +1,151 @@
+/* Chip — Figma node 23764-133279 */
+
+.chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-12);
+  border-radius: 16px;
+  background: var(--stone-300);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+  clip-path: inset(0 round 16px);
+}
+
+/* ── Type variants ─────────────────────────────────────── */
+
+.danger { background: var(--red-50); }
+
+/* ── Disabled ──────────────────────────────────────────── */
+
+.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ── Draggable ─────────────────────────────────────────── */
+
+.draggable         { cursor: grab; transition: clip-path var(--transition-fast); }
+.draggable:active  { cursor: grabbing; }
+.dragging          { clip-path: inset(0 round 9999px); }
+
+/* ── Avatar layout ─────────────────────────────────────── */
+
+.withAvatar {
+  padding: 0 var(--space-12) 0 0;
+  gap: var(--space-4);
+}
+
+.avatarLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* ── Label ─────────────────────────────────────────────── */
+
+.label { flex-shrink: 0; }
+
+/* ── Icon slot (16×16) ─────────────────────────────────── */
+
+.icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Remove button ─────────────────────────────────────── */
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.removeBtn:disabled { pointer-events: none; }
+
+.removeBtnIcon { display: contents; }
+.removeBtnIcon svg { width: 16px; height: 16px; }
+
+/* ── Menu button + dropdown ────────────────────────────── */
+
+.menuWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.menuBtn {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.menuBtn:disabled { pointer-events: none; }
+
+.menuBtnIcon { display: contents; }
+.menuBtnIcon svg { width: 16px; height: 16px; }
+
+.menuDropdown {
+  position: fixed;
+  z-index: 8000;
+  display: flex;
+  flex-direction: column;
+  min-width: 140px;
+  background: var(--stone-0);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-100);
+  padding: var(--space-4);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-6) var(--space-8);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+.menuItem:hover  { background: var(--color-bg-hover); }
+.menuItem:active { background: var(--color-border); }
+
+.menuItemDanger { color: var(--color-text-error); }

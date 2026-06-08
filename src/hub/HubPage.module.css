@@ -1,0 +1,135 @@
+/* HubPage — Figma node 35372-4538 */
+
+.shell {
+  min-height: 100vh;
+  background: var(--color-bg-surface);
+  font-family: var(--font-family);
+}
+
+/* ── Header — 68px ────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-24);
+  height: 68px;
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+}
+
+/* Board wordmark SVG (97×20) */
+.logo {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 97px;
+  height: 20px;
+}
+
+.logo svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Nav links */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-24);
+}
+
+.navLink {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.navLink:hover {
+  color: var(--color-text-primary);
+}
+
+/* ── Main content ─────────────────────────────────────────── */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-24);
+}
+
+/* "Prototypes" heading — X Large Default: 20px / Medium / 24px / 1% */
+.sectionTitle {
+  width: 800px;
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: var(--font-weight-medium);
+  line-height: 24px;
+  letter-spacing: var(--letter-spacing-heading);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-16);
+}
+
+/* Feature list — 800px, bordered card */
+.list {
+  width: 800px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* ── Feature row — 52px ───────────────────────────────────── */
+
+.row {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  padding: 0 var(--space-24);
+  border-bottom: 1px solid var(--color-border);
+  box-sizing: border-box;
+  background: var(--color-bg-surface);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+
+/* Feature name — 383px column */
+.featureName {
+  flex: 0 0 383px;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Designer name — 200px column */
+.designerName {
+  flex: 0 0 200px;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* "Open prototype" link */
+.protoLink {
+  flex: 1;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-brand);
+  text-decoration: none;
+  text-align: right;
+  transition: color var(--transition-fast);
+}
+
+.protoLink:hover {
+  color: var(--color-brand-hover);
+}

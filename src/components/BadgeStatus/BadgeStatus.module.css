@@ -1,0 +1,42 @@
+/* BadgeStatus — Figma node 23996-1024 */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) var(--space-12);
+  border-radius: var(--radius-full);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+/* ── Icon slot (16×16) ─────────────────────────────── */
+
+.icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--space-16);
+  height: var(--space-16);
+  color: var(--badge-icon-color);
+}
+
+.icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Type variants ─────────────────────────────────── */
+
+.neutral  { background: var(--blue-50);    --badge-icon-color: var(--blue-500); }
+.positive { background: var(--green-50);   --badge-icon-color: var(--green-500); }
+.danger   { background: var(--red-50);     --badge-icon-color: var(--red-500); }
+.warning  { background: var(--yellow-50);  --badge-icon-color: var(--orange-500); }
+.disable  { background: var(--stone-200);  --badge-icon-color: var(--stone-700); }
+.pending  { background: var(--orange-50);  --badge-icon-color: var(--orange-500); }

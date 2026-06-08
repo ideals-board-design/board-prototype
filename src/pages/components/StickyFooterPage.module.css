@@ -1,0 +1,137 @@
+/* StickyFooterPage */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-32) var(--space-40);
+  font-family: var(--font-family);
+}
+
+.title {
+  font-size: 28px;
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: calc(-1 * var(--space-16)) 0 0;
+}
+
+.sectionTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.description {
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  margin: calc(-1 * var(--space-16)) 0 0;
+}
+
+/* ── Row layout (full-page variants) ─────────────────── */
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.rowLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* No full border — the footer's own border-top is the only line */
+.rowContent {
+  overflow: hidden;
+}
+
+/* ── Drawer grid ─────────────────────────────────────── */
+
+.drawerGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-24);
+}
+
+.drawerCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.drawerLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* No full border — footer's own border-top is visible */
+.drawerFrame {
+  width: 460px;
+  overflow: hidden;
+}
+
+/* ── Overflow menu (opens upward via portal) ─────────── */
+/* Mirrors DS droplist styles from Dropdown.module.css   */
+
+.overflowMenu {
+  position: fixed;
+  z-index: 8000;
+  background: var(--stone-0);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-100);
+  padding: var(--space-4);
+  min-width: 160px;
+  font-family: var(--font-family);
+}
+
+.overflowItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-10) var(--space-12);
+  box-sizing: border-box;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  text-align: left;
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition-fast);
+}
+
+.overflowItem:hover  { background: var(--color-bg-hover); }
+.overflowItem:active { background: var(--color-border); }
+
+/* ── Guidelines ──────────────────────────────────────── */
+
+.guidelines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding-left: var(--space-24);
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.guidelines code {
+  font-family: monospace;
+  background: var(--stone-100);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 13px;
+}

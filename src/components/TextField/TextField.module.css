@@ -1,0 +1,128 @@
+/* TextField — Figma node 11436:127802 */
+
+/* ── Outer wrapper ──────────────────────────────── */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Label ──────────────────────────────────────── */
+.label {
+  display: block;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  cursor: default;
+}
+
+.sizeS .label { font-size: var(--text-sm); }
+.sizeM .label { font-size: var(--text-base); }
+.sizeL .label { font-size: var(--text-md); }
+
+/* ── Input wrapper (the visual "field" box) ─────── */
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);   /* 4px */
+  background: var(--stone-0);
+  transition:
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+  width: 100%;
+}
+
+/* Sizes — padding drives height (no explicit height) */
+.sizeS .inputWrapper { padding: var(--space-6)  var(--space-12); gap: var(--space-4); }
+.sizeM .inputWrapper { padding: var(--space-10) var(--space-16); gap: var(--space-8); }
+.sizeL .inputWrapper { padding: var(--space-14) var(--space-16); gap: var(--space-8); }
+
+/* ── Outline variant ─────────────────────────────── */
+.outline .inputWrapper {
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+}
+
+/* Hover & focus: green border (only when not disabled, not error) */
+.outline:not(.isDisabled):not(.hasError) .inputWrapper:hover,
+.outline:not(.isDisabled):not(.hasError) .inputWrapper:focus-within {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* Error: always red, regardless of hover/focus */
+.outline.hasError .inputWrapper {
+  box-shadow: inset 0 0 0 1px var(--red-500);
+}
+
+/* Disabled: stone border + stone-200 background */
+.outline.isDisabled .inputWrapper {
+  background: var(--stone-200);
+}
+
+/* ── No-border variant ───────────────────────────── */
+.noBorder .inputWrapper {
+  background: transparent;
+  box-shadow: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* ── Disabled state ──────────────────────────────── */
+.isDisabled .inputWrapper {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ── Native <input> ──────────────────────────────── */
+.input {
+  flex: 1 0 0;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+  /* Ensure input doesn't break the height */
+  display: block;
+}
+
+.sizeS .input { font-size: var(--text-sm); }
+.sizeM .input { font-size: var(--text-base); }
+.sizeL .input { font-size: var(--text-md); }
+
+.input::placeholder {
+  color: var(--color-text-secondary);
+}
+
+/* ── Prefix / Suffix icons ───────────────────────── */
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+
+/* S: 16×16  |  M/L: 20×20 */
+.sizeS .icon { width: 16px; height: 16px; }
+.sizeM .icon,
+.sizeL .icon { width: 20px; height: 20px; }
+
+.icon svg { width: 100%; height: 100%; }
+
+/* Loading spinner */
+.spinner { color: var(--green-500); }
+.spinner svg { animation: tfSpin 600ms linear infinite; }
+
+@keyframes tfSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Hint row → see src/components/shared/HintRow.module.css */
