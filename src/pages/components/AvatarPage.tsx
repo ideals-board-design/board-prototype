@@ -1,9 +1,8 @@
 import { Avatar } from '../../components/Avatar/Avatar'
 import styles from './AvatarPage.module.css'
 
-/* Temporary demo photos from Figma (expire after 7 days — replace with project assets) */
-const PHOTO_USER = 'https://www.figma.com/api/mcp/asset/d5c2d57d-c16c-4507-b31d-ccc892332a9f'
-const PHOTO_ORG  = 'https://www.figma.com/api/mcp/asset/dcac25ea-1b6d-4103-b9eb-0268ea2e052a'
+const PHOTO_USER = new URL('../../assets/user-profile-pic-1.png', import.meta.url).href
+const PHOTO_ORG  = new URL('../../assets/org-profile-pic.png', import.meta.url).href
 
 export default function AvatarPage() {
   return (

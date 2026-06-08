@@ -1,14 +1,16 @@
 import { AvatarsGroup } from '../../components/AvatarsGroup/AvatarsGroup'
 import styles from './AvatarsGroupPage.module.css'
 
-/* Temporary demo photo from Figma */
-const PHOTO = 'https://www.figma.com/api/mcp/asset/d5c2d57d-c16c-4507-b31d-ccc892332a9f'
+const p1 = new URL('../../assets/user-profile-pic-1.png', import.meta.url).href
+const p2 = new URL('../../assets/user-profile-pic-2.png', import.meta.url).href
+const p3 = new URL('../../assets/user-profile-pic-3.png', import.meta.url).href
+const p4 = new URL('../../assets/user-profile-pic-4.png', import.meta.url).href
 
 const SAMPLE_ITEMS = [
-  { src: PHOTO },
-  { initials: 'AB' },
-  { src: PHOTO },
-  { initials: 'CD' },
+  { src: p1 },
+  { src: p2 },
+  { src: p3 },
+  { src: p4 },
   { initials: 'EF' },
   { initials: 'GH' },
 ]
@@ -50,7 +52,7 @@ export default function AvatarsGroupPage() {
         </div>
         <div className={styles.variantRow}>
           <span className={styles.rowLabel}>2 items</span>
-          <AvatarsGroup items={[{ initials: 'AB' }, { src: PHOTO }]} max={3} size="l" />
+          <AvatarsGroup items={[{ initials: 'AB' }, { src: p1 }]} max={3} size="l" />
         </div>
         <div className={styles.variantRow}>
           <span className={styles.rowLabel}>3 items (= max)</span>
