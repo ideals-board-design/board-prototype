@@ -9,6 +9,7 @@ export default defineConfig({
         main:             'index.html',
         'design-system':  'design-system.html',
         tasks:            'tasks.html',
+        'public-page':    'public-page.html',
       },
     },
   },

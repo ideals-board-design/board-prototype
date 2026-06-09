@@ -13,6 +13,12 @@ const FEATURES: { id: string; name: string; designer: string; href: string }[] =
     designer: 'Jaroslav Getman',
     href: '/tasks.html',
   },
+  {
+    id: 'public-page',
+    name: 'Public Page',
+    designer: 'Olena Skurtova',
+    href: '/public-page.html',
+  },
 ]
 
 export default function HubPage() {
