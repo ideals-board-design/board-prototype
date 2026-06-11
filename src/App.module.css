@@ -106,5 +106,5 @@
   flex: 1;
   overflow-x: hidden;
   overflow-y: auto;
-  background: var(--color-bg-page);
+  background: var(--color-bg-surface);
 }

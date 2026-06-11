@@ -8,6 +8,8 @@ import { actions } from '../../icons/actions'
 import { functional } from '../../icons/functional'
 import styles from './ChipPage.module.css'
 
+const PHOTO_USER = new URL('../../assets/user-profile-pic-1.png', import.meta.url).href
+
 const plusSvg  = actions.find(i => i.name === 'plus')!.svg
 const dragSvg  = functional.find(i => i.name === 'drag')!.svg
 
@@ -39,8 +41,8 @@ export default function ChipPage() {
         <span className={styles.colLabel}>Disabled</span>
 
         <span className={styles.rowLabel}>avatar: Picture</span>
-        <Chip label="Chip name" avatar={<Avatar size="s" type="user" variant="picture" src="https://www.figma.com/api/mcp/asset/d5c2d57d-c16c-4507-b31d-ccc892332a9f" alt="User" />} />
-        <Chip label="Chip name" disabled avatar={<Avatar size="s" type="user" variant="picture" src="https://www.figma.com/api/mcp/asset/d5c2d57d-c16c-4507-b31d-ccc892332a9f" alt="User" />} />
+        <Chip label="Chip name" avatar={<Avatar size="s" type="user" variant="picture" src={PHOTO_USER} alt="User" />} />
+        <Chip label="Chip name" disabled avatar={<Avatar size="s" type="user" variant="picture" src={PHOTO_USER} alt="User" />} />
 
         <span className={styles.rowLabel}>avatar: Letters</span>
         <Chip label="Chip name" avatar={<Avatar size="s" type="user" variant="letters" color="contrast" initials="A" />} />
