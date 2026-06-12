@@ -20,8 +20,10 @@ import styles from './DatePicker.module.css'
 
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
 
-function formatDate(d: Date): string {
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+function formatDate(d: Date, format: 'short' | 'long' = 'short'): string {
+  return format === 'long'
+    ? d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
+    : d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
 }
 
 function toInputFormat(d: Date): string {
@@ -62,6 +64,8 @@ export interface DatePickerProps {
   onRangeChange?:  (start: Date | null, end: Date | null) => void
   size?:           DatePickerSize
   variant?:        DatePickerVariant
+  /** 'long' = "Wednesday, March 27, 2025"; 'short' = "Mar 27, 2025" (default) */
+  format?:         'short' | 'long'
   label?:          ReactNode
   placeholder?:    string
   /** Show an × clear button when value is set */
@@ -92,6 +96,7 @@ export function DatePicker({
   onRangeChange,
   size        = 'm',
   variant     = 'outline',
+  format      = 'short',
   label,
   placeholder = 'MM/DD/YYYY',
   clearable   = false,
@@ -130,10 +135,10 @@ export function DatePicker({
         : rStart
           ? `${formatDate(rStart)} – ...`
           : placeholder)
-    : hasValue ? formatDate(value as Date) : placeholder
+    : hasValue ? formatDate(value as Date, format) : placeholder
 
   const [open, setOpen] = useState(false)
-  const [pos,  setPos]  = useState({ top: 0, right: 0 })
+  const [pos,  setPos]  = useState({ top: 0, left: 0 })
   const triggerRef      = useRef<HTMLDivElement>(null)
   const popoverRef      = useRef<HTMLDivElement>(null)
   const uid             = useId()
@@ -143,7 +148,7 @@ export function DatePicker({
   const openPopover = useCallback(() => {
     if (!triggerRef.current || disabled) return
     const r = triggerRef.current.getBoundingClientRect()
-    setPos({ top: r.bottom + 4, right: window.innerWidth - r.right })
+    setPos({ top: r.bottom + 4, left: r.left })
     setOpen(true)
   }, [disabled])
 
@@ -179,7 +184,7 @@ export function DatePicker({
     const update = () => {
       if (!triggerRef.current) return
       const r = triggerRef.current.getBoundingClientRect()
-      setPos({ top: r.bottom + 4, right: window.innerWidth - r.right })
+      setPos({ top: r.bottom + 4, left: r.left })
     }
     window.addEventListener('scroll', update, true)
     window.addEventListener('resize', update)
@@ -393,7 +398,7 @@ export function DatePicker({
         <div
           ref={popoverRef}
           className={styles.popover}
-          style={{ top: pos.top, right: pos.right }}
+          style={{ top: pos.top, left: pos.left }}
           role="dialog"
           aria-label="Date picker"
         >

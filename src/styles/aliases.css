@@ -36,6 +36,9 @@
   --color-bg-selected:  var(--green-25);     /* #EBF8EF */
   --color-bg-disabled:  var(--stone-200);    /* #F7F7F7 */
   --color-bg-overlay:   rgba(31, 33, 41, 0.6); /* stone-1000 at 60% */
+  /* Hover-fill overlay (experimental) — off-palette #435098, no Layer 1 token */
+  --color-bg-hover-fill:        rgba(67, 80, 152, 0.1); /* hover */
+  --color-bg-hover-fill-strong: rgba(67, 80, 152, 0.2); /* pressed */
 
   /* ---------------------------------------------------------------------------
      Brand / Primary action

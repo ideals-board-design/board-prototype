@@ -80,12 +80,34 @@
 
 /* ── No-border variant ───────────────────────────── */
 
+/* Inline: transparent, no padding → single text line (20px), matching the Figma
+   no-border spec. Soft fill extends 6px per side (radius 4), kept on hover, while
+   editing (focus) and while open. */
 .noBorder .inputWrapper {
   background: transparent;
   box-shadow: none;
-  padding-left: 0;
-  padding-right: 0;
+  padding: 0;
+  position: relative;
+  z-index: 0;
 }
+.noBorder .inputWrapper::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: -1;
+}
+.noBorder:not(.isDisabled) .inputWrapper:hover::before,
+.noBorder:not(.isDisabled) .inputWrapper:focus-within::before,
+.noBorder.isOpen:not(.isDisabled) .inputWrapper::before {
+  background: var(--color-bg-hover-fill);
+}
+/* Pointer (hand) by default; text caret only while editing (focused). */
+.noBorder .input { cursor: pointer; }
+.noBorder .input:focus { cursor: text; }
 
 /* Resting: input shrinks to its value text width,
    clear button appears right after text at gap distance */
@@ -200,6 +222,9 @@
   max-height: 360px;
   overflow-y: auto;
   padding: var(--space-4);
+  /* At least wide enough to show option text even when the trigger is narrow
+     (e.g. a hugged no-border time field). Inline width = trigger width. */
+  min-width: max-content;
 }
 
 /* ── Droplist items ───────────────────────────────── */

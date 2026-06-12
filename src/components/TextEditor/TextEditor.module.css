@@ -50,6 +50,61 @@
   pointer-events: none;
 }
 
+/* ── No-border variant ───────────────────────────── */
+/* At rest: a borderless multiline text "active zone" (hover + pressed fill).
+   On click (focus): becomes a bordered Text Editor with the top formatting bar
+   only — no bottom action bar (toolbar={false}). */
+
+/* Rest + hover: transparent, borderless (override the outline green border). */
+.noBorder .fieldWrapper,
+.noBorder:not(.isDisabled):not(.hasError) .fieldWrapper:not(:focus-within):hover {
+  background: transparent;
+  box-shadow: none;
+}
+.noBorder .fieldWrapper {
+  overflow: visible;           /* don't clip the hover-fill ::before */
+  position: relative;
+  z-index: 0;
+}
+.noBorder .fieldWrapper::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: -1;
+}
+/* Resting "active zone": hover (light) + pressed (strong). Suppressed once the
+   editor is focused (it then shows its border instead). */
+.noBorder:not(.isDisabled) .fieldWrapper:not(:focus-within):hover::before {
+  background: var(--color-bg-hover-fill);
+}
+.noBorder:not(.isDisabled) .fieldWrapper:not(:focus-within):active::before {
+  background: var(--color-bg-hover-fill-strong);
+}
+/* Rest: flush text, no toolbars (looks like a plain line/paragraph).
+   Auto-grows with content (field-sizing) up to 400px, then scrolls. */
+.noBorder .textarea {
+  padding: 0;
+  field-sizing: content;
+  max-height: 400px;
+  overflow-y: auto;
+  cursor: pointer; /* hand by default; text caret only while editing */
+}
+.noBorder .textarea:focus { cursor: text; }
+.noBorder .topBar { display: none; }
+
+/* Edit (focus): bordered editor with the formatting bar + normal padding. */
+.noBorder:not(.isDisabled):not(.hasError) .fieldWrapper:focus-within {
+  background: var(--stone-0);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  overflow: hidden;
+}
+.noBorder .fieldWrapper:focus-within .topBar { display: flex; }
+.noBorder .fieldWrapper:focus-within .textarea { padding: var(--space-10) var(--space-16); }
+
 /* ── Toolbar rows ────────────────────────────────── */
 /* DS Button tertiary iconOnly has margin: -4px (natural hit-area expansion).
    Vertical margin reset to 0 so 12px padding gives correct height: 12 + 20 + 12 = 44px.

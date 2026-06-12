@@ -178,6 +178,30 @@
 .tertiary.iconOnly.sizeM { width: 24px; height: 24px; margin: -2px; }
 .tertiary.iconOnly.sizeL { width: 24px; height: 24px; margin: -2px; }
 
+/* ── Tertiary hover-fill (experimental) — soft background extending 6px per side ──
+   z-index:-1 keeps it behind text/icons; z-index:0 makes the button its own
+   stacking context so the fill stays in front of the page. */
+.tertiary { position: relative; z-index: 0; }
+.tertiary::before {
+  content: '';
+  position: absolute;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: -1;
+}
+/* Label: 6px beyond text horizontally; vertical inset = (size padding − 6px) so the
+   fill hugs the 20px text line (→ 32px tall) at every size. */
+.tertiary.sizeS:not(.iconOnly)::before { inset: 0   -6px; }
+.tertiary.sizeM:not(.iconOnly)::before { inset: 4px -6px; }
+.tertiary.sizeL:not(.iconOnly)::before { inset: 8px -6px; }
+/* Icon-only: 6px beyond the 24×24 hit area on every side. */
+.tertiary.iconOnly::before { inset: -6px; }
+
+/* Fill shows on hover only — no persistent pressed/focus state. */
+.tertiary:hover:not(:disabled):not([data-loading])::before { background: var(--color-bg-hover-fill); }
+
 /* ── Link ────────────────────────────────────────────────────────────────── */
 
 .link {
