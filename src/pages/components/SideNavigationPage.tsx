@@ -12,6 +12,7 @@ import type { Workspace } from '../../components/WorkspaceSwitcher/WorkspaceSwit
 import { SideNavUserItem } from '../../components/SideNavUserItem/SideNavUserItem'
 import { condition } from '../../icons/condition'
 import styles from './SideNavigationPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const shieldCheckSvg       = condition.find(i => i.name === 'shield-check')!.svg
 const shieldExclamationSvg = condition.find(i => i.name === 'shield-exclamation')!.svg
@@ -69,6 +70,7 @@ export default function SideNavigationPage() {
       <p className={styles.subtitle}>
         Figma nodes 34973-6191 · 34954-1796 · 34954-1797 · 34954-1798 · 32820-53135
       </p>
+      <SourceLink path={['src/components/SideNavigation/SideNavigation.tsx', 'src/components/SideNavigationItem/SideNavigationItem.tsx', 'src/components/SideNavUserItem/SideNavUserItem.tsx', 'src/components/WorkspaceSwitcher/WorkspaceSwitcher.tsx']} />
 
       {/* ── Full sidebar ────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Full sidebar</h2>

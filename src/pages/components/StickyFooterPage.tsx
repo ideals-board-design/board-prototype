@@ -9,6 +9,7 @@ import { Tooltip } from '../../components/Tooltip/Tooltip'
 import { functional } from '../../icons/functional'
 import { actions } from '../../icons/actions'
 import styles from './StickyFooterPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const ellipsisH = functional.find(i => i.name === 'ellipsis-h')!.svg
 const trashSvg  = actions.find(i => i.name === 'trash-alt')!.svg
@@ -114,6 +115,7 @@ export default function StickyFooterPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Sticky Footer</h1>
       <p className={styles.subtitle}>Figma nodes 34928-9456 (full page) · 34928-9470 (drawer)</p>
+      <SourceLink path="src/components/StickyFooter/StickyFooter.tsx" />
 
       {/* ── Full page variant ─────────────────────────── */}
       <h2 className={styles.sectionTitle}>Full page</h2>

@@ -3,6 +3,7 @@ import { Tooltip } from '../../components/Tooltip/Tooltip'
 import { Button } from '../../components/Button/Button'
 import { editor } from '../../icons/editor'
 import { actions } from '../../icons/actions'
+import { SourceLink } from '../SourceLink'
 
 const boldSvg = editor.find(i => i.name === 'bold')!.svg
 const plusSvg = actions.find(i => i.name === 'plus')!.svg
@@ -30,6 +31,7 @@ export default function TooltipPage() {
       <p className={styles.subtitle}>
         Appears on hover after a 300 ms delay. Required on all icon-only buttons.
       </p>
+      <SourceLink path="src/components/Tooltip/Tooltip.tsx" />
 
       {/* ── Positions ──────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Positions</h2>

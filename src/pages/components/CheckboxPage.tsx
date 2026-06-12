@@ -1,11 +1,13 @@
 import styles from './CheckboxPage.module.css'
 import { Checkbox } from '../../components/Checkbox/Checkbox'
+import { SourceLink } from '../SourceLink'
 
 export default function CheckboxPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Checkbox</h1>
       <p className={styles.subtitle}>Form control for boolean and indeterminate selection.</p>
+      <SourceLink path="src/components/Checkbox/Checkbox.tsx" />
 
       {/* ── Checkbox only ── */}
       <h2 className={styles.sectionTitle}>Checkbox only</h2>

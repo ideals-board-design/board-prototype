@@ -1,12 +1,14 @@
 import styles from './TextAreaPage.module.css'
 import { TextArea } from '../../components/TextArea/TextArea'
 import { Button } from '../../components/Button/Button'
+import { SourceLink } from '../SourceLink'
 
 export default function TextAreaPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Text Area</h1>
       <p className={styles.subtitle}>Multi-line text input for longer content.</p>
+      <SourceLink path="src/components/TextArea/TextArea.tsx" />
 
       {/* ── Variants ─────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>States</h2>

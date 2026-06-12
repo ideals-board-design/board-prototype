@@ -11,6 +11,7 @@ import { files }      from '../../icons/files'
 import { users }      from '../../icons/users'
 import { functional } from '../../icons/functional'
 import styles from './TableCellPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const plusIcon        = actions.find(i => i.name === 'plus')!.svg
 
@@ -179,6 +180,7 @@ export default function TableCellPage() {
       <p className={styles.subtitle}>
         Figma nodes 31434-6336 · 35294-4837
       </p>
+      <SourceLink path={['src/components/TableCell/TableCell.tsx', 'src/components/TableAvatarCell/TableAvatarCell.tsx', 'src/components/TableActionsCell/TableActionsCell.tsx']} />
 
       {/* ── Header cell states ─────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Header cell</h2>

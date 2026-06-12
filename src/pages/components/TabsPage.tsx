@@ -1,5 +1,6 @@
 import styles from './TabsPage.module.css'
 import { Tabs } from '../../components/Tabs/Tabs'
+import { SourceLink } from '../SourceLink'
 
 const plusIcon = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M10.75 4.25V9.25H15.75V10.75H10.75V15.75H9.25V10.75H4.25V9.25H9.25V4.25H10.75Z" fill="currentColor"/> </svg>`
 
@@ -8,6 +9,7 @@ export default function TabsPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Tabs</h1>
       <p className={styles.subtitle}>Navigation between related content sections.</p>
+      <SourceLink path="src/components/Tabs/Tabs.tsx" />
 
       {/* ── Text only ── */}
       <h2 className={styles.sectionTitle}>Text only</h2>

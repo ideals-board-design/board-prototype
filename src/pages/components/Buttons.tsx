@@ -5,6 +5,7 @@ import type { ButtonVariant, ButtonSize, ButtonIntent } from '../../components/B
 import { Tooltip } from '../../components/Tooltip/Tooltip'
 import { actions } from '../../icons/actions'
 import styles from './Buttons.module.css'
+import { SourceLink } from '../SourceLink'
 
 /* ── DS Icons (always from src/icons/, never custom SVG) ─────────────────── */
 
@@ -110,6 +111,7 @@ export default function ButtonsPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Button</h1>
       <p className={styles.subtitle}>Figma · 5761-13093</p>
+      <SourceLink path="src/components/Button/Button.tsx" />
 
       {/* ── Label and icon ─────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Label and icon</h2>

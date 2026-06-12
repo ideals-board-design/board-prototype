@@ -5,6 +5,7 @@ import { EmptyState } from '../../components/EmptyState/EmptyState'
 import { Button } from '../../components/Button/Button'
 import { illustrations } from '../../illustrations/illustrations'
 import styles from './EmptyStatePage.module.css'
+import { SourceLink } from '../SourceLink'
 
 export default function EmptyStatePage() {
   return (
@@ -13,6 +14,7 @@ export default function EmptyStatePage() {
       <p className={styles.subtitle}>
         Figma nodes 35292-596 · 35292-629 · 35292-1106
       </p>
+      <SourceLink path="src/components/EmptyState/EmptyState.tsx" />
 
       {/* ── Component (with title + description + two actions) ─── */}
       <h2 className={styles.sectionTitle}>Component</h2>

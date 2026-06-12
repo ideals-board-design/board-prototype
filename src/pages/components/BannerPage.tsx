@@ -4,6 +4,7 @@
 import { Banner, type BannerState } from '../../components/Banner/Banner'
 import { Button } from '../../components/Button/Button'
 import styles from './BannerPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const MSG  = 'Banner message text'
 const MSG2 = 'This is a longer banner message that may wrap onto a second line when the container is narrow enough to trigger it.'
@@ -42,6 +43,7 @@ export default function BannerPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Banner</h1>
       <p className={styles.subtitle}>Figma node 14376-70685</p>
+      <SourceLink path="src/components/Banner/Banner.tsx" />
 
       {/* ── Rounded · Size L ──────────────────────────── */}
       <h2 className={styles.sectionTitle}>Rounded · Size L (48px)</h2>

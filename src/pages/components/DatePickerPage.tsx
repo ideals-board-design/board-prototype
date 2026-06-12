@@ -4,6 +4,7 @@ import { DateCell } from '../../components/DateCell/DateCell'
 import { YearCell } from '../../components/YearCell/YearCell'
 import { Calendar } from '../../components/Calendar/Calendar'
 import styles from './DatePickerPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const CELL_TYPES = ['default', 'date-range', 'selected', 'today'] as const
 const CELL_LABELS = { 'default': 'Default', 'date-range': 'Date range', 'selected': 'Selected', 'today': 'Today' }
@@ -37,6 +38,7 @@ export default function DatePickerPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Date Picker</h1>
       <p className={styles.subtitle}>Figma node 24002-10435</p>
+      <SourceLink path="src/components/DatePicker/DatePicker.tsx" />
 
       {/* ── States ──────────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>States</h2>

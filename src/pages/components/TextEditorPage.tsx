@@ -1,12 +1,14 @@
 import styles from './TextEditorPage.module.css'
 import { TextEditor } from '../../components/TextEditor/TextEditor'
 import { Button } from '../../components/Button/Button'
+import { SourceLink } from '../SourceLink'
 
 export default function TextEditorPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Text Editor</h1>
       <p className={styles.subtitle}>Rich text area with formatting toolbar and action bar.</p>
+      <SourceLink path="src/components/TextEditor/TextEditor.tsx" />
 
       {/* ── States ─────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>States</h2>

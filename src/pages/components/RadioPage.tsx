@@ -1,11 +1,13 @@
 import styles from './RadioPage.module.css'
 import { Radio } from '../../components/Radio/Radio'
+import { SourceLink } from '../SourceLink'
 
 export default function RadioPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Radio</h1>
       <p className={styles.subtitle}>Form control for single selection within a group.</p>
+      <SourceLink path="src/components/Radio/Radio.tsx" />
 
       {/* ── Radio only ── */}
       <h2 className={styles.sectionTitle}>Radio only</h2>

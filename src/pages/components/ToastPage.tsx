@@ -6,6 +6,7 @@ import { Toast, type ToastState } from '../../components/Toast/Toast'
 import { ToastContainer, type ToastContainerHandle } from '../../components/ToastContainer/ToastContainer'
 import { Button } from '../../components/Button/Button'
 import styles from './ToastPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 type Intent = 'default' | 'info' | 'warning' | 'danger'
 const ACTION_INTENT: Record<ToastState, Intent> = {
@@ -38,6 +39,7 @@ export default function ToastPage() {
         <p className={styles.subtitle}>
           Figma nodes 9829-100949 · 34940-39518…39521 · 34940-39576
         </p>
+        <SourceLink path={['src/components/Toast/Toast.tsx', 'src/components/ToastContainer/ToastContainer.tsx']} />
 
         {/* ── Live demo ──────────────────────────────────── */}
         <h2 className={styles.sectionTitle}>Live demo</h2>

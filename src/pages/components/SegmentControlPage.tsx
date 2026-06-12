@@ -1,5 +1,6 @@
 import styles from './SegmentControlPage.module.css'
 import { SegmentControl } from '../../components/SegmentControl/SegmentControl'
+import { SourceLink } from '../SourceLink'
 
 const plusIcon = `<svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M10.75 4.25V9.25H15.75V10.75H10.75V15.75H9.25V10.75H4.25V9.25H9.25V4.25H10.75Z" fill="currentColor"/></svg>`
 
@@ -20,6 +21,7 @@ export default function SegmentControlPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Segment Control</h1>
       <p className={styles.subtitle}>Single-select button group for switching between views or options.</p>
+      <SourceLink path="src/components/SegmentControl/SegmentControl.tsx" />
 
       {/* ── Sizes ── */}
       <h2 className={styles.sectionTitle}>Sizes</h2>

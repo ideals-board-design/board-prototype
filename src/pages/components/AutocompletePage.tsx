@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Autocomplete, type AutocompleteOption } from '../../components/Autocomplete/Autocomplete'
 import { actions } from '../../icons/actions'
 import styles from './AutocompletePage.module.css'
+import { SourceLink } from '../SourceLink'
 
 /* ── Icons ────────────────────────────────────────────────────────────────── */
 
@@ -92,6 +93,7 @@ export default function AutocompletePage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Autocomplete</h1>
       <p className={styles.subtitle}>Based on TextField · "No options" Figma node 34614-49336</p>
+      <SourceLink path="src/components/Autocomplete/Autocomplete.tsx" />
 
       {/* ── States ──────────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>States</h2>

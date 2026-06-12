@@ -1,11 +1,13 @@
 import styles from './TogglePage.module.css'
 import { Toggle } from '../../components/Toggle/Toggle'
+import { SourceLink } from '../SourceLink'
 
 export default function TogglePage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Toggle</h1>
       <p className={styles.subtitle}>Switch control for binary on/off states.</p>
+      <SourceLink path="src/components/Toggle/Toggle.tsx" />
 
       {/* ── Toggle only ── */}
       <h2 className={styles.sectionTitle}>Toggle only</h2>

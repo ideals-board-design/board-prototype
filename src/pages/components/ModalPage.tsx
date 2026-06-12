@@ -6,6 +6,7 @@ import { Button } from '../../components/Button/Button'
 import { TextField } from '../../components/TextField/TextField'
 import { TextArea } from '../../components/TextArea/TextArea'
 import styles from './ModalPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 export default function ModalPage() {
   const [openDefault,     setOpenDefault]     = useState(false)
@@ -18,6 +19,7 @@ export default function ModalPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Modal</h1>
       <p className={styles.subtitle}>Figma · 34919-5041, 34919-5148, 34919-5150, 34919-5160</p>
+      <SourceLink path="src/components/Modal/Modal.tsx" />
 
       {/* ── Default ──────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Default</h2>

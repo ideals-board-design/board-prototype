@@ -4,6 +4,7 @@ import { Button }   from '../../components/Button/Button'
 import { actions }  from '../../icons/actions'
 import { users }    from '../../icons/users'
 import styles from './DropdownPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 /* ── Icons ────────────────────────────────────────────────────────────────── */
 
@@ -183,6 +184,7 @@ export default function DropdownPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Dropdown</h1>
       <p className={styles.subtitle}>Figma · 5761-13893</p>
+      <SourceLink path="src/components/Dropdown/Dropdown.tsx" />
 
       {/* ── States ──────────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>States</h2>

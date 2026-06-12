@@ -7,6 +7,7 @@ import { Tooltip } from '../../components/Tooltip/Tooltip'
 import { actions } from '../../icons/actions'
 import { functional } from '../../icons/functional'
 import styles from './ChipPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const PHOTO_USER = new URL('../../assets/user-profile-pic-1.png', import.meta.url).href
 
@@ -31,6 +32,7 @@ export default function ChipPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Chip</h1>
       <p className={styles.subtitle}>Figma · 23764-133279</p>
+      <SourceLink path="src/components/Chip/Chip.tsx" />
 
       {/* ── Variants ──────────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Variants</h2>

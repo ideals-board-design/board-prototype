@@ -1,6 +1,7 @@
 import styles from './TextFieldPage.module.css'
 import { TextField } from '../../components/TextField/TextField'
 import { condition } from '../../icons/condition'
+import { SourceLink } from '../SourceLink'
 
 const infoIcon = condition.find(i => i.name === 'info-circle')!.svg
 
@@ -15,6 +16,7 @@ export default function TextFieldPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Text Field</h1>
       <p className={styles.subtitle}>Single-line text input. Foundation for Dropdown, Search, and Date Picker.</p>
+      <SourceLink path="src/components/TextField/TextField.tsx" />
 
       {/* ── Variants ─────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Variants</h2>

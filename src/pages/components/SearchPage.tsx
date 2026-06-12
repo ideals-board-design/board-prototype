@@ -2,6 +2,7 @@ import { useState, useMemo, useRef, useEffect } from 'react'
 import { Search } from '../../components/Search/Search'
 import { SearchFilterPanel } from '../../components/Search/SearchFilterPanel'
 import styles from './SearchPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 /* ── Task data ──────────────────────────────────────────────────────────── */
 
@@ -300,6 +301,7 @@ export function SearchPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.pageTitle}>Search</h1>
+      <SourceLink path="src/components/Search/Search.tsx" />
 
       {/* ── Sizes ── */}
       <section className={styles.section}>

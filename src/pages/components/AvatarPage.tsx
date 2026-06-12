@@ -1,5 +1,6 @@
 import { Avatar } from '../../components/Avatar/Avatar'
 import styles from './AvatarPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const PHOTO_USER = new URL('../../assets/user-profile-pic-1.png', import.meta.url).href
 const PHOTO_ORG  = new URL('../../assets/org-profile-pic.png', import.meta.url).href
@@ -9,6 +10,7 @@ export default function AvatarPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Avatar</h1>
       <p className={styles.subtitle}>Figma · 11028-290223</p>
+      <SourceLink path="src/components/Avatar/Avatar.tsx" />
 
       {/* ── Sizes ─────────────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Sizes</h2>

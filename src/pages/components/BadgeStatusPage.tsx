@@ -4,6 +4,7 @@ import { BadgeStatus, type BadgeStatusType } from '../../components/BadgeStatus/
 import { condition } from '../../icons/condition'
 import { actions } from '../../icons/actions'
 import styles from './BadgeStatusPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const infoSvg     = condition.find(i => i.name === 'info-circle')!.svg
 const checkSvg    = condition.find(i => i.name === 'check-circle')!.svg
@@ -30,6 +31,7 @@ export default function BadgeStatusPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Badge Status</h1>
       <p className={styles.subtitle}>Figma · 23996-1024</p>
+      <SourceLink path="src/components/BadgeStatus/BadgeStatus.tsx" />
 
       {/* ── Types ─────────────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Types</h2>

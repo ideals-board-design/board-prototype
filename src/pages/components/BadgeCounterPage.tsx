@@ -3,6 +3,7 @@
 import { Fragment } from 'react'
 import { BadgeCounter } from '../../components/BadgeCounter/BadgeCounter'
 import styles from './BadgeCounterPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const TEXT_VARIANTS = ['new', 'regular', 'disabled', 'primary', 'secondary', 'inverted'] as const
 const COUNTS = ['1', '99', '99+'] as const
@@ -12,6 +13,7 @@ export default function BadgeCounterPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Badge Counter</h1>
       <p className={styles.subtitle}>Figma · 9801-63513</p>
+      <SourceLink path="src/components/BadgeCounter/BadgeCounter.tsx" />
 
       {/* ── Text variants ─────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Variants</h2>

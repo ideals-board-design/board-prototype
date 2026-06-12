@@ -1,5 +1,6 @@
 import styles from './BreadcrumbsPage.module.css'
 import { Breadcrumbs } from '../../components/Breadcrumbs/Breadcrumbs'
+import { SourceLink } from '../SourceLink'
 
 const items2 = [
   { label: 'Home' },
@@ -32,6 +33,7 @@ export default function BreadcrumbsPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Breadcrumbs</h1>
       <p className={styles.subtitle}>Navigation trail showing the current page's location.</p>
+      <SourceLink path="src/components/Breadcrumbs/Breadcrumbs.tsx" />
 
       <h2 className={styles.sectionTitle}>Large</h2>
       <div className={styles.group}>

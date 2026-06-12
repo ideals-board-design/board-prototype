@@ -1,5 +1,6 @@
 import { AvatarsGroup } from '../../components/AvatarsGroup/AvatarsGroup'
 import styles from './AvatarsGroupPage.module.css'
+import { SourceLink } from '../SourceLink'
 
 const p1 = new URL('../../assets/user-profile-pic-1.png', import.meta.url).href
 const p2 = new URL('../../assets/user-profile-pic-2.png', import.meta.url).href
@@ -20,6 +21,7 @@ export default function AvatarsGroupPage() {
     <div className={styles.page}>
       <h1 className={styles.title}>Avatars Group</h1>
       <p className={styles.subtitle}>Figma · 27111-11237</p>
+      <SourceLink path="src/components/AvatarsGroup/AvatarsGroup.tsx" />
 
       {/* ── Sizes ──────────────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Sizes</h2>
