@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { HubHeader } from './hub/HubHeader'
 import styles from './App.module.css'
+import ComponentsOverview from './pages/foundation/ComponentsOverview'
 import ColorsPage from './pages/foundation/Colors'
 import TypographyPage from './pages/foundation/Typography'
 import IconsPage from './pages/foundation/Icons'
@@ -38,6 +39,7 @@ import EmptyStatePage from './pages/components/EmptyStatePage'
 import TableCellPage from './pages/components/TableCellPage'
 
 type Page =
+  | 'foundation/components-overview'
   | 'foundation/colors'
   | 'foundation/typography'
   | 'foundation/icons'
@@ -79,6 +81,7 @@ const nav = [
   {
     section: 'Foundation',
     items: [
+      { id: 'foundation/components-overview' as Page, label: 'Components overview' },
       { id: 'foundation/colors' as Page,        label: 'Colors' },
       { id: 'foundation/elevation' as Page,     label: 'Elevation' },
       { id: 'foundation/icons' as Page,         label: 'Icons' },
@@ -199,6 +202,7 @@ export default function App() {
       </aside>
 
       <main className={styles.main}>
+        {page === 'foundation/components-overview' && <ComponentsOverview onNavigate={(id) => setPage(id as Page)} />}
         {page === 'foundation/colors'         && <ColorsPage />}
         {page === 'foundation/typography'     && <TypographyPage />}
         {page === 'foundation/spacing'        && <SpacingPage />}
