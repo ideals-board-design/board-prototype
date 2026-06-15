@@ -87,7 +87,8 @@ export function TimeField({
   const openList = () => {
     if (disabled) return
     const r = rootRef.current?.getBoundingClientRect()
-    if (r) setPos({ top: r.bottom + 4, left: r.left })
+    // +10 = 6px hover-fill that extends below the focused field + 4px gap
+    if (r) setPos({ top: r.bottom + 10, left: r.left })
     setOpen(true)
   }
   const closeList = () => setOpen(false)

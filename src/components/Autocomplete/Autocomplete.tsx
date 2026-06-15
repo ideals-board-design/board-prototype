@@ -7,11 +7,14 @@ import {
   useRef,
   useCallback,
   useEffect,
+  useLayoutEffect,
   useId,
 } from 'react'
 import { createPortal } from 'react-dom'
 import { HintRow }  from '../shared/HintRow'
 import { Tooltip }  from '../Tooltip/Tooltip'
+import { Avatar }   from '../Avatar/Avatar'
+import { Checkbox } from '../Checkbox/Checkbox'
 import { actions }  from '../../icons/actions'
 import styles from './Autocomplete.module.css'
 
@@ -26,12 +29,16 @@ export interface AutocompleteOptionAvatar {
   initials?: string
   /** 'user' = circular, 'group' | 'org' = rounded square. Default: 'user' */
   type?:     'user' | 'group' | 'org'
+  /** Optional background colour override (e.g. a token var) for the square */
+  color?:    string
 }
 
 export interface AutocompleteOption {
   value:         string
   label:         string
   avatar?:       AutocompleteOptionAvatar
+  /** 20×20 icon shown before the label (takes precedence over avatar) */
+  icon?:         ReactNode
   /** Inline secondary text shown after the label, e.g. "(Admin)" */
   sublistLabel?: string
 }
@@ -41,9 +48,11 @@ export type AutocompleteVariant = 'outline' | 'no-border'
 
 export interface AutocompleteProps {
   options:      AutocompleteOption[]
-  /** Currently selected value */
-  value?:       string
-  onChange?:    (value: string) => void
+  /** Selected value(s). `string` in single mode, `string[]` when `multiple`. */
+  value?:       string | string[]
+  onChange?:    (value: string | string[]) => void
+  /** Multi-select: options show a checkbox, list stays open, value is string[] */
+  multiple?:    boolean
   size?:        AutocompleteSize
   variant?:     AutocompleteVariant
   label?:       ReactNode
@@ -72,19 +81,17 @@ const sizeCls: Record<AutocompleteSize, string> = {
 
 /* ── Avatar helper ────────────────────────────────────────────────────────── */
 
-function ItemAvatar({ avatar, size }: { avatar: AutocompleteOptionAvatar; size: AutocompleteSize }) {
-  const { src, initials = '?', type = 'user' } = avatar
-  const letter   = size === 's' ? initials.slice(0, 1) : initials.slice(0, 2)
-  const shapeCls = type === 'user' ? styles.itemAvatarUser : styles.itemAvatarSquare
-  const colorCls = type === 'group' ? styles.itemAvatarGroup : type === 'org' ? styles.itemAvatarOrg : ''
-  const cls = [styles.itemAvatar, shapeCls, colorCls].filter(Boolean).join(' ')
+function ItemAvatar({ avatar }: { avatar: AutocompleteOptionAvatar; size: AutocompleteSize }) {
+  const { src, initials = '?', type = 'user', color } = avatar
   return (
-    <span className={cls} aria-hidden="true">
-      {src
-        ? <img className={styles.itemAvatarImg} src={src} alt="" />
-        : <span className={styles.itemAvatarInitials}>{letter}</span>
-      }
-    </span>
+    <Avatar
+      size="s"
+      type={type}
+      variant={src ? 'picture' : 'letters'}
+      src={src}
+      initials={initials}
+      tint={color}
+    />
   )
 }
 
@@ -94,6 +101,7 @@ export function Autocomplete({
   options,
   value     = '',
   onChange,
+  multiple  = false,
   size      = 'm',
   variant   = 'outline',
   label,
@@ -108,9 +116,13 @@ export function Autocomplete({
 }: AutocompleteProps) {
   const uid = useId()
 
-  /* ── Derive selected label ────────────────────────────────────────────── */
+  /* ── Derive selected value(s) / label ─────────────────────────────────── */
 
-  const selectedLabel = options.find(o => o.value === value)?.label ?? (allowCustomValue ? value : '')
+  const selectedValues = multiple ? (Array.isArray(value) ? value : []) : []
+  const singleValue    = multiple ? '' : (value as string)
+  const selectedLabel  = multiple
+    ? ''
+    : (options.find(o => o.value === singleValue)?.label ?? (allowCustomValue ? singleValue : ''))
 
   /* ── State ────────────────────────────────────────────────────────────── */
 
@@ -145,8 +157,10 @@ export function Autocomplete({
   const calcPos = useCallback(() => {
     if (!inputWrapperRef.current) return
     const r = inputWrapperRef.current.getBoundingClientRect()
-    setPos({ top: r.bottom + 4, left: r.left, width: r.width })
-  }, [])
+    // no-border field has a 6px hover-fill below it → +6 so the 4px gap is real
+    const off = variant === 'no-border' ? 10 : 4
+    setPos({ top: r.bottom + off, left: r.left, width: r.width })
+  }, [variant])
 
   /* ── Open / close ─────────────────────────────────────────────────────── */
 
@@ -161,20 +175,32 @@ export function Autocomplete({
     setOpen(false)
     setActiveIdx(-1)
     setQuery('')
-    setInputText(selectedLabel)
-  }, [selectedLabel])
+    setInputText(multiple ? '' : selectedLabel)
+  }, [selectedLabel, multiple])
 
   /* ── Interactions ─────────────────────────────────────────────────────── */
 
   const selectOption = useCallback((optValue: string) => {
     const opt = options.find(o => o.value === optValue)
     if (!opt) return
+    if (multiple) {
+      // toggle, keep the list open for more selections
+      const next = selectedValues.includes(optValue)
+        ? selectedValues.filter(v => v !== optValue)
+        : [...selectedValues, optValue]
+      onChange?.(next)
+      setQuery('')
+      setInputText('')
+      setActiveIdx(-1)
+      inputRef.current?.focus()
+      return
+    }
     onChange?.(optValue)
     setInputText(opt.label)
     setQuery('')
     setOpen(false)
     setActiveIdx(-1)
-  }, [options, onChange])
+  }, [options, onChange, multiple, selectedValues])
 
   /** Commit a free-typed value (allowCustomValue mode) */
   const commitCustom = useCallback((text: string) => {
@@ -268,6 +294,11 @@ export function Autocomplete({
     return () => document.removeEventListener('mousedown', handler)
   }, [open, closeDroplist])
 
+  /* Re-anchor to the field if it shifts while open (e.g. multi-select adds a row) */
+  useLayoutEffect(() => {
+    if (open) calcPos()
+  }, [open, value, calcPos])
+
   /* ── Reposition on scroll / resize ───────────────────────────────────── */
 
   useEffect(() => {
@@ -284,7 +315,7 @@ export function Autocomplete({
 
   const hasError = Boolean(error)
   const hintText = (typeof error === 'string' ? error : undefined) ?? helper
-  const hasValue = Boolean(value)
+  const hasValue = multiple ? selectedValues.length > 0 : Boolean(singleValue)
 
   const isNoBorder  = variant === 'no-border'
   const variantCls  = isNoBorder ? styles.noBorder : styles.outline
@@ -340,6 +371,7 @@ export function Autocomplete({
           spellCheck={false}
           onChange={handleChange}
           onFocus={handleFocus}
+          onClick={openDroplist}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
         />
@@ -394,23 +426,30 @@ export function Autocomplete({
             </div>
           ) : (
             filteredOpts.map((opt, i) => {
-              const sel = opt.value === value
+              const sel = multiple ? selectedValues.includes(opt.value) : opt.value === singleValue
               return (
                 <div
                   id={`${uid}-opt-${i}`}
                   key={opt.value}
                   className={[
                     styles.item,
-                    sel             ? styles.itemSelected  : '',
-                    activeIdx === i ? styles.itemActive    : '',
-                    opt.avatar      ? styles.itemHasAvatar : '',
+                    sel              ? styles.itemSelected : '',
+                    activeIdx === i  ? styles.itemActive    : '',
+                    (opt.avatar || opt.icon) ? styles.itemHasAvatar : '',
                   ].filter(Boolean).join(' ')}
                   role="option"
                   aria-selected={sel}
                   onMouseDown={e => e.preventDefault()}
                   onClick={() => selectOption(opt.value)}
                 >
-                  {opt.avatar && <ItemAvatar avatar={opt.avatar} size={size} />}
+                  {multiple && (
+                    <span className={styles.itemCheck} aria-hidden="true">
+                      <Checkbox checked={sel} readOnly tabIndex={-1} />
+                    </span>
+                  )}
+                  {opt.icon
+                    ? <span className={styles.itemIcon} aria-hidden="true">{opt.icon}</span>
+                    : opt.avatar && <ItemAvatar avatar={opt.avatar} size={size} />}
                   <span className={styles.itemLabel}>
                     {opt.label}
                     {opt.sublistLabel && (

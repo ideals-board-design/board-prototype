@@ -77,8 +77,8 @@ export default function AutocompletePage() {
     nbPrefix:      'apple',
     nbDisabled:    'banana',
   })
-  const set = (k: string) => (v: string) =>
-    setVals(p => ({ ...p, [k]: v }))
+  const set = (k: string) => (v: string | string[]) =>
+    setVals(p => ({ ...p, [k]: v as string }))
 
   /* User & Group demos */
   const [ugPerson,  setUgPerson]  = useState('')
@@ -290,7 +290,7 @@ export default function AutocompletePage() {
             label="Assign to"
             options={PEOPLE}
             value={ugPerson}
-            onChange={setUgPerson}
+            onChange={v => setUgPerson(v as string)}
             placeholder="Select person…"
           />
         </div>
@@ -301,7 +301,7 @@ export default function AutocompletePage() {
             label="Assign to group"
             options={GROUPS_AC}
             value={ugGroup}
-            onChange={setUgGroup}
+            onChange={v => setUgGroup(v as string)}
             placeholder="Select group…"
           />
         </div>
@@ -312,7 +312,7 @@ export default function AutocompletePage() {
             label="Assign to"
             options={PEOPLE_AND_GROUPS}
             value={ugMixed}
-            onChange={setUgMixed}
+            onChange={v => setUgMixed(v as string)}
             placeholder="Person or group…"
             clearable
           />
@@ -331,7 +331,7 @@ export default function AutocompletePage() {
           label="Fruit"
           options={FRUITS}
           value={live1}
-          onChange={setLive1}
+          onChange={v => setLive1(v as string)}
           placeholder="Select fruit…"
           prefix={<Icon svg={plusSvg} />}
         />
@@ -339,7 +339,7 @@ export default function AutocompletePage() {
           label="Country (pre-selected)"
           options={COUNTRIES}
           value={live2}
-          onChange={setLive2}
+          onChange={v => setLive2(v as string)}
           placeholder="Select country…"
           clearable
         />

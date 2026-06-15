@@ -37,7 +37,7 @@
 .rowContent {
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
+  gap: var(--space-16);
   min-width: 0;
 }
 
@@ -60,6 +60,7 @@
   gap: var(--space-8);
   position: relative;
   z-index: 0;
+  cursor: pointer; /* hand across the whole 32px hover zone */
 }
 .hoverRow::before {
   content: '';
@@ -68,7 +69,7 @@
   border-radius: var(--radius-sm);
   background: transparent;
   transition: background var(--transition-fast);
-  pointer-events: none;
+  pointer-events: auto;  /* the full 32px fill zone triggers hover */
   z-index: -1;
 }
 .hoverRow:hover::before { background: var(--color-bg-hover-fill); }
@@ -107,11 +108,23 @@
   height: 20px;
 }
 
+
 /* Location: same hover pattern as the video row — the row carries the fill and
    the copy/× sit at the end (revealed on hover). The inner field's own fill is
    suppressed so it doesn't double up with the row fill. */
 .locationRow [class*='inputWrapper']::before { display: none; }
 .locationInput { flex: 1; min-width: 0; }
+
+/* Full-width field: the input fills the row so a click anywhere in the 32px zone
+   focuses it (matches the title TextField). Overrides the no-border autocomplete's
+   content-hugging width. */
+.fullField { width: 100%; }
+.fullField input {
+  flex: 1 1 auto !important;
+  field-sizing: normal !important;
+}
+/* Keep the fill while editing (focus), like the title field — not hover-only */
+.locationRow:focus-within::before { background: var(--color-bg-hover-fill); }
 
 /* ── Date / time ───────────────────────────────────── */
 .timeRow {
@@ -123,15 +136,6 @@
    tertiary button's own `margin` shorthand (higher specificity). */
 .timeRow .tzButton { margin-left: var(--space-8) !important; }
 .sep { color: var(--color-text-secondary); }
-
-/* ── Zoom link ─────────────────────────────────────── */
-.link {
-  font-size: var(--text-base);
-  line-height: var(--line-height-base);
-  color: var(--color-text-brand);
-  text-decoration: underline;
-  cursor: pointer;
-}
 
 /* ── Brand (service) icons — keep their own colors ──── */
 .brandIcon {

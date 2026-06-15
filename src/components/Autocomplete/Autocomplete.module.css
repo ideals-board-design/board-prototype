@@ -105,8 +105,16 @@
 .noBorder.isOpen:not(.isDisabled) .inputWrapper::before {
   background: var(--color-bg-hover-fill);
 }
-/* Pointer (hand) by default; text caret only while editing (focused). */
-.noBorder .input { cursor: pointer; }
+/* The input owns the full 32px zone (6px padding, cancelled by negative margin),
+   so hovering/clicking anywhere in it focuses the field. Hand cursor by default;
+   text caret only while editing (focused). */
+.noBorder .input {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-6);
+  margin-top: calc(-1 * var(--space-6));
+  margin-bottom: calc(-1 * var(--space-6));
+  cursor: pointer;
+}
 .noBorder .input:focus { cursor: text; }
 
 /* Resting: input shrinks to its value text width,
@@ -242,6 +250,24 @@
 .sizeS .item { padding: var(--space-6)  var(--space-8); }
 .sizeM .item { padding: var(--space-10) var(--space-12); }
 .sizeL .item { padding: var(--space-14) var(--space-12); }
+
+/* Multi-select checkbox (DS Checkbox, purely visual — the option row toggles it) */
+.itemCheck {
+  flex: none;
+  display: inline-flex;
+  pointer-events: none;
+}
+
+/* Brand/leading icon in an option (20×20, keeps its own colours) */
+.itemIcon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.itemIcon :global(svg) { width: 100%; height: 100%; }
 
 .item:hover  { background: var(--color-bg-hover); }
 .item:active { background: var(--color-border); }

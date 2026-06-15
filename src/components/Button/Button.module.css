@@ -188,7 +188,7 @@
   border-radius: var(--radius-sm);
   background: transparent;
   transition: background var(--transition-fast);
-  pointer-events: none;
+  pointer-events: auto;  /* the full fill zone (6px beyond) triggers hover */
   z-index: -1;
 }
 /* Label: 6px beyond text horizontally; vertical inset = (size padding − 6px) so the

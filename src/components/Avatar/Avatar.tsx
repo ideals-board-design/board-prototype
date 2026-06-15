@@ -13,6 +13,8 @@ export interface AvatarProps {
   type?:     AvatarType
   variant?:  AvatarVariant
   color?:    AvatarColor
+  /** Background colour override (e.g. a per-group token) for the Letters variant */
+  tint?:     string
   /** Image URL for Picture variant */
   src?:      string
   /** Initials shown in Letters variant (1–2 chars; s size shows only 1) */
@@ -34,6 +36,7 @@ export function Avatar({
   type     = 'user',
   variant  = 'letters',
   color    = 'neutral',
+  tint,
   src,
   initials = 'AB',
   alt      = '',
@@ -43,14 +46,19 @@ export function Avatar({
     styles.avatar,
     sizeCls[size],
     styles[type],
-    styles[color],
+    tint ? '' : styles[color],
     className,
   ].filter(Boolean).join(' ')
 
   const displayInitials = size === 's' ? initials.slice(0, 1) : initials
 
   return (
-    <div className={cls} role="img" aria-label={alt || undefined}>
+    <div
+      className={cls}
+      role="img"
+      aria-label={alt || undefined}
+      style={tint ? { background: tint, color: 'var(--stone-0)' } : undefined}
+    >
       {variant === 'picture' && src && (
         <img className={styles.img} src={src} alt={alt} />
       )}

@@ -89,6 +89,7 @@
 .noBorder .textarea {
   padding: 0;
   field-sizing: content;
+  min-height: var(--line-height-base); /* one line at rest (grows as you type) */
   max-height: 400px;
   overflow-y: auto;
   cursor: pointer; /* hand by default; text caret only while editing */
@@ -99,7 +100,7 @@
 /* Edit (focus): bordered editor with the formatting bar + normal padding. */
 .noBorder:not(.isDisabled):not(.hasError) .fieldWrapper:focus-within {
   background: var(--stone-0);
-  box-shadow: inset 0 0 0 1px var(--color-border);
+  box-shadow: inset 0 0 0 1px var(--color-border-focus);
   overflow: hidden;
 }
 .noBorder .fieldWrapper:focus-within .topBar { display: flex; }

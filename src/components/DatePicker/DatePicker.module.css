@@ -97,6 +97,7 @@
   box-shadow: none;
   padding: 0;
   gap: var(--space-4);
+  cursor: pointer; /* hand across the whole 32px hover zone */
 }
 
 .noBorder.sizeS .trigger,
@@ -119,7 +120,7 @@
   border-radius: var(--radius-sm);
   background: transparent;
   transition: background var(--transition-fast);
-  pointer-events: none;
+  pointer-events: auto;  /* the full 32px fill zone triggers hover */
   z-index: -1;
 }
 /* Fill kept on hover, while editing (focus) and while open. */
