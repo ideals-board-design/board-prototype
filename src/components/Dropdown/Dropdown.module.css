@@ -450,6 +450,7 @@
   box-shadow: none;
   padding: 0;
   gap: var(--space-4);
+  position: relative;
 }
 
 /* Override size-based padding */
@@ -461,6 +462,37 @@
 .noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
 .noBorder.isOpen:not(.isDisabled):not(.hasError) .trigger { box-shadow: none; }
 .noBorder.hasError .trigger { box-shadow: none; }
+
+/* Hover background pill — extends 6px beyond left/right content edges */
+.noBorder:not(.isDisabled) .trigger::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.noBorder:not(.isDisabled) .trigger:hover::before,
+.noBorder.isOpen:not(.isDisabled) .trigger::before {
+  background: var(--color-bg-hover);
+}
+
+/* Lift trigger content above the pill pseudo-element */
+.noBorder .triggerText,
+.noBorder .chevron,
+.noBorder .iconLeft,
+.noBorder .clearBtn,
+.noBorder .itemAvatar {
+  position: relative;
+  z-index: 1;
+}
 
 /* TriggerText: don't flex-grow (content-width). Color inherits base rules:
    primary when value selected, secondary when placeholder (.isPlaceholder) */
@@ -476,6 +508,27 @@
 .noBorder .trigger:hover .triggerText { color: var(--color-text-primary); }
 .noBorder .trigger:hover .chevron,
 .noBorder .trigger:hover .iconLeft { color: var(--color-icon-primary); }
+
+/* Chevron not shown in no-border variant */
+.chevronNoBorder {
+  display: none;
+}
+
+/* Chevron fully hidden when clear button takes its place */
+.chevronHidden {
+  display: none;
+}
+
+/* Clear button in no-border mode — hidden at rest, visible on hover */
+.clearBtnNoBorder {
+  position: relative;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.noBorder .trigger:hover .clearBtnNoBorder {
+  opacity: 1;
+}
 
 /* Disabled: keep transparent bg */
 .noBorder.isDisabled .trigger { background: transparent; }
@@ -503,6 +556,18 @@
 .itemAvatarSquare { border-radius: var(--radius-sm); }
 .itemAvatarGroup  { background: var(--tag-kepeel); }
 .itemAvatarOrg    { background: var(--green-500); }
+
+/* Small variant used in the trigger (20×20 instead of 24×24) */
+.itemAvatarSmall {
+  width: 20px;
+  height: 20px;
+}
+.itemAvatarSmall .itemAvatarInitials {
+  font-size: var(--text-xs);
+}
+
+/* Colored square avatars always use inverse (white) text */
+.itemAvatarSquare .itemAvatarInitials { color: var(--color-text-inverse); }
 
 .itemAvatarImg {
   width: 100%;

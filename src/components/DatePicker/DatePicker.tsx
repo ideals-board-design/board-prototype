@@ -55,6 +55,8 @@ export interface DatePickerProps {
   /** Single-select mode — selected date */
   value?:          Date | null
   onChange?:       (date: Date | null) => void
+  /** Custom display formatter — overrides the default "Mon DD, YYYY" format */
+  formatValue?:    (date: Date) => string
   /** Range mode — two-click selection inside one popover */
   mode?:           'range'
   rangeStart?:     Date | null
@@ -86,6 +88,7 @@ const sizeCls: Record<DatePickerSize, string> = {
 export function DatePicker({
   value,
   onChange,
+  formatValue,
   mode,
   rangeStart:  rangeStartProp,
   rangeEnd:    rangeEndProp,
@@ -124,13 +127,15 @@ export function DatePicker({
     ? Boolean(rStart && rEnd)
     : value instanceof Date
 
+  const fmt = formatValue ?? formatDate
+
   const displayText = isRange
     ? (rStart && rEnd
         ? `${formatDate(rStart)} – ${formatDate(rEnd)}`
         : rStart
           ? `${formatDate(rStart)} – ...`
           : placeholder)
-    : hasValue ? formatDate(value as Date) : placeholder
+    : hasValue ? fmt(value as Date) : placeholder
 
   const [open, setOpen] = useState(false)
   const [pos,  setPos]  = useState({ top: 0, right: 0 })
@@ -269,6 +274,7 @@ export function DatePicker({
     editing    ? styles.isEditing  : '',
     disabled   ? styles.isDisabled : '',
     hasError   ? styles.hasError   : '',
+    hasValue   ? styles.hasValue   : '',
     isNoBorder ? styles.noBorder   : styles.outline,
     className ?? '',
   ].filter(Boolean).join(' ')
@@ -324,7 +330,7 @@ export function DatePicker({
         ) : (
           <span
             className={styles.triggerText}
-            onClick={!isRange ? startEditing : undefined}
+            onClick={!isRange && !isNoBorder ? startEditing : undefined}
           >
             {displayText}
           </span>

@@ -54,7 +54,21 @@
       "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__get_metadata",
       "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__use_figma",
       "Bash(ffmpeg -i \"/Users/jaroslav.getman/Downloads/Screen Recording 2026-03-17 at 11.28.41.mov\" -vf \"fps=6,scale=600:-1\" -frames:v 24 /tmp/toast_anim_%02d.png -y)",
-      "Bash(qlmanage -t -s 800 -o /tmp/ \"/Users/jaroslav.getman/Downloads/Screen Recording 2026-03-17 at 11.28.41.mov\")"
+      "Bash(qlmanage -t -s 800 -o /tmp/ \"/Users/jaroslav.getman/Downloads/Screen Recording 2026-03-17 at 11.28.41.mov\")",
+      "Bash(node -e \"const {communication} = require\\('./src/icons/communication'\\); console.log\\(communication.map\\(i=>i.name\\).join\\(', '\\)\\)\")",
+      "Bash(node -e ' *)",
+      "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__search_design_system",
+      "Bash(node --input-type=module)",
+      "Bash(python3 -c ' *)",
+      "mcp__Figma__get_screenshot",
+      "Bash(node -e \"const {functional} = require\\('./src/icons/functional.ts'\\); console.log\\(functional.map\\(i=>i.name\\).filter\\(n=>n.includes\\('copy'\\)||n.includes\\('clip'\\)\\)\\)\")",
+      "mcp__Figma__get_design_context",
+      "Bash(node -e \"const {editor} = require\\('./src/icons/editor.ts'\\); console.log\\(editor.map\\(i=>i.name\\).join\\(', '\\)\\)\")",
+      "Bash(sed -n '65,100p' src/components/TextField/TextField.module.css)",
+      "Bash(sed -n '444,492p' src/components/Dropdown/Dropdown.module.css)",
+      "Bash(sed -n '113,140p' src/components/DatePicker/DatePicker.module.css)",
+      "Bash(sed -n '30,50p' src/components/Dropdown/Dropdown.module.css)",
+      "Bash(sed -n '515,535p' src/components/Dropdown/Dropdown.module.css)"
     ]
   }
 }

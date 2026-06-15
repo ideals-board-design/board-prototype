@@ -43,6 +43,8 @@ export interface DropdownItemAvatar {
   initials?: string
   /** 'user' = circular, 'group' | 'org' = rounded square. Default: 'user' */
   type?:     'user' | 'group' | 'org'
+  /** Custom background color (CSS value or var()), overrides type-based color */
+  color?:    string
 }
 
 /** Regular selectable option */
@@ -153,14 +155,15 @@ function getDescendantValues(opts: DropdownTreeOption[], nodeValue: string): str
 
 /* ── Avatar helper ────────────────────────────────────────────────────────── */
 
-function ItemAvatar({ avatar }: { avatar: DropdownItemAvatar }) {
-  const { src, initials = '?', type = 'user' } = avatar
-  const letter = initials.slice(0, 1)
-  const shapeCls = type === 'user' ? styles.itemAvatarUser : styles.itemAvatarSquare
-  const colorCls = type === 'group' ? styles.itemAvatarGroup : type === 'org' ? styles.itemAvatarOrg : ''
-  const cls = [styles.itemAvatar, shapeCls, colorCls].filter(Boolean).join(' ')
+function ItemAvatar({ avatar, small }: { avatar: DropdownItemAvatar; small?: boolean }) {
+  const { src, initials = '?', type = 'user', color } = avatar
+  const letter    = initials.slice(0, 1)
+  const shapeCls  = type === 'user' ? styles.itemAvatarUser : styles.itemAvatarSquare
+  const colorCls  = !color ? (type === 'group' ? styles.itemAvatarGroup : type === 'org' ? styles.itemAvatarOrg : '') : ''
+  const cls       = [styles.itemAvatar, shapeCls, colorCls, small ? styles.itemAvatarSmall : ''].filter(Boolean).join(' ')
+  const inlineStyle = color ? { backgroundColor: color } : undefined
   return (
-    <span className={cls} aria-hidden="true">
+    <span className={cls} style={inlineStyle} aria-hidden="true">
       {src
         ? <img className={styles.itemAvatarImg} src={src} alt="" />
         : <span className={styles.itemAvatarInitials}>{letter}</span>
@@ -288,6 +291,11 @@ export function Dropdown({
   // Secondary text from the selected option (single mode only)
   const triggerSecondaryText = (hasValue && mode === 'single')
     ? options.filter(isSelectable).find(o => o.value === selectedValues[0])?.secondaryText
+    : undefined
+
+  // Avatar from the selected option (single mode only)
+  const triggerAvatar = (hasValue && mode === 'single')
+    ? options.filter(isSelectable).find(o => o.value === selectedValues[0])?.avatar
     : undefined
 
   const hasError = Boolean(error)
@@ -508,6 +516,11 @@ export function Dropdown({
           <span className={styles.iconLeft} aria-hidden="true">{iconLeft}</span>
         )}
 
+        {/* Avatar for selected option (single mode) */}
+        {triggerAvatar && (
+          <ItemAvatar avatar={triggerAvatar} small />
+        )}
+
         {/* Value / placeholder text */}
         <span className={styles.triggerText}>
           {hasValue ? triggerText : placeholder}
@@ -520,37 +533,56 @@ export function Dropdown({
           </span>
         )}
 
-        {/* Clear button — always in DOM to reserve layout space.
-            Tooltip only mounts when button is truly visible, so its hover
-            area never captures events over an invisible button. */}
-        {clearable && !disabled && !isNoBorder && (
-          showClearTooltip ? (
-            <Tooltip label="Clear" position="top">
+        {/* Clear button — outline: always in DOM to reserve space.
+            no-border: only rendered when value is selected (× replaces chevron on hover). */}
+        {clearable && !disabled && (
+          isNoBorder ? (
+            hasValue ? (
+              <Tooltip label="Clear" position="top">
+                <button
+                  type="button"
+                  className={`${styles.clearBtn} ${styles.clearBtnNoBorder}`}
+                  onClick={clearValue}
+                  aria-label="Clear selection"
+                  tabIndex={-1}
+                >
+                  <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
+                </button>
+              </Tooltip>
+            ) : null
+          ) : (
+            showClearTooltip ? (
+              <Tooltip label="Clear" position="top">
+                <button
+                  type="button"
+                  className={styles.clearBtn}
+                  onClick={clearValue}
+                  aria-label="Clear selection"
+                  tabIndex={-1}
+                >
+                  <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
+                </button>
+              </Tooltip>
+            ) : (
               <button
                 type="button"
-                className={styles.clearBtn}
-                onClick={clearValue}
-                aria-label="Clear selection"
+                className={`${styles.clearBtn} ${styles.clearBtnHidden}`}
                 tabIndex={-1}
+                aria-hidden="true"
               >
                 <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
               </button>
-            </Tooltip>
-          ) : (
-            <button
-              type="button"
-              className={`${styles.clearBtn} ${styles.clearBtnHidden}`}
-              tabIndex={-1}
-              aria-hidden="true"
-            >
-              <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-            </button>
+            )
           )
         )}
 
-        {/* Chevron */}
+        {/* Chevron — in no-border hidden when value is selected (× takes its place) */}
         <span
-          className={styles.chevron}
+          className={[
+            styles.chevron,
+            isNoBorder ? styles.chevronNoBorder : '',
+            isNoBorder && hasValue && clearable ? styles.chevronHidden : '',
+          ].filter(Boolean).join(' ')}
           aria-hidden="true"
           dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
         />

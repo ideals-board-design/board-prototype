@@ -30,7 +30,7 @@
   /* ---------------------------------------------------------------------------
      Background
      --------------------------------------------------------------------------- */
-  --color-bg-page:      var(--stone-100);    /* #FBFBFB */
+  --color-bg-page:      var(--stone-0);      /* #FFFFFF */
   --color-bg-surface:   var(--stone-0);      /* #FFFFFF */
   --color-bg-hover:     var(--stone-300);    /* #ECEEF9 */
   --color-bg-selected:  var(--green-25);     /* #EBF8EF */

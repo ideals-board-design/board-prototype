@@ -79,12 +79,43 @@
 }
 
 /* ── No-border variant ───────────────────────────── */
+/* Hover state — Figma node 35528-970 */
 
 .noBorder .inputWrapper {
   background: transparent;
   box-shadow: none;
   padding-left: 0;
   padding-right: 0;
+  position: relative;
+}
+
+/* Hover background pill — extends 6px beyond left/right content edges */
+.noBorder:not(.isDisabled) .inputWrapper::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.noBorder:not(.isDisabled) .inputWrapper:hover::before,
+.noBorder:not(.isDisabled) .inputWrapper:focus-within::before {
+  background: var(--color-bg-hover);
+}
+
+/* Lift content above the pseudo-element background */
+.noBorder .input,
+.noBorder .icon,
+.noBorder .clearBtn {
+  position: relative;
+  z-index: 1;
 }
 
 /* Resting: input shrinks to its value text width,

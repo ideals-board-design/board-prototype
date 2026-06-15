@@ -1,0 +1,1111 @@
+/* MeetingsPage — Meeting Creation Form
+   Figma: 8I0d6Pc5e5yvKW2Fxhgdrx node 23157-69192 */
+
+/* ── Page shell ─────────────────────────────────────────────────────────── */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--color-bg-surface);
+}
+
+/* ── Body: form column + divider + preview column ───────────────────────── */
+
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Form column ─────────────────────────────────────────────────────────── */
+
+.formCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding: var(--space-24);
+}
+
+/* ── Field rows — no dividers, gap handled by .form ─────────────────────── */
+
+.fieldRow {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-16);
+}
+
+/* Icon column: 20×20, offset down by --space-10 to optically center
+   with the first text line of M-size (padding-top: 10px) content */
+.fieldIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: var(--space-10);
+  color: var(--color-icon-secondary);
+}
+
+.fieldIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.fieldContent {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Force no-border Dropdown to stretch full width inside a field row */
+.fieldDropdown {
+  width: 100%;
+}
+
+/* Fill-width no-border field overrides: the hover pill spans the whole field
+   row (matches the Figma — meeting name / group / tool / location / description) */
+.fillField {
+  width: 100% !important;
+}
+
+/* Stretch the inner trigger so its hover pill fills the full width */
+.fillField [role="combobox"] {
+  width: 100%;
+}
+
+/* Push the clear button (now wrapped in a Tooltip div) to the right edge,
+   matching the tool / location fields */
+.fillField [role="combobox"] > button,
+.fillField [role="combobox"] > div {
+  margin-left: auto;
+}
+
+/* Wrapper that keeps the group FieldRow + Add participants together with internal spacing */
+.groupBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* Sub-row below a FieldRow — indented to align with field content (icon 20px + gap 8px) */
+.subRow {
+  padding-left: calc(20px + var(--space-8));
+}
+
+/* Center-aligned row — for single-line controls with no top padding (e.g. no-border Dropdown) */
+.fieldRowCenter {
+  align-items: center;
+}
+
+.fieldRowCenter .fieldIcon {
+  margin-top: 0;
+}
+
+/* Top-aligned row — flex-start but no icon offset (for Dropdown + sub-button stacked) */
+.fieldRowTop .fieldIcon {
+  margin-top: 0;
+}
+
+/* ── Meeting type content (label above, radios below) ────────────────────── */
+
+.meetingTypeContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding-top: var(--space-10);
+  padding-bottom: var(--space-10);
+}
+
+.meetingTypeLabel {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.radioGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-24);
+  flex-wrap: wrap;
+}
+
+/* ── Date & time content ─────────────────────────────────────────────────── */
+
+.dateBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding-top: var(--space-10);
+}
+
+/* No-border DatePicker used for the date field — content-width, matching hover pill */
+.datePicker {
+  width: fit-content !important;
+}
+
+.dateText {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  position: relative;
+  cursor: pointer;
+  width: fit-content;
+  z-index: 1;
+}
+
+.dateText::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.dateText:hover::before {
+  background: var(--color-bg-hover);
+}
+
+.timeRow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: fit-content;
+}
+
+.timeText {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  cursor: pointer;
+  width: fit-content;
+  z-index: 1;
+}
+
+.timeText::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.timeText:hover::before {
+  background: var(--color-bg-hover);
+}
+
+.timeSeparator {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.timezoneText {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  -webkit-font-smoothing: antialiased;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.timezoneText:hover {
+  color: var(--color-text-primary);
+}
+
+.addToCalendar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-brand);
+  -webkit-font-smoothing: antialiased;
+}
+
+.addToCalendar:hover { opacity: 0.8; }
+
+.calendarPlusIcon {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.calendarPlusIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Tool trigger ────────────────────────────────────────────────────────── */
+
+.toolTrigger {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  white-space: nowrap;
+  cursor: pointer;
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: var(--space-10) 0;
+}
+
+.toolTrigger::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.toolTrigger:hover::before {
+  background: var(--color-bg-hover);
+}
+
+.toolTriggerPlaceholder {
+  color: var(--color-text-secondary);
+}
+
+/* Filled state — icon + link on the left, action buttons pushed to the right */
+.toolFilled {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  white-space: nowrap;
+  position: relative;
+  z-index: 1;
+  padding: var(--space-10) 0;
+}
+
+/* Hover pill — fills the full field width, matching the empty trigger */
+.toolFilled::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.toolFilled:hover::before {
+  background: var(--color-bg-hover);
+}
+
+/* Action buttons grouped at the right edge of the field */
+.toolActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+}
+
+.toolLink {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: #2C9C74;
+  text-decoration: underline;
+  cursor: pointer;
+  -webkit-font-smoothing: antialiased;
+}
+
+.toolFilled:hover .toolLink {
+  color: #1C8269;
+}
+
+.toolActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+}
+
+.toolFilled:hover .toolActionBtn {
+  opacity: 1;
+}
+
+.toolActionBtn:hover {
+  background: var(--color-bg-hover);
+}
+
+.toolActionIcon {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.toolActionIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.toolTriggerIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* ── Tool selector popup ─────────────────────────────────────────────────── */
+
+.toolPop {
+  position: fixed;
+  z-index: 8000;
+  min-width: 180px;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-100);
+  padding: var(--space-4);
+}
+
+.toolOpt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.toolOpt:hover {
+  background: var(--color-bg-hover);
+}
+
+.toolOptIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.toolOptLabel {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Open state — persistent hover fill */
+.timeTextOpen::before {
+  background: var(--color-bg-hover) !important;
+}
+
+/* ── Time picker popup ───────────────────────────────────────────────────── */
+
+.timePop {
+  position: fixed;
+  z-index: 8000;
+  min-width: 160px;
+  max-height: 260px;
+  overflow-y: auto;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-100);
+  padding: var(--space-4);
+}
+
+.timeOpt {
+  display: flex;
+  align-items: center;
+  padding: var(--space-10) var(--space-12);
+  cursor: pointer;
+  gap: var(--space-8);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.timeOpt:hover {
+  background: var(--color-bg-hover);
+}
+
+.timeOptSelected {
+  background: #ebf8ef;
+}
+
+.timeOptSelected:hover {
+  background: #ebf8ef;
+}
+
+.timeOptLabel {
+  flex: 1;
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.timeOptDur {
+  flex: 1;
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  text-align: right;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Location autocomplete ───────────────────────────────────────────────── */
+
+.locationWrap {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Hover pill — fills the full field width (matches the other no-border fields) */
+.locationWrap:has(.locationInput) {
+  position: relative;
+}
+
+.locationWrap:has(.locationInput)::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.locationWrap:has(.locationInput):hover::before,
+.locationWrap:has(.locationInput):focus-within::before {
+  background: var(--color-bg-hover);
+}
+
+.locationInput {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: var(--space-10) 0;
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+.locationInput::placeholder {
+  color: var(--color-text-secondary);
+}
+
+.locationPop {
+  position: fixed;
+  z-index: 8000;
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-100);
+  padding: var(--space-4);
+  width: max-content;
+  min-width: 320px;
+}
+
+.locationOpt {
+  padding: var(--space-10) var(--space-12);
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+  -webkit-font-smoothing: antialiased;
+}
+
+.locationOpt:hover {
+  background: var(--color-bg-hover);
+}
+
+/* Location selected chip */
+.locationChip {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+  padding: var(--space-10) 0;
+}
+
+.locationChip::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.locationChip:hover::before {
+  background: var(--color-bg-hover);
+}
+
+.locationChipText {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  position: relative;
+  z-index: 1;
+}
+
+.locationChipActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.locationChipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  border-radius: var(--radius-sm);
+  opacity: 0;
+  transition: opacity var(--transition-fast), background var(--transition-fast);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.locationChip:hover .locationChipRemove {
+  opacity: 1;
+}
+
+.locationChipRemove:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.locationChipRemoveIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.locationChipRemoveIcon svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Rich Text Editor ────────────────────────────────────────────────────── */
+
+.rtfWrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+  transition: box-shadow var(--transition-fast);
+  background: transparent;
+}
+
+/* Hover pill — borderless (unfocused) state only, fills the full field width
+   and the full content height so it hugs every line of a multi-line value */
+.rtfWrap:not(.rtfFocused)::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -6px;
+  right: -6px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.rtfWrap:not(.rtfFocused):hover::before {
+  background: var(--color-bg-hover);
+}
+
+.rtfFocused {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+  background: var(--color-bg-surface);
+}
+
+.rtfToolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.rtfToolBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast), color var(--transition-fast);
+  flex-shrink: 0;
+  line-height: 0;
+}
+
+.rtfToolBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.rtfToolBtnActive {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.rtfToolIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  line-height: 0;
+}
+
+.rtfToolIcon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+}
+
+.rtfEditor {
+  flex: 1;
+  position: relative;
+  z-index: 1;
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  outline: none;
+  padding: var(--space-10) 0;
+}
+
+/* Focused: expand into a bordered box with inner padding */
+.rtfFocused .rtfEditor {
+  min-height: 80px;
+  padding: var(--space-12) var(--space-16);
+}
+
+.rtfEditor:empty::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+.rtfEditor ul,
+.rtfEditor ol {
+  padding-left: var(--space-20);
+  margin: 0;
+}
+
+/* ── Vertical divider between form and preview ───────────────────────────── */
+
+.panelDivider {
+  width: 1px;
+  background: var(--color-border);
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+/* ── Preview column ──────────────────────────────────────────────────────── */
+
+.preview {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  overflow-y: auto;
+  padding: var(--space-24);
+  background: var(--stone-100);
+}
+
+/* ── Preview header (invitation subject + sender) ────────────────────────── */
+
+.previewSubject {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+.previewSender {
+  font-size: var(--text-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  -webkit-font-smoothing: antialiased;
+  margin: var(--space-4) 0 0;
+}
+
+/* ── Invitation card ─────────────────────────────────────────────────────── */
+
+.inviteCard {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Top section: org branding */
+.inviteCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: var(--space-16) var(--space-24);
+}
+
+.inviteOrgLogo {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--green-50);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-brand);
+  flex-shrink: 0;
+}
+
+.inviteOrgLogo svg {
+  width: 20px;
+  height: 20px;
+}
+
+.inviteOrgName {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1.3;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Green accent line below org branding */
+.inviteAccentLine {
+  height: 2px;
+  background: var(--green-500);
+}
+
+/* Body section: invite content */
+.inviteCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  padding: var(--space-24);
+}
+
+.inviteTitle {
+  font-size: var(--text-md);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+.inviteDesc {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+/* ── Date badge row ──────────────────────────────────────────────────────── */
+
+.inviteDateRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.inviteDateBadge {
+  width: 48px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.inviteDateMonth {
+  font-size: var(--text-xs);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-inverse);
+  background: var(--green-500);
+  width: 100%;
+  text-align: center;
+  padding: var(--space-2) 0;
+  letter-spacing: 0.05em;
+  -webkit-font-smoothing: antialiased;
+}
+
+.inviteDateDay {
+  font-size: var(--text-xl);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  line-height: 1;
+  padding: var(--space-4) 0 var(--space-6);
+  -webkit-font-smoothing: antialiased;
+}
+
+.inviteDateInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.inviteDateName {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+.inviteDateMeta {
+  font-size: var(--text-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+/* ── RSVP section ────────────────────────────────────────────────────────── */
+
+.rsvpQuestion {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+.rsvpButtons {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+
+.rsvpBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-12);
+  font-size: var(--text-sm);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  -webkit-font-smoothing: antialiased;
+}
+
+.rsvpBtn:hover { background: var(--color-bg-hover); }
+
+.rsvpBtnIcon {
+  display: flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+
+.rsvpBtnIcon svg { width: 100%; height: 100%; }
+
+.rsvpBtnMaybe {
+  color: var(--color-text-warning);
+  border-color: var(--orange-500);
+}
+
+.rsvpBtnMaybe .rsvpBtnIcon { color: var(--color-text-warning); }
+
+.rsvpBtnNo {
+  color: var(--color-text-error);
+  border-color: var(--red-500);
+}
+
+.rsvpBtnNo .rsvpBtnIcon { color: var(--color-text-error); }
+
+/* ── Details section ─────────────────────────────────────────────────────── */
+
+.inviteDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.inviteDetailsTitle {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}
+
+.inviteDetailsText {
+  font-size: var(--text-base);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+}

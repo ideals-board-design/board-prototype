@@ -97,6 +97,7 @@
   box-shadow: none;
   padding: 0;
   gap: var(--space-4);
+  position: relative;
 }
 
 .noBorder.sizeS .trigger,
@@ -108,6 +109,34 @@
 .noBorder.hasError .trigger { box-shadow: none; }
 
 .noBorder.isDisabled .trigger { background: transparent; }
+
+/* Hover background pill — extends 6px beyond left/right content edges */
+.noBorder:not(.isDisabled) .trigger::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: -6px;
+  right: -6px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.noBorder:not(.isDisabled) .trigger:hover::before,
+.noBorder.isOpen:not(.isDisabled) .trigger::before {
+  background: var(--color-bg-hover);
+}
+
+/* Lift content above pill */
+.noBorder .triggerText,
+.noBorder .clearBtn {
+  position: relative;
+  z-index: 1;
+}
 
 /* Editing state — green border like focus */
 .outline.wrapper.isEditing:not(.isDisabled) .trigger {
