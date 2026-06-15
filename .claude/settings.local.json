@@ -68,7 +68,8 @@
       "Bash(sed -n '444,492p' src/components/Dropdown/Dropdown.module.css)",
       "Bash(sed -n '113,140p' src/components/DatePicker/DatePicker.module.css)",
       "Bash(sed -n '30,50p' src/components/Dropdown/Dropdown.module.css)",
-      "Bash(sed -n '515,535p' src/components/Dropdown/Dropdown.module.css)"
+      "Bash(sed -n '515,535p' src/components/Dropdown/Dropdown.module.css)",
+      "Bash(npm run *)"
     ]
   }
 }

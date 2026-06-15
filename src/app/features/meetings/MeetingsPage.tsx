@@ -76,7 +76,7 @@ function TimePickerDropdown({
   onClose,
 }: {
   value: number
-  startRef: React.RefObject<HTMLElement>
+  startRef: React.RefObject<HTMLElement | null>
   referenceMinutes?: number
   showDuration?: boolean
   onChange: (minutes: number) => void
@@ -178,7 +178,7 @@ function ToolSelectorPopup({
   onSelect,
   onClose,
 }: {
-  triggerRef: React.RefObject<HTMLElement>
+  triggerRef: React.RefObject<HTMLElement | null>
   onSelect: (value: string) => void
   onClose: () => void
 }) {
@@ -247,7 +247,7 @@ function LocationPopup({
   onClose,
 }: {
   suggestions: string[]
-  wrapRef: React.RefObject<HTMLElement>
+  wrapRef: React.RefObject<HTMLElement | null>
   onSelect: (v: string) => void
   onClose: () => void
 }) {
@@ -316,11 +316,6 @@ function RichTextEditor({ placeholder }: { placeholder: string }) {
     editorRef.current?.focus()
     document.execCommand(cmd, false)
     updateActiveFormats()
-  }
-
-  const isEmpty = () => {
-    const text = editorRef.current?.textContent ?? ''
-    return text.trim() === ''
   }
 
   const TOOLBAR_BTNS = [
@@ -486,7 +481,6 @@ export default function MeetingsPage() {
   const endTriggerRef   = useRef<HTMLSpanElement>(null)
   const closeStart = useCallback(() => setOpenPicker(null), [])
   const closeEnd   = useCallback(() => setOpenPicker(null), [])
-  const [videoLink,   setVideoLink]   = useState('')
   const [videoTool,   setVideoTool]   = useState('')
   const [videoToolOpen, setVideoToolOpen] = useState(false)
   const videoTriggerRef = useRef<HTMLDivElement>(null)
