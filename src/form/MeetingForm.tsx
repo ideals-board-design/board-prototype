@@ -7,6 +7,7 @@ import styles from './MeetingForm.module.css'
 import { TextField } from '../components/TextField/TextField'
 import { TextEditor } from '../components/TextEditor/TextEditor'
 import { Autocomplete } from '../components/Autocomplete/Autocomplete'
+import { TimeField } from '../components/TimeField/TimeField'
 import { Radio } from '../components/Radio/Radio'
 import { Avatar } from '../components/Avatar/Avatar'
 import { DatePicker } from '../components/DatePicker/DatePicker'
@@ -38,20 +39,6 @@ const zoomSvg      = services.find(i => i.name === 'zoom-monogram-colored')!.svg
 
 const PHOTO_1 = new URL('../assets/user-profile-pic-1.png', import.meta.url).href
 const PHOTO_2 = new URL('../assets/user-profile-pic-2.png', import.meta.url).href
-
-/* Time options — every 30 min, 8:00 AM → 6:00 PM */
-const TIME_OPTIONS = (() => {
-  const out: { value: string; label: string }[] = []
-  for (let h = 8; h <= 18; h++) {
-    for (const m of ['00', '30']) {
-      const ampm = h < 12 ? 'AM' : 'PM'
-      const hr = h % 12 === 0 ? 12 : h % 12
-      const t = `${String(hr).padStart(2, '0')}:${m} ${ampm}`
-      out.push({ value: t, label: t })
-    }
-  }
-  return out
-})()
 
 const PEOPLE_OPTIONS = [
   { value: 'sarah',  label: 'Sarah Mitchell' },
@@ -155,11 +142,11 @@ export default function MeetingForm() {
 
         {/* Date, time, calendar */}
         <Row icon={calendarSvg}>
-          <DatePicker variant="no-border" format="long" value={date} onChange={setDate} aria-label="Date" />
+          <DatePicker variant="no-border" format="long" value={date} onChange={setDate} placeholder="M/DD/YYYY" aria-label="Date" />
           <div className={styles.timeRow}>
-            <Autocomplete variant="no-border" className={styles.hugField} options={TIME_OPTIONS} value={startTime} onChange={setStartTime} aria-label="Start time" />
+            <TimeField variant="no-border" value={startTime} onChange={setStartTime} aria-label="Start time" />
             <span className={styles.sep}>–</span>
-            <Autocomplete variant="no-border" className={styles.hugField} options={TIME_OPTIONS} value={endTime} onChange={setEndTime} aria-label="End time" />
+            <TimeField variant="no-border" value={endTime} onChange={setEndTime} aria-label="End time" />
             <Button variant="tertiary" intent="neutral" className={styles.tzButton}>(GMT+6) Chicago</Button>
           </div>
           {hasCalendar && (

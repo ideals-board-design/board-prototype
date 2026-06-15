@@ -26,6 +26,9 @@ function icon(svg: string) {
 }
 
 // ── Internal toolbar button (always with tooltip above) ───
+// onMouseDown preventDefault keeps focus (and the caret/selection) in the
+// textarea when a formatting button is clicked — the editor stays in its
+// focused state instead of the button stealing focus.
 function ToolbarBtn({ svg, label }: { svg: string; label: string }) {
   return (
     <Tooltip label={label} position="top">
@@ -35,6 +38,7 @@ function ToolbarBtn({ svg, label }: { svg: string; label: string }) {
         size="s"
         iconOnly={icon(svg)}
         aria-label={label}
+        onMouseDown={e => e.preventDefault()}
       />
     </Tooltip>
   )

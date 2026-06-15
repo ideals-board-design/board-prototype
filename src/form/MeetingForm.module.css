@@ -119,10 +119,9 @@
   align-items: center;
   gap: var(--space-8);
 }
-/* Time autocompletes hug content and keep that width when opened (not expanded) */
-.timeRow .hugField { width: fit-content; flex: none; }
-.timeRow .hugField input { field-sizing: content !important; flex: 0 1 auto !important; }
-.tzButton { margin-left: var(--space-8); }
+/* 16px before the timezone = 8px flex gap + 8px margin. !important beats the
+   tertiary button's own `margin` shorthand (higher specificity). */
+.timeRow .tzButton { margin-left: var(--space-8) !important; }
 .sep { color: var(--color-text-secondary); }
 
 /* ── Zoom link ─────────────────────────────────────── */

@@ -56,6 +56,9 @@ export interface AutocompleteProps {
   error?:       boolean | string
   disabled?:    boolean
   clearable?:   boolean
+  /** Allow committing a typed value that isn't in the options (free combobox).
+      The dropdown still offers suggestions; Enter / blur keeps the typed text. */
+  allowCustomValue?: boolean
   className?:   string
 }
 
@@ -100,13 +103,14 @@ export function Autocomplete({
   error     = false,
   disabled  = false,
   clearable = false,
+  allowCustomValue = false,
   className,
 }: AutocompleteProps) {
   const uid = useId()
 
   /* ── Derive selected label ────────────────────────────────────────────── */
 
-  const selectedLabel = options.find(o => o.value === value)?.label ?? ''
+  const selectedLabel = options.find(o => o.value === value)?.label ?? (allowCustomValue ? value : '')
 
   /* ── State ────────────────────────────────────────────────────────────── */
 
@@ -172,6 +176,15 @@ export function Autocomplete({
     setActiveIdx(-1)
   }, [options, onChange])
 
+  /** Commit a free-typed value (allowCustomValue mode) */
+  const commitCustom = useCallback((text: string) => {
+    onChange?.(text)
+    setInputText(text)
+    setQuery('')
+    setOpen(false)
+    setActiveIdx(-1)
+  }, [onChange])
+
   const clearValue = (e: React.MouseEvent) => {
     e.preventDefault()   // keep focus on input
     e.stopPropagation()
@@ -218,8 +231,10 @@ export function Autocomplete({
       e.preventDefault()
       if (activeIdx >= 0 && filteredOpts[activeIdx]) {
         selectOption(filteredOpts[activeIdx].value)
-      } else if (filteredOpts.length === 1) {
+      } else if (!allowCustomValue && filteredOpts.length === 1) {
         selectOption(filteredOpts[0].value)
+      } else if (allowCustomValue) {
+        commitCustom(inputText.trim())
       }
     } else if (e.key === 'Escape') {
       closeDroplist()
@@ -230,6 +245,10 @@ export function Autocomplete({
   const handleBlur = () => {
     // Items use onMouseDown e.preventDefault() to prevent blur on click.
     // handleBlur only fires on Tab or genuinely clicking outside.
+    if (allowCustomValue) {
+      const t = inputText.trim()
+      if (t !== selectedLabel) { commitCustom(t); return }
+    }
     closeDroplist()
   }
 
