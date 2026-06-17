@@ -115,7 +115,9 @@
   margin-bottom: calc(-1 * var(--space-6));
   cursor: pointer;
 }
-.noBorder .input:focus { cursor: text; }
+/* Filled (has text) or focused → text caret; empty placeholder → hand. */
+.noBorder .input:focus,
+.noBorder .input:not(:placeholder-shown) { cursor: text; }
 
 /* Resting: input shrinks to its value text width,
    clear button appears right after text at gap distance */

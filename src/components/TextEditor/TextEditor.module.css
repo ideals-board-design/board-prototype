@@ -94,7 +94,9 @@
   overflow-y: auto;
   cursor: pointer; /* hand by default; text caret only while editing */
 }
-.noBorder .textarea:focus { cursor: text; }
+/* Filled (has text) or focused → text caret; empty placeholder → hand. */
+.noBorder .textarea:focus,
+.noBorder .textarea:not(:placeholder-shown) { cursor: text; }
 .noBorder .topBar { display: none; }
 
 /* Edit (focus): bordered editor with the formatting bar + normal padding. */
