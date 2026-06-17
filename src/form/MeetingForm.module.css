@@ -97,16 +97,8 @@
 .hoverRow:hover .rowActions,
 .rowActions:focus-within { opacity: 1; }
 
-/* Inline action buttons sized to the 20px icon (keeps rows from growing taller) */
-.rowActions button {
-  width: 20px !important;
-  height: 20px !important;
-  margin: 0 !important;
-}
-.rowActions button [class*='icon'] {
-  width: 20px;
-  height: 20px;
-}
+/* Inline action buttons use the DS tertiary icon-only sizing (32px hit area,
+   20px footprint) — no override needed. */
 
 
 /* Location: same hover pattern as the video row — the row carries the fill and

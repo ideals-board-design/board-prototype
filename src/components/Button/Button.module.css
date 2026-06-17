@@ -168,15 +168,18 @@
 .tertiary.warning:active:not(:disabled):not([data-loading]),
 .tertiary.warning[data-state="active"] { color: var(--orange-700); }
 
-/* Tertiary label: content-sized visually; vertical padding + negative margin = hit area */
-.tertiary.sizeS:not(.iconOnly) { padding: var(--space-6) 0;  margin: calc(-1 * var(--space-6))  0; }
-.tertiary.sizeM:not(.iconOnly) { padding: var(--space-10) 0; margin: calc(-1 * var(--space-10)) 0; }
-.tertiary.sizeL:not(.iconOnly) { padding: var(--space-14) 0; margin: calc(-1 * var(--space-14)) 0; }
+/* Tertiary label: 32px hit area at every size (matches icon-only & the +6px demo).
+   Vertical padding + negative margin keep the layout footprint at the 20px text line,
+   so hit area == fill == 32px — no zone where hover triggers but the fill is absent. */
+.tertiary.sizeS:not(.iconOnly),
+.tertiary.sizeM:not(.iconOnly),
+.tertiary.sizeL:not(.iconOnly) { padding: var(--space-6) 0; margin: calc(-1 * var(--space-6)) 0; }
 
-/* Tertiary icon-only: 24×24 hit area + negative margin keeps layout at icon size */
-.tertiary.iconOnly.sizeS { width: 24px; height: 24px; margin: -4px; }
-.tertiary.iconOnly.sizeM { width: 24px; height: 24px; margin: -2px; }
-.tertiary.iconOnly.sizeL { width: 24px; height: 24px; margin: -2px; }
+/* Tertiary icon-only: 32×32 hit area; negative margin keeps the layout footprint
+   at the icon size (S=16, M/L=20), so the +6px zone overflows without shifting. */
+.tertiary.iconOnly.sizeS { width: 32px; height: 32px; margin: -8px; }
+.tertiary.iconOnly.sizeM { width: 32px; height: 32px; margin: -6px; }
+.tertiary.iconOnly.sizeL { width: 32px; height: 32px; margin: -6px; }
 
 /* ── Tertiary hover-fill (experimental) — soft background extending 6px per side ──
    z-index:-1 keeps it behind text/icons; z-index:0 makes the button its own
@@ -191,13 +194,12 @@
   pointer-events: auto;  /* the full fill zone (6px beyond) triggers hover */
   z-index: -1;
 }
-/* Label: 6px beyond text horizontally; vertical inset = (size padding − 6px) so the
-   fill hugs the 20px text line (→ 32px tall) at every size. */
-.tertiary.sizeS:not(.iconOnly)::before { inset: 0   -6px; }
-.tertiary.sizeM:not(.iconOnly)::before { inset: 4px -6px; }
-.tertiary.sizeL:not(.iconOnly)::before { inset: 8px -6px; }
-/* Icon-only: 6px beyond the 24×24 hit area on every side. */
-.tertiary.iconOnly::before { inset: -6px; }
+/* Label: fill = the 32px hit-area box, extended 6px beyond the text horizontally. */
+.tertiary.sizeS:not(.iconOnly)::before,
+.tertiary.sizeM:not(.iconOnly)::before,
+.tertiary.sizeL:not(.iconOnly)::before { inset: 0 -6px; }
+/* Icon-only: the fill fills the 32×32 hit-area box. */
+.tertiary.iconOnly::before { inset: 0; }
 
 /* Fill shows on hover only — no persistent pressed/focus state. */
 .tertiary:hover:not(:disabled):not([data-loading])::before { background: var(--color-bg-hover-fill); }
@@ -222,10 +224,11 @@
 .link:active:not(:disabled):not([data-loading]),
 .link[data-state="active"] { color: var(--green-700); }
 
-/* Link: content-sized visually; vertical padding + negative margin = hit area */
-.link.sizeS { padding: var(--space-6) 0;  margin: calc(-1 * var(--space-6))  0; }
-.link.sizeM { padding: var(--space-10) 0; margin: calc(-1 * var(--space-10)) 0; }
-.link.sizeL { padding: var(--space-14) 0; margin: calc(-1 * var(--space-14)) 0; }
+/* Link: 32px hit area at every size (matches tertiary). Vertical padding + negative
+   margin keep the layout footprint at the 20px text line — no oversized box. */
+.link.sizeS,
+.link.sizeM,
+.link.sizeL { padding: var(--space-6) 0; margin: calc(-1 * var(--space-6)) 0; }
 
 /* ── States ──────────────────────────────────────────────────────────────── */
 
