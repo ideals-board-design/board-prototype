@@ -16,6 +16,7 @@ import { Checkbox } from '../Checkbox/Checkbox'
 import { HintRow }  from '../shared/HintRow'
 import { Search }   from '../Search/Search'
 import { Tooltip }  from '../Tooltip/Tooltip'
+import { Button }   from '../Button/Button'
 import { arrows }   from '../../icons/arrows'
 import { actions }  from '../../icons/actions'
 import styles from './Dropdown.module.css'
@@ -526,33 +527,39 @@ export function Dropdown({
         {clearable && !disabled && !isNoBorder && (
           showClearTooltip ? (
             <Tooltip label="Clear" position="top">
-              <button
-                type="button"
-                className={styles.clearBtn}
+              <Button
+                variant="tertiary"
+                intent="neutral"
+                size={size}
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
                 onClick={clearValue}
                 aria-label="Clear selection"
                 tabIndex={-1}
-              >
-                <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-              </button>
+              />
             </Tooltip>
           ) : (
-            <button
-              type="button"
-              className={`${styles.clearBtn} ${styles.clearBtnHidden}`}
+            <Button
+              variant="tertiary"
+              intent="neutral"
+              size={size}
+              iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
+              className={styles.clearBtnHidden}
               tabIndex={-1}
               aria-hidden="true"
-            >
-              <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-            </button>
+            />
           )
         )}
 
-        {/* Chevron */}
-        <span
-          className={styles.chevron}
+        {/* Chevron — icon button for a consistent hit area + hover fill. No own
+            handler: clicks bubble to the trigger's toggle. Decorative for a11y
+            (the combobox div is the real control). */}
+        <Button
+          variant="tertiary"
+          intent="neutral"
+          size={size}
+          iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }} />}
+          tabIndex={-1}
           aria-hidden="true"
-          dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
         />
       </div>
 

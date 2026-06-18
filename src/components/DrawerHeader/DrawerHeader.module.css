@@ -41,4 +41,22 @@
   gap: var(--space-8);
 }
 
-/* Close and type buttons — DS Button variant="tertiary" intent="neutral" handles all states */
+/* Type — plain icon + text meta (not a button) */
+.type {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+}
+.typeIcon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+.typeIcon svg { width: 100%; height: 100%; }
+
+/* Close button — DS Button variant="tertiary" intent="neutral" handles all states */

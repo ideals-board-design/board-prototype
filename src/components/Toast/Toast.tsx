@@ -85,7 +85,6 @@ export function Toast({
             }
             onClick={onDismiss}
             aria-label="Dismiss"
-            style={{ width: 20, height: 20, margin: 0 }}
           />
         </Tooltip>
       )}

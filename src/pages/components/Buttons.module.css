@@ -41,6 +41,9 @@
   justify-items: start;
 }
 
+/* Icon-only demo: tighter 12px gap between the icon buttons */
+.iconTable { column-gap: var(--space-12); }
+
 /* Column header (L / M / S) */
 .colHeader {
   font-size: var(--text-xs);

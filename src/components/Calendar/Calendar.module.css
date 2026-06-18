@@ -63,7 +63,7 @@
 
 .navGroup {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-12);  /* 12px between the prev / next icon buttons */
 }
 
 /* ── Day labels ────────────────────────────── */

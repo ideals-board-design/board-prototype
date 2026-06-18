@@ -139,7 +139,7 @@ export default function ButtonsPage() {
 
       {/* ── Icon only ──────────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Icon only</h2>
-      <div className={styles.table}>
+      <div className={`${styles.table} ${styles.iconTable}`}>
         <span />
         <span className={styles.colHeader}>L</span>
         <span className={styles.colHeader}>M</span>

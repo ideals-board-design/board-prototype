@@ -13,6 +13,7 @@ import {
 import { createPortal } from 'react-dom'
 import { HintRow }    from '../shared/HintRow'
 import { Tooltip }    from '../Tooltip/Tooltip'
+import { Button }     from '../Button/Button'
 import { Calendar }   from '../Calendar/Calendar'
 import { dateTime }   from '../../icons/dateTime'
 import { actions }    from '../../icons/actions'
@@ -340,50 +341,58 @@ export function DatePicker({
           isNoBorder ? (
             hasValue ? (
               <Tooltip label="Clear" position="top">
-                <button
-                  type="button"
-                  className={styles.clearBtn}
+                <Button
+                  variant="tertiary"
+                  intent="neutral"
+                  size={size}
+                  className={styles.clearReveal}
+                  iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
                   onClick={clearValue}
                   aria-label="Clear date"
                   tabIndex={-1}
-                >
-                  <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-                </button>
+                />
               </Tooltip>
             ) : null
           ) : (
             hasValue ? (
               <Tooltip label="Clear" position="top">
-                <button
-                  type="button"
-                  className={styles.clearBtn}
+                <Button
+                  variant="tertiary"
+                  intent="neutral"
+                  size={size}
+                  className={styles.clearReveal}
+                  iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
                   onClick={clearValue}
                   aria-label="Clear date"
                   tabIndex={-1}
-                >
-                  <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-                </button>
+                />
               </Tooltip>
             ) : (
-              <button
-                type="button"
-                className={`${styles.clearBtn} ${styles.clearBtnHidden}`}
+              <Button
+                variant="tertiary"
+                intent="neutral"
+                size={size}
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
+                className={styles.clearBtnHidden}
                 tabIndex={-1}
                 aria-hidden="true"
-              >
-                <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-              </button>
+              />
             )
           )
         )}
 
-        {/* Calendar icon — outline: opens popover on click */}
+        {/* Calendar — icon button (consistent hit area + hover fill); toggles the
+            popover. stopPropagation so it doesn't double with the trigger. Decorative
+            for a11y (the combobox div is the real control). */}
         {!isNoBorder && (
-          <span
-            className={styles.calendarIcon}
-            aria-hidden="true"
-            dangerouslySetInnerHTML={{ __html: calenderSvg }}
+          <Button
+            variant="tertiary"
+            intent="neutral"
+            size={size}
+            iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: calenderSvg }} />}
             onClick={e => { e.stopPropagation(); if (!disabled) toggle() }}
+            tabIndex={-1}
+            aria-hidden="true"
           />
         )}
       </div>

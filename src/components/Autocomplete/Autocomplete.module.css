@@ -42,8 +42,8 @@
 
 /* Sizes — padding drives height (no explicit height) */
 .sizeS .inputWrapper { padding: var(--space-6)  var(--space-12); gap: var(--space-4); }
-.sizeM .inputWrapper { padding: var(--space-10) var(--space-16); gap: var(--space-8); }
-.sizeL .inputWrapper { padding: var(--space-14) var(--space-16); gap: var(--space-8); }
+.sizeM .inputWrapper { padding: var(--space-10) var(--space-16); gap: var(--space-12); }
+.sizeL .inputWrapper { padding: var(--space-14) var(--space-16); gap: var(--space-12); }
 
 /* ── Outline variant ─────────────────────────────── */
 
@@ -105,6 +105,15 @@
 .noBorder.isOpen:not(.isDisabled) .inputWrapper::before {
   background: var(--color-bg-hover-fill);
 }
+
+/* No-border clear button: revealed only on field hover / focus (like the form's
+   row actions). Footprint is still reserved (opacity, not display) so nothing shifts. */
+.noBorder .clearReveal {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.noBorder .inputWrapper:hover .clearReveal,
+.noBorder .inputWrapper:focus-within .clearReveal { opacity: 1; }
 /* The input owns the full 32px zone (6px padding, cancelled by negative margin),
    so hovering/clicking anywhere in it focuses the field. Hand cursor by default;
    text caret only while editing (focused). */
@@ -119,12 +128,12 @@
 .noBorder .input:focus,
 .noBorder .input:not(:placeholder-shown) { cursor: text; }
 
-/* Resting: input shrinks to its value text width,
-   clear button appears right after text at gap distance */
+/* Input fills the field so the clear button sits at the far right edge
+   (value on the left, button on the right — matches the form). */
 .noBorder:not(.isOpen) .input {
-  flex: 0 1 auto;
-  field-sizing: content;
-  min-width: 3ch;
+  flex: 1 1 auto;
+  field-sizing: normal;
+  min-width: 0;
 }
 
 /* Editing / open: input expands to fill available space */

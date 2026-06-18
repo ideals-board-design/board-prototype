@@ -43,8 +43,8 @@
 
 /* Sizes — padding drives height */
 .sizeS .field { padding: var(--space-6)  var(--space-12); gap: var(--space-4); }
-.sizeM .field { padding: var(--space-10) var(--space-16); gap: var(--space-8); }
-.sizeL .field { padding: var(--space-14) var(--space-16); gap: var(--space-8); }
+.sizeM .field { padding: var(--space-10) var(--space-16); gap: var(--space-12); }
+.sizeL .field { padding: var(--space-14) var(--space-16); gap: var(--space-12); }
 
 /* Hover */
 .wrapper:not(.isDisabled) .field:hover {
@@ -178,6 +178,13 @@
 .sizeL .filterIcon { width: 20px; height: 20px; }
 
 .filterIcon svg { width: 100%; height: 100%; }
+
+/* Wrapper hugs the DS Button footprint so the active dot anchors to its corner */
+.filterWrap {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
 
 /* Indicator dot — 8×8px absolute, top-right corner */
 .filterDot {

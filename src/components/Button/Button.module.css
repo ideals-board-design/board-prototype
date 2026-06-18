@@ -177,7 +177,7 @@
 
 /* Tertiary icon-only: 32×32 hit area; negative margin keeps the layout footprint
    at the icon size (S=16, M/L=20), so the +6px zone overflows without shifting. */
-.tertiary.iconOnly.sizeS { width: 32px; height: 32px; margin: -8px; }
+.tertiary.iconOnly.sizeS { width: 24px; height: 24px; margin: -4px; }
 .tertiary.iconOnly.sizeM { width: 32px; height: 32px; margin: -6px; }
 .tertiary.iconOnly.sizeL { width: 32px; height: 32px; margin: -6px; }
 

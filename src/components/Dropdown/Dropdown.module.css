@@ -30,7 +30,7 @@
 .trigger {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-12);  /* 12px between value text and the clear / chevron icon buttons */
   border-radius: var(--radius-sm);
   background: var(--stone-0);
   box-shadow: inset 0 0 0 1px var(--stone-500);
@@ -449,7 +449,7 @@
   background: transparent;
   box-shadow: none;
   padding: 0;
-  gap: var(--space-4);
+  gap: var(--space-12);  /* 12px between value text and the chevron icon button */
   cursor: pointer; /* hand across the whole 32px hover zone */
 }
 

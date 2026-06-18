@@ -221,8 +221,8 @@ export default function AutocompletePage() {
       {/* ── No border variant ───────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>No border</h2>
       <p className={styles.description}>
-        No border or background. In resting state the clear button appears inline
-        right after the value text (8px gap). On focus the input expands for typing.
+        No border or background. The input fills the field, so the clear button sits
+        at the far right edge (value left, button right). On focus the input is ready for typing.
       </p>
       <div className={styles.additionalGrid}>
 
@@ -230,7 +230,6 @@ export default function AutocompletePage() {
           <span className={styles.rowLabel}>With value + clear</span>
           <Autocomplete
             variant="no-border"
-            label="Label"
             options={FRUITS}
             value={vals.nbValue}
             onChange={set('nbValue')}
@@ -243,7 +242,6 @@ export default function AutocompletePage() {
           <span className={styles.rowLabel}>Empty (placeholder)</span>
           <Autocomplete
             variant="no-border"
-            label="Label"
             options={FRUITS}
             value={vals.nbEmpty}
             onChange={set('nbEmpty')}
@@ -256,7 +254,6 @@ export default function AutocompletePage() {
           <span className={styles.rowLabel}>Prefix + clear</span>
           <Autocomplete
             variant="no-border"
-            label="Label"
             options={FRUITS}
             value={vals.nbPrefix}
             onChange={set('nbPrefix')}
@@ -270,7 +267,6 @@ export default function AutocompletePage() {
           <span className={styles.rowLabel}>Disabled</span>
           <Autocomplete
             variant="no-border"
-            label="Label"
             options={FRUITS}
             value={vals.nbDisabled}
             placeholder="Select…"

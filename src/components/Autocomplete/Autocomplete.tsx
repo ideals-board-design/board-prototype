@@ -13,6 +13,7 @@ import {
 import { createPortal } from 'react-dom'
 import { HintRow }  from '../shared/HintRow'
 import { Tooltip }  from '../Tooltip/Tooltip'
+import { Button }   from '../Button/Button'
 import { Avatar }   from '../Avatar/Avatar'
 import { Checkbox } from '../Checkbox/Checkbox'
 import { actions }  from '../../icons/actions'
@@ -382,25 +383,27 @@ export function Autocomplete({
         {clearable && !disabled && (
           showClearTooltip ? (
             <Tooltip label="Clear" position="top">
-              <button
-                type="button"
-                className={styles.clearBtn}
+              <Button
+                variant="tertiary"
+                intent="neutral"
+                size={size}
+                className={styles.clearReveal}
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
                 onMouseDown={clearValue}
                 aria-label="Clear"
                 tabIndex={-1}
-              >
-                <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-              </button>
+              />
             </Tooltip>
           ) : (
-            <button
-              type="button"
-              className={`${styles.clearBtn} ${styles.clearBtnHidden}`}
+            <Button
+              variant="tertiary"
+              intent="neutral"
+              size={size}
+              iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
+              className={styles.clearBtnHidden}
               tabIndex={-1}
               aria-hidden="true"
-            >
-              <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-            </button>
+            />
           )
         )}
 
