@@ -35,7 +35,7 @@ function ToolbarBtn({ svg, label }: { svg: string; label: string }) {
       <Button
         variant="tertiary"
         intent="neutral"
-        size="s"
+        size="m"
         iconOnly={icon(svg)}
         aria-label={label}
         onMouseDown={e => e.preventDefault()}

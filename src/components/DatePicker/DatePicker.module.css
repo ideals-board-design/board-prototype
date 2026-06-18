@@ -96,7 +96,7 @@
   background: transparent;
   box-shadow: none;
   padding: 0;
-  gap: var(--space-12);  /* 12px between value text and the clear icon button */
+  gap: var(--space-8);  /* 8px to the single clear button (no adjacent icon-buttons here) */
   cursor: pointer; /* hand across the whole 32px hover zone */
 }
 

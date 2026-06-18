@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import styles from './Avatar.module.css'
 import { users } from '../../icons/users'
 
@@ -52,6 +53,10 @@ export function Avatar({
 
   const displayInitials = size === 's' ? initials.slice(0, 1) : initials
 
+  // Picture variant falls back to initials if the image is missing or fails to load.
+  const [imgFailed, setImgFailed] = useState(false)
+  const showImg = variant === 'picture' && !!src && !imgFailed
+
   return (
     <div
       className={cls}
@@ -59,10 +64,10 @@ export function Avatar({
       aria-label={alt || undefined}
       style={tint ? { background: tint, color: 'var(--stone-0)' } : undefined}
     >
-      {variant === 'picture' && src && (
-        <img className={styles.img} src={src} alt={alt} />
+      {showImg && (
+        <img className={styles.img} src={src} alt={alt} onError={() => setImgFailed(true)} />
       )}
-      {(variant === 'letters' || (variant === 'picture' && !src)) && (
+      {(variant === 'letters' || (variant === 'picture' && !showImg)) && (
         <span className={styles.initials}>{displayInitials}</span>
       )}
       {variant === 'icon' && type === 'user' && (

@@ -109,47 +109,27 @@
 .noBorder .fieldWrapper:focus-within .textarea { padding: var(--space-10) var(--space-16); }
 
 /* ── Toolbar rows ────────────────────────────────── */
-/* DS Button tertiary iconOnly has margin: -4px (natural hit-area expansion).
-   Vertical margin reset to 0 so 12px padding gives correct height: 12 + 20 + 12 = 44px.
-   Horizontal -4px margin preserved → compensate padding-x and gaps:
-     padding-x: 20px  →  button visual start = 20 − 4 = 16px from frame edge ✓
-     within-group gap: 16px  →  visual gap = 16 − 4 − 4 = 8px ✓
-     between-groups gap: 32px  →  visual gap = 32 − 4 − 4 = 24px ✓ */
+/* Toolbar uses standard DS size-s icon-only buttons (24×24 hit area + hover fill,
+   16px glyph, margin -4 → 16px footprint). No size/margin overrides — the flex gap
+   is the footprint gap, so the group gap sets the visible spacing directly. */
 .topBar,
 .bottomBar {
   display: flex;
   align-items: center;
-  padding: var(--space-12) var(--space-20);
+  padding: var(--space-12) var(--space-16);
   gap: var(--space-32);
-}
-
-/* Toolbar buttons: 20×20px; vertical margin reset (height = 12+20+12=44px);
-   horizontal -4px margin preserved for wider hit area */
-.topBar button,
-.bottomBar button {
-  width: 20px !important;
-  height: 20px !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* Icon inside toolbar buttons: fill the full 20×20 button (DS icon viewBox="0 0 20 20") */
-.topBar button [class*='icon'],
-.bottomBar button [class*='icon'] {
-  width: 20px;
-  height: 20px;
 }
 
 .bottomBar {
   justify-content: space-between;
 }
 
-/* Icon groups within topBar / bottomLeft */
+/* Icon groups within topBar / bottomLeft — 12px between adjacent icon buttons */
 .toolbarGroup,
 .bottomLeft {
   display: flex;
   align-items: center;
-  gap: var(--space-16);
+  gap: var(--space-12);
 }
 
 /* ── Textarea element ───────────────────────────── */

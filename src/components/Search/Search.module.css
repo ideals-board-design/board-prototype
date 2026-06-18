@@ -83,6 +83,11 @@
 .sizeM .searchIcon,
 .sizeL .searchIcon { width: 20px; height: 20px; }
 
+/* Leading search icon is decorative → 8px to the input (M/L field gap is 12px, so
+   pull it 4px closer). The trailing icon buttons keep the full 12px between them. */
+.sizeM .searchIcon,
+.sizeL .searchIcon { margin-right: calc(-1 * var(--space-4)); }
+
 .searchIcon svg { width: 100%; height: 100%; }
 
 /* ── Input ───────────────────────────────────────── */

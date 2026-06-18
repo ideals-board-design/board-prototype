@@ -133,6 +133,11 @@
 .iconLeft svg,
 .chevron svg { width: 100%; height: 100%; }
 
+/* Leading icon is decorative → 8px to the value. Outline trigger gap is 12px, so pull
+   it 4px closer; no-border gap is already 8px, so no pull there. */
+.iconLeft { margin-right: calc(-1 * var(--space-4)); }
+.noBorder .iconLeft { margin-right: 0; }
+
 /* ── Display-only checkbox (inside droplist items) ── */
 
 /* 20×20 wrapper that matches DS checkbox click-area spec.
@@ -449,7 +454,7 @@
   background: transparent;
   box-shadow: none;
   padding: 0;
-  gap: var(--space-12);  /* 12px between value text and the chevron icon button */
+  gap: var(--space-8);  /* 8px between value and the decorative chevron icon (no buttons here) */
   cursor: pointer; /* hand across the whole 32px hover zone */
 }
 

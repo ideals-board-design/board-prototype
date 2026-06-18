@@ -157,13 +157,15 @@ function getDescendantValues(opts: DropdownTreeOption[], nodeValue: string): str
 function ItemAvatar({ avatar }: { avatar: DropdownItemAvatar }) {
   const { src, initials = '?', type = 'user' } = avatar
   const letter = initials.slice(0, 1)
+  const [imgFailed, setImgFailed] = useState(false)
   const shapeCls = type === 'user' ? styles.itemAvatarUser : styles.itemAvatarSquare
   const colorCls = type === 'group' ? styles.itemAvatarGroup : type === 'org' ? styles.itemAvatarOrg : ''
   const cls = [styles.itemAvatar, shapeCls, colorCls].filter(Boolean).join(' ')
+  // Fall back to initials if the image is missing or fails to load (broken/expired URL).
   return (
     <span className={cls} aria-hidden="true">
-      {src
-        ? <img className={styles.itemAvatarImg} src={src} alt="" />
+      {src && !imgFailed
+        ? <img className={styles.itemAvatarImg} src={src} alt="" onError={() => setImgFailed(true)} />
         : <span className={styles.itemAvatarInitials}>{letter}</span>
       }
     </span>
@@ -550,17 +552,25 @@ export function Dropdown({
           )
         )}
 
-        {/* Chevron — icon button for a consistent hit area + hover fill. No own
-            handler: clicks bubble to the trigger's toggle. Decorative for a11y
-            (the combobox div is the real control). */}
-        <Button
-          variant="tertiary"
-          intent="neutral"
-          size={size}
-          iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }} />}
-          tabIndex={-1}
-          aria-hidden="true"
-        />
+        {/* Chevron — outline: icon button (consistent hit area + hover fill), clicks
+            bubble to the trigger's toggle. No-border: a plain decorative icon (the
+            inline field stays minimal). Decorative for a11y either way. */}
+        {isNoBorder ? (
+          <span
+            className={styles.chevron}
+            aria-hidden="true"
+            dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
+          />
+        ) : (
+          <Button
+            variant="tertiary"
+            intent="neutral"
+            size={size}
+            iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }} />}
+            tabIndex={-1}
+            aria-hidden="true"
+          />
+        )}
       </div>
 
       {/* Hint / error row */}
