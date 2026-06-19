@@ -145,7 +145,7 @@
   box-sizing: border-box;
 }
 
-.menuItem:hover  { background: var(--color-bg-hover); }
-.menuItem:active { background: var(--color-border); }
+.menuItem:hover  { background: var(--color-bg-hover-fill); }         /* blue-800 · 10% */
+.menuItem:active { background: var(--color-bg-hover-fill-strong); }  /* blue-800 · 20% */
 
 .menuItemDanger { color: var(--color-text-error); }

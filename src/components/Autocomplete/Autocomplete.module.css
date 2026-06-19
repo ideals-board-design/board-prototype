@@ -280,14 +280,14 @@
 }
 .itemIcon :global(svg) { width: 100%; height: 100%; }
 
-.item:hover  { background: var(--color-bg-hover); }
-.item:active { background: var(--color-border); }
+.item:hover  { background: var(--color-bg-hover-fill); }         /* blue-800 · 10% */
+.item:active { background: var(--color-bg-hover-fill-strong); }  /* blue-800 · 20% */
 
 /* Selected resting state */
 .itemSelected { background: var(--color-bg-selected); }
 
-/* Keyboard-active highlight (↑ / ↓ navigation) */
-.itemActive { background: var(--color-bg-hover); }
+/* Keyboard-active highlight (↑ / ↓ navigation) — matches hover */
+.itemActive { background: var(--color-bg-hover-fill); }
 
 /* ── "No options" state — Figma: same box, opacity 0.4 ── */
 

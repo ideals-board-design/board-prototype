@@ -33,7 +33,7 @@
 
 .trigger:hover .triggerInner,
 .triggerOpen .triggerInner {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
 }
 
 .trigger:focus-visible .triggerInner {
@@ -104,16 +104,22 @@
   text-align: left;
 }
 
-/* Interactive item resets */
+/* Interactive item resets — styled to match the DS Dropdown item
+   (hover 10% / pressed 20% Transparent fill, selected green, danger red label). */
 .item {
   background: none;
   border: none;
   cursor: pointer;
   outline: none;
+  transition: background var(--transition-fast);
 }
 
 .item:hover {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
+}
+
+.item:active {
+  background: var(--color-bg-hover-fill-strong);
 }
 
 .item:focus-visible {

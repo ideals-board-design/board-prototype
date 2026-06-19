@@ -93,4 +93,21 @@
   align-items: center;
 }
 
+/* Dismiss (×) keeps its neutral grey glyph, but its hover/press hit-zone fill
+   inherits the banner's intent colour. The neutral button reads these two vars,
+   so scoping them per state recolours only the fill. Info already = blue-800
+   (the neutral default), so only success / warning / error need an override. */
+.success .dismiss {
+  --color-bg-hover-fill:        var(--transparent-green-700-10);
+  --color-bg-hover-fill-strong: var(--transparent-green-700-20);
+}
+.warning .dismiss {
+  --color-bg-hover-fill:        var(--transparent-orange-700-10);
+  --color-bg-hover-fill-strong: var(--transparent-orange-700-20);
+}
+.error .dismiss {
+  --color-bg-hover-fill:        var(--transparent-red-700-10);
+  --color-bg-hover-fill-strong: var(--transparent-red-700-20);
+}
+
 /* Dismiss button is a DS Button (tertiary/neutral/m) — no custom styles needed */

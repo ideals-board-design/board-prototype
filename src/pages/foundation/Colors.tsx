@@ -69,34 +69,65 @@ const badges = [
   { name: 'badge-purple', value: '#DBE0F5' },
   { name: 'badge-olive',  value: '#E1E9C8' },
 ]
+const transparent = [
+  { name: 'stone-1000-60', value: '#1F212999' },
+  { name: 'blue-800-10',   value: '#3E52C21A' },
+  { name: 'blue-800-20',   value: '#3E52C233' },
+  { name: 'green-700-10',  value: '#12695C1A' },
+  { name: 'green-700-20',  value: '#12695C33' },
+  { name: 'orange-700-10', value: '#9E68001A' },
+  { name: 'orange-700-20', value: '#9E680033' },
+  { name: 'red-700-10',    value: '#AF26151A' },
+  { name: 'red-700-20',    value: '#AF261533' },
+]
+
+/* Checkerboard backing (over white) so semi-transparent swatches read as transparent.
+   The colour is layered on top as the first background, the checker sits behind it. */
+const CHECKER =
+  'linear-gradient(45deg,#DEE0EB 25%,transparent 25%) 0 0/12px 12px,' +
+  'linear-gradient(-45deg,#DEE0EB 25%,transparent 25%) 0 6px/12px 12px,' +
+  'linear-gradient(45deg,transparent 75%,#DEE0EB 75%) 6px -6px/12px 12px,' +
+  'linear-gradient(-45deg,transparent 75%,#DEE0EB 75%) -6px 0/12px 12px,' +
+  '#FFFFFF'
+
 const semantic = [
   { name: 'Divider',        token: '--color-border',         value: '#DEE0EB' },
   { name: 'Primary text',   token: '--color-text-primary',   value: '#1F2129' },
   { name: 'Secondary text', token: '--color-text-secondary', value: '#5F616A' },
   { name: 'Inverse text',   token: '--color-text-inverse',   value: '#FFFFFF' },
-  { name: 'Hover bg',       token: '--color-bg-hover',       value: '#ECEEF9' },
-  { name: 'Selected bg',    token: '--color-bg-selected',    value: '#EBF8EF' },
+  { name: 'Hover background',   token: '--color-bg-hover-fill',        value: '#3E52C21A' },
+  { name: 'Pressed background', token: '--color-bg-hover-fill-strong', value: '#3E52C233' },
+  { name: 'Selected bg',        token: '--color-bg-selected',          value: '#EBF8EF' },
 ]
 
-function Swatch({ name, value }: { name: string; value: string }) {
+/* Show 8-digit hex as "#RRGGBB · NN%" (the base colour + its opacity). */
+function fmtColor(v: string): string {
+  const m = /^#([0-9A-Fa-f]{6})([0-9A-Fa-f]{2})$/.exec(v)
+  if (!m) return v
+  return `#${m[1].toUpperCase()} · ${Math.round((parseInt(m[2], 16) / 255) * 100)}%`
+}
+
+function Swatch({ name, value, alpha }: { name: string; value: string; alpha?: boolean }) {
   return (
     <div className={styles.swatch}>
       <div
         className={styles.swatchColor}
-        style={{ background: value, border: value === '#FFFFFF' ? '1px solid #DEE0EB' : 'none' }}
+        style={alpha
+          ? { background: `linear-gradient(${value},${value}),${CHECKER}` }
+          : { background: value, border: value === '#FFFFFF' ? '1px solid #DEE0EB' : 'none' }}
       />
       <div className={styles.swatchLabel}>{name}</div>
-      <div className={styles.swatchValue}>{value}</div>
+      <div className={styles.swatchValue}>{fmtColor(value)}</div>
     </div>
   )
 }
 
-function Row({ label, colors }: { label: string; colors: { name: string; value: string }[] }) {
+function Row({ label, colors, alpha }: { label: string; colors: { name: string; value: string }[]; alpha?: boolean }) {
   return (
     <div className={styles.row}>
       <div className={styles.rowLabel}>{label}</div>
       <div className={styles.swatches}>
-        {colors.map(c => <Swatch key={c.name} {...c} />)}
+        {colors.map(c => <Swatch key={c.name} {...c} alpha={alpha} />)}
       </div>
     </div>
   )
@@ -115,7 +146,7 @@ function SemanticRow() {
             />
             <span className={styles.semanticName}>{item.name}</span>
             <code className={styles.semanticToken}>{item.token}</code>
-            <span className={styles.semanticValue}>{item.value}</span>
+            <span className={styles.semanticValue}>{fmtColor(item.value)}</span>
           </div>
         ))}
       </div>
@@ -137,6 +168,7 @@ export default function ColorsPage() {
       <Row label="Info / Blue" colors={blue} />
       <Row label="Support / Tags" colors={tags} />
       <Row label="Support / Badges" colors={badges} />
+      <Row label="Transparent" colors={transparent} alpha />
     </div>
   )
 }

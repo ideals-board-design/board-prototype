@@ -72,7 +72,7 @@
 .seg:focus,
 .segMer:focus {
   outline: none;
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
   cursor: text;
 }
 .segMer:focus { cursor: default; }
@@ -113,7 +113,8 @@
   cursor: pointer;
   white-space: nowrap;
 }
-.option:hover { background: var(--color-bg-hover); }
+.option:hover  { background: var(--color-bg-hover-fill); }         /* blue-800 · 10% */
+.option:active { background: var(--color-bg-hover-fill-strong); }  /* blue-800 · 20% */
 .optionSelected {
   background: var(--color-bg-selected);
   font-weight: var(--font-weight-medium);

@@ -18,8 +18,7 @@ const ACTION_INTENT: Record<ToastState, Intent> = {
 
 function ActionBtn({ state }: { state: ToastState }) {
   return (
-    <Button variant="tertiary" intent={ACTION_INTENT[state]} size="m"
-      style={{ padding: 0, margin: 0 }}>
+    <Button variant="tertiary" intent={ACTION_INTENT[state]} size="m">
       Button
     </Button>
   )

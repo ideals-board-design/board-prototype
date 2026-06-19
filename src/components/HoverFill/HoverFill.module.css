@@ -1,9 +1,8 @@
 /* HoverFill — experimental hover/edit background for borderless elements.
-   Off-palette brand value (#435098) is not in the token system, so it is
-   scoped here as module-local custom properties. */
+   Inherits the shared hover / pressed fill tokens (Transparent blue-800 10% / 20%). */
 .wrapper {
-  --hoverfill-bg-hover: rgba(67, 80, 152, 0.1);
-  --hoverfill-bg-active: rgba(67, 80, 152, 0.2);
+  --hoverfill-bg-hover: var(--color-bg-hover-fill);
+  --hoverfill-bg-active: var(--color-bg-hover-fill-strong);
 
   display: inline-flex;
   position: relative;

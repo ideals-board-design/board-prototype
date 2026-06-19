@@ -77,6 +77,7 @@ export function Toast({
             variant="tertiary"
             intent="neutral"
             size="m"
+            className={styles.dismiss}
             iconOnly={
               <span
                 style={{ display: 'contents' }}

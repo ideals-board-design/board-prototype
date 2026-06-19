@@ -113,10 +113,16 @@
   box-shadow: inset 0 0 0 1px var(--stone-500);
 }
 
+/* Hover (10%) / pressed (20%) fill composited over the white surface so the button
+   stays opaque. Default = neutral Utility tokens (Hover/Pressed background); Danger = red. */
 .secondary:hover:not(:disabled):not([data-loading]),
-.secondary[data-state="hover"]  { background: var(--color-bg-hover); }
+.secondary[data-state="hover"] {
+  background: linear-gradient(var(--color-bg-hover-fill), var(--color-bg-hover-fill)), var(--color-bg-surface);
+}
 .secondary:active:not(:disabled):not([data-loading]),
-.secondary[data-state="active"] { background: var(--stone-400); }
+.secondary[data-state="active"] {
+  background: linear-gradient(var(--color-bg-hover-fill-strong), var(--color-bg-hover-fill-strong)), var(--color-bg-surface);
+}
 
 /* Secondary — Danger */
 .secondary.danger {
@@ -124,9 +130,13 @@
   box-shadow: inset 0 0 0 1px var(--red-200);
 }
 .secondary.danger:hover:not(:disabled):not([data-loading]),
-.secondary.danger[data-state="hover"]  { background: var(--red-50); }
+.secondary.danger[data-state="hover"] {
+  background: linear-gradient(var(--transparent-red-700-10), var(--transparent-red-700-10)), var(--color-bg-surface);
+}
 .secondary.danger:active:not(:disabled):not([data-loading]),
-.secondary.danger[data-state="active"] { background: var(--red-100); }
+.secondary.danger[data-state="active"] {
+  background: linear-gradient(var(--transparent-red-700-20), var(--transparent-red-700-20)), var(--color-bg-surface);
+}
 
 /* ── Tertiary ────────────────────────────────────────────────────────────── */
 
@@ -201,8 +211,23 @@
 /* Icon-only: the fill fills the 32×32 hit-area box. */
 .tertiary.iconOnly::before { inset: 0; }
 
-/* Fill shows on hover only — no persistent pressed/focus state. */
-.tertiary:hover:not(:disabled):not([data-loading])::before { background: var(--color-bg-hover-fill); }
+/* Hover (10%) + pressed (20%) fill, tinted per intent (Transparent palette).
+   Pressed (:active) shows only while the click is held. */
+/* Default — green */
+.tertiary:hover:not(:disabled):not([data-loading])::before  { background: var(--transparent-green-700-10); }
+.tertiary:active:not(:disabled):not([data-loading])::before { background: var(--transparent-green-700-20); }
+/* Neutral — generic blue-800 fill */
+.tertiary.neutral:hover:not(:disabled):not([data-loading])::before  { background: var(--color-bg-hover-fill); }
+.tertiary.neutral:active:not(:disabled):not([data-loading])::before { background: var(--color-bg-hover-fill-strong); }
+/* Info — blue */
+.tertiary.info:hover:not(:disabled):not([data-loading])::before  { background: var(--transparent-blue-800-10); }
+.tertiary.info:active:not(:disabled):not([data-loading])::before { background: var(--transparent-blue-800-20); }
+/* Warning — orange */
+.tertiary.warning:hover:not(:disabled):not([data-loading])::before  { background: var(--transparent-orange-700-10); }
+.tertiary.warning:active:not(:disabled):not([data-loading])::before { background: var(--transparent-orange-700-20); }
+/* Danger — red */
+.tertiary.danger:hover:not(:disabled):not([data-loading])::before  { background: var(--transparent-red-700-10); }
+.tertiary.danger:active:not(:disabled):not([data-loading])::before { background: var(--transparent-red-700-20); }
 
 /* ── Link ────────────────────────────────────────────────────────────────── */
 

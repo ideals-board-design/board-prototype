@@ -92,6 +92,20 @@
   --badge-olive:  #E1E9C8;
 
   /* ---------------------------------------------------------------------------
+     Transparent — semi-opaque overlays (Figma node 24446-44191)
+     8-digit hex carries the alpha: -10 = 10%, -20 = 20%, -60 = 60%
+     --------------------------------------------------------------------------- */
+  --transparent-stone-1000-60: #1F212999;
+  --transparent-blue-800-10:   #3E52C21A;
+  --transparent-blue-800-20:   #3E52C233;
+  --transparent-green-700-10:  #12695C1A;
+  --transparent-green-700-20:  #12695C33;
+  --transparent-orange-700-10: #9E68001A;
+  --transparent-orange-700-20: #9E680033;
+  --transparent-red-700-10:    #AF26151A;
+  --transparent-red-700-20:    #AF261533;
+
+  /* ---------------------------------------------------------------------------
      Spacing scale
      --------------------------------------------------------------------------- */
   --space-0:  0px;

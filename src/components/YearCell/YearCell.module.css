@@ -40,7 +40,7 @@
 /* ── Hover ────────────────────────────────── */
 
 .typeDefault:hover:not(.isDisabled) {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
 }
 
 .typeSelected:hover:not(.isDisabled) {

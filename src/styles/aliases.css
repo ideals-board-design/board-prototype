@@ -35,10 +35,10 @@
   --color-bg-hover:     var(--stone-300);    /* #ECEEF9 */
   --color-bg-selected:  var(--green-25);     /* #EBF8EF */
   --color-bg-disabled:  var(--stone-200);    /* #F7F7F7 */
-  --color-bg-overlay:   rgba(31, 33, 41, 0.6); /* stone-1000 at 60% */
-  /* Hover-fill overlay (experimental) — off-palette #435098, no Layer 1 token */
-  --color-bg-hover-fill:        rgba(67, 80, 152, 0.1); /* hover */
-  --color-bg-hover-fill-strong: rgba(67, 80, 152, 0.2); /* pressed */
+  --color-bg-overlay:   var(--transparent-stone-1000-60); /* #1F212999 — stone-1000 at 60% */
+  /* Hover / pressed background fill — Transparent palette (Figma node 24446-44191) */
+  --color-bg-hover-fill:        var(--transparent-blue-800-10);  /* hover   · #3E52C21A */
+  --color-bg-hover-fill-strong: var(--transparent-blue-800-20);  /* pressed · #3E52C233 */
 
   /* ---------------------------------------------------------------------------
      Brand / Primary action

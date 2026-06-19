@@ -83,6 +83,7 @@ export function Banner({
                 variant="tertiary"
                 intent="neutral"
                 size="m"
+                className={styles.dismiss}
                 iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: multiplySvg }} />}
                 onClick={onDismiss}
                 aria-label="Dismiss"
