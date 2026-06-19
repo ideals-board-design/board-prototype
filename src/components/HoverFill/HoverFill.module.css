@@ -1,0 +1,62 @@
+/* HoverFill — experimental hover/edit background for borderless elements.
+   Inherits the shared hover / pressed fill tokens (Transparent blue-800 10% / 20%). */
+.wrapper {
+  --hoverfill-bg-hover: var(--color-bg-hover-fill);
+  --hoverfill-bg-active: var(--color-bg-hover-fill-strong);
+
+  display: inline-flex;
+  position: relative;
+  /* 6px hit zone on each side; negative margin cancels layout impact */
+  padding: var(--space-6);
+  margin: calc(-1 * var(--space-6));
+}
+
+.wrapper::before {
+  content: '';
+  position: absolute;
+  inset: 0; /* fills the padded box = element + 6px per side */
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+}
+
+/* Keep the wrapped element painted above the ::before background */
+.wrapper > * {
+  position: relative;
+}
+
+/* ── Cursors ───────────────────────────────────────────────────────────────
+   Hand cursor on hover for every wrapped UI. Fields keep the text-selection
+   cursor for editing — but only while focused. */
+.button:not(.disabled),
+.field:not(.disabled) {
+  cursor: pointer;
+}
+.field:not(.disabled) input {
+  cursor: pointer; /* hover state — signal the field is editable */
+}
+.field:not(.disabled):focus-within,
+.field:not(.disabled):focus-within input {
+  cursor: text; /* focus / edit state */
+}
+.disabled {
+  cursor: default;
+}
+
+/* ── Button: hover → light, pressed → strong ───────────────────────────────── */
+.button:not(.disabled):hover::before {
+  background: var(--hoverfill-bg-hover);
+}
+/* Strong fill shows only while the click is held (:active) — it must not linger
+   after a mouse click. Keyboard focus (:focus-visible) is kept for accessibility. */
+.button:not(.disabled):active::before,
+.button:not(.disabled):has(:focus-visible)::before {
+  background: var(--hoverfill-bg-active);
+}
+
+/* ── Field: hover and focus use the SAME (light) fill ──────────────────────── */
+.field:not(.disabled):hover::before,
+.field:not(.disabled):focus-within::before {
+  background: var(--hoverfill-bg-hover);
+}

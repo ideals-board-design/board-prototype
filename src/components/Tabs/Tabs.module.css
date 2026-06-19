@@ -100,3 +100,8 @@
 .tab.selected .indicator {
   background: var(--color-brand);
 }
+
+/* Hover (non-selected): preview the green indicator line, same as selected */
+.tab:not(.disabled):not(.selected):hover .indicator {
+  background: var(--color-brand);
+}

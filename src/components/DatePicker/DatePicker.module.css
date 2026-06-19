@@ -32,7 +32,7 @@
 .trigger {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-12);  /* 12px between value text and the clear/calendar icon buttons */
   border-radius: var(--radius-sm);
   background: var(--stone-0);
   cursor: pointer;
@@ -96,7 +96,8 @@
   background: transparent;
   box-shadow: none;
   padding: 0;
-  gap: var(--space-4);
+  gap: var(--space-8);  /* 8px to the single clear button (no adjacent icon-buttons here) */
+  cursor: pointer; /* hand across the whole 32px hover zone */
 }
 
 .noBorder.sizeS .trigger,
@@ -108,6 +109,36 @@
 .noBorder.hasError .trigger { box-shadow: none; }
 
 .noBorder.isDisabled .trigger { background: transparent; }
+
+/* No-border hover-fill (experimental): soft background extending 6px per side.
+   z-index:-1 sits behind text/icon; z-index:0 = own stacking context. */
+.noBorder .trigger { position: relative; z-index: 0; }
+.noBorder .trigger::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: auto;  /* the full 32px fill zone triggers hover */
+  z-index: -1;
+}
+/* Fill kept on hover, while editing (focus) and while open. */
+.noBorder:not(.isDisabled) .trigger:hover::before,
+.noBorder:not(.isDisabled) .trigger:focus-within::before,
+.noBorder.isOpen:not(.isDisabled) .trigger::before,
+.noBorder.isEditing:not(.isDisabled) .trigger::before {
+  background: var(--color-bg-hover-fill);
+}
+
+/* No-border clear button: revealed only on field hover / focus. Footprint reserved
+   (opacity, not display) so nothing shifts. */
+.noBorder .clearReveal {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.noBorder .trigger:hover .clearReveal,
+.noBorder .trigger:focus-within .clearReveal { opacity: 1; }
 
 /* Editing state — green border like focus */
 .outline.wrapper.isEditing:not(.isDisabled) .trigger {

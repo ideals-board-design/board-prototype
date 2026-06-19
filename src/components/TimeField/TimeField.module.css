@@ -1,0 +1,121 @@
+/* Segmented time field — hh:mm aa. Hugs its content. */
+.field {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+/* ── Outline variant ──────────────────────────────── */
+.outline {
+  padding: var(--space-10) var(--space-16);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+  background: var(--color-bg-surface);
+}
+.outline:not(.disabled):hover,
+.outline:not(.disabled):focus-within {
+  box-shadow: inset 0 0 0 1px var(--green-500);
+}
+
+/* ── No-border variant: inline + experimental hover fill ── */
+.noBorder {
+  position: relative;
+  z-index: 0;
+  cursor: pointer; /* hand across the whole 32px hover zone */
+}
+.noBorder::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: auto;  /* the full 32px fill zone triggers hover */
+  z-index: -1;
+}
+.noBorder:not(.disabled):hover::before,
+.noBorder:not(.disabled):focus-within::before {
+  background: var(--color-bg-hover-fill);
+}
+
+/* ── Segments ─────────────────────────────────────── */
+.seg,
+.segMer {
+  border: none;
+  background: transparent;
+  padding: 0 1px;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 2px;
+}
+/* Each segment hugs its own content (value or mask) so the time reads tight —
+   "12:00 AM" — yet the wider letter masks ("mm") are never clipped. min-width
+   keeps 2 digits from collapsing so the width stays steady while typing. */
+.seg,
+.segMer {
+  box-sizing: content-box;
+  field-sizing: content;
+}
+.seg { min-width: 2ch; }
+.segMer {
+  min-width: 2ch;
+  margin-left: 0.25em;          /* small space before the meridiem → "00 AM" */
+}
+/* value is stored as AM/PM; the empty mask stays lowercase "aa" */
+
+.seg:focus,
+.segMer:focus {
+  outline: none;
+  background: var(--color-bg-hover-fill);
+  cursor: text;
+}
+.segMer:focus { cursor: default; }
+
+.seg::placeholder,
+.segMer::placeholder { color: var(--color-text-secondary); }
+
+.sep {
+  color: var(--color-text-primary);
+  padding: 0 1px;
+}
+
+.disabled { opacity: 0.4; }
+.disabled .seg,
+.disabled .segMer { cursor: not-allowed; }
+
+/* ── Pick-list (portal) ───────────────────────────── */
+.list {
+  position: fixed;
+  z-index: 8000;
+  min-width: 140px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--space-4);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-100);
+}
+.option {
+  display: flex;
+  align-items: center;
+  min-height: var(--size-m); /* M = 40px */
+  padding: 0 var(--space-16);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.option:hover  { background: var(--color-bg-hover-fill); }         /* blue-800 · 10% */
+.option:active { background: var(--color-bg-hover-fill-strong); }  /* blue-800 · 20% */
+.optionSelected {
+  background: var(--color-bg-selected);
+  font-weight: var(--font-weight-medium);
+}

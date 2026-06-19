@@ -113,10 +113,16 @@
   box-shadow: inset 0 0 0 1px var(--stone-500);
 }
 
+/* Hover (10%) / pressed (20%) fill composited over the white surface so the button
+   stays opaque. Default = neutral Utility tokens (Hover/Pressed background); Danger = red. */
 .secondary:hover:not(:disabled):not([data-loading]),
-.secondary[data-state="hover"]  { background: var(--color-bg-hover); }
+.secondary[data-state="hover"] {
+  background: linear-gradient(var(--color-bg-hover-fill), var(--color-bg-hover-fill)), var(--color-bg-surface);
+}
 .secondary:active:not(:disabled):not([data-loading]),
-.secondary[data-state="active"] { background: var(--stone-400); }
+.secondary[data-state="active"] {
+  background: linear-gradient(var(--color-bg-hover-fill-strong), var(--color-bg-hover-fill-strong)), var(--color-bg-surface);
+}
 
 /* Secondary — Danger */
 .secondary.danger {
@@ -124,9 +130,13 @@
   box-shadow: inset 0 0 0 1px var(--red-200);
 }
 .secondary.danger:hover:not(:disabled):not([data-loading]),
-.secondary.danger[data-state="hover"]  { background: var(--red-50); }
+.secondary.danger[data-state="hover"] {
+  background: linear-gradient(var(--transparent-red-700-10), var(--transparent-red-700-10)), var(--color-bg-surface);
+}
 .secondary.danger:active:not(:disabled):not([data-loading]),
-.secondary.danger[data-state="active"] { background: var(--red-100); }
+.secondary.danger[data-state="active"] {
+  background: linear-gradient(var(--transparent-red-700-20), var(--transparent-red-700-20)), var(--color-bg-surface);
+}
 
 /* ── Tertiary ────────────────────────────────────────────────────────────── */
 
@@ -168,15 +178,56 @@
 .tertiary.warning:active:not(:disabled):not([data-loading]),
 .tertiary.warning[data-state="active"] { color: var(--orange-700); }
 
-/* Tertiary label: content-sized visually; vertical padding + negative margin = hit area */
-.tertiary.sizeS:not(.iconOnly) { padding: var(--space-6) 0;  margin: calc(-1 * var(--space-6))  0; }
-.tertiary.sizeM:not(.iconOnly) { padding: var(--space-10) 0; margin: calc(-1 * var(--space-10)) 0; }
-.tertiary.sizeL:not(.iconOnly) { padding: var(--space-14) 0; margin: calc(-1 * var(--space-14)) 0; }
+/* Tertiary label: 32px hit area at every size (matches icon-only & the +6px demo).
+   Vertical padding + negative margin keep the layout footprint at the 20px text line,
+   so hit area == fill == 32px — no zone where hover triggers but the fill is absent. */
+.tertiary.sizeS:not(.iconOnly),
+.tertiary.sizeM:not(.iconOnly),
+.tertiary.sizeL:not(.iconOnly) { padding: var(--space-6) 0; margin: calc(-1 * var(--space-6)) 0; }
 
-/* Tertiary icon-only: 24×24 hit area + negative margin keeps layout at icon size */
+/* Tertiary icon-only: 32×32 hit area; negative margin keeps the layout footprint
+   at the icon size (S=16, M/L=20), so the +6px zone overflows without shifting. */
 .tertiary.iconOnly.sizeS { width: 24px; height: 24px; margin: -4px; }
-.tertiary.iconOnly.sizeM { width: 24px; height: 24px; margin: -2px; }
-.tertiary.iconOnly.sizeL { width: 24px; height: 24px; margin: -2px; }
+.tertiary.iconOnly.sizeM { width: 32px; height: 32px; margin: -6px; }
+.tertiary.iconOnly.sizeL { width: 32px; height: 32px; margin: -6px; }
+
+/* ── Tertiary hover-fill (experimental) — soft background extending 6px per side ──
+   z-index:-1 keeps it behind text/icons; z-index:0 makes the button its own
+   stacking context so the fill stays in front of the page. */
+.tertiary { position: relative; z-index: 0; }
+.tertiary::before {
+  content: '';
+  position: absolute;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: auto;  /* the full fill zone (6px beyond) triggers hover */
+  z-index: -1;
+}
+/* Label: fill = the 32px hit-area box, extended 6px beyond the text horizontally. */
+.tertiary.sizeS:not(.iconOnly)::before,
+.tertiary.sizeM:not(.iconOnly)::before,
+.tertiary.sizeL:not(.iconOnly)::before { inset: 0 -6px; }
+/* Icon-only: the fill fills the 32×32 hit-area box. */
+.tertiary.iconOnly::before { inset: 0; }
+
+/* Hover (10%) + pressed (20%) fill, tinted per intent (Transparent palette).
+   Pressed (:active) shows only while the click is held. */
+/* Default — green */
+.tertiary:hover:not(:disabled):not([data-loading])::before  { background: var(--transparent-green-700-10); }
+.tertiary:active:not(:disabled):not([data-loading])::before { background: var(--transparent-green-700-20); }
+/* Neutral — generic blue-800 fill */
+.tertiary.neutral:hover:not(:disabled):not([data-loading])::before  { background: var(--color-bg-hover-fill); }
+.tertiary.neutral:active:not(:disabled):not([data-loading])::before { background: var(--color-bg-hover-fill-strong); }
+/* Info — blue */
+.tertiary.info:hover:not(:disabled):not([data-loading])::before  { background: var(--transparent-blue-800-10); }
+.tertiary.info:active:not(:disabled):not([data-loading])::before { background: var(--transparent-blue-800-20); }
+/* Warning — orange */
+.tertiary.warning:hover:not(:disabled):not([data-loading])::before  { background: var(--transparent-orange-700-10); }
+.tertiary.warning:active:not(:disabled):not([data-loading])::before { background: var(--transparent-orange-700-20); }
+/* Danger — red */
+.tertiary.danger:hover:not(:disabled):not([data-loading])::before  { background: var(--transparent-red-700-10); }
+.tertiary.danger:active:not(:disabled):not([data-loading])::before { background: var(--transparent-red-700-20); }
 
 /* ── Link ────────────────────────────────────────────────────────────────── */
 
@@ -198,10 +249,11 @@
 .link:active:not(:disabled):not([data-loading]),
 .link[data-state="active"] { color: var(--green-700); }
 
-/* Link: content-sized visually; vertical padding + negative margin = hit area */
-.link.sizeS { padding: var(--space-6) 0;  margin: calc(-1 * var(--space-6))  0; }
-.link.sizeM { padding: var(--space-10) 0; margin: calc(-1 * var(--space-10)) 0; }
-.link.sizeL { padding: var(--space-14) 0; margin: calc(-1 * var(--space-14)) 0; }
+/* Link: 32px hit area at every size (matches tertiary). Vertical padding + negative
+   margin keep the layout footprint at the 20px text line — no oversized box. */
+.link.sizeS,
+.link.sizeM,
+.link.sizeL { padding: var(--space-6) 0; margin: calc(-1 * var(--space-6)) 0; }
 
 /* ── States ──────────────────────────────────────────────────────────────── */
 

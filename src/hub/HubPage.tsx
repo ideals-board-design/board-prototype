@@ -13,6 +13,12 @@ const FEATURES: { id: string; name: string; designer: string; href: string }[] =
     designer: 'Jaroslav Getman',
     href: '/tasks.html',
   },
+  {
+    id: 'form',
+    name: 'Form with hover color fill',
+    designer: 'Jaroslav Getman',
+    href: '/form.html',
+  },
 ]
 
 export default function HubPage() {

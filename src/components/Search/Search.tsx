@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom'
 import { actions } from '../../icons/actions'
 import { arrows } from '../../icons/arrows'
 import { Tooltip } from '../Tooltip/Tooltip'
+import { Button } from '../Button/Button'
 import styles from './Search.module.css'
 
 /* ── Icons ──────────────────────────────────────────────────────────────── */
@@ -228,43 +229,43 @@ export function Search({
             </span>
 
             <Tooltip label="Previous" position="top">
-              <button
-                type="button"
-                className={styles.navBtn}
+              <Button
+                variant="tertiary"
+                intent="neutral"
+                size={size}
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: angleUpSvg }} />}
                 onClick={e => { e.stopPropagation(); onPrev?.() }}
                 disabled={disabled}
                 aria-label="Previous"
                 tabIndex={-1}
-              >
-                <span className={styles.navIcon} dangerouslySetInnerHTML={{ __html: angleUpSvg }} />
-              </button>
+              />
             </Tooltip>
 
             <Tooltip label="Next" position="top">
-              <button
-                type="button"
-                className={styles.navBtn}
+              <Button
+                variant="tertiary"
+                intent="neutral"
+                size={size}
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: angleDownSvg }} />}
                 onClick={e => { e.stopPropagation(); onNext?.() }}
                 disabled={disabled}
                 aria-label="Next"
                 tabIndex={-1}
-              >
-                <span className={styles.navIcon} dangerouslySetInnerHTML={{ __html: angleDownSvg }} />
-              </button>
+              />
             </Tooltip>
 
             {/* Clear — always visible in counter mode (closes the search bar) */}
             {!disabled && (
               <Tooltip label="Clear search" position="top">
-                <button
-                  type="button"
-                  className={styles.clearBtn}
+                <Button
+                  variant="tertiary"
+                  intent="neutral"
+                  size={size}
+                  iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
                   onMouseDown={handleClear}
                   aria-label="Clear search"
                   tabIndex={-1}
-                >
-                  <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-                </button>
+                />
               </Tooltip>
             )}
           </>
@@ -273,41 +274,34 @@ export function Search({
             {/* Clear button — visible when has value and not disabled */}
             {hasValue && !disabled && (
               <Tooltip label="Clear search" position="top">
-                <button
-                  type="button"
-                  className={styles.clearBtn}
+                <Button
+                  variant="tertiary"
+                  intent="neutral"
+                  size={size}
+                  iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
                   onMouseDown={handleClear}
                   aria-label="Clear search"
                   tabIndex={-1}
-                >
-                  <span
-                    className={styles.clearIcon}
-                    dangerouslySetInnerHTML={{ __html: clearSvg }}
-                  />
-                </button>
+                />
               </Tooltip>
             )}
 
-            {/* Filter button */}
+            {/* Filter button — DS Button with an active-state dot overlaid via wrapper */}
             {filter && (
               <Tooltip label="Filters" position="top">
-                <button
-                  type="button"
-                  className={[
-                    styles.filterBtn,
-                    filterActive ? styles.filterBtnActive : '',
-                  ].filter(Boolean).join(' ')}
-                  onClick={e => { e.stopPropagation(); onFilterClick?.() }}
-                  disabled={disabled}
-                  aria-label="Filters"
-                  tabIndex={-1}
-                >
-                  <span
-                    className={styles.filterIcon}
-                    dangerouslySetInnerHTML={{ __html: filterSvg }}
+                <span className={styles.filterWrap}>
+                  <Button
+                    variant="tertiary"
+                    intent="neutral"
+                    size={size}
+                    iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: filterSvg }} />}
+                    onClick={e => { e.stopPropagation(); onFilterClick?.() }}
+                    disabled={disabled}
+                    aria-label="Filters"
+                    tabIndex={-1}
                   />
                   {filterActive && <span className={styles.filterDot} aria-hidden="true" />}
-                </button>
+                </span>
               </Tooltip>
             )}
           </>

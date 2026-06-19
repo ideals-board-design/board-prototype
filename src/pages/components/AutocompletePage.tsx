@@ -3,6 +3,8 @@ import { Autocomplete, type AutocompleteOption } from '../../components/Autocomp
 import { actions } from '../../icons/actions'
 import styles from './AutocompletePage.module.css'
 import { SourceLink } from '../SourceLink'
+import userPic1 from '../../assets/user-profile-pic-1.png'
+import userPic2 from '../../assets/user-profile-pic-2.png'
 
 /* ── Icons ────────────────────────────────────────────────────────────────── */
 
@@ -14,14 +16,12 @@ const Icon = ({ svg }: { svg: string }) => (
 
 /* ── Sample photo ─────────────────────────────────────────────────────────── */
 
-const USER_PHOTO = 'https://www.figma.com/api/mcp/asset/5a06f04f-25e6-46f2-94b2-cc9a0071069d'
-
 /* ── Sample data ──────────────────────────────────────────────────────────── */
 
 const PEOPLE: AutocompleteOption[] = [
-  { value: 'alice',  label: 'Alice Johnson',  avatar: { src: USER_PHOTO, type: 'user' } },
+  { value: 'alice',  label: 'Alice Johnson',  avatar: { src: userPic1, initials: 'AJ', type: 'user' } },
   { value: 'bob',    label: 'Bob Smith',      avatar: { initials: 'BS', type: 'user' } },
-  { value: 'carol',  label: 'Carol Williams', avatar: { src: USER_PHOTO, type: 'user' }, sublistLabel: '(Admin)' },
+  { value: 'carol',  label: 'Carol Williams', avatar: { src: userPic2, initials: 'CW', type: 'user' }, sublistLabel: '(Admin)' },
   { value: 'david',  label: 'David Lee',      avatar: { initials: 'DL', type: 'user' } },
   { value: 'emma',   label: 'Emma Davis',     avatar: { initials: 'ED', type: 'user' } },
 ]
@@ -77,8 +77,8 @@ export default function AutocompletePage() {
     nbPrefix:      'apple',
     nbDisabled:    'banana',
   })
-  const set = (k: string) => (v: string) =>
-    setVals(p => ({ ...p, [k]: v }))
+  const set = (k: string) => (v: string | string[]) =>
+    setVals(p => ({ ...p, [k]: v as string }))
 
   /* User & Group demos */
   const [ugPerson,  setUgPerson]  = useState('')
@@ -221,8 +221,8 @@ export default function AutocompletePage() {
       {/* ── No border variant ───────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>No border</h2>
       <p className={styles.description}>
-        No border or background. In resting state the clear button appears inline
-        right after the value text (8px gap). On focus the input expands for typing.
+        No border or background. The input fills the field, so the clear button sits
+        at the far right edge (value left, button right). On focus the input is ready for typing.
       </p>
       <div className={styles.additionalGrid}>
 
@@ -230,7 +230,6 @@ export default function AutocompletePage() {
           <span className={styles.rowLabel}>With value + clear</span>
           <Autocomplete
             variant="no-border"
-            label="Label"
             options={FRUITS}
             value={vals.nbValue}
             onChange={set('nbValue')}
@@ -243,7 +242,6 @@ export default function AutocompletePage() {
           <span className={styles.rowLabel}>Empty (placeholder)</span>
           <Autocomplete
             variant="no-border"
-            label="Label"
             options={FRUITS}
             value={vals.nbEmpty}
             onChange={set('nbEmpty')}
@@ -256,7 +254,6 @@ export default function AutocompletePage() {
           <span className={styles.rowLabel}>Prefix + clear</span>
           <Autocomplete
             variant="no-border"
-            label="Label"
             options={FRUITS}
             value={vals.nbPrefix}
             onChange={set('nbPrefix')}
@@ -270,7 +267,6 @@ export default function AutocompletePage() {
           <span className={styles.rowLabel}>Disabled</span>
           <Autocomplete
             variant="no-border"
-            label="Label"
             options={FRUITS}
             value={vals.nbDisabled}
             placeholder="Select…"
@@ -290,7 +286,7 @@ export default function AutocompletePage() {
             label="Assign to"
             options={PEOPLE}
             value={ugPerson}
-            onChange={setUgPerson}
+            onChange={v => setUgPerson(v as string)}
             placeholder="Select person…"
           />
         </div>
@@ -301,7 +297,7 @@ export default function AutocompletePage() {
             label="Assign to group"
             options={GROUPS_AC}
             value={ugGroup}
-            onChange={setUgGroup}
+            onChange={v => setUgGroup(v as string)}
             placeholder="Select group…"
           />
         </div>
@@ -312,7 +308,7 @@ export default function AutocompletePage() {
             label="Assign to"
             options={PEOPLE_AND_GROUPS}
             value={ugMixed}
-            onChange={setUgMixed}
+            onChange={v => setUgMixed(v as string)}
             placeholder="Person or group…"
             clearable
           />
@@ -331,7 +327,7 @@ export default function AutocompletePage() {
           label="Fruit"
           options={FRUITS}
           value={live1}
-          onChange={setLive1}
+          onChange={v => setLive1(v as string)}
           placeholder="Select fruit…"
           prefix={<Icon svg={plusSvg} />}
         />
@@ -339,7 +335,7 @@ export default function AutocompletePage() {
           label="Country (pre-selected)"
           options={COUNTRIES}
           value={live2}
-          onChange={setLive2}
+          onChange={v => setLive2(v as string)}
           placeholder="Select country…"
           clearable
         />

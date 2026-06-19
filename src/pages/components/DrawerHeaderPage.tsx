@@ -34,7 +34,6 @@ export default function DrawerHeaderPage() {
           title="Drawer header"
           onClose={() => {}}
           type="Type"
-          onTypeClick={() => {}}
           badge={<BadgeStatus type="neutral" label="Badge" />}
         />
       </div>

@@ -12,8 +12,7 @@ const plusSvg     = actions.find(i => i.name === 'plus')!.svg
 export interface DrawerHeaderProps {
   title:          string
   onClose:        () => void
-  type?:          string       // shows "+ type" row when provided
-  onTypeClick?:   () => void
+  type?:          string       // shows the "+ type" icon+text meta when provided
   badge?:         ReactNode    // status badge slot (right of type)
   className?:     string
 }
@@ -22,7 +21,6 @@ export function DrawerHeader({
   title,
   onClose,
   type,
-  onTypeClick,
   badge,
   className,
 }: DrawerHeaderProps) {
@@ -36,18 +34,14 @@ export function DrawerHeader({
         {hasMeta && (
           <div className={styles.meta}>
             {type !== undefined && (
-              <Button
-                variant="tertiary"
-                intent="neutral"
-                size="s"
-                iconLeft={
-                  <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: plusSvg }} />
-                }
-                onClick={onTypeClick}
-                aria-label={`Set type: ${type}`}
-              >
+              <span className={styles.type}>
+                <span
+                  className={styles.typeIcon}
+                  aria-hidden="true"
+                  dangerouslySetInnerHTML={{ __html: plusSvg }}
+                />
                 {type}
-              </Button>
+              </span>
             )}
             {badge}
           </div>

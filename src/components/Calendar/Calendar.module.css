@@ -20,15 +20,35 @@
   margin-bottom: 8px;
 }
 
+/* Styled to match the Dropdown no-border trigger: borderless, 8px to the chevron,
+   soft hover-fill that extends 6px per side (shown on hover and while the year
+   picker is open). Behaviour unchanged — it still toggles the year-grid picker. */
 .monthBtn {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-8);
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
   border-radius: var(--radius-sm);
+  position: relative;
+  z-index: 0;
+}
+
+.monthBtn::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  z-index: -1;
+}
+
+.monthBtn:hover::before,
+.monthBtn[aria-expanded="true"]::before {
+  background: var(--color-bg-hover-fill);
 }
 
 .monthLabel {
@@ -63,7 +83,7 @@
 
 .navGroup {
   display: flex;
-  gap: var(--space-4);
+  gap: var(--space-12);  /* 12px between the prev / next icon buttons */
 }
 
 /* ── Day labels ────────────────────────────── */

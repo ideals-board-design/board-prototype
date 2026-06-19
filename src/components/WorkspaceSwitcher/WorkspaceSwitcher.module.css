@@ -33,7 +33,7 @@
 
 .trigger:hover .triggerInner,
 .triggerOpen .triggerInner {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
 }
 
 .trigger:focus-visible .triggerInner {
@@ -123,7 +123,7 @@
 }
 
 .listItem:hover {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
 }
 
 .listItemActive {

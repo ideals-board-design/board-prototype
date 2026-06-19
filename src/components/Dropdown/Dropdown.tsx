@@ -16,6 +16,7 @@ import { Checkbox } from '../Checkbox/Checkbox'
 import { HintRow }  from '../shared/HintRow'
 import { Search }   from '../Search/Search'
 import { Tooltip }  from '../Tooltip/Tooltip'
+import { Button }   from '../Button/Button'
 import { arrows }   from '../../icons/arrows'
 import { actions }  from '../../icons/actions'
 import styles from './Dropdown.module.css'
@@ -156,13 +157,15 @@ function getDescendantValues(opts: DropdownTreeOption[], nodeValue: string): str
 function ItemAvatar({ avatar }: { avatar: DropdownItemAvatar }) {
   const { src, initials = '?', type = 'user' } = avatar
   const letter = initials.slice(0, 1)
+  const [imgFailed, setImgFailed] = useState(false)
   const shapeCls = type === 'user' ? styles.itemAvatarUser : styles.itemAvatarSquare
   const colorCls = type === 'group' ? styles.itemAvatarGroup : type === 'org' ? styles.itemAvatarOrg : ''
   const cls = [styles.itemAvatar, shapeCls, colorCls].filter(Boolean).join(' ')
+  // Fall back to initials if the image is missing or fails to load (broken/expired URL).
   return (
     <span className={cls} aria-hidden="true">
-      {src
-        ? <img className={styles.itemAvatarImg} src={src} alt="" />
+      {src && !imgFailed
+        ? <img className={styles.itemAvatarImg} src={src} alt="" onError={() => setImgFailed(true)} />
         : <span className={styles.itemAvatarInitials}>{letter}</span>
       }
     </span>
@@ -526,34 +529,48 @@ export function Dropdown({
         {clearable && !disabled && !isNoBorder && (
           showClearTooltip ? (
             <Tooltip label="Clear" position="top">
-              <button
-                type="button"
-                className={styles.clearBtn}
+              <Button
+                variant="tertiary"
+                intent="neutral"
+                size={size}
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
                 onClick={clearValue}
                 aria-label="Clear selection"
                 tabIndex={-1}
-              >
-                <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-              </button>
+              />
             </Tooltip>
           ) : (
-            <button
-              type="button"
-              className={`${styles.clearBtn} ${styles.clearBtnHidden}`}
+            <Button
+              variant="tertiary"
+              intent="neutral"
+              size={size}
+              iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
+              className={styles.clearBtnHidden}
               tabIndex={-1}
               aria-hidden="true"
-            >
-              <span className={styles.clearIcon} dangerouslySetInnerHTML={{ __html: clearSvg }} />
-            </button>
+            />
           )
         )}
 
-        {/* Chevron */}
-        <span
-          className={styles.chevron}
-          aria-hidden="true"
-          dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
-        />
+        {/* Chevron — outline: icon button (consistent hit area + hover fill), clicks
+            bubble to the trigger's toggle. No-border: a plain decorative icon (the
+            inline field stays minimal). Decorative for a11y either way. */}
+        {isNoBorder ? (
+          <span
+            className={styles.chevron}
+            aria-hidden="true"
+            dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
+          />
+        ) : (
+          <Button
+            variant="tertiary"
+            intent="neutral"
+            size={size}
+            iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }} />}
+            tabIndex={-1}
+            aria-hidden="true"
+          />
+        )}
       </div>
 
       {/* Hint / error row */}

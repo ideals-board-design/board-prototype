@@ -5,6 +5,8 @@ import { actions }  from '../../icons/actions'
 import { users }    from '../../icons/users'
 import styles from './DropdownPage.module.css'
 import { SourceLink } from '../SourceLink'
+import userPic1 from '../../assets/user-profile-pic-1.png'
+import userPic2 from '../../assets/user-profile-pic-2.png'
 
 /* ── Icons ────────────────────────────────────────────────────────────────── */
 
@@ -76,13 +78,10 @@ const LANGUAGE_OPTIONS: DropdownSelectableOption[] = [
 
 /* ── User & Group item data ───────────────────────────────────────────────── */
 
-/** Demo user photo (Figma asset — expires in 7 days) */
-const USER_PHOTO = 'https://www.figma.com/api/mcp/asset/5a06f04f-25e6-46f2-94b2-cc9a0071069d'
-
 const PEOPLE: DropdownSelectableOption[] = [
-  { value: 'alice',  label: 'Alice Johnson',  avatar: { src: USER_PHOTO, type: 'user' } },
+  { value: 'alice',  label: 'Alice Johnson',  avatar: { src: userPic1, initials: 'AJ', type: 'user' } },
   { value: 'bob',    label: 'Bob Smith',      avatar: { initials: 'BS',  type: 'user' } },
-  { value: 'carol',  label: 'Carol Williams', avatar: { src: USER_PHOTO, type: 'user' }, sublistLabel: '(Admin)' },
+  { value: 'carol',  label: 'Carol Williams', avatar: { src: userPic2, initials: 'CW', type: 'user' }, sublistLabel: '(Admin)' },
   { value: 'david',  label: 'David Lee',      avatar: { initials: 'DL',  type: 'user' } },
 ]
 

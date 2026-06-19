@@ -39,11 +39,34 @@
   text-decoration: none;
   -webkit-font-smoothing: antialiased;
   transition: color var(--transition-fast);
+  position: relative;
+  z-index: 0;
+  border-radius: var(--radius-sm);
 }
 
 .crumb:hover {
   color: var(--color-text-primary);
 }
+
+/* Hover / pressed hit effect — same approach as tertiary buttons: a soft fill that
+   extends 6px around the crumb (the +6px zone is part of the hit area). Hover = 10%,
+   pressed = 20%. Only the clickable crumbs (not the current-page .active span). */
+.crumb:not(.active)::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 32px;          /* fixed 32px hit zone (matches tertiary), centred on the text */
+  left: -6px;
+  right: -6px;           /* extends 6px each side */
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: auto;
+  z-index: -1;
+}
+.crumb:not(.active):hover::before  { background: var(--color-bg-hover-fill); }
+.crumb:not(.active):active::before { background: var(--color-bg-hover-fill-strong); }
 
 /* Active (last item) — non-interactive */
 .crumb.active {

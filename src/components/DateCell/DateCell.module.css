@@ -65,7 +65,7 @@
 /* Default hover — stone-300 bg, 4px radius */
 .typeDefault:hover:not(.isDisabled),
 .typeDefault.isHover:not(.isDisabled) {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
   border-radius: var(--radius-sm);
 }
 
@@ -84,7 +84,7 @@
 /* Today hover — stone-300 bg + green border */
 .typeToday:hover:not(.isDisabled),
 .typeToday.isHover:not(.isDisabled) {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
 }
 
 /* ═══════════════════════════════════════════

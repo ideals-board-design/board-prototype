@@ -50,48 +50,86 @@
   pointer-events: none;
 }
 
+/* ── No-border variant ───────────────────────────── */
+/* At rest: a borderless multiline text "active zone" (hover + pressed fill).
+   On click (focus): becomes a bordered Text Editor with the top formatting bar
+   only — no bottom action bar (toolbar={false}). */
+
+/* Rest + hover: transparent, borderless (override the outline green border). */
+.noBorder .fieldWrapper,
+.noBorder:not(.isDisabled):not(.hasError) .fieldWrapper:not(:focus-within):hover {
+  background: transparent;
+  box-shadow: none;
+}
+.noBorder .fieldWrapper {
+  overflow: visible;           /* don't clip the hover-fill ::before */
+  position: relative;
+  z-index: 0;
+}
+.noBorder .fieldWrapper::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+  pointer-events: none;
+  z-index: -1;
+}
+/* Resting "active zone": hover (light) + pressed (strong). Suppressed once the
+   editor is focused (it then shows its border instead). */
+.noBorder:not(.isDisabled) .fieldWrapper:not(:focus-within):hover::before {
+  background: var(--color-bg-hover-fill);
+}
+.noBorder:not(.isDisabled) .fieldWrapper:not(:focus-within):active::before {
+  background: var(--color-bg-hover-fill-strong);
+}
+/* Rest: flush text, no toolbars (looks like a plain line/paragraph).
+   Auto-grows with content (field-sizing) up to 400px, then scrolls. */
+.noBorder .textarea {
+  padding: 0;
+  field-sizing: content;
+  min-height: var(--line-height-base); /* one line at rest (grows as you type) */
+  max-height: 400px;
+  overflow-y: auto;
+  cursor: pointer; /* hand by default; text caret only while editing */
+}
+/* Filled (has text) or focused → text caret; empty placeholder → hand. */
+.noBorder .textarea:focus,
+.noBorder .textarea:not(:placeholder-shown) { cursor: text; }
+.noBorder .topBar { display: none; }
+
+/* Edit (focus): bordered editor with the formatting bar + normal padding. */
+.noBorder:not(.isDisabled):not(.hasError) .fieldWrapper:focus-within {
+  background: var(--stone-0);
+  box-shadow: inset 0 0 0 1px var(--color-border-focus);
+  overflow: hidden;
+}
+.noBorder .fieldWrapper:focus-within .topBar { display: flex; }
+.noBorder .fieldWrapper:focus-within .textarea { padding: var(--space-10) var(--space-16); }
+
 /* ── Toolbar rows ────────────────────────────────── */
-/* DS Button tertiary iconOnly has margin: -4px (natural hit-area expansion).
-   Vertical margin reset to 0 so 12px padding gives correct height: 12 + 20 + 12 = 44px.
-   Horizontal -4px margin preserved → compensate padding-x and gaps:
-     padding-x: 20px  →  button visual start = 20 − 4 = 16px from frame edge ✓
-     within-group gap: 16px  →  visual gap = 16 − 4 − 4 = 8px ✓
-     between-groups gap: 32px  →  visual gap = 32 − 4 − 4 = 24px ✓ */
+/* Toolbar uses standard DS size-s icon-only buttons (24×24 hit area + hover fill,
+   16px glyph, margin -4 → 16px footprint). No size/margin overrides — the flex gap
+   is the footprint gap, so the group gap sets the visible spacing directly. */
 .topBar,
 .bottomBar {
   display: flex;
   align-items: center;
-  padding: var(--space-12) var(--space-20);
+  padding: var(--space-12) var(--space-16);
   gap: var(--space-32);
-}
-
-/* Toolbar buttons: 20×20px; vertical margin reset (height = 12+20+12=44px);
-   horizontal -4px margin preserved for wider hit area */
-.topBar button,
-.bottomBar button {
-  width: 20px !important;
-  height: 20px !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
-}
-
-/* Icon inside toolbar buttons: fill the full 20×20 button (DS icon viewBox="0 0 20 20") */
-.topBar button [class*='icon'],
-.bottomBar button [class*='icon'] {
-  width: 20px;
-  height: 20px;
 }
 
 .bottomBar {
   justify-content: space-between;
 }
 
-/* Icon groups within topBar / bottomLeft */
+/* Icon groups within topBar / bottomLeft — 12px between adjacent icon buttons */
 .toolbarGroup,
 .bottomLeft {
   display: flex;
   align-items: center;
-  gap: var(--space-16);
+  gap: var(--space-12);
 }
 
 /* ── Textarea element ───────────────────────────── */

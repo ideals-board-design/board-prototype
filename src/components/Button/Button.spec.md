@@ -56,22 +56,25 @@ All variants: `--radius-md` (6px).
 | Pressed  | --red-700   |
 
 ### Secondary / Default
-| State    | Background          | Border       | Text                 |
-|----------|---------------------|--------------|----------------------|
-| Active   | --color-bg-surface  | --stone-500  | --color-text-primary |
-| Hover    | --color-bg-hover    | --stone-500  | —                    |
-| Pressed  | --stone-400         | --stone-500  | —                    |
-| Disabled | opacity 0.4         | —            | —                    |
+Hover / pressed = neutral Utility tokens (Hover/Pressed background) composited over the surface.
+
+| State    | Background                                          | Border       | Text                 |
+|----------|-----------------------------------------------------|--------------|----------------------|
+| Active   | --color-bg-surface                                  | --stone-500  | --color-text-primary |
+| Hover    | --color-bg-hover-fill over --color-bg-surface       | --stone-500  | —                    |
+| Pressed  | --color-bg-hover-fill-strong over --color-bg-surface| --stone-500  | —                    |
+| Disabled | opacity 0.4                                         | —            | —                    |
 
 ### Secondary / Danger
-| State    | Background          | Border      | Text      |
-|----------|---------------------|-------------|-----------|
-| Active   | --color-bg-surface  | --red-500   | --red-600 |
-| Hover    | --red-50            | --red-500   | —         |
-| Pressed  | --red-100           | --red-500   | —         |
+| State    | Background                                          | Border      | Text      |
+|----------|-----------------------------------------------------|-------------|-----------|
+| Active   | --color-bg-surface                                  | --red-500   | --red-600 |
+| Hover    | --transparent-red-700-10 over --color-bg-surface    | --red-500   | —         |
+| Pressed  | --transparent-red-700-20 over --color-bg-surface    | --red-500   | —         |
 
 ### Tertiary
-Background: transparent. Hover: `--color-bg-hover`. Pressed: `--stone-400`.
+Transparent fill (`::before`, extends 6px per side), tinted per intent — hover = 10%, pressed (`:active`) = 20%:
+default = green-700, info = blue-800, warning = orange-700, danger = red-700, neutral = `--color-bg-hover-fill`/`-strong` (blue-800).
 
 | Intent  | Text (active)                                     |
 |---------|---------------------------------------------------|

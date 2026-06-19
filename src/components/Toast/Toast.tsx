@@ -77,6 +77,7 @@ export function Toast({
             variant="tertiary"
             intent="neutral"
             size="m"
+            className={styles.dismiss}
             iconOnly={
               <span
                 style={{ display: 'contents' }}
@@ -85,7 +86,6 @@ export function Toast({
             }
             onClick={onDismiss}
             aria-label="Dismiss"
-            style={{ width: 20, height: 20, margin: 0 }}
           />
         </Tooltip>
       )}

@@ -71,7 +71,7 @@
 
 .semanticItem {
   display: grid;
-  grid-template-columns: 24px 160px 1fr 80px;
+  grid-template-columns: 24px 160px 1fr 104px;
   align-items: center;
   gap: var(--space-12);
   padding: var(--space-4) var(--space-8);
@@ -105,4 +105,5 @@
   color: var(--color-text-secondary);
   font-family: var(--font-family);
   text-align: right;
+  white-space: nowrap;
 }

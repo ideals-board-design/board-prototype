@@ -24,7 +24,7 @@
 }
 
 .item:hover .inner {
-  background: var(--color-bg-hover);
+  background: var(--color-bg-hover-fill);
 }
 
 .item.selected .inner {

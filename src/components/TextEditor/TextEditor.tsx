@@ -26,21 +26,27 @@ function icon(svg: string) {
 }
 
 // ── Internal toolbar button (always with tooltip above) ───
+// onMouseDown preventDefault keeps focus (and the caret/selection) in the
+// textarea when a formatting button is clicked — the editor stays in its
+// focused state instead of the button stealing focus.
 function ToolbarBtn({ svg, label }: { svg: string; label: string }) {
   return (
     <Tooltip label={label} position="top">
       <Button
         variant="tertiary"
         intent="neutral"
-        size="s"
+        size="m"
         iconOnly={icon(svg)}
         aria-label={label}
+        onMouseDown={e => e.preventDefault()}
       />
     </Tooltip>
   )
 }
 
 // ── Props ────────────────────────────────────────
+export type TextEditorVariant = 'outline' | 'no-border'
+
 export interface TextEditorProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
   label?:  ReactNode
   helper?: ReactNode
@@ -48,6 +54,10 @@ export interface TextEditorProps extends Omit<TextareaHTMLAttributes<HTMLTextAre
   action?: ReactNode
   /** true = red border only; string = red border + error message below */
   error?:  boolean | string
+  /** 'no-border' = transparent, borderless; formatting bar appears on focus + hover fill */
+  variant?: TextEditorVariant
+  /** false = hide the bottom action bar (Add / Attach / Format / Send) */
+  toolbar?: boolean
 }
 
 // ── Component ────────────────────────────────────
@@ -56,6 +66,8 @@ export function TextEditor({
   helper,
   action,
   error    = false,
+  variant  = 'outline',
+  toolbar  = true,
   disabled,
   className,
   id,
@@ -69,6 +81,7 @@ export function TextEditor({
 
   const wrapperCls = [
     styles.wrapper,
+    variant === 'no-border' ? styles.noBorder : '',
     hasError  ? styles.hasError   : '',
     disabled  ? styles.isDisabled : '',
     className ?? '',
@@ -105,14 +118,16 @@ export function TextEditor({
         />
 
         {/* ── Bottom action toolbar ── */}
-        <div className={styles.bottomBar}>
-          <div className={styles.bottomLeft}>
-            <ToolbarBtn svg={plusSvg}   label="Add" />
-            <ToolbarBtn svg={clipSvg}   label="Attach file" />
-            <ToolbarBtn svg={formatSvg} label="Formatting" />
+        {toolbar && (
+          <div className={styles.bottomBar}>
+            <div className={styles.bottomLeft}>
+              <ToolbarBtn svg={plusSvg}   label="Add" />
+              <ToolbarBtn svg={clipSvg}   label="Attach file" />
+              <ToolbarBtn svg={formatSvg} label="Formatting" />
+            </div>
+            <ToolbarBtn svg={sendSvg} label="Send" />
           </div>
-          <ToolbarBtn svg={sendSvg} label="Send" />
-        </div>
+        )}
       </div>
 
       {(hasHint || hasAction) && (
