@@ -1,8 +1,11 @@
 import { type InputHTMLAttributes, type ReactNode, useEffect, useRef } from 'react'
 import styles from './Checkbox.module.css'
 
-/* Checkmark path matches Figma checkbox asset (16×16 viewBox, currentColor fill) */
+/* Checkmark path matches Figma checkbox asset (16×16 viewBox, currentColor fill).
+   This is the one sanctioned inline <svg>: a tiny, constant mark that isn't part
+   of the src/icons set. All other icons must come from src/icons via dangerouslySetInnerHTML. */
 const CheckIcon = () => (
+  // eslint-disable-next-line no-restricted-syntax -- sanctioned inline check mark, see note above
   <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
     <path fillRule="evenodd" clipRule="evenodd" d="M6.14286 12.5L2.5 8.70154L3.80929 7.34837L6.14286 9.78407L12.1907 3.5L13.5 4.86276L6.14286 12.5Z" fill="currentColor" />
   </svg>

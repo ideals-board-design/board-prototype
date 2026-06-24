@@ -53,7 +53,6 @@ function IconCell({ name, svg, size = 20 }: IconDef & { size?: number }) {
     <div className={styles.iconCell} title={name} style={{ '--icon-size': `${size}px` } as React.CSSProperties}>
       <div
         className={styles.iconWrap}
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: svg }}
       />
       <span className={styles.iconName}>{name}</span>

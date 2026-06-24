@@ -8,7 +8,6 @@ function IllustrationCell({ name, svg }: { name: string; svg: string }) {
     <div className={styles.cell} title={name}>
       <div
         className={styles.preview}
-        // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: svg }}
       />
       <span className={styles.name}>{name}</span>

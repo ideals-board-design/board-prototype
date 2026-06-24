@@ -125,4 +125,10 @@ Each at: `src/components/<ComponentName>/<ComponentName>.tsx`
 ```bash
 npm run dev      # starts both apps (localhost:5173)
 npm run build    # builds both entry points
+npm run verify   # typecheck + eslint + stylelint — MUST pass before finishing
 ```
+
+`npm run verify` is the guardrail that enforces the Mandatory Rules above as machine errors:
+- **Stylelint** rejects `var(--token)` references to tokens that don't exist (catches silent fallbacks) and hardcoded colours (use a semantic colour token).
+- **ESLint** rejects inline `<svg>` JSX (icons/illustrations must come from `src/icons` / `src/illustrations`).
+Run it before finishing any change; it must come back clean.

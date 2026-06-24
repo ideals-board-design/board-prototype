@@ -163,7 +163,7 @@
 
 /* Focused (current) match — full opacity */
 .markFocus {
-  background-color: #fff4b4;
+  background-color: var(--color-highlight-bg);
   border-radius: 2px;
   padding: 0 1px;
   color: inherit;

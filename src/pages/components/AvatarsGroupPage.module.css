@@ -12,7 +12,7 @@
 
 .subtitle {
   font-size: var(--text-sm);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   margin: 0 0 40px;
 }
 
@@ -22,7 +22,7 @@
   color: var(--color-text-primary);
   margin: 0 0 16px;
   padding-top: 32px;
-  border-top: 1px solid var(--color-border-default);
+  border-top: 1px solid var(--color-border);
 }
 
 .sectionTitle:first-of-type {
@@ -48,7 +48,7 @@
 
 .label {
   font-size: var(--text-sm);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
 }
 
 /* ── Variant rows ──────────────────────────────────────────────────────── */
@@ -68,7 +68,7 @@
 
 .rowLabel {
   font-size: var(--text-sm);
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   min-width: 80px;
 }
 
@@ -86,6 +86,6 @@
 }
 
 .specTable td:first-child {
-  color: var(--color-text-tertiary);
+  color: var(--color-text-secondary);
   white-space: nowrap;
 }

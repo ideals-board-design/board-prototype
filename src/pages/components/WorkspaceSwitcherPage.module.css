@@ -76,7 +76,7 @@
 .guidelines code {
   font-family: monospace;
   font-size: 13px;
-  background: var(--color-bg-subtle);
+  background: var(--color-bg-page);
   padding: 1px 4px;
   border-radius: 3px;
 }
