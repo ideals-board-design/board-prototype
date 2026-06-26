@@ -54,7 +54,31 @@
       "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__get_metadata",
       "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__use_figma",
       "Bash(ffmpeg -i \"/Users/jaroslav.getman/Downloads/Screen Recording 2026-03-17 at 11.28.41.mov\" -vf \"fps=6,scale=600:-1\" -frames:v 24 /tmp/toast_anim_%02d.png -y)",
-      "Bash(qlmanage -t -s 800 -o /tmp/ \"/Users/jaroslav.getman/Downloads/Screen Recording 2026-03-17 at 11.28.41.mov\")"
+      "Bash(qlmanage -t -s 800 -o /tmp/ \"/Users/jaroslav.getman/Downloads/Screen Recording 2026-03-17 at 11.28.41.mov\")",
+      "Bash(curl -s -o /tmp/dashboard.png \"https://www.figma.com/api/mcp/asset/58e8bdd8-50c6-4315-8099-22c9cc5f11d7\")",
+      "Bash(sed -n '1,60p' src/components/PageHeader/PageHeader.tsx)",
+      "Bash(sed -n '1,50p' src/components/Checkbox/Checkbox.tsx)",
+      "Bash(sed -n '1,60p' src/components/Button/Button.tsx)",
+      "Bash(node -e ' *)",
+      "Bash(grep -oE 'name: \"settings\", svg: \\\\`[^\\\\`]{0,200}' src/icons/actions.ts)",
+      "Bash(grep -oE 'name: \"users-alt\", svg: \\\\`[^\\\\`]{0,160}' src/icons/users.ts)",
+      "Bash(grep -oE 'name: \"envelope\", svg: \\\\`[^\\\\`]{0,160}' src/icons/communication.ts)",
+      "Bash(grep -oE 'name: \"plus\", svg: \\\\`[^\\\\`]{0,160}' src/icons/actions.ts)",
+      "Bash(npm run *)",
+      "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__download_assets",
+      "Bash(curl -s \"https://www.figma.com/api/mcp/asset/3baf5094-83fa-4f7c-b545-4157681f45e1\" -o /tmp/configure.svg)",
+      "Bash(curl -s \"https://www.figma.com/api/mcp/asset/55431c5a-b8c0-4a6f-b11c-f389ca9b8319\" -o /tmp/groups.svg)",
+      "Bash(curl -s \"https://www.figma.com/api/mcp/asset/0940f0a6-f862-49fa-9331-d6694b6749bc\" -o /tmp/invite.svg)",
+      "Bash(curl -s -o /tmp/cs-before-default.png \"https://www.figma.com/api/mcp/asset/92f341f7-cec0-43e2-bef5-93b77c361476\")",
+      "Bash(curl -s -o /tmp/cs-before-droplist.png \"https://www.figma.com/api/mcp/asset/3deb84c1-0bce-47a4-9e0d-635ecd90ab56\")",
+      "Bash(sed -n '1,60p' src/components/BadgeStatus/BadgeStatus.tsx)",
+      "Bash(sed -n '1,50p' src/components/Avatar/Avatar.tsx)",
+      "Bash(grep -oE 'name: \"zoom-monogram-colored\", svg: `[^`]{0,140}' src/icons/services.ts)",
+      "Bash(grep -rnB3 -A1 'margin: 0 calc\\\\|margin: calc\\\\|margin-inline\\\\|margin: -' src/components/Dropdown/Dropdown.module.css)",
+      "Bash(curl -s -o /tmp/meeting-details.png \"https://www.figma.com/api/mcp/asset/01297cd2-31fe-457b-aa08-9902575b9eb3\")",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 -c \"import PIL\")",
+      "Bash(pip3 install *)"
     ]
   }
 }
