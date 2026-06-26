@@ -1,0 +1,16 @@
+/* BlankPage — placeholder prototype */
+
+.shell {
+  min-height: 100vh;
+  background: var(--color-bg-surface);
+  font-family: var(--font-family);
+}
+
+.main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 68px); /* header is 68px */
+  padding: var(--space-24);
+  box-sizing: border-box;
+}

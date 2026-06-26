@@ -118,7 +118,7 @@
   text-overflow: ellipsis;
 }
 
-/* "Open prototype" link */
+/* "Open prototype" link — renders as <a> or <button> */
 .protoLink {
   flex: 1;
   font-family: var(--font-family);
@@ -128,8 +128,60 @@
   text-decoration: none;
   text-align: right;
   transition: color var(--transition-fast);
+  /* button reset */
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 .protoLink:hover {
   color: var(--color-brand-hover);
+}
+
+/* ── Dashboard flows sub-page ─────────────────────────────── */
+
+.flowsHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 800px;
+  margin-bottom: var(--space-24);
+}
+
+.flowsTitle {
+  font-family: var(--font-family);
+  font-size: 20px;
+  font-weight: var(--font-weight-medium);
+  line-height: 24px;
+  letter-spacing: var(--letter-spacing-heading);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.flowGroup {
+  display: flex;
+  flex-direction: column;
+  width: 800px;
+}
+
+.flowGroup:not(:first-of-type) {
+  margin-top: var(--space-32);
+}
+
+/* group subtitle — smaller than the page title */
+.groupTitle {
+  width: 100%;
+  font-family: var(--font-family);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-md);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-12);
+}
+
+/* inside a group the list spans the group width */
+.flowGroup .list {
+  width: 100%;
 }
