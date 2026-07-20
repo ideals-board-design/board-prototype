@@ -33,3 +33,14 @@
 .preview {
   overflow: hidden;
 }
+
+/* Plain icon action — 6px-padded 20px icon (not a button) */
+.iconAction {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-6);
+  gap: var(--space-0);
+  color: var(--color-icon-secondary);
+}
+.iconAction svg { width: 20px; height: 20px; }

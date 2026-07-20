@@ -33,19 +33,31 @@
   font-family: var(--font-family);
 }
 
-/* ── Header (72px) ───────────────────────────────────────── */
+/* ── Header (68px = 18 + 32 + 18) — Figma node 19863-14962 ── */
 
 .header {
   display: flex;
   align-items: flex-start;
   gap: var(--space-16);
-  padding: var(--space-24);
+  padding: var(--space-18) var(--space-18) var(--space-18) var(--space-24);
   flex-shrink: 0;
   box-sizing: border-box;
 }
 
+/* Title wrapper — 4px vertical padding centres the 24px title line on the 32px
+   close button; flex:1 pushes the button to the edge; gap reserves room for a
+   future subtitle line. */
+.titleWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  padding: var(--space-4) 0;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
 .title {
-  flex: 1;
   font-size: 20px;
   font-weight: var(--font-weight-medium);
   line-height: 24px;

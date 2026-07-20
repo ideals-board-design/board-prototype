@@ -69,7 +69,7 @@ export default function AvatarsGroupPage() {
           <tr><td>L</td><td>40×40px · overlap −6px</td></tr>
           <tr><td>M</td><td>32×32px · overlap −4px</td></tr>
           <tr><td>S</td><td>24×24px · overlap −2px</td></tr>
-          <tr><td>Border</td><td>2px solid white (stone-0)</td></tr>
+          <tr><td>Separator</td><td>2px transparent gap (masked — background shows through)</td></tr>
           <tr><td>Letters bg</td><td>stone-300</td></tr>
           <tr><td>Counter bg</td><td>blue-500</td></tr>
           <tr><td>Counter text</td><td>white (inverse)</td></tr>

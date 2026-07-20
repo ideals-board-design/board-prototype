@@ -5,7 +5,7 @@
 .breadcrumbs {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-0);   /* crumb padding provides the spacing to the separators */
   list-style: none;
   margin: 0;
   padding: 0;
@@ -29,18 +29,20 @@
 
 /* ── Crumb (shared base) ─────────────────────────────────────────────────── */
 
+/* Real padded box (Figma node 10337-310841 / 34171-7324): 6px 8px, inline-flex.
+   6px vertical padding + line-height gives the 36px (L) / 32px (M) hit height. */
 .crumb {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-6) var(--space-8);
   font-family: var(--font-family);
   color: var(--color-text-secondary);
   background: transparent;
   border: none;
-  padding: 0;
   cursor: pointer;
   text-decoration: none;
   -webkit-font-smoothing: antialiased;
-  transition: color var(--transition-fast);
-  position: relative;
-  z-index: 0;
+  transition: background var(--transition-fast), color var(--transition-fast);
   border-radius: var(--radius-sm);
 }
 
@@ -48,25 +50,10 @@
   color: var(--color-text-primary);
 }
 
-/* Hover / pressed hit effect — same approach as tertiary buttons: a soft fill that
-   extends 6px around the crumb (the +6px zone is part of the hit area). Hover = 10%,
-   pressed = 20%. Only the clickable crumbs (not the current-page .active span). */
-.crumb:not(.active)::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 32px;          /* fixed 32px hit zone (matches tertiary), centred on the text */
-  left: -6px;
-  right: -6px;           /* extends 6px each side */
-  border-radius: var(--radius-sm);
-  background: transparent;
-  transition: background var(--transition-fast);
-  pointer-events: auto;
-  z-index: -1;
-}
-.crumb:not(.active):hover::before  { background: var(--color-bg-hover-fill); }
-.crumb:not(.active):active::before { background: var(--color-bg-hover-fill-strong); }
+/* Hover / pressed fill is the crumb's own padded box. Hover = 10%, pressed = 20%.
+   Only the clickable crumbs (not the current-page .active span). */
+.crumb:not(.active):hover  { background: var(--color-bg-hover-fill); }
+.crumb:not(.active):active { background: var(--color-bg-hover-fill-strong); }
 
 /* Active (last item) — non-interactive */
 .crumb.active {
@@ -74,6 +61,60 @@
   cursor: default;
   pointer-events: none;
 }
+
+/* Ellipsis crumb (collapsed middle) — centres the … icon */
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+}
+.ellipsisIcon {
+  display: flex;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+}
+.ellipsisIcon svg { width: 100%; height: 100%; }
+
+/* ── Contextual menu (hidden pages) ──────────────────────────────────────── */
+
+.menu {
+  position: fixed;
+  z-index: 8000;
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  max-width: 280px;
+  background: var(--stone-0);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-100);
+  padding: var(--space-4);
+}
+
+/* M-size droplist item — matches Dropdown/Autocomplete droplists (15px · 10/12 pad) */
+.menuItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-font-smoothing: antialiased;
+  box-sizing: border-box;
+}
+
+.menuItem:hover  { background: var(--color-bg-hover-fill); }
+.menuItem:active { background: var(--color-bg-hover-fill-strong); }
 
 /* ── Separator ───────────────────────────────────────────────────────────── */
 

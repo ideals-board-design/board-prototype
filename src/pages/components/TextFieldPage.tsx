@@ -1,13 +1,42 @@
+import { useState } from 'react'
 import styles from './TextFieldPage.module.css'
-import { TextField } from '../../components/TextField/TextField'
+import { TextField, type TextFieldSize } from '../../components/TextField/TextField'
+import { Button } from '../../components/Button/Button'
 import { condition } from '../../icons/condition'
+import { actions } from '../../icons/actions'
 import { SourceLink } from '../SourceLink'
 
-const infoIcon = condition.find(i => i.name === 'info-circle')!.svg
+const infoIcon  = condition.find(i => i.name === 'info-circle')!.svg
+const clearIcon = actions.find(i => i.name === 'multiply')!.svg
 
 function Icon({ svg }: { svg: string }) {
   return (
     <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} />
+  )
+}
+
+/* No-border input with an optional clear (×) trailing button that clears the
+   content. The button footprint follows the size (XL reuses the 36px L button). */
+function ClearInput({ size }: { size: TextFieldSize }) {
+  const [value, setValue] = useState('Filled text')
+  return (
+    <TextField
+      size={size}
+      variant="no-border"
+      value={value}
+      onChange={e => setValue(e.target.value)}
+      placeholder="Prompt text"
+      suffix={
+        <Button
+          variant="tertiary"
+          intent="neutral"
+          size={size === 'xl' ? 'l' : size}
+          iconOnly={<Icon svg={clearIcon} />}
+          aria-label="Clear"
+          onClick={() => setValue('')}
+        />
+      }
+    />
   )
 }
 
@@ -60,6 +89,10 @@ export default function TextFieldPage() {
           <span className={styles.rowLabel}>L — 48px</span>
           <TextField size="l" variant="outline" defaultValue="Filled text" placeholder="Prompt text" />
         </div>
+        <div className={styles.sizeItem}>
+          <span className={styles.rowLabel}>XL — 56px</span>
+          <TextField size="xl" variant="outline" defaultValue="Filled text" placeholder="Prompt text" />
+        </div>
       </div>
 
       {/* ── Options ──────────────────────────────────── */}
@@ -88,6 +121,14 @@ export default function TextFieldPage() {
         <TextField size="s" variant="outline" defaultValue="Filled text" placeholder="Prompt text" suffix={<Icon svg={infoIcon} />} />
         <TextField size="m" variant="outline" defaultValue="Filled text" placeholder="Prompt text" suffix={<Icon svg={infoIcon} />} />
         <TextField size="l" variant="outline" defaultValue="Filled text" placeholder="Prompt text" suffix={<Icon svg={infoIcon} />} />
+      </div>
+
+      <h3 className={styles.subsectionTitle}>No border — trailing icon button</h3>
+      <div className={styles.exampleRow}>
+        <ClearInput size="s" />
+        <ClearInput size="m" />
+        <ClearInput size="l" />
+        <ClearInput size="xl" />
       </div>
 
       <h3 className={styles.subsectionTitle}>Error message</h3>

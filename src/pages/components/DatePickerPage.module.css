@@ -82,6 +82,13 @@
   gap: var(--space-8);
 }
 
+/* No-border date pickers are content-width by default (inline usage). In this
+   preview grid, stretch them to fill the 240px cell like the outline ones so the
+   component reads as a fixed-width field. Two-class selector overrides .noBorder. */
+.additionalItem .nbPreview {
+  width: 100%;
+}
+
 /* ── Live demo row ────────────────────────────────── */
 
 .demoRow {

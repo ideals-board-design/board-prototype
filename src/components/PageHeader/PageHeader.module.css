@@ -1,14 +1,30 @@
-/* PageHeader — Figma nodes 34914-4984, 34914-4987 */
+/* PageHeader — Figma nodes 30455-16481 (Default), 9822-92904 (Meeting), 30455-21449 (Documents) */
 
 .header {
   display: flex;
   align-items: center;
   gap: var(--space-16);
-  padding: var(--space-16) var(--space-24);
   min-height: 56px;
   border-bottom: 1px solid var(--color-border);
   background: var(--color-bg-surface);
   box-sizing: border-box;
+  font-family: var(--font-family);
+}
+
+/* Per-type padding/gap. Left padding shifts so the leading element's glyph lands
+   at ~24px: Default title at 24; Meeting back button (18 + 6px inset); Documents
+   first crumb (16 + 8px crumb padding). All resolve to a 56px header. */
+.typeDefault {
+  padding: var(--space-16) var(--space-24);
+  gap: var(--space-16);
+}
+.typeMeeting {
+  padding: var(--space-12) var(--space-24) var(--space-12) var(--space-18);
+  gap: var(--space-16);
+}
+.typeDocuments {
+  padding: var(--space-10) var(--space-24) var(--space-10) var(--space-16);
+  gap: var(--space-8);
 }
 
 /* ── Title ─────────────────────────────────────────── */
@@ -21,6 +37,38 @@
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   margin: 0;
+  white-space: nowrap;
 }
 
-/* Back button — DS Button variant="tertiary" intent="neutral" handles all states */
+/* Title + dropdown chevron (title switcher) */
+.titleMenu {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.chevron {
+  display: inline-flex;
+  align-items: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+.chevron svg { width: 100%; height: 100%; }
+
+/* ── Trailing inline actions ───────────────────────── */
+
+/* Actions wrapper — items abut (gap 0); each icon's own 6px padding spaces them. */
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-0);
+}
+
+/* Back button — DS Button variant="tertiary" intent="neutral" size="m" handles states */

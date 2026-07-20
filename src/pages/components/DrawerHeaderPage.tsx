@@ -12,10 +12,16 @@ export default function DrawerHeaderPage() {
       <p className={styles.subtitle}>Figma · 34916-4993, 34916-4994, 34916-4995</p>
       <SourceLink path="src/components/DrawerHeader/DrawerHeader.tsx" />
 
-      {/* ── Default ─────────────────────────────────────────────────────── */}
+      {/* ── Default (editable input) ────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Default</h2>
       <div className={styles.preview}>
         <DrawerHeader title="Drawer header" onClose={() => {}} />
+      </div>
+
+      {/* ── View only (non-editable heading) ────────────────────────────── */}
+      <h2 className={styles.sectionTitle}>View only</h2>
+      <div className={styles.preview}>
+        <DrawerHeader title="Drawer header" onClose={() => {}} readOnly />
       </div>
 
       {/* ── Multi lines ─────────────────────────────────────────────────── */}

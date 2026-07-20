@@ -282,6 +282,9 @@ export function DatePicker({
   const triggerCls = [
     styles.trigger,
     !hasValue && !editing ? styles.isPlaceholder : '',
+    // Reserve the full button-row footprint whenever clearable — empty OR filled —
+    // so the field doesn't jump height/padding when a value is added or cleared.
+    isNoBorder && clearable ? styles.hasClearSlot : '',
   ].filter(Boolean).join(' ')
 
   /* ── Render ───────────────────────────────────────────────────────────── */
@@ -336,48 +339,36 @@ export function DatePicker({
           </span>
         )}
 
-        {/* Clear button */}
+        {/* Trailing controls (clear + calendar) pinned to the text line so the
+            icon buttons centre on it and don't inflate the trigger height. */}
+        <div className={styles.trailing}>
+        {/* Clear button — always present when clearable so the field never jumps.
+            Filled: revealed (outline always; no-border on hover via .clearReveal).
+            Empty: visibility-hidden placeholder that still reserves the footprint. */}
         {clearable && !disabled && (
-          isNoBorder ? (
-            hasValue ? (
-              <Tooltip label="Clear" position="top">
-                <Button
-                  variant="tertiary"
-                  intent="neutral"
-                  size={size}
-                  className={styles.clearReveal}
-                  iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
-                  onClick={clearValue}
-                  aria-label="Clear date"
-                  tabIndex={-1}
-                />
-              </Tooltip>
-            ) : null
-          ) : (
-            hasValue ? (
-              <Tooltip label="Clear" position="top">
-                <Button
-                  variant="tertiary"
-                  intent="neutral"
-                  size={size}
-                  className={styles.clearReveal}
-                  iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
-                  onClick={clearValue}
-                  aria-label="Clear date"
-                  tabIndex={-1}
-                />
-              </Tooltip>
-            ) : (
+          hasValue ? (
+            <Tooltip label="Clear" position="top">
               <Button
                 variant="tertiary"
                 intent="neutral"
                 size={size}
+                className={styles.clearReveal}
                 iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
-                className={styles.clearBtnHidden}
+                onClick={clearValue}
+                aria-label="Clear date"
                 tabIndex={-1}
-                aria-hidden="true"
               />
-            )
+            </Tooltip>
+          ) : (
+            <Button
+              variant="tertiary"
+              intent="neutral"
+              size={size}
+              iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: clearSvg }} />}
+              className={styles.clearBtnHidden}
+              tabIndex={-1}
+              aria-hidden="true"
+            />
           )
         )}
 
@@ -395,6 +386,7 @@ export function DatePicker({
             aria-hidden="true"
           />
         )}
+        </div>
       </div>
 
       {/* Hint / error row */}

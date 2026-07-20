@@ -1,44 +1,65 @@
-/* DrawerHeader — Figma nodes 34916-4993, 34916-4994, 34916-4995 */
+/* DrawerHeader — Figma nodes 29854-14645, 33303-4248, 33299-3912 */
 
+/* Outer wrapper — column: [title + close] row, then optional meta row.
+   Padding 10px 16px · 8px gap. Fills the drawer width. */
 .header {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-16);
-  padding: var(--space-16) var(--space-24);
-  min-height: var(--space-56);
+  gap: var(--space-8);
+  padding: var(--space-10) var(--space-16);
   background: var(--color-bg-surface);
   box-sizing: border-box;
+  width: 100%;
   font-family: var(--font-family);
 }
 
-/* ── Content (title + optional meta) ──────────────────── */
+/* ── Top row (title field + close button) ──────────────── */
 
-.content {
-  flex: 1;
-  min-width: 0;
+.topRow {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-8);
+  align-items: flex-start;
+  gap: var(--space-16);
+  align-self: stretch;
 }
 
 /* ── Title ─────────────────────────────────────────────── */
+/* Editable = DS no-border TextField (multiline, size XL). Fills the row so the
+   close button is pushed to the edge; one line = 36px (24px line + 6px padding).
+   Give the field 8px horizontal padding to match the no-border input structure
+   (Figma: field padding-left 8, content padding-right 8). */
+.titleField {
+  flex: 1;
+  min-width: 0;
+}
+.header .titleField textarea {
+  padding: var(--space-6) var(--space-8);
+}
 
-.title {
+/* View only — plain text (not an input), same 36px row / 8px padding / 20px
+   Medium so it sits identically to the editable field and wraps the same way. */
+.titleText {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-6) var(--space-8);
   font-size: 20px;
   font-weight: var(--font-weight-medium);
   line-height: 24px;
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
-  margin: 0;
   word-break: break-word;
 }
 
 /* ── Meta row (type + badge) ───────────────────────────── */
 
+/* 8px left padding aligns the meta with the title text (which sits 8px into the
+   field); 24px tall; 16px between type and badge. */
 .meta {
   display: flex;
+  height: 24px;
+  padding-left: var(--space-8);
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-16);
 }
 
 /* Type — plain icon + text meta (not a button) */
@@ -48,15 +69,15 @@
   gap: var(--space-4);
   font-size: var(--text-sm);
   line-height: var(--line-height-base);
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
 }
 .typeIcon {
   display: inline-flex;
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  color: var(--color-icon-secondary);
+  color: var(--color-icon-primary);
 }
 .typeIcon svg { width: 100%; height: 100%; }
 
-/* Close button — DS Button variant="tertiary" intent="neutral" handles all states */
+/* Close button — DS Button variant="tertiary" intent="neutral" size="l" (36px) */

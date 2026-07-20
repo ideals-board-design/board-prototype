@@ -11,13 +11,15 @@
   z-index: 2;
 }
 
-/* Overlay — solid hover background to cover row content behind */
+/* Overlay — solid hover background to cover row content behind.
+   Figma node 31434-6276: padding 8px 10px, buttons abut (gap 0) — each 32px
+   button's own padding supplies the visual spacing (32px glyph-to-glyph). */
 .inner {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--space-16);
-  padding: 0 var(--space-16);
+  gap: var(--space-0);
+  padding: var(--space-8) var(--space-10);
   height: var(--size-l);
   position: absolute;
   top: 0;

@@ -42,9 +42,28 @@
 }
 
 /* Sizes — padding drives height */
-.sizeS .field { padding: var(--space-6)  var(--space-12); gap: var(--space-4); }
-.sizeM .field { padding: var(--space-10) var(--space-16); gap: var(--space-12); }
-.sizeL .field { padding: var(--space-14) var(--space-16); gap: var(--space-12); }
+/* Symmetric padding: a trailing icon button sits at the field padding (like the
+   Toast dismiss) — box-to-edge = the Figma padding, icon centred within the button.
+   No shift (no negative margin, no reduced padding). */
+/* Right padding is a dynamic per-size value (S=8, M=12, L=10) — NOT symmetric with
+   the left — so the trailing icon-button sits at the correct Figma edge distance.
+   4-value: top right bottom left. */
+/* Right padding is −2px vs the left-side scale so the trailing icon button sits
+   closer to the edge (S=6, M=10, L=8). 4-value: top right bottom left. */
+.sizeS .field { padding: var(--space-6)  var(--space-6)  var(--space-6)  var(--space-12); gap: var(--space-4); }
+.sizeM .field { padding: var(--space-10) var(--space-10) var(--space-10) var(--space-16); gap: var(--space-12); }
+.sizeL .field { padding: var(--space-14) var(--space-8)  var(--space-14) var(--space-16); gap: var(--space-12); }
+
+/* Trailing controls slot — pinned to the text line (20px) so the embedded icon
+   buttons (S=28/M=32/L=36) centre on the line and overflow it, instead of
+   growing the field. Keeps field height padding-driven (32/40/48). */
+.trailing {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: var(--line-height-base);   /* 20px */
+  gap: var(--space-0);               /* icon buttons abut — their padding is the visual gap */
+}
 
 /* Hover */
 .wrapper:not(.isDisabled) .field:hover {
@@ -184,23 +203,26 @@
 
 .filterIcon svg { width: 100%; height: 100%; }
 
-/* Wrapper hugs the DS Button footprint so the active dot anchors to its corner */
+/* Wrapper hugs the DS Button footprint; the active dot anchors to the icon glyph's
+   top-right corner (the 20px glyph sits 6px inset inside the 32px button). */
 .filterWrap {
   position: relative;
   display: inline-flex;
   flex-shrink: 0;
 }
 
-/* Indicator dot — 8×8px absolute, top-right corner */
+/* Indicator dot — 8×8px, centred on the glyph's top-right corner (6px inset − half
+   the 8px dot = 2px), so it reads as attached to the icon, not floating off the button. */
 .filterDot {
   position: absolute;
-  top: -3px;
-  right: -3px;
+  top: 2px;
+  right: 2px;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--green-500);
   border: 1.5px solid var(--stone-0);
+  box-sizing: border-box;
   pointer-events: none;
 }
 

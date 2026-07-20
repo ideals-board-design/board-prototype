@@ -1,13 +1,16 @@
-/* Banner — Figma node 14376-70685 */
+/* Banner — Figma nodes 14361-51081 (rounded) + 36377-252 (inline)
+   Top-aligned; vertical pad L=14/M=10; horizontal pad differs by variant AND side:
+   rounded = 16 left / 10 right; inline = 24 left / 18 right. The trailing dismiss/
+   action button sits flush at the right padding with no additional shift. */
 
 /* ── Base ───────────────────────────────────────────────── */
 
 .banner {
   display: flex;
-  align-items: flex-start;
+  align-items: flex-start;                    /* top-align: icon & action sit on the first line */
   justify-content: space-between;
-  gap: var(--space-16);
-  padding: var(--space-14) var(--space-16);   /* L: 14+14+20 = 48px */
+  gap: var(--space-32);                       /* min gap between message and actions */
+  padding: var(--space-14) var(--space-10) var(--space-14) var(--space-16);   /* L: 14+20+14 = 48px; default (rounded) right = 10 */
   box-sizing: border-box;
   font-family: var(--font-family);
   min-height: var(--size-l);                  /* 48px */
@@ -16,18 +19,21 @@
 /* ── Sizes ──────────────────────────────────────────────── */
 
 .m {
-  padding: var(--space-10) var(--space-16);   /* M: 10+10+20 = 40px */
+  padding: var(--space-10) var(--space-10) var(--space-10) var(--space-16);   /* M: 10+20+10 = 40px */
   min-height: var(--size-m);                  /* 40px */
 }
 
 /* ── Variants ───────────────────────────────────────────── */
 
 .rounded {
-  border-radius: var(--radius-sm);            /* 4px */
+  border-radius: var(--radius-sm);            /* 4px · horizontal padding = 16 left / 10 right (base) */
 }
 
 .inline {
   border-radius: 0;
+  /* Inline sits edge-to-edge, so it takes wider side padding */
+  padding-left: var(--space-24);
+  padding-right: var(--space-18);
 }
 
 /* ── States — background ────────────────────────────────── */
@@ -84,8 +90,9 @@
 .right {
   display: flex;
   align-items: center;
-  gap: var(--space-16);
+  gap: var(--space-0);              /* action & dismiss abut; their own padding separates them */
   flex-shrink: 0;
+  height: var(--line-height-base);  /* pin to first line (20px); taller controls centre on it */
 }
 
 .action {

@@ -43,9 +43,27 @@
 }
 
 /* Sizes — padding drives height (no explicit height) */
-.sizeS .trigger { padding: var(--space-6)  var(--space-12); }
-.sizeM .trigger { padding: var(--space-10) var(--space-16); }
-.sizeL .trigger { padding: var(--space-14) var(--space-16); }
+/* Symmetric padding: the trailing chevron/clear button sits at the trigger padding
+   (like the Toast dismiss), box-to-edge = the Figma padding, icon centred. No shift.
+   (No-border overrides padding to 0 below.) */
+/* Right padding is a dynamic per-size value (S=8, M=12, L=10) — NOT symmetric with
+   the left — so the trailing chevron/clear button sits at the correct Figma edge
+   distance. 4-value: top right bottom left. (No-border overrides padding to 0 below.) */
+.sizeS .trigger { padding: var(--space-6)  var(--space-6)  var(--space-6)  var(--space-12); }
+.sizeM .trigger { padding: var(--space-10) var(--space-10) var(--space-10) var(--space-16); }
+.sizeL .trigger { padding: var(--space-14) var(--space-8)  var(--space-14) var(--space-16); }
+
+/* Trailing controls (clear + chevron) — pinned to the text line (20px) so the
+   28/32/36 icon buttons centre on it and don't inflate the trigger. Buttons abut. */
+.trailing {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: var(--line-height-base);   /* 20px */
+  gap: var(--space-0);
+}
+/* Outline only: pull the group toward the edge by the button's centring inset so the
+   trailing glyph lands on the trigger padding (symmetric with the left icon). */
 
 /* Hover — green border (not disabled, not error) */
 .wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
@@ -132,6 +150,20 @@
 
 .iconLeft svg,
 .chevron svg { width: 100%; height: 100%; }
+
+/* Outline chevron wrapper — square box matching the icon-button footprint
+   (S=28 / M=32 / L=36) so the decorative chevron keeps the same spacing/alignment
+   the old <Button> had, minus the button hover fill. It overflow-centres on the
+   20px .trailing line, so the trigger height is unaffected. */
+.chevronBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.sizeS .chevronBox { width: 28px; height: 28px; }
+.sizeM .chevronBox { width: 32px; height: 32px; }
+.sizeL .chevronBox { width: 36px; height: 36px; }
 
 /* Leading icon is decorative → 8px to the value. Outline trigger gap is 12px, so pull
    it 4px closer; no-border gap is already 8px, so no pull there. */

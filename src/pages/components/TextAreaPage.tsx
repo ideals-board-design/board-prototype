@@ -1,6 +1,5 @@
 import styles from './TextAreaPage.module.css'
 import { TextArea } from '../../components/TextArea/TextArea'
-import { Button } from '../../components/Button/Button'
 import { SourceLink } from '../SourceLink'
 
 export default function TextAreaPage() {
@@ -52,16 +51,6 @@ export default function TextAreaPage() {
       <h3 className={styles.subsectionTitle}>Helper text</h3>
       <div className={styles.exampleRow}>
         <TextArea size="m" label="Label" defaultValue="Filled text" placeholder="Prompt text" helper="This is a hint message" />
-      </div>
-
-      <h3 className={styles.subsectionTitle}>Helper text with action</h3>
-      <div className={styles.exampleRow}>
-        <TextArea
-          size="m" label="Label"
-          defaultValue="Filled text" placeholder="Prompt text"
-          helper="This is a hint message"
-          action={<Button variant="tertiary" size="m">Action</Button>}
-        />
       </div>
 
       <h3 className={styles.subsectionTitle}>Error message</h3>

@@ -43,9 +43,27 @@
 }
 
 /* Sizes — padding drives height (no explicit height) */
-.sizeS .trigger { padding: var(--space-6)  var(--space-12); }
-.sizeM .trigger { padding: var(--space-10) var(--space-16); }
-.sizeL .trigger { padding: var(--space-14) var(--space-16); }
+/* Symmetric padding: the trailing clear/calendar button sits at the trigger padding
+   (like the Toast dismiss), box-to-edge = the Figma padding, icon centred. No shift.
+   (No-border overrides padding to 0 below.) */
+/* Right padding is a dynamic per-size value (S=8, M=12, L=10) — NOT symmetric with
+   the left — so the trailing clear/calendar button sits at the correct Figma edge
+   distance. 4-value: top right bottom left. (No-border overrides padding to 0 below.) */
+.sizeS .trigger { padding: var(--space-6)  var(--space-6)  var(--space-6)  var(--space-12); }
+.sizeM .trigger { padding: var(--space-10) var(--space-10) var(--space-10) var(--space-16); }
+.sizeL .trigger { padding: var(--space-14) var(--space-8)  var(--space-14) var(--space-16); }
+
+/* Trailing controls (clear + calendar) — pinned to the text line (20px) so the
+   28/32/36 icon buttons centre on it and don't inflate the trigger. Buttons abut. */
+.trailing {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: var(--line-height-base);   /* 20px */
+  gap: var(--space-0);
+}
+/* Outline only: pull the group toward the edge by the button's centring inset so the
+   trailing glyph lands on the trigger padding (symmetric with the value text edge). */
 
 /* ── Outline variant ──────────────────────────────── */
 
@@ -104,6 +122,21 @@
 .noBorder.sizeM .trigger,
 .noBorder.sizeL .trigger { padding: 0; }
 
+/* No-border WITH a clear button present (hasValue) — Figma node 36407-19010. The
+   row height matches the tertiary icon-only Button's own compact footprint exactly
+   (S=28/M=32/L=36), with zero vertical padding, so the button fills the row
+   edge-to-edge. Left stays 8px; right is 0 so the button sits flush at the true
+   right edge; gap is 0 so the text's own trailing padding (below) separates it. */
+.noBorder.sizeS .trigger.hasClearSlot { height: 28px; padding: 0 0 0 var(--space-8); gap: 0; }
+.noBorder.sizeM .trigger.hasClearSlot { height: 32px; padding: 0 0 0 var(--space-8); gap: 0; }
+.noBorder.sizeL .trigger.hasClearSlot { height: 36px; padding: 0 0 0 var(--space-8); gap: 0; }
+
+/* Gap is removed above so the button sits flush right — the text keeps its own
+   8px trailing space instead, matching the Figma label-wrapper's own padding.
+   Applies to both display mode (.triggerText) and inline-edit mode (.editInput). */
+.noBorder .trigger.hasClearSlot .triggerText,
+.noBorder .trigger.hasClearSlot .editInput { padding-right: var(--space-8); }
+
 .noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
 .noBorder.isOpen:not(.isDisabled):not(.hasError) .trigger { box-shadow: none; }
 .noBorder.hasError .trigger { box-shadow: none; }
@@ -130,6 +163,9 @@
 .noBorder.isEditing:not(.isDisabled) .trigger::before {
   background: var(--color-bg-hover-fill);
 }
+/* hasClearSlot rows already stand at the button's full height (28/32/36), so the
+   hover fill matches the row exactly — no -6px text-line bleed. */
+.noBorder .trigger.hasClearSlot::before { inset: 0; }
 
 /* No-border clear button: revealed only on field hover / focus. Footprint reserved
    (opacity, not display) so nothing shifts. */

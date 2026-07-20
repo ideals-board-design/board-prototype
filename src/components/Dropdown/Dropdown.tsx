@@ -523,6 +523,9 @@ export function Dropdown({
           </span>
         )}
 
+        {/* Trailing controls (clear + chevron) pinned to the text line so the
+            icon buttons centre on it and don't inflate the trigger height. */}
+        <div className={styles.trailing}>
         {/* Clear button — always in DOM to reserve layout space.
             Tooltip only mounts when button is truly visible, so its hover
             area never captures events over an invisible button. */}
@@ -552,9 +555,10 @@ export function Dropdown({
           )
         )}
 
-        {/* Chevron — outline: icon button (consistent hit area + hover fill), clicks
-            bubble to the trigger's toggle. No-border: a plain decorative icon (the
-            inline field stays minimal). Decorative for a11y either way. */}
+        {/* Chevron — decorative (the whole trigger is the control, clicks bubble to
+            its toggle), so it's a plain icon, not a Button. Outline: centred in a
+            sized wrapper (S=28/M=32/L=36) that matches the icon-button footprint so
+            spacing/alignment is unchanged. No-border: a bare icon (minimal inline). */}
         {isNoBorder ? (
           <span
             className={styles.chevron}
@@ -562,15 +566,14 @@ export function Dropdown({
             dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
           />
         ) : (
-          <Button
-            variant="tertiary"
-            intent="neutral"
-            size={size}
-            iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }} />}
-            tabIndex={-1}
-            aria-hidden="true"
-          />
+          <span className={styles.chevronBox} aria-hidden="true">
+            <span
+              className={styles.chevron}
+              dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
+            />
+          </span>
         )}
+        </div>
       </div>
 
       {/* Hint / error row */}

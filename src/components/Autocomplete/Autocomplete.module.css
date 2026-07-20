@@ -40,10 +40,26 @@
   cursor: text;
 }
 
-/* Sizes — padding drives height (no explicit height) */
-.sizeS .inputWrapper { padding: var(--space-6)  var(--space-12); gap: var(--space-4); }
-.sizeM .inputWrapper { padding: var(--space-10) var(--space-16); gap: var(--space-8); }
-.sizeL .inputWrapper { padding: var(--space-14) var(--space-16); gap: var(--space-8); }
+/* Sizes — padding drives height (no explicit height).
+   Right padding is a dynamic per-size value (S=8, M=12, L=10) — NOT symmetric with
+   the left — so the trailing icon-button sits at the correct Figma edge distance.
+   No-border overrides padding to 0 below. 4-value: top right bottom left. */
+.sizeS .inputWrapper { padding: var(--space-6)  var(--space-6)  var(--space-6)  var(--space-12); gap: var(--space-4); }
+.sizeM .inputWrapper { padding: var(--space-10) var(--space-10) var(--space-10) var(--space-16); gap: var(--space-8); }
+.sizeL .inputWrapper { padding: var(--space-14) var(--space-8)  var(--space-14) var(--space-16); gap: var(--space-8); }
+
+/* Trailing controls slot — pinned to the text line (20px) so an icon button
+   (S=28/M=32/L=36) overflow-centres on it in the OUTLINE variant without inflating
+   the padded field. In no-border + hasClearSlot the row height is set explicitly
+   (below) to the button's own footprint, so the same overflow-centred button ends
+   up filling the row exactly — the 20px pin is harmless there. */
+.trailing {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: var(--line-height-base);   /* 20px */
+  gap: var(--space-0);
+}
 
 /* ── Outline variant ─────────────────────────────── */
 
@@ -90,6 +106,23 @@
   position: relative;
   z-index: 0;
 }
+
+/* No-border WITH a clear button present (clearable, space always reserved) — Figma
+   node 36407-19010. Row height matches the tertiary icon-only Button's own compact
+   footprint exactly (S=28/M=32/L=36 — same raw-px precedent as Button.module.css's
+   .tertiary.iconOnly.sizeS/M/L), with zero vertical padding: the button fills the
+   row edge-to-edge top/bottom, no overflow needed. Left stays 8px; right is 0 so
+   the button sits flush at the true right edge; gap is 0 so the input's own
+   trailing padding (below) is what separates the text from the button. */
+.noBorder.sizeS .inputWrapper.hasClearSlot { height: 28px; padding: 0 0 0 var(--space-8); gap: 0; }
+.noBorder.sizeM .inputWrapper.hasClearSlot { height: 32px; padding: 0 0 0 var(--space-8); gap: 0; }
+.noBorder.sizeL .inputWrapper.hasClearSlot { height: 36px; padding: 0 0 0 var(--space-8); gap: 0; }
+
+.noBorder .inputWrapper.hasClearSlot .input { padding-right: var(--space-8); }
+
+/* Zeroing the wrapper's gap above also removes the prefix→input gap when both are
+   present ("Prefix + clear") — restore it explicitly on the prefix icon itself. */
+.noBorder .inputWrapper.hasClearSlot .icon { margin-right: var(--space-8); }
 .noBorder .inputWrapper::before {
   content: '';
   position: absolute;
@@ -105,6 +138,9 @@
 .noBorder.isOpen:not(.isDisabled) .inputWrapper::before {
   background: var(--color-bg-hover-fill);
 }
+/* hasClearSlot rows already stand at the button's full height (28/32/36), so the
+   hover fill matches the row exactly — no -6px text-line bleed. */
+.noBorder .inputWrapper.hasClearSlot::before { inset: 0; }
 
 /* No-border clear button: revealed only on field hover / focus (like the form's
    row actions). Footprint is still reserved (opacity, not display) so nothing shifts. */

@@ -37,7 +37,6 @@ import ToastPage  from './pages/components/ToastPage'
 import SideNavigationPage from './pages/components/SideNavigationPage'
 import EmptyStatePage from './pages/components/EmptyStatePage'
 import TableCellPage from './pages/components/TableCellPage'
-import HoverFillPage from './pages/components/HoverFillPage'
 
 type Page =
   | 'foundation/components-overview'
@@ -76,7 +75,6 @@ type Page =
   | 'components/side-navigation'
   | 'components/empty-state'
   | 'components/table-cell'
-  | 'components/hover-fill'
 
 const nav = [
   // Foundation stays on top as the base layer
@@ -155,12 +153,6 @@ const nav = [
       { id: 'components/breadcrumbs' as Page,     label: 'Breadcrumbs' },
       { id: 'components/side-navigation' as Page, label: 'Side Navigation' },
       { id: 'components/tabs' as Page,            label: 'Tabs' },
-    ],
-  },
-  {
-    section: 'Experimental',
-    items: [
-      { id: 'components/hover-fill' as Page, label: 'Hover Fill' },
     ],
   },
 ]
@@ -246,7 +238,6 @@ export default function App() {
         {page === 'components/side-navigation'    && <SideNavigationPage />}
         {page === 'components/empty-state'        && <EmptyStatePage />}
         {page === 'components/table-cell'         && <TableCellPage />}
-        {page === 'components/hover-fill'         && <HoverFillPage />}
       </main>
       </div>
 

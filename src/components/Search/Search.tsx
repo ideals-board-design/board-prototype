@@ -221,6 +221,9 @@ export function Search({
           onBlur={() => setFocused(false)}
         />
 
+        {/* Trailing controls, pinned to the text line so the 28/32/36 icon
+            buttons centre on it and don't inflate the field height. */}
+        <div className={styles.trailing}>
         {/* ── Counter navigation (mutually exclusive with filter) ─── */}
         {counter ? (
           <>
@@ -306,6 +309,7 @@ export function Search({
             )}
           </>
         )}
+        </div>
 
       </div>
 

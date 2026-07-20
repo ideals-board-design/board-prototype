@@ -78,7 +78,14 @@
       "Bash(curl -s -o /tmp/meeting-details.png \"https://www.figma.com/api/mcp/asset/01297cd2-31fe-457b-aa08-9902575b9eb3\")",
       "Bash(python3 -c ' *)",
       "Bash(python3 -c \"import PIL\")",
-      "Bash(pip3 install *)"
+      "Bash(pip3 install *)",
+      "mcp__mcp-registry__list_connectors",
+      "mcp__646d35eb-e0a3-41d7-9c5a-e3f88adb4c0e__get_metadata",
+      "mcp__646d35eb-e0a3-41d7-9c5a-e3f88adb4c0e__get_design_context",
+      "mcp__646d35eb-e0a3-41d7-9c5a-e3f88adb4c0e__get_variable_defs",
+      "mcp__646d35eb-e0a3-41d7-9c5a-e3f88adb4c0e__get_screenshot",
+      "Bash(curl -sL -o /private/tmp/claude-501/-Users-jaroslav-getman-Documents-Projects-Board-design-system/c37f4497-f563-4302-b409-cb2cb8855cf5/scratchpad/tf_nb.png https://www.figma.com/api/mcp/asset/2b42a26c-fa1c-4691-987c-9290209fac94)",
+      "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__get_variable_defs"
     ]
   }
 }

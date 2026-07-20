@@ -140,6 +140,7 @@ export default function DatePickerPage() {
           <span className={styles.rowLabel}>Empty (placeholder)</span>
           <DatePicker
             variant="no-border"
+            className={styles.nbPreview}
             label="Date"
             value={vals.nbEmpty}
             onChange={set('nbEmpty')}
@@ -152,6 +153,7 @@ export default function DatePickerPage() {
           <span className={styles.rowLabel}>With value</span>
           <DatePicker
             variant="no-border"
+            className={styles.nbPreview}
             label="Date"
             value={vals.nbValue}
             onChange={set('nbValue')}
@@ -164,6 +166,7 @@ export default function DatePickerPage() {
           <span className={styles.rowLabel}>Disabled</span>
           <DatePicker
             variant="no-border"
+            className={styles.nbPreview}
             label="Date"
             value={vals.nbDisabled}
             placeholder="MM/DD/YYYY"

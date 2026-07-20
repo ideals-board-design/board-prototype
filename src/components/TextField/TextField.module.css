@@ -22,6 +22,7 @@
 .sizeS .label { font-size: var(--text-sm); }
 .sizeM .label { font-size: var(--text-base); }
 .sizeL .label { font-size: var(--text-md); }
+.sizeXL .label { font-size: var(--text-md); }
 
 /* ── Input wrapper (the visual "field" box) ─────── */
 .inputWrapper {
@@ -36,9 +37,12 @@
 }
 
 /* Sizes — padding drives height (no explicit height) */
-.sizeS .inputWrapper { padding: var(--space-6)  var(--space-12); gap: var(--space-4); }
-.sizeM .inputWrapper { padding: var(--space-10) var(--space-16); gap: var(--space-8); }
-.sizeL .inputWrapper { padding: var(--space-14) var(--space-16); gap: var(--space-8); }
+/* Right padding is −2px vs left so a trailing suffix icon sits closer to the edge.
+   4-value: top right bottom left. */
+.sizeS .inputWrapper  { padding: var(--space-6)  var(--space-10) var(--space-6)  var(--space-12); gap: var(--space-4); }
+.sizeM .inputWrapper  { padding: var(--space-10) var(--space-14) var(--space-10) var(--space-16); gap: var(--space-8); }
+.sizeL .inputWrapper  { padding: var(--space-14) var(--space-14) var(--space-14) var(--space-16); gap: var(--space-8); }
+.sizeXL .inputWrapper { padding: var(--space-16) var(--space-14) var(--space-16) var(--space-16); gap: var(--space-8); }
 
 /* ── Outline variant ─────────────────────────────── */
 .outline .inputWrapper {
@@ -72,6 +76,33 @@
   position: relative;
   z-index: 0;
 }
+/* No-border WITH a trailing icon-button (suffix) — Figma node 36407-19010 / 36209-4953:
+   the row height matches the tertiary icon-only Button's own compact footprint exactly
+   (S=28/M=32/L=36), with zero vertical padding, so the button fills the row
+   edge-to-edge. Left stays 8px; right is 0 so the button sits flush at the true right
+   edge; gap is 0 so the input's own trailing padding (below) separates the text. */
+.noBorder.sizeS  .inputWrapper.hasSuffix { height: 28px; padding: 0 0 0 var(--space-8); gap: 0; }
+.noBorder.sizeM  .inputWrapper.hasSuffix { height: 32px; padding: 0 0 0 var(--space-8); gap: 0; }
+.noBorder.sizeL  .inputWrapper.hasSuffix { height: 36px; padding: 0 0 0 var(--space-8); gap: 0; }
+.noBorder.sizeXL .inputWrapper.hasSuffix { height: 36px; padding: 0 0 0 var(--space-8); gap: 0; }
+
+/* Gap is removed above so the button sits flush right — the text keeps its own
+   8px trailing space instead, matching the Figma label-wrapper's own padding. */
+.noBorder .inputWrapper.hasSuffix .input { padding-right: var(--space-8); }
+
+/* The suffix slot is normally a fixed 16/20px icon box (plain icon in outline). For
+   a no-border trailing icon-button it must instead hug the button's natural footprint
+   (S=28/M=32/L=36) — otherwise the flex row squishes the button on the main axis. */
+.noBorder .inputWrapper.hasSuffix .icon { width: auto; height: auto; }
+
+/* No-border suffix icon-button — reveal on hover/focus, matching the clearReveal
+   convention already used in Autocomplete/DatePicker no-border variants. */
+.noBorder .suffixReveal {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.noBorder .inputWrapper:hover .suffixReveal,
+.noBorder .inputWrapper:focus-within .suffixReveal { opacity: 1; }
 .noBorder .inputWrapper::before {
   content: '';
   position: absolute;
@@ -86,6 +117,9 @@
 .noBorder:not(.isDisabled) .inputWrapper:focus-within::before {
   background: var(--color-bg-hover-fill);
 }
+/* hasSuffix rows already stand at the button's full height (28/32/36), so the hover
+   fill matches the row exactly — no -6px text-line bleed. */
+.noBorder .inputWrapper.hasSuffix::before { inset: 0; }
 /* The input owns the full 32px zone (6px padding, cancelled by negative margin),
    so hovering/clicking anywhere in it focuses the field. Hand cursor by default;
    text caret only while editing (focused). */
@@ -97,6 +131,19 @@
 /* Filled (has text) or focused → text caret; empty placeholder → hand. */
 .noBorder .input:focus,
 .noBorder .input:not(:placeholder-shown) { cursor: text; }
+
+/* ── Multiline (textarea) ────────────────────────── */
+/* Auto-grows and wraps with content. */
+.multiline .input {
+  field-sizing: content;
+  resize: none;
+  overflow: hidden;
+}
+/* No-border multiline: drop the single-line hit-area negative-margin trick so the
+   6px padding adds real height (one line = line-height + 12px), and match the
+   hover-fill to the full row (no −6px text-line bleed). */
+.noBorder.multiline .input { margin: 0; }
+.noBorder.multiline .inputWrapper::before { inset: 0; }
 
 /* ── Disabled state ──────────────────────────────── */
 .isDisabled .inputWrapper {
@@ -125,6 +172,12 @@
 .sizeS .input { font-size: var(--text-sm); }
 .sizeM .input { font-size: var(--text-base); }
 .sizeL .input { font-size: var(--text-md); }
+/* XL — 20px Medium / 24px line (Figma "X Large Default") */
+.sizeXL .input {
+  font-size: 20px;
+  font-weight: var(--font-weight-medium);
+  line-height: 24px;
+}
 
 .input::placeholder {
   color: var(--color-text-secondary);
@@ -139,10 +192,11 @@
   color: var(--color-icon-secondary);
 }
 
-/* S: 16×16  |  M/L: 20×20 */
+/* S: 16×16  |  M/L/XL: 20×20 */
 .sizeS .icon { width: 16px; height: 16px; }
 .sizeM .icon,
-.sizeL .icon { width: 20px; height: 20px; }
+.sizeL .icon,
+.sizeXL .icon { width: 20px; height: 20px; }
 
 .icon svg { width: 100%; height: 100%; }
 

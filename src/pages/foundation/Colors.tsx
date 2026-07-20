@@ -95,8 +95,12 @@ const semantic = [
   { name: 'Primary text',   token: '--color-text-primary',   value: '#1F2129' },
   { name: 'Secondary text', token: '--color-text-secondary', value: '#5F616A' },
   { name: 'Inverse text',   token: '--color-text-inverse',   value: '#FFFFFF' },
-  { name: 'Hover background',   token: '--color-bg-hover-fill',        value: '#3E52C21A' },
-  { name: 'Pressed background', token: '--color-bg-hover-fill-strong', value: '#3E52C233' },
+  { name: 'Primary icon',   token: '--color-icon-primary',   value: '#1F2129' },
+  { name: 'Secondary icon', token: '--color-icon-secondary', value: '#5F616A' },
+  { name: 'Inverse icon',   token: '--color-icon-inverse',   value: '#FFFFFF' },
+  { name: 'Hover background',      token: '--color-bg-hover',             value: '#ECEEF9' },
+  { name: 'Hover background (tr)',   token: '--color-bg-hover-fill',        value: '#3E52C21A' },
+  { name: 'Pressed background (tr)', token: '--color-bg-hover-fill-strong', value: '#3E52C233' },
   { name: 'Selected bg',        token: '--color-bg-selected',          value: '#EBF8EF' },
 ]
 

@@ -72,22 +72,24 @@ export function Toast({
       </div>
 
       {onDismiss && (
-        <Tooltip label="Dismiss" position="top">
-          <Button
-            variant="tertiary"
-            intent="neutral"
-            size="m"
-            className={styles.dismiss}
-            iconOnly={
-              <span
-                style={{ display: 'contents' }}
-                dangerouslySetInnerHTML={{ __html: multiplySvg }}
-              />
-            }
-            onClick={onDismiss}
-            aria-label="Dismiss"
-          />
-        </Tooltip>
+        <div className={styles.right}>
+          <Tooltip label="Dismiss" position="top">
+            <Button
+              variant="tertiary"
+              intent="neutral"
+              size="m"
+              className={styles.dismiss}
+              iconOnly={
+                <span
+                  style={{ display: 'contents' }}
+                  dangerouslySetInnerHTML={{ __html: multiplySvg }}
+                />
+              }
+              onClick={onDismiss}
+              aria-label="Dismiss"
+            />
+          </Tooltip>
+        </div>
       )}
     </div>
   )

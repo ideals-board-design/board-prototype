@@ -56,7 +56,9 @@ export function Modal({
         style={{ width }}
       >
         <header className={styles.header}>
-          <h2 id="modal-title" className={styles.title}>{title}</h2>
+          <div className={styles.titleWrap}>
+            <h2 id="modal-title" className={styles.title}>{title}</h2>
+          </div>
           <Tooltip label="Close" position="top">
             <Button
               variant="tertiary"
@@ -65,7 +67,6 @@ export function Modal({
               iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: multiplySvg }} />}
               onClick={onClose}
               aria-label="Close"
-              style={{ width: 20, height: 20, margin: 0 }}
             />
           </Tooltip>
         </header>

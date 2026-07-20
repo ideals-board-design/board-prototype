@@ -1,4 +1,7 @@
-/* Toast — Figma nodes 9829-100949, 34940-39518…39521 */
+/* Toast — Figma nodes 9829-100950…101007 (single-line states) + 23765-87788 (multi-line).
+   BG = state -50 palette (warning = yellow-50); icon = state -500.
+   Single-line 48px; multi-line (title+optional+action) 102px. Dismiss & action pinned
+   to the 20px line so 32px tertiary buttons don't inflate the toast height. */
 
 /* ── Base ───────────────────────────────────────────────── */
 
@@ -7,7 +10,9 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: var(--space-16);
-  padding: var(--space-14) var(--space-16);   /* 14+14+20 = 48px single-line */
+  /* Right padding is 10px (not symmetric with the left 16px) — the trailing
+     dismiss/action button sits flush there with no additional shift. */
+  padding: var(--space-14) var(--space-10) var(--space-14) var(--space-16);   /* 14+14+20 = 48px single-line */
   width: 400px;
   box-sizing: border-box;
   border-radius: var(--radius-sm);            /* 4px */
@@ -16,10 +21,10 @@
 
 /* ── States — background ────────────────────────────────── */
 
-.success { background: var(--color-success-bg); }   /* green-25  */
-.info    { background: var(--color-info-bg);    }   /* blue-50   */
-.warning { background: var(--color-warning-bg); }   /* orange-50 */
-.error   { background: var(--color-error-bg);   }   /* red-50    */
+.success { background: var(--green-50);  }   /* #CBF1DA */
+.info    { background: var(--blue-50);   }   /* #E6F2FD */
+.warning { background: var(--yellow-50); }   /* #FFF4B4 — warning toast uses yellow bg */
+.error   { background: var(--red-50);    }   /* #FAD9D6 */
 
 /* ── Left slot ──────────────────────────────────────────── */
 
@@ -42,17 +47,17 @@
 
 .icon svg { width: 20px; height: 20px; }
 
-.success .icon { color: var(--color-success-bold); }
-.info    .icon { color: var(--color-info-bold);    }
-.warning .icon { color: var(--color-warning-bold); }
-.error   .icon { color: var(--color-error-bold);   }
+.success .icon { color: var(--color-success); }   /* green-500  */
+.info    .icon { color: var(--color-info);    }   /* blue-500   */
+.warning .icon { color: var(--color-warning); }   /* orange-500 */
+.error   .icon { color: var(--color-error);   }   /* red-500    */
 
 /* ── Body ───────────────────────────────────────────────── */
 
 .body {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);              /* texts → action: 8px */
+  gap: var(--space-10);             /* texts → action: 10px */
   flex: 1;
   min-width: 0;
 }
@@ -92,9 +97,26 @@
 }
 
 /* ── Action slot ────────────────────────────────────────── */
-
+/* Pin to line height so the 32px tertiary button centres on its line
+   (overflows symmetrically) instead of adding 12px to the toast height. */
 .action {
   display: flex;
+  align-items: center;
+  height: var(--line-height-base);  /* 20px */
+  /* Offset the tertiary button's own left padding so its LABEL aligns with the
+     message/optional text column (Figma: all three flush-left). Positioning at the
+     usage site — the Button keeps its normal padding/hit-area. */
+  margin-left: calc(-1 * var(--space-10));
+}
+
+/* ── Right slot (dismiss) ───────────────────────────────── */
+/* Same first-line pin: the 32px dismiss centres on the first line, so a
+   message-only toast stays 48px instead of growing to the button's 60px. */
+.right {
+  display: flex;
+  align-items: center;
+  height: var(--line-height-base);  /* 20px */
+  flex-shrink: 0;
 }
 
 /* Dismiss (×) keeps its neutral grey glyph, but its hover/press hit-zone fill

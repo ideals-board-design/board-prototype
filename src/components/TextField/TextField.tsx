@@ -1,11 +1,11 @@
-import { type InputHTMLAttributes, type ReactNode } from 'react'
+import { type InputHTMLAttributes, type TextareaHTMLAttributes, type ReactNode } from 'react'
 import styles from './TextField.module.css'
 import { HintRow } from '../shared/HintRow'
 import { condition } from '../../icons/condition'
 
 const loaderSvg = condition.find(i => i.name === 'loader-round')!.svg
 
-export type TextFieldSize    = 's' | 'm' | 'l'
+export type TextFieldSize    = 's' | 'm' | 'l' | 'xl'
 export type TextFieldVariant = 'outline' | 'no-border'
 
 export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'size' | 'prefix'> {
@@ -21,6 +21,9 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   /** true = red border only; string = red border + error message below */
   error?:    boolean | string
   loading?:  boolean
+  /** Render a multi-line, auto-growing field (<textarea> that wraps) instead of
+   *  a single-line <input>. All variant/size styling still applies. */
+  multiline?: boolean
 }
 
 export function TextField({
@@ -32,6 +35,7 @@ export function TextField({
   helper,
   error   = false,
   loading = false,
+  multiline = false,
   disabled,
   className,
   id,
@@ -41,13 +45,14 @@ export function TextField({
   const errorMsg  = typeof error === 'string' ? error : undefined
   const hintText  = errorMsg ?? helper
 
-  const sizeClass    = size === 'l' ? styles.sizeL : size === 's' ? styles.sizeS : styles.sizeM
+  const sizeClass    = size === 'xl' ? styles.sizeXL : size === 'l' ? styles.sizeL : size === 's' ? styles.sizeS : styles.sizeM
   const variantClass = variant === 'no-border' ? styles.noBorder : styles.outline
 
   const wrapperCls = [
     styles.wrapper,
     sizeClass,
     variantClass,
+    multiline ? styles.multiline : '',
     hasError  ? styles.hasError   : '',
     disabled  ? styles.isDisabled : '',
     className ?? '',
@@ -59,18 +64,29 @@ export function TextField({
         <label className={styles.label} htmlFor={id}>{label}</label>
       )}
 
-      <div className={styles.inputWrapper}>
+      <div className={[styles.inputWrapper, suffix !== undefined ? styles.hasSuffix : ''].filter(Boolean).join(' ')}>
         {prefix !== undefined && (
           <span className={styles.icon} aria-hidden="true">{prefix}</span>
         )}
 
-        <input
-          id={id}
-          className={styles.input}
-          disabled={disabled}
-          aria-invalid={hasError || undefined}
-          {...rest}
-        />
+        {multiline ? (
+          <textarea
+            id={id}
+            className={styles.input}
+            rows={1}
+            disabled={disabled}
+            aria-invalid={hasError || undefined}
+            {...(rest as TextareaHTMLAttributes<HTMLTextAreaElement>)}
+          />
+        ) : (
+          <input
+            id={id}
+            className={styles.input}
+            disabled={disabled}
+            aria-invalid={hasError || undefined}
+            {...rest}
+          />
+        )}
 
         {loading ? (
           <span
@@ -79,7 +95,12 @@ export function TextField({
             dangerouslySetInnerHTML={{ __html: loaderSvg }}
           />
         ) : suffix !== undefined ? (
-          <span className={styles.icon} aria-hidden="true">{suffix}</span>
+          <span
+            className={[styles.icon, variant === 'no-border' ? styles.suffixReveal : ''].filter(Boolean).join(' ')}
+            aria-hidden="true"
+          >
+            {suffix}
+          </span>
         ) : null}
       </div>
 

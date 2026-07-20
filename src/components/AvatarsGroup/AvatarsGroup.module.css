@@ -4,16 +4,18 @@
 
 .group {
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   isolation: isolate;
 }
 
 /* ── Item shell ──────────────────────────────────────────────────────────── */
+/* No border: the separator between overlapping avatars is a transparent notch
+   (mask, below), so the page background shows through instead of a white ring. */
 
 .item {
   position: relative;
   border-radius: 50%;
-  border: 2px solid var(--stone-0);
+  box-sizing: border-box;
   flex-shrink: 0;
   overflow: hidden;
   display: flex;
@@ -28,6 +30,25 @@
 .sizeS .item { width: 24px; height: 24px; margin-right: -2px; }
 
 .item:last-child { margin-right: 0; }
+
+/* ── Transparent overlap mask ────────────────────────────────────────────── */
+/* Every avatar except the first is overlapped on its left by the one in front.
+   Cut a hole = that front avatar's disc (radius R) + a 2px gap, centred at the
+   front avatar's centre (x = R − step, y = 50%). The 2px ring between the two
+   discs then reveals whatever is behind the group — no white border needed.
+   step = diameter − |overlap|  →  L 34, M 28, S 22. */
+.sizeL .item:not(:first-child) {
+  -webkit-mask-image: radial-gradient(circle at -14px 50%, transparent 22px, #000 22px);
+          mask-image: radial-gradient(circle at -14px 50%, transparent 22px, #000 22px);
+}
+.sizeM .item:not(:first-child) {
+  -webkit-mask-image: radial-gradient(circle at -12px 50%, transparent 18px, #000 18px);
+          mask-image: radial-gradient(circle at -12px 50%, transparent 18px, #000 18px);
+}
+.sizeS .item:not(:first-child) {
+  -webkit-mask-image: radial-gradient(circle at -10px 50%, transparent 14px, #000 14px);
+          mask-image: radial-gradient(circle at -10px 50%, transparent 14px, #000 14px);
+}
 
 /* ── Variants ────────────────────────────────────────────────────────────── */
 

@@ -92,6 +92,8 @@
 .semanticName {
   font-size: var(--text-sm);
   color: var(--color-text-primary);
+  width: 200px;
+  flex-shrink: 0;
 }
 
 .semanticToken {

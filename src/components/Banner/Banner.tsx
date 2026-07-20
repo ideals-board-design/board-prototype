@@ -16,7 +16,7 @@ export type BannerSize    = 'm' | 'l'
 export interface BannerProps {
   /** Semantic state — controls background, icon and accent colour */
   state?:     BannerState
-  /** 'rounded' = border-radius 12px; 'inline' = square corners */
+  /** 'rounded' = border-radius 4px (radius-sm); 'inline' = square corners */
   variant?:   BannerVariant
   /** 'l' = 48px, 'm' = 40px */
   size?:      BannerSize

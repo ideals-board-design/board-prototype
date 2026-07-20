@@ -345,7 +345,13 @@ export function Autocomplete({
       )}
 
       {/* Input wrapper — the visual "field" box */}
-      <div ref={inputWrapperRef} className={styles.inputWrapper}>
+      <div
+        ref={inputWrapperRef}
+        className={[
+          styles.inputWrapper,
+          clearable && !disabled ? styles.hasClearSlot : '',
+        ].filter(Boolean).join(' ')}
+      >
 
         {prefix !== undefined && (
           <span className={styles.icon} aria-hidden="true">{prefix}</span>
@@ -381,7 +387,8 @@ export function Autocomplete({
             Tooltip only mounts when button is truly visible, so its hover
             area never captures events over an invisible button. */}
         {clearable && !disabled && (
-          showClearTooltip ? (
+          <div className={styles.trailing}>
+          {showClearTooltip ? (
             <Tooltip label="Clear" position="top">
               <Button
                 variant="tertiary"
@@ -404,7 +411,8 @@ export function Autocomplete({
               tabIndex={-1}
               aria-hidden="true"
             />
-          )
+          )}
+          </div>
         )}
 
       </div>

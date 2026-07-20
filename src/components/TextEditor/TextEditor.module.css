@@ -21,7 +21,14 @@
 }
 
 /* ── Field box (visual border container) ────────── */
+/* Figma node 36411-20452: flex column, 4px vertical padding, no gap. The three
+   parts (top bar / textarea / bottom bar) supply their own padding. */
 .fieldWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-0);
+  padding: var(--space-4) var(--space-0);   /* 4px 0 */
   border-radius: var(--radius-sm);   /* 4px */
   background: var(--stone-0);
   box-shadow: inset 0 0 0 1px var(--stone-500);
@@ -65,6 +72,7 @@
   overflow: visible;           /* don't clip the hover-fill ::before */
   position: relative;
   z-index: 0;
+  padding: 0;                  /* inline at rest — no outline wrapper padding */
 }
 .noBorder .fieldWrapper::before {
   content: '';
@@ -109,31 +117,36 @@
 .noBorder .fieldWrapper:focus-within .textarea { padding: var(--space-10) var(--space-16); }
 
 /* ── Toolbar rows ────────────────────────────────── */
-/* Toolbar uses standard DS size-s icon-only buttons (24×24 hit area + hover fill,
-   16px glyph, margin -4 → 16px footprint). No size/margin overrides — the flex gap
-   is the footprint gap, so the group gap sets the visible spacing directly. */
+/* DS size-m tertiary icon-only buttons (32×32 hit area + hover fill, 20px glyph).
+   Figma node 36411-20452: bars carry asymmetric vertical padding so, with the 4px
+   wrapper padding, each 32px button row is 40px tall (6+32+2 top, 2+32+6 bottom).
+   16px gap between the two toggle groups. */
 .topBar,
 .bottomBar {
   display: flex;
   align-items: center;
-  padding: var(--space-12) var(--space-16);
-  gap: var(--space-32);
+  gap: var(--space-16);
 }
 
+.topBar    { padding: var(--space-6) var(--space-10) var(--space-2) var(--space-10); }
 .bottomBar {
+  padding: var(--space-2) var(--space-10) var(--space-6) var(--space-10);
   justify-content: space-between;
 }
 
-/* Icon groups within topBar / bottomLeft — 12px between adjacent icon buttons */
+/* Toggle-button groups — buttons abut (gap 0); each button's own 6px padding
+   supplies the visual separation, aligning the first glyph with the text at 16px. */
 .toolbarGroup,
 .bottomLeft {
   display: flex;
   align-items: center;
-  gap: var(--space-12);
+  gap: var(--space-0);
 }
 
-/* ── Textarea element ───────────────────────────── */
-/* min-height: 40px → total fieldWrapper = 44+40+44 = 128px (Figma spec) */
+/* ── Textarea element (middle part) ─────────────── */
+/* Figma node 36411-20452: padding 10px 16px, one 20px line → 40px band.
+   Total fieldWrapper = 4(wrapper) + 40(top) + 40(mid) + 40(bottom) + 4(wrapper) = 128px.
+   Grows with content. */
 .textarea {
   display: block;
   width: 100%;
