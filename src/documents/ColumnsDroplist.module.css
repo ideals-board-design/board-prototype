@@ -1,0 +1,130 @@
+/* ColumnsDroplist — Figma 947-17476 */
+
+.droplist {
+  position: fixed;
+  z-index: 100;
+  width: 232px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0);
+  padding: var(--space-4);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-100);
+}
+
+/* ── Rows ─────────────────────────────────────────────────── */
+
+.settingRow,
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: 40px;
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.row {
+  position: relative;
+  user-select: none;
+  cursor: pointer;
+}
+
+.rowSelected { background: var(--color-bg-selected); }
+
+.rowLocked { opacity: 0.4; cursor: default; }
+
+/* Original slot while its item is being dragged */
+.rowGhost { opacity: 0.4; }
+
+.rowLabel {
+  flex: 1 0 0;
+  min-width: 0;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Drag handle ──────────────────────────────────────────── */
+
+.handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle svg { width: 20px; height: 20px; }
+
+.handleLocked { cursor: default; }
+
+/* Visual-only indicator: clicks pass through to the row toggle */
+.check {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* ── Items container + target line ────────────────────────── */
+
+.items {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0);
+}
+
+.targetLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--green-500);
+  border-radius: 1px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ── Floating chip ────────────────────────────────────────── */
+
+.chip {
+  position: fixed;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: 40px;
+  padding: var(--space-10) var(--space-12);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--green-500);   /* green border while dragging — selected or not */
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-100);
+  pointer-events: none;
+}
+
+/* Selected item keeps its green fill while dragging; unselected stays neutral */
+.chipSelected {
+  background: var(--color-bg-selected);
+}
+
+.chipReturning {
+  transition: left 0.15s ease, top 0.15s ease;
+}
+
+/* Grabbing cursor applied to <body> during an active drag */
+.grabbing,
+.grabbing * {
+  cursor: grabbing !important;
+}

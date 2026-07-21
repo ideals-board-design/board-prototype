@@ -35,6 +35,12 @@ const FEATURES: { id: string; name: string; designer: string; href?: string; vie
     designer: 'Jaroslav Getman',
     href: '/form.html',
   },
+  {
+    id: 'documents',
+    name: 'Documents',
+    designer: 'Jaroslav Getman',
+    href: '/documents.html',
+  },
 ]
 
 /* ── Dashboard flows ───────────────────────────────────────

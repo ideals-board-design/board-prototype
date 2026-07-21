@@ -85,7 +85,18 @@
       "mcp__646d35eb-e0a3-41d7-9c5a-e3f88adb4c0e__get_variable_defs",
       "mcp__646d35eb-e0a3-41d7-9c5a-e3f88adb4c0e__get_screenshot",
       "Bash(curl -sL -o /private/tmp/claude-501/-Users-jaroslav-getman-Documents-Projects-Board-design-system/c37f4497-f563-4302-b409-cb2cb8855cf5/scratchpad/tf_nb.png https://www.figma.com/api/mcp/asset/2b42a26c-fa1c-4691-987c-9290209fac94)",
-      "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__get_variable_defs"
+      "mcp__a76dfbf6-dbf6-4906-82c8-bd14ababb29b__get_variable_defs",
+      "Bash(grep -oE 'name: \"format-folder\", svg: `[^`]*`' src/icons/fileFormat.ts)",
+      "Bash(grep -oE 'name: \"format-pdf\", svg: `<svg[^>]*>' src/icons/fileFormat.ts)",
+      "Bash(grep -oE 'name: \"format-word\", svg: `<svg[^>]*>' src/icons/fileFormat.ts)",
+      "Bash(grep -oE 'name: \"star\\(-filled\\)?\", svg: `<svg[^>]*>[^`]*`' src/icons/functional.ts)",
+      "Bash(curl -sL -o col-node.png \"https://www.figma.com/api/mcp/asset/4f369eef-6559-4625-aa80-981b007f8f80\")",
+      "Bash(sort -t- -k3 -n)",
+      "Bash(grep -nA6 \"truncationHintFlex\" src/components/TableCell/TableCell.module.css)",
+      "Bash(curl -sL -o rc-default.png \"https://www.figma.com/api/mcp/asset/10b3b216-d097-4f04-91a0-57041b9a86a3\")",
+      "Bash(curl -sL -o rc-drag.png \"https://www.figma.com/api/mcp/asset/666ee63f-a341-4806-96e0-374f32b8b9dd\")",
+      "Bash(curl -sL -o rc-chip.png \"https://www.figma.com/api/mcp/asset/14111739-a242-4181-bcb4-53bae5181499\")",
+      "Bash(grep -oE 'name: \"drag\", svg: `<svg[^`]*`' src/icons/functional.ts)"
     ]
   }
 }

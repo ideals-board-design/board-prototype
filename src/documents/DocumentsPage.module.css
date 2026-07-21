@@ -1,0 +1,233 @@
+/* DocumentsPage — Documents table (Figma 658-21422) */
+
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Invisible catcher that closes the columns droplist on any outside pointerdown.
+   Sits just below the droplist (z 100) so clicks on the droplist never reach it. */
+.columnsBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 99;
+}
+
+/* ── Toolbar — 88px (pad 24 + button 40 + pad 24) ────────── */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  flex-shrink: 0;
+}
+
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  flex-shrink: 0;
+}
+
+.searchInput {
+  width: 360px;
+  flex-shrink: 0;
+}
+
+/* ── Scroll areas ────────────────────────────────────────── */
+
+.tableScroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tableCard {
+  margin: 0 var(--space-24) var(--space-24);
+  overflow: hidden;
+  overflow-x: auto;
+}
+
+/* ── Table ───────────────────────────────────────────────── */
+
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  min-width: 1400px;
+}
+
+.table thead tr { background: var(--stone-200); }
+
+/* Round the row ends */
+.table th:first-child,
+.table td:first-child {
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+.table th:nth-last-child(2),
+.table td:nth-last-child(2) {
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+/* ── Frozen left columns — checkbox (1) + Name (2) ───────────
+   Stay fixed on horizontal scroll. Opaque backgrounds are
+   required so scrolled content never shows through. No shadow
+   or other effects. */
+
+.table th:first-child,
+.table td:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.table th:nth-child(2),
+.table td:nth-child(2) {
+  position: sticky;
+  left: 36px;
+  z-index: 1;
+}
+
+/* Header frozen cells sit above the scrolling body cells */
+.table thead th:first-child,
+.table thead th:nth-child(2) {
+  z-index: 3;
+  background: var(--stone-200);
+}
+
+/* Opaque per-row backgrounds for the two frozen body cells */
+.rowOdd  td:first-child,
+.rowOdd  td:nth-child(2)  { background: var(--stone-0);   }
+.rowEven td:first-child,
+.rowEven td:nth-child(2)  { background: var(--stone-100); }
+.rowSelected td:first-child,
+.rowSelected td:nth-child(2) { background: var(--color-bg-selected); }
+
+.rowOdd:hover  td:first-child,
+.rowOdd:hover  td:nth-child(2),
+.rowEven:hover td:first-child,
+.rowEven:hover td:nth-child(2),
+.rowSelected:hover td:first-child,
+.rowSelected:hover td:nth-child(2) { background: var(--color-bg-hover); }
+
+/* ── Name column ──────────────────────────────────────────── */
+
+/* Row name — Medium/Default text style: 15px · 400 · 20px */
+.nameCell {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: 20px;
+}
+
+/* File-format icon is 24×24 (Figma) */
+.nameCell > div > span:first-child {
+  width: 24px;
+  height: 24px;
+}
+
+/* ── Star column ─────────────────────────────────────────── */
+
+.starTh {
+  padding: 0;
+}
+
+.starTd {
+  padding: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.starBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon-secondary);
+  opacity: 0;
+  transition: opacity 0.1s ease, color 0.1s ease;
+}
+
+.starBtn svg { width: 20px; height: 20px; }
+
+/* Outline star appears on row hover; filled gold star is always visible */
+.starHoverable { opacity: 1; }
+
+.starActive {
+  opacity: 1;
+  color: var(--yellow-700);
+}
+
+/* ── Actions column — 0-width, overlays only (Figma 658-22261) ───
+   The column reserves no space, so the default state never covers
+   or clips data. Both the header button and the row actions are
+   opaque overlays pinned to the right edge. */
+
+.actionsTh,
+.actionsTd {
+  position: sticky;
+  right: 0;
+  width: 0;
+  padding: 0;
+  vertical-align: middle;
+  z-index: 2;
+}
+
+/* Header — 52px opaque cell pinned right; floats over the header row only */
+.actionsHeaderInner {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 52px;
+  height: var(--size-l);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: var(--space-10);
+  background: var(--stone-200);
+}
+
+/* Body — row actions reveal as a left-extending overlay on hover only.
+   Action group wrapper (Figma "Table: Actions"): flex · padding 8px 10px
+   · justify flex-end · align center. */
+.actionsOverlay {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: var(--size-l);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-0);
+  padding: var(--space-8) var(--space-10);
+  background: var(--color-bg-hover);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.actionsVisible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Body rows ───────────────────────────────────────────── */
+
+.rowOdd  { background: var(--stone-0);   }
+.rowEven { background: var(--stone-100); }
+.rowSelected { background: var(--color-bg-selected); }
+
+.rowOdd:hover,
+.rowEven:hover,
+.rowSelected:hover { background: var(--color-bg-hover); }

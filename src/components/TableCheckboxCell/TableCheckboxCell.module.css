@@ -1,0 +1,23 @@
+/* TableCheckboxCell — Figma node 31434-6343
+   Main wrapper (cell): padding 14px 0 14px 16px
+   Checkbox wrapper: padding 2px */
+
+.cell {
+  padding: var(--space-14) var(--space-0) var(--space-14) var(--space-16);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* Constrain the DS Checkbox hit area to the 20×20 table wrapper
+   (16px box + 2px all around). The shared Checkbox default stays 24px. */
+.checkbox > span {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+}
