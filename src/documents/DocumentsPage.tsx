@@ -377,18 +377,23 @@ export default function DocumentsPage() {
                           {renderBodyCell(k, row)}
                           {k === 'name' && (
                             <td className={styles.starTd}>
-                              <button
-                                type="button"
-                                className={[
-                                  styles.starBtn,
-                                  row.starred ? styles.starActive : '',
-                                  hoveredRow === row.id ? styles.starHoverable : '',
-                                ].filter(Boolean).join(' ')}
-                                onClick={() => toggleStar(row.id)}
-                                aria-label={row.starred ? 'Unstar' : 'Star'}
-                                aria-pressed={row.starred}
-                                dangerouslySetInnerHTML={{ __html: row.starred ? starFilledSvg : starSvg }}
-                              />
+                              <Tooltip
+                                label={row.starred ? 'Remove from favorites' : 'Add to favorites'}
+                                position="top"
+                              >
+                                <button
+                                  type="button"
+                                  className={[
+                                    styles.starBtn,
+                                    row.starred ? styles.starActive : '',
+                                    hoveredRow === row.id ? styles.starHoverable : '',
+                                  ].filter(Boolean).join(' ')}
+                                  onClick={() => toggleStar(row.id)}
+                                  aria-label={row.starred ? 'Remove from favorites' : 'Add to favorites'}
+                                  aria-pressed={row.starred}
+                                  dangerouslySetInnerHTML={{ __html: row.starred ? starFilledSvg : starSvg }}
+                                />
+                              </Tooltip>
                             </td>
                           )}
                         </Fragment>
