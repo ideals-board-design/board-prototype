@@ -18,7 +18,7 @@ body {
   font-size: var(--text-sm);
   line-height: var(--line-height-sm);
   color: var(--color-text-primary);
-  background-color: var(--color-bg-page);
+  background-color: var(--color-bg-surface);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

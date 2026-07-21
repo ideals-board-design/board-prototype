@@ -18,6 +18,7 @@ export default defineConfig({
         'cs-before-meeting': 'cs-before-meeting.html',
         blank:            'blank.html',
         form:             'form.html',
+        documents:        'documents.html',
       },
     },
   },
