@@ -12,13 +12,13 @@
 }
 
 /* Overlay — solid hover background to cover row content behind.
-   Figma node 31434-6276: padding 8px 10px, buttons abut (gap 0) — each 32px
-   button's own padding supplies the visual spacing (32px glyph-to-glyph). */
+   Figma node 31434-6276: padding 8px 10px. Adjacent tertiary icon buttons
+   are separated by 2px (DS rule); each button's own padding adds to that. */
 .inner {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: var(--space-0);
+  gap: var(--space-2);              /* 2px between adjacent tertiary icon buttons (DS rule) */
   padding: var(--space-8) var(--space-10);
   height: var(--size-l);
   position: absolute;

@@ -94,6 +94,7 @@ import { actions } from '../icons/actions'
 - **Never hardcode values**: no `#1F2129`, no `14px`, no `8px` directly
 - **All styles via CSS Modules** (`.module.css` files)
 - **Component heights**: S=32px, M=40px, L=48px (via padding, not height property)
+- **Tertiary icon-button spacing**: adjacent tertiary icon buttons (in field trailing slots, table action cells, toolbars, headers, row-hover actions, calendar nav — anywhere two or more sit together) are separated by exactly **2px** — set `gap: var(--space-2)` on the container. This is the single source of truth; never use 0px "abut" spacing or ad-hoc gaps (12/16px) between them. Does not apply to a text button sitting next to an icon button (e.g. Banner action + dismiss).
 
 ### Icons
 - **Only from `src/icons/*.ts`** — never create inline SVGs

@@ -62,7 +62,7 @@
   align-items: center;
   flex-shrink: 0;
   height: var(--line-height-base);   /* 20px */
-  gap: var(--space-0);               /* icon buttons abut — their padding is the visual gap */
+  gap: var(--space-2);               /* 2px between adjacent tertiary icon buttons (DS rule) */
 }
 
 /* Hover */

@@ -54,13 +54,13 @@
 .sizeL .trigger { padding: var(--space-14) var(--space-8)  var(--space-14) var(--space-16); }
 
 /* Trailing controls (clear + calendar) — pinned to the text line (20px) so the
-   28/32/36 icon buttons centre on it and don't inflate the trigger. Buttons abut. */
+   28/32/36 icon buttons centre on it and don't inflate the trigger. */
 .trailing {
   display: flex;
   align-items: center;
   flex-shrink: 0;
   height: var(--line-height-base);   /* 20px */
-  gap: var(--space-0);
+  gap: var(--space-2);               /* 2px between adjacent tertiary icon buttons (DS rule) */
 }
 /* Outline only: pull the group toward the edge by the button's centring inset so the
    trailing glyph lands on the trigger padding (symmetric with the value text edge). */
