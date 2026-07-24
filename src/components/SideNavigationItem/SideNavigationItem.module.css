@@ -64,6 +64,12 @@
 .item:hover .iconActive,
 .item.selected .iconActive  { display: flex; }
 
+/* Active icon outline follows primary (matches the label + the Navigation icon
+   spec: default = secondary, active = primary + green). currentColor drives the
+   icon's stroke; the green accent is baked in. Flips light/dark via the token. */
+.item:hover .icon,
+.item.selected .icon { color: var(--color-text-primary); }
+
 /* ── Label ─────────────────────────────────────────────────── */
 
 .label {

@@ -21,7 +21,7 @@ export default function IllustrationsPage() {
   return (
     <div className={styles.page}>
       <h1 className={styles.title}>Illustrations</h1>
-      <p className={styles.subtitle}>176×120px · multi-color · 23 illustrations</p>
+      <p className={styles.subtitle}>176×120px · multi-color · {illustrations.length} illustrations</p>
 
       <div className={styles.grid}>
         {illustrations.map(ill => (

@@ -83,7 +83,8 @@
   position: absolute;
   width: 10px;
   height: 2px;
-  background: var(--stone-0);
+  /* On the brand-green fill — inverse icon stays light in both modes */
+  background: var(--color-icon-inverse);
   border-radius: 1px;
 }
 
@@ -93,7 +94,8 @@
   display: none;
   width: 16px;
   height: 16px;
-  color: var(--stone-0);
+  /* On the brand-green fill — inverse icon stays light in both modes */
+  color: var(--color-icon-inverse);
 }
 
 .checkIcon svg {

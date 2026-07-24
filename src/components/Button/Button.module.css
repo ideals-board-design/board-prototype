@@ -90,7 +90,13 @@
 
 .primary {
   background: var(--green-500);
-  color: var(--stone-0);
+  color: var(--color-text-inverse);
+}
+
+/* Icon follows the inverse icon token (stays light on the coloured fill in
+   both modes); most DS icons paint via fill: currentColor. */
+.primary .icon {
+  color: var(--color-icon-inverse);
 }
 
 .primary:hover:not(:disabled):not([data-loading]),

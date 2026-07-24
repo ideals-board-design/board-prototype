@@ -310,7 +310,7 @@
   z-index: 8000;
   background: var(--stone-0);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-100);
+  box-shadow: var(--elevation-100);
 }
 
 .sizeS .loadingDroplist,

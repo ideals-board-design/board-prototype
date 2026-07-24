@@ -23,7 +23,8 @@
 
 .new {
   background: var(--red-500);
-  color: var(--stone-0);
+  /* On the red fill — inverse text stays light in both modes */
+  color: var(--color-text-inverse);
 }
 
 .regular {

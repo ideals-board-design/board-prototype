@@ -1,6 +1,7 @@
 import { Fragment, useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './Breadcrumbs.module.css'
+import { Button } from '../Button/Button'
 import { arrows } from '../../icons/arrows'
 import { functional } from '../../icons/functional'
 
@@ -29,7 +30,7 @@ type RenderNode =
 export function Breadcrumbs({ items, size = 'm', maxItems = 4, className }: BreadcrumbsProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuPos, setMenuPos]   = useState({ top: 0, left: 0 })
-  const menuBtnRef = useRef<HTMLButtonElement>(null)
+  const menuBtnRef = useRef<HTMLLIElement>(null)
   const menuRef    = useRef<HTMLDivElement>(null)
 
   const collapsed = items.length > maxItems
@@ -75,19 +76,18 @@ export function Breadcrumbs({ items, size = 'm', maxItems = 4, className }: Brea
                 <span className={styles.separatorIcon} dangerouslySetInnerHTML={{ __html: separatorSvg }} />
               </li>
             )}
-            <li>
+            <li ref={node.kind === 'ellipsis' ? menuBtnRef : undefined}>
               {node.kind === 'ellipsis' ? (
-                <button
-                  ref={menuBtnRef}
-                  type="button"
-                  className={`${styles.crumb} ${styles.ellipsis}`}
+                <Button
+                  variant="tertiary"
+                  intent="neutral"
+                  size={size}
+                  iconOnly={<span dangerouslySetInnerHTML={{ __html: ellipsisSvg }} />}
                   onClick={() => setMenuOpen(o => !o)}
                   aria-label="Show hidden breadcrumbs"
                   aria-haspopup="menu"
                   aria-expanded={menuOpen}
-                >
-                  <span className={styles.ellipsisIcon} dangerouslySetInnerHTML={{ __html: ellipsisSvg }} />
-                </button>
+                />
               ) : node.index === items.length - 1 ? (
                 <span className={`${styles.crumb} ${styles.active}`} aria-current="page">
                   {node.item.label}

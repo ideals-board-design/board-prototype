@@ -52,3 +52,22 @@
   font-weight: var(--font-weight-medium);
   cursor: default;
 }
+
+/* Theme toggle — text button styled to match the utility nav links */
+.themeToggle {
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-12);
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.themeToggle:hover {
+  color: var(--color-text-primary);
+  border-color: var(--color-border-strong);
+}
