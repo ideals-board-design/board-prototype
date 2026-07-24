@@ -52,7 +52,7 @@
 /* Hover & focus: green border (only when not disabled, not error) */
 .outline:not(.isDisabled):not(.hasError) .inputWrapper:hover,
 .outline:not(.isDisabled):not(.hasError) .inputWrapper:focus-within {
-  box-shadow: inset 0 0 0 1px var(--green-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 /* Error: always red, regardless of hover/focus */
@@ -201,7 +201,7 @@
 .icon svg { width: 100%; height: 100%; }
 
 /* Loading spinner */
-.spinner { color: var(--green-500); }
+.spinner { color: var(--accent-500); }
 .spinner svg { animation: tfSpin 600ms linear infinite; }
 
 @keyframes tfSpin {

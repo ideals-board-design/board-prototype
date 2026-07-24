@@ -29,7 +29,7 @@
 }
 
 .typeSelected {
-  background: var(--green-500);
+  background: var(--accent-500);
   border-radius: var(--radius-sm);
 }
 
@@ -44,7 +44,7 @@
 }
 
 .typeSelected:hover:not(.isDisabled) {
-  background: var(--green-600);
+  background: var(--accent-600);
 }
 
 /* ── Disabled ─────────────────────────────── */

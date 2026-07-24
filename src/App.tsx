@@ -3,6 +3,7 @@ import { HubHeader } from './hub/HubHeader'
 import styles from './App.module.css'
 import ComponentsOverview from './pages/foundation/ComponentsOverview'
 import ColorsPage from './pages/foundation/Colors'
+import BrandingColorsPage from './pages/foundation/BrandingColors'
 import TypographyPage from './pages/foundation/Typography'
 import IconsPage from './pages/foundation/Icons'
 import IllustrationsPage from './pages/foundation/Illustrations'
@@ -41,6 +42,7 @@ import TableCellPage from './pages/components/TableCellPage'
 type Page =
   | 'foundation/components-overview'
   | 'foundation/colors'
+  | 'foundation/branding-colors'
   | 'foundation/typography'
   | 'foundation/icons'
   | 'foundation/illustrations'
@@ -83,6 +85,7 @@ const nav = [
     items: [
       { id: 'foundation/components-overview' as Page, label: 'Components overview' },
       { id: 'foundation/colors' as Page,        label: 'Colors' },
+      { id: 'foundation/branding-colors' as Page, label: 'Branding colors' },
       { id: 'foundation/elevation' as Page,     label: 'Elevation' },
       { id: 'foundation/icons' as Page,         label: 'Icons' },
       { id: 'foundation/illustrations' as Page, label: 'Illustrations' },
@@ -204,6 +207,7 @@ export default function App() {
       <main className={styles.main}>
         {page === 'foundation/components-overview' && <ComponentsOverview onNavigate={(id) => setPage(id as Page)} />}
         {page === 'foundation/colors'         && <ColorsPage />}
+        {page === 'foundation/branding-colors' && <BrandingColorsPage />}
         {page === 'foundation/typography'     && <TypographyPage />}
         {page === 'foundation/spacing'        && <SpacingPage />}
         {page === 'foundation/elevation'      && <ElevationPage />}

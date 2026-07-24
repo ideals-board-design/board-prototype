@@ -73,12 +73,12 @@
 
 /* Hover — green border (not disabled, not error) */
 .outline.wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
-  box-shadow: inset 0 0 0 1px var(--green-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 /* Open — green border */
 .outline.wrapper.isOpen:not(.isDisabled):not(.hasError) .trigger {
-  box-shadow: inset 0 0 0 1px var(--green-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 /* Focus ring (keyboard) */
@@ -178,7 +178,7 @@
 
 /* Editing state — green border like focus */
 .outline.wrapper.isEditing:not(.isDisabled) .trigger {
-  box-shadow: inset 0 0 0 1px var(--green-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 /* ── Trigger text ─────────────────────────────────── */

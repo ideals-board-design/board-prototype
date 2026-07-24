@@ -12,7 +12,7 @@ type AppPage = NavMenuItemKey
 export type DashboardVariant = 'default' | 'cs-before-meeting'
 
 const WORKSPACES = [
-  { id: 'star', name: 'STAR Enterprises', initials: 'ST', color: '#28a560' },
+  { id: 'star', name: 'STAR Enterprises', initials: 'ST', color: 'var(--color-brand)' },
 ]
 
 const USER = {

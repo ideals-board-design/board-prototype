@@ -1,0 +1,217 @@
+.page {
+  padding: var(--space-40) var(--space-48);
+  max-width: 1100px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-xl);
+  letter-spacing: var(--letter-spacing-heading);
+  margin-bottom: var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-40);
+  max-width: 640px;
+  line-height: var(--line-height-base);
+}
+
+/* ── Blocks ─────────────────────────────────────────────── */
+.block {
+  margin-bottom: var(--space-40);
+}
+
+.blockHead {
+  margin-bottom: var(--space-16);
+}
+
+.blockTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-md);
+  margin-bottom: var(--space-2);
+}
+
+.blockSub {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+/* ── Scheme switcher ────────────────────────────────────── */
+.swatchRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-12);
+  margin-bottom: var(--space-16);
+}
+
+.schemeSwatch {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-lg);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.schemeSwatch:hover {
+  transform: scale(1.06);
+}
+
+.schemeSwatchActive {
+  box-shadow: 0 0 0 2px var(--color-bg-surface), 0 0 0 4px var(--color-border-focus);
+}
+
+.schemeSwatch:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.schemeCheck {
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon-inverse);   /* white in both modes — reads on the saturated fill */
+  display: flex;
+}
+
+.schemeCheck svg { width: 100%; height: 100%; }
+
+/* ── Spec (Active / Hover / Pressed) ────────────────────── */
+.spec {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-24);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.spec span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.spec code {
+  font-size: var(--text-xs);
+  color: var(--color-text-primary);
+}
+
+.specDot {
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+/* ── Live preview ───────────────────────────────────────── */
+.preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-24);
+  padding: var(--space-24);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+}
+
+.illo {
+  display: block;
+  width: 176px;
+  height: 120px;
+}
+
+.illo svg { width: 100%; height: 100%; }
+
+/* ── Token table (mirrors the Colors page) ──────────────── */
+.table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  max-width: 760px;
+}
+
+.headerRow,
+.item {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+.headerRow {
+  padding: 0 var(--space-8) var(--space-4);
+}
+
+.modeHead {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-upper);
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.groupLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-8);
+}
+
+.item {
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-sm);
+}
+
+.itemName {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+}
+
+/* Each mode wrapper is a self-contained mini light/dark surface */
+.modeWrap {
+  display: inline-flex;
+}
+
+.modeCell {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-10);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.hex {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+  white-space: nowrap;
+}

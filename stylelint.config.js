@@ -28,5 +28,5 @@ export default {
     ],
   },
   // These files DEFINE the raw token values — exempt them.
-  ignoreFiles: ['src/styles/tokens.css', 'src/styles/aliases.css'],
+  ignoreFiles: ['src/styles/tokens.css', 'src/styles/aliases.css', 'src/styles/branding.css'],
 }

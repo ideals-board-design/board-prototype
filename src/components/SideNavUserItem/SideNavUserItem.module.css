@@ -283,3 +283,22 @@
   z-index: var(--z-dropdown, 200);
   box-shadow: var(--elevation-100);
 }
+
+/* Branding sublist — anchored to the item's bottom (grows upward) and capped,
+   since it lists every scheme and the trigger sits near the viewport bottom. */
+.brandingSublist {
+  top: auto;
+  bottom: calc(-1 * var(--space-4));
+  width: 200px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+/* Round colour swatch preceding each scheme label. */
+.brandingSwatch {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: var(--radius-full);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}

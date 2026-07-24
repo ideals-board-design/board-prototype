@@ -38,12 +38,12 @@
 
 /* Hover: unselected */
 .item:not(.selected):hover {
-  --b: var(--green-500);
+  --b: var(--accent-500);
 }
 
 /* Selected */
 .item.selected {
-  --b: var(--green-500);
+  --b: var(--accent-500);
   background: var(--color-bg-selected);
 }
 
