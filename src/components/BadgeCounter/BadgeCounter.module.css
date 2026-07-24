@@ -33,7 +33,7 @@
 }
 
 .primary {
-  background: var(--green-50);
+  background: var(--accent-50);
   color: var(--color-text-primary);
 }
 
@@ -60,6 +60,6 @@
   width: var(--space-8);
   height: var(--space-8);
   border-radius: 50%;
-  background: var(--green-500);
+  background: var(--accent-500);
   flex-shrink: 0;
 }

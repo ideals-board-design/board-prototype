@@ -10,6 +10,7 @@ import { actions }   from '../../icons/actions'
 import { location }  from '../../icons/location'
 import { arrows }    from '../../icons/arrows'
 import { useTheme, type ThemePref } from '../../hooks/useTheme'
+import { useBranding, BRANDING_THEMES } from '../../hooks/useBranding'
 import styles from './SideNavUserItem.module.css'
 
 const shieldCheckSvg       = condition.find(i => i.name === 'shield-check')!.svg
@@ -19,6 +20,7 @@ const linkSvg        = actions.find(i => i.name === 'link')!.svg
 const globeSvg       = location.find(i => i.name === 'globe')!.svg
 const themeSvg       = condition.find(i => i.name === 'chart-50%')!.svg
 const angleRightSvg  = arrows.find(i => i.name === 'angle-right-fill')!.svg
+const brandingSvg    = actions.find(i => i.name === 'sparkles')!.svg
 const exitSvg        = actions.find(i => i.name === 'exit')!.svg
 
 const THEMES: { value: ThemePref; label: string }[] = [
@@ -58,10 +60,13 @@ export function SideNavUserItem({
   const [langOpen, setLangOpen] = useState(false)
   const [activeLang, setActiveLang] = useState('en')
   const [themeOpen, setThemeOpen] = useState(false)
+  const [brandingOpen, setBrandingOpen] = useState(false)
   const { theme, setTheme } = useTheme()
-  const rootRef        = useRef<HTMLDivElement>(null)
-  const langTimerRef   = useRef<ReturnType<typeof setTimeout>>(undefined)
-  const themeTimerRef  = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const { branding, setBranding } = useBranding()
+  const rootRef          = useRef<HTMLDivElement>(null)
+  const langTimerRef     = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const themeTimerRef    = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const brandingTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   // Close on outside click
   useEffect(() => {
@@ -102,6 +107,14 @@ export function SideNavUserItem({
   }
   const handleThemeLeave = () => {
     themeTimerRef.current = setTimeout(() => setThemeOpen(false), 120)
+  }
+
+  const handleBrandingEnter = () => {
+    clearTimeout(brandingTimerRef.current)
+    setBrandingOpen(true)
+  }
+  const handleBrandingLeave = () => {
+    brandingTimerRef.current = setTimeout(() => setBrandingOpen(false), 120)
   }
 
   return (
@@ -207,6 +220,40 @@ export function SideNavUserItem({
                     onClick={() => { setTheme(t.value); setOpen(false) }}
                   >
                     <span className={styles.itemLabel}>{t.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Branding — hover reveals scheme sublist (mirrors Theme) */}
+          <div
+            className={[styles.item, styles.langItem].join(' ')}
+            onMouseEnter={handleBrandingEnter}
+            onMouseLeave={handleBrandingLeave}
+          >
+            <span className={styles.icon} dangerouslySetInnerHTML={{ __html: brandingSvg }} />
+            <span className={styles.itemLabel}>Branding</span>
+            <span className={styles.chevronRight} dangerouslySetInnerHTML={{ __html: angleRightSvg }} />
+
+            {brandingOpen && (
+              <div
+                className={[styles.sublist, styles.brandingSublist].join(' ')}
+                onMouseEnter={handleBrandingEnter}
+                onMouseLeave={handleBrandingLeave}
+              >
+                {BRANDING_THEMES.map(scheme => (
+                  <button
+                    key={scheme.key}
+                    type="button"
+                    className={[
+                      styles.item,
+                      scheme.key === branding ? styles.itemActive : '',
+                    ].filter(Boolean).join(' ')}
+                    onClick={() => { setBranding(scheme.key); setOpen(false) }}
+                  >
+                    <span className={styles.brandingSwatch} style={{ background: scheme.swatch }} />
+                    <span className={styles.itemLabel}>{scheme.label}</span>
                   </button>
                 ))}
               </div>

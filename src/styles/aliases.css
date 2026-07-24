@@ -19,7 +19,7 @@
   --color-text-secondary: var(--stone-800);    /* #5F616A */
   --color-text-disabled:  var(--stone-500);    /* #BBBDC8 */
   --color-text-inverse:   var(--stone-0);      /* #FFFFFF */
-  --color-text-brand:     var(--green-500);    /* #2C9C74 */
+  --color-text-brand:     var(--accent-500);   /* brand accent (themeable) */
   --color-text-error:     var(--red-600);      /* #DB2F1B */
   --color-text-warning:   var(--orange-600);   /* #B87900 */
   --color-text-success:   var(--green-600);    /* #1C8269 */
@@ -32,7 +32,7 @@
   --color-icon-secondary: var(--stone-800);
   --color-icon-disabled:  var(--stone-500);
   --color-icon-inverse:   var(--stone-0);
-  --color-icon-brand:     var(--green-500);
+  --color-icon-brand:     var(--accent-500);
 
   /* ---------------------------------------------------------------------------
      Background
@@ -40,7 +40,7 @@
   --color-bg-page:      var(--stone-100);    /* #FBFBFB */
   --color-bg-surface:   var(--stone-0);      /* #FFFFFF */
   --color-bg-hover:     var(--stone-300);    /* #ECEEF9 */
-  --color-bg-selected:  var(--green-25);     /* #EBF8EF */
+  --color-bg-selected:  var(--accent-25);    /* brand-tinted selection (themeable) */
   --color-bg-disabled:  var(--stone-200);    /* #F7F7F7 */
   --color-bg-overlay:   var(--transparent-stone-1000-60); /* #1F212999 — stone-1000 at 60% */
   /* Hover / pressed background fill — Transparent palette (Figma node 24446-44191) */
@@ -58,18 +58,21 @@
   /* ---------------------------------------------------------------------------
      Brand / Primary action
      --------------------------------------------------------------------------- */
-  --color-brand:         var(--green-500);   /* #2C9C74 — default */
-  --color-brand-hover:   var(--green-600);   /* #1C8269 — hover */
-  --color-brand-active:  var(--green-700);   /* #12695C — pressed */
-  --color-brand-subtle:  var(--green-25);    /* #EBF8EF — tinted bg */
-  --color-brand-light:   var(--green-50);    /* #CBF1DA */
+  /* Themeable via [data-branding]: Active = -500, Hover = -600, Pressed = -700. */
+  --color-brand:            var(--accent-500);   /* default action */
+  --color-brand-hover:      var(--accent-600);   /* hover */
+  --color-brand-active:     var(--accent-700);   /* pressed */
+  --color-brand-subtle:     var(--accent-25);    /* tinted bg */
+  --color-brand-light:      var(--accent-50);
+  --color-brand-fill-hover:  var(--accent-transparent-10);  /* tertiary/link hover tint */
+  --color-brand-fill-active: var(--accent-transparent-20);  /* tertiary/link pressed tint */
 
   /* ---------------------------------------------------------------------------
      Border / Divider
      --------------------------------------------------------------------------- */
   --color-border:          var(--stone-400);   /* #DEE0EB */
   --color-border-strong:   var(--stone-500);   /* #BBBDC8 */
-  --color-border-focus:    var(--green-500);   /* #2C9C74 */
+  --color-border-focus:    var(--accent-500);   /* brand accent (themeable) */
   --color-border-error:    var(--red-500);     /* #E95B4A */
   --color-border-disabled: var(--stone-300);   /* #ECEEF9 */
 
@@ -104,12 +107,12 @@
      Special / Illustration (Figma "Special" collection)
      Per-mode retargeting — light values here, dark overrides below.
      --------------------------------------------------------------------------- */
-  --illustration-green-50:  var(--green-50);
-  --illustration-green-100: var(--green-100);
-  --illustration-green-200: var(--green-200);
-  --illustration-green-300: var(--green-300);
-  --illustration-green-400: var(--green-400);
-  --illustration-green-500: var(--green-500);
+  --illustration-green-50:  var(--accent-50);
+  --illustration-green-100: var(--accent-100);
+  --illustration-green-200: var(--accent-200);
+  --illustration-green-300: var(--accent-300);
+  --illustration-green-400: var(--accent-400);
+  --illustration-green-500: var(--accent-500);
   --illustration-stone-0:   var(--stone-0);
   --illustration-stone-200: var(--stone-200);
   --illustration-stone-400: var(--stone-400);
@@ -152,12 +155,12 @@
   --elevation-200: var(--shadow-200), 0 0 0 1px var(--color-border);
 
   /* Special / Illustration — Figma retargets each token in dark mode. */
-  --illustration-green-50:  var(--green-400);
-  --illustration-green-100: var(--green-500);
-  --illustration-green-200: var(--green-700);
-  --illustration-green-300: var(--green-700);
-  --illustration-green-400: var(--green-600);
-  --illustration-green-500: var(--green-500);
+  --illustration-green-50:  var(--accent-400);
+  --illustration-green-100: var(--accent-500);
+  --illustration-green-200: var(--accent-700);
+  --illustration-green-300: var(--accent-700);
+  --illustration-green-400: var(--accent-600);
+  --illustration-green-500: var(--accent-500);
   --illustration-stone-0:   var(--stone-400);
   --illustration-stone-200: var(--stone-600);
   --illustration-stone-400: var(--stone-800);

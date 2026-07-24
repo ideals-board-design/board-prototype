@@ -43,7 +43,7 @@
 
 /* Selected — green-500 fill, 4px radius, inverse text */
 .typeSelected {
-  background: var(--green-500);
+  background: var(--accent-500);
   border-radius: var(--radius-sm);
 }
 
@@ -53,7 +53,7 @@
 
 /* Today — green-500 border, 4px radius, primary text */
 .typeToday {
-  border: 1px solid var(--green-500);
+  border: 1px solid var(--accent-500);
   border-radius: var(--radius-sm);
 }
 
@@ -72,13 +72,13 @@
 /* Date range hover — green-50 bg */
 .typeDateRange:hover:not(.isDisabled),
 .typeDateRange.isHover:not(.isDisabled) {
-  background: var(--green-50);    /* #CBF1DA */
+  background: var(--accent-50);    /* #CBF1DA */
 }
 
 /* Selected hover — green-600 bg */
 .typeSelected:hover:not(.isDisabled),
 .typeSelected.isHover:not(.isDisabled) {
-  background: var(--green-600);
+  background: var(--accent-600);
 }
 
 /* Today hover — stone-300 bg + green border */

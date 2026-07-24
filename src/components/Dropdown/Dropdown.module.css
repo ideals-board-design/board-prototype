@@ -67,12 +67,12 @@
 
 /* Hover — green border (not disabled, not error) */
 .wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
-  box-shadow: inset 0 0 0 1px var(--green-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 /* Open — green border (same as focus) */
 .wrapper.isOpen:not(.isDisabled):not(.hasError) .trigger {
-  box-shadow: inset 0 0 0 1px var(--green-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 /* Focus ring (keyboard) */
@@ -560,7 +560,7 @@
 .itemAvatarUser   { border-radius: 50%;  background: var(--stone-300); }
 .itemAvatarSquare { border-radius: var(--radius-sm); }
 .itemAvatarGroup  { background: var(--tag-kepeel); }
-.itemAvatarOrg    { background: var(--green-500); }
+.itemAvatarOrg    { background: var(--accent-500); }
 
 .itemAvatarImg {
   width: 100%;

@@ -31,7 +31,7 @@
 
 .user.neutral  { background: var(--stone-300); }
 .user.contrast { background: var(--stone-400); }
-.org           { background: var(--green-500); }
+.org           { background: var(--accent-500); }
 .group         { background: var(--tag-kepeel); }
 
 /* ── Initials ────────────────────────────────────────────────────────────── */

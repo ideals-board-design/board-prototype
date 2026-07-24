@@ -66,14 +66,14 @@
 /* ── Checked ─────────────────────────────────────────────────────────────── */
 
 .input:checked + .hitArea .box {
-  background: var(--green-500);
+  background: var(--accent-500);
   box-shadow: none;
 }
 
 /* ── Indeterminate ───────────────────────────────────────────────────────── */
 
 .input:indeterminate + .hitArea .box {
-  background: var(--green-500);
+  background: var(--accent-500);
   box-shadow: none;
 }
 
@@ -116,17 +116,17 @@
 
 /* Unchecked hover */
 .wrapper:not(.disabled):hover .input:not(:checked):not(:indeterminate) + .hitArea .box {
-  box-shadow: inset 0 0 0 1px var(--green-600);
+  box-shadow: inset 0 0 0 1px var(--accent-600);
 }
 
 /* Checked hover */
 .wrapper:not(.disabled):hover .input:checked + .hitArea .box {
-  background: var(--green-600);
+  background: var(--accent-600);
 }
 
 /* Indeterminate hover */
 .wrapper:not(.disabled):hover .input:indeterminate + .hitArea .box {
-  background: var(--green-600);
+  background: var(--accent-600);
 }
 
 /* ── Label text ──────────────────────────────────────────────────────────── */

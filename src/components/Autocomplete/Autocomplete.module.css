@@ -69,12 +69,12 @@
 
 /* Hover — green border */
 .outline.wrapper:not(.isDisabled):not(.hasError) .inputWrapper:hover {
-  box-shadow: inset 0 0 0 1px var(--green-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 /* Open — green border */
 .outline.wrapper.isOpen:not(.isDisabled):not(.hasError) .inputWrapper {
-  box-shadow: inset 0 0 0 1px var(--green-500);
+  box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
 /* Error */
@@ -375,7 +375,7 @@
 .itemAvatarUser   { border-radius: 50%;  background: var(--stone-300); }
 .itemAvatarSquare { border-radius: 4px; }
 .itemAvatarGroup  { background: var(--tag-kepeel); }
-.itemAvatarOrg    { background: var(--green-500); }
+.itemAvatarOrg    { background: var(--accent-500); }
 
 .itemAvatarImg {
   width: 100%;

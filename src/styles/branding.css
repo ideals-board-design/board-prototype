@@ -1,0 +1,282 @@
+/* =============================================================================
+   LAYER 1b — Branding accent ramps (generated from Figma "Color themes" export)
+   DO NOT EDIT BY HAND. A [data-branding="<slug>"] attribute on the root (or on a
+   nested preview container) retargets --accent-* to the scheme's ramp. Default
+   green needs no block — absence of the attribute falls through to tokens.css.
+
+   Four selectors per theme so the global root toggle AND nested light/dark
+   preview containers (Colors / Branding colors pages) both resolve correctly.
+   Spec: Active = -500, Hover = -600, Pressed = -700.
+   ============================================================================= */
+
+/* Vibrant Green */
+[data-branding="vibrant-green"],
+[data-branding="vibrant-green"] [data-theme="light"] {
+  --accent-25: #EBFAEB;
+  --accent-50: #D9F6D8;
+  --accent-100: #C1F6C0;
+  --accent-200: #91ED90;
+  --accent-300: #72DC70;
+  --accent-400: #32BD2F;
+  --accent-500: #03A300;
+  --accent-600: #028A00;
+  --accent-700: #027000;
+  --accent-800: #015700;
+  --accent-900: #013D00;
+  --accent-transparent-10: #0270001A;
+  --accent-transparent-20: #02700033;
+}
+[data-branding="vibrant-green"][data-theme="dark"],
+[data-branding="vibrant-green"] [data-theme="dark"] {
+  --accent-25: #13230F;
+  --accent-50: #172C13;
+  --accent-100: #1D3818;
+  --accent-200: #24471F;
+  --accent-300: #026E00;
+  --accent-400: #028800;
+  --accent-500: #03A300;
+  --accent-600: #23B81F;
+  --accent-700: #45C742;
+  --accent-800: #7BDD78;
+  --accent-900: #B5EFB2;
+  --accent-transparent-10: #45C7421A;
+  --accent-transparent-20: #45C74233;
+}
+
+/* Cerulean Blue */
+[data-branding="cerulean-blue"],
+[data-branding="cerulean-blue"] [data-theme="light"] {
+  --accent-25: #EBF7FA;
+  --accent-50: #CBEDF5;
+  --accent-100: #ADEAF7;
+  --accent-200: #77D7ED;
+  --accent-300: #43C3E0;
+  --accent-400: #2AB4D4;
+  --accent-500: #139BBA;
+  --accent-600: #0884A1;
+  --accent-700: #006E87;
+  --accent-800: #00596E;
+  --accent-900: #004454;
+  --accent-transparent-10: #006E871A;
+  --accent-transparent-20: #006E8733;
+}
+[data-branding="cerulean-blue"][data-theme="dark"],
+[data-branding="cerulean-blue"] [data-theme="dark"] {
+  --accent-25: #0F2024;
+  --accent-50: #14292E;
+  --accent-100: #1A363D;
+  --accent-200: #22464F;
+  --accent-300: #0D6C82;
+  --accent-400: #10849E;
+  --accent-500: #139BBA;
+  --accent-600: #1DBEE2;
+  --accent-700: #51C2DC;
+  --accent-800: #88D0E0;
+  --accent-900: #C1E7F0;
+  --accent-transparent-10: #51C2DC1A;
+  --accent-transparent-20: #51C2DC33;
+}
+
+/* Azure Blue */
+[data-branding="azure-blue"],
+[data-branding="azure-blue"] [data-theme="light"] {
+  --accent-25: #EBF4FA;
+  --accent-50: #D3E7F5;
+  --accent-100: #BADDF5;
+  --accent-200: #A2D3F5;
+  --accent-300: #7AC3F5;
+  --accent-400: #48ABF0;
+  --accent-500: #3099E2;
+  --accent-600: #2084C9;
+  --accent-700: #1370B0;
+  --accent-800: #095D96;
+  --accent-900: #014B7D;
+  --accent-transparent-10: #1370B01A;
+  --accent-transparent-20: #1370B033;
+}
+[data-branding="azure-blue"][data-theme="dark"],
+[data-branding="azure-blue"] [data-theme="dark"] {
+  --accent-25: #0F1B24;
+  --accent-50: #14242E;
+  --accent-100: #1A2E3D;
+  --accent-200: #223C4F;
+  --accent-300: #145E92;
+  --accent-400: #1B7DC1;
+  --accent-500: #3099E2;
+  --accent-600: #53A7E3;
+  --accent-700: #76B4DF;
+  --accent-800: #9DC5E2;
+  --accent-900: #C3DDEE;
+  --accent-transparent-10: #76B4DF1A;
+  --accent-transparent-20: #76B4DF33;
+}
+
+/* Royal Blue */
+[data-branding="royal-blue"],
+[data-branding="royal-blue"] [data-theme="light"] {
+  --accent-25: #EBEFFA;
+  --accent-50: #D0D9F5;
+  --accent-100: #BAC9F5;
+  --accent-200: #A2B6F5;
+  --accent-300: #7A98F5;
+  --accent-400: #5E80EB;
+  --accent-500: #4268DF;
+  --accent-600: #3155C4;
+  --accent-700: #2042AB;
+  --accent-800: #143391;
+  --accent-900: #0B2578;
+  --accent-transparent-10: #2042AB1A;
+  --accent-transparent-20: #2042AB33;
+}
+[data-branding="royal-blue"][data-theme="dark"],
+[data-branding="royal-blue"] [data-theme="dark"] {
+  --accent-25: #0F1424;
+  --accent-50: #141A2E;
+  --accent-100: #1A223D;
+  --accent-200: #222D4F;
+  --accent-300: #193692;
+  --accent-400: #2149C5;
+  --accent-500: #4268DF;
+  --accent-600: #617FE0;
+  --accent-700: #8097DE;
+  --accent-800: #A2B1E1;
+  --accent-900: #C4CEED;
+  --accent-transparent-10: #8097DE1A;
+  --accent-transparent-20: #8097DE33;
+}
+
+/* Violet Indigo */
+[data-branding="violet-indigo"],
+[data-branding="violet-indigo"] [data-theme="light"] {
+  --accent-25: #EBEFFA;
+  --accent-50: #D7D0F5;
+  --accent-100: #BDB0F5;
+  --accent-200: #A998F5;
+  --accent-300: #937EF2;
+  --accent-400: #7C64ED;
+  --accent-500: #6247E1;
+  --accent-600: #5036C7;
+  --accent-700: #3F26AD;
+  --accent-800: #2F1994;
+  --accent-900: #220F7A;
+  --accent-transparent-10: #3F26AD1A;
+  --accent-transparent-20: #3F26AD33;
+}
+[data-branding="violet-indigo"][data-theme="dark"],
+[data-branding="violet-indigo"] [data-theme="dark"] {
+  --accent-25: #130F24;
+  --accent-50: #19142E;
+  --accent-100: #201A3D;
+  --accent-200: #2A224F;
+  --accent-300: #2E1895;
+  --accent-400: #3F21CA;
+  --accent-500: #6247E1;
+  --accent-600: #7A64E2;
+  --accent-700: #9383DF;
+  --accent-800: #AEA4E2;
+  --accent-900: #CBC4ED;
+  --accent-transparent-10: #9383DF1A;
+  --accent-transparent-20: #9383DF33;
+}
+
+/* Magenta Pink */
+[data-branding="magenta-pink"],
+[data-branding="magenta-pink"] [data-theme="light"] {
+  --accent-25: #FAEBF6;
+  --accent-50: #F5C9E9;
+  --accent-100: #F5A4DF;
+  --accent-200: #F57FD5;
+  --accent-300: #EB57C3;
+  --accent-400: #E03DB5;
+  --accent-500: #CD23A0;
+  --accent-600: #B21589;
+  --accent-700: #990B74;
+  --accent-800: #80035F;
+  --accent-900: #66004B;
+  --accent-transparent-10: #990B741A;
+  --accent-transparent-20: #990B7433;
+}
+[data-branding="magenta-pink"][data-theme="dark"],
+[data-branding="magenta-pink"] [data-theme="dark"] {
+  --accent-25: #240F1E;
+  --accent-50: #2E1427;
+  --accent-100: #3D1A34;
+  --accent-200: #4F2243;
+  --accent-300: #841767;
+  --accent-400: #A91D84;
+  --accent-500: #CD23A0;
+  --accent-600: #DA41B1;
+  --accent-700: #D76ABA;
+  --accent-800: #DD96CA;
+  --accent-900: #EDC4E2;
+  --accent-transparent-10: #D76ABA1A;
+  --accent-transparent-20: #D76ABA33;
+}
+
+/* Crimson Rose */
+[data-branding="crimson-rose"],
+[data-branding="crimson-rose"] [data-theme="light"] {
+  --accent-25: #FAEBEF;
+  --accent-50: #F5CED8;
+  --accent-100: #F5AEC0;
+  --accent-200: #F589A5;
+  --accent-300: #F5678B;
+  --accent-400: #F54E79;
+  --accent-500: #E73361;
+  --accent-600: #CF234F;
+  --accent-700: #B5163E;
+  --accent-800: #9C0B30;
+  --accent-900: #820323;
+  --accent-transparent-10: #B5163E1A;
+  --accent-transparent-20: #B5163E33;
+}
+[data-branding="crimson-rose"][data-theme="dark"],
+[data-branding="crimson-rose"] [data-theme="dark"] {
+  --accent-25: #240F15;
+  --accent-50: #2E141B;
+  --accent-100: #3D1A23;
+  --accent-200: #4F222D;
+  --accent-300: #971234;
+  --accent-400: #CA1845;
+  --accent-500: #E73361;
+  --accent-600: #E7557A;
+  --accent-700: #E27893;
+  --accent-800: #E49DAF;
+  --accent-900: #EFC2CE;
+  --accent-transparent-10: #E278931A;
+  --accent-transparent-20: #E2789333;
+}
+
+/* Burnt Orange */
+[data-branding="burnt-orange"],
+[data-branding="burnt-orange"] [data-theme="light"] {
+  --accent-25: #FAF1EB;
+  --accent-50: #F5E0D0;
+  --accent-100: #F5CBAB;
+  --accent-200: #F5B584;
+  --accent-300: #F59F5D;
+  --accent-400: #F08837;
+  --accent-500: #E16D13;
+  --accent-600: #C75A06;
+  --accent-700: #AD4C00;
+  --accent-800: #944100;
+  --accent-900: #7A3500;
+  --accent-transparent-10: #AD4C001A;
+  --accent-transparent-20: #AD4C0033;
+}
+[data-branding="burnt-orange"][data-theme="dark"],
+[data-branding="burnt-orange"] [data-theme="dark"] {
+  --accent-25: #24180F;
+  --accent-50: #2E1F14;
+  --accent-100: #3D291A;
+  --accent-200: #4F3522;
+  --accent-300: #90460C;
+  --accent-400: #B85910;
+  --accent-500: #E16D13;
+  --accent-600: #E98335;
+  --accent-700: #E29A61;
+  --accent-800: #E4B591;
+  --accent-900: #F1D6C1;
+  --accent-transparent-10: #E29A611A;
+  --accent-transparent-20: #E29A6133;
+}

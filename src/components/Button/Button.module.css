@@ -89,7 +89,7 @@
 /* ── Primary ─────────────────────────────────────────────────────────────── */
 
 .primary {
-  background: var(--green-500);
+  background: var(--accent-500);
   color: var(--color-text-inverse);
 }
 
@@ -100,9 +100,9 @@
 }
 
 .primary:hover:not(:disabled):not([data-loading]),
-.primary[data-state="hover"]  { background: var(--green-600); }
+.primary[data-state="hover"]  { background: var(--accent-600); }
 .primary:active:not(:disabled):not([data-loading]),
-.primary[data-state="active"] { background: var(--green-700); }
+.primary[data-state="active"] { background: var(--accent-700); }
 
 /* Primary — Danger */
 .primary.danger { background: var(--red-500); }
@@ -148,13 +148,13 @@
 
 .tertiary {
   background: transparent;
-  color: var(--green-500);
+  color: var(--accent-500);
 }
 
 .tertiary:hover:not(:disabled):not([data-loading]),
-.tertiary[data-state="hover"]  { background: var(--transparent-green-700-10); color: var(--green-600); }
+.tertiary[data-state="hover"]  { background: var(--color-brand-fill-hover); color: var(--accent-600); }
 .tertiary:active:not(:disabled):not([data-loading]),
-.tertiary[data-state="active"] { background: var(--transparent-green-700-20); color: var(--green-700); }
+.tertiary[data-state="active"] { background: var(--color-brand-fill-active); color: var(--accent-700); }
 
 /* Tertiary — Neutral */
 .tertiary.neutral { color: var(--color-text-secondary); }
@@ -200,7 +200,7 @@
 
 .link {
   background: transparent;
-  color: var(--green-500);
+  color: var(--accent-500);
   font-weight: var(--font-weight-regular);
   text-decoration: none;
 }
@@ -212,9 +212,9 @@
 }
 
 .link:hover:not(:disabled):not([data-loading]),
-.link[data-state="hover"]  { color: var(--green-600); }
+.link[data-state="hover"]  { color: var(--accent-600); }
 .link:active:not(:disabled):not([data-loading]),
-.link[data-state="active"] { color: var(--green-700); }
+.link[data-state="active"] { color: var(--accent-700); }
 
 /* Link: inline text — no hit-area padding, no negative margin. Size classes only
    vary font-size; height collapses to the 20px line box. */
