@@ -87,7 +87,7 @@
   border-radius: var(--radius-md);
   padding: var(--space-4);
   z-index: var(--z-dropdown, 200);
-  box-shadow: var(--shadow-100);
+  box-shadow: var(--elevation-100);
 }
 
 /* ── Shared item layout ─────────────────────────────────── */
@@ -281,5 +281,5 @@
   border-radius: var(--radius-md);
   padding: var(--space-4);
   z-index: var(--z-dropdown, 200);
-  box-shadow: var(--shadow-100);
+  box-shadow: var(--elevation-100);
 }

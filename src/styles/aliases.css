@@ -1,9 +1,16 @@
 /* =============================================================================
    LAYER 2 — Semantic aliases (reference Layer 1 tokens only)
    Components MUST use these — never use Layer 1 directly
+
+   Declared at every theme boundary (:root + both [data-theme] values) so the
+   var(--primitive) references re-resolve against that boundary's primitives —
+   this is what makes nested light/dark previews (Colors page) flip correctly,
+   not just the global root toggle.
    ============================================================================= */
 
-:root {
+:root,
+[data-theme="light"],
+[data-theme="dark"] {
 
   /* ---------------------------------------------------------------------------
      Text
@@ -39,6 +46,14 @@
   /* Hover / pressed background fill — Transparent palette (Figma node 24446-44191) */
   --color-bg-hover-fill:        var(--transparent-blue-800-10);  /* hover   · #3E52C21A */
   --color-bg-hover-fill-strong: var(--transparent-blue-800-20);  /* pressed · #3E52C233 */
+
+  /* Inverse surface (tooltips, dark chips): the background and its on-colour
+     flip TOGETHER in opposite directions, so contrast holds in both modes.
+     NOTE: different from --color-text-inverse, which stays white (that one is
+     for text on brand/coloured fills, not on an inverting surface). */
+  --color-bg-inverse:      var(--stone-1000);   /* dark surface in light, light in dark */
+  --color-text-on-inverse: var(--stone-0);      /* light text in light, dark in dark */
+  --color-icon-on-inverse: var(--stone-0);      /* icon on inverse surface — matches on-inverse text */
 
   /* ---------------------------------------------------------------------------
      Brand / Primary action
@@ -86,10 +101,66 @@
   --color-highlight:    var(--yellow-500);   /* #FFE448 */
 
   /* ---------------------------------------------------------------------------
+     Special / Illustration (Figma "Special" collection)
+     Per-mode retargeting — light values here, dark overrides below.
+     --------------------------------------------------------------------------- */
+  --illustration-green-50:  var(--green-50);
+  --illustration-green-100: var(--green-100);
+  --illustration-green-200: var(--green-200);
+  --illustration-green-300: var(--green-300);
+  --illustration-green-400: var(--green-400);
+  --illustration-green-500: var(--green-500);
+  --illustration-stone-0:   var(--stone-0);
+  --illustration-stone-200: var(--stone-200);
+  --illustration-stone-400: var(--stone-400);
+  --illustration-stone-500: var(--stone-500);
+  --illustration-stone-600: var(--stone-600);
+
+  /* ---------------------------------------------------------------------------
+     Elevation — light = drop shadow; dark = 1px divider ring (see dark block).
+     Floating surfaces (dropdown/menu/popover/modal/toast/etc.) MUST use these,
+     never the raw --shadow-* tokens, so dark mode swaps shadow → border.
+     --------------------------------------------------------------------------- */
+  --elevation-100: var(--shadow-100);   /* dropdowns, popovers, menus */
+  --elevation-200: var(--shadow-200);   /* modals */
+
+  /* ---------------------------------------------------------------------------
      Component size scale
      All interactive elements: S=32px, M=40px, L=48px
      --------------------------------------------------------------------------- */
   --size-s: 32px;
   --size-m: 40px;
   --size-l: 48px;
+}
+
+/* =============================================================================
+   Dark theme — the primitive flip in tokens.css does the heavy lifting, so
+   every alias that references a primitive resolves automatically. Only the
+   deliberate per-mode RETARGETS live here (Figma binds these to a different
+   primitive in dark). Applies at root and on nested [data-theme="dark"].
+   ============================================================================= */
+[data-theme="dark"] {
+
+  /* Inverse text/icon are rebound stone-0 → stone-1000 so they stay light
+     (on-fill text on brand/coloured surfaces reads white in both modes). */
+  --color-text-inverse: var(--stone-1000);
+  --color-icon-inverse: var(--stone-1000);
+
+  /* Elevation in dark: keep the SAME drop shadow as light (shadow colour is not
+     inverted) AND add a 1px divider ring so the surface edge reads on dark. */
+  --elevation-100: var(--shadow-100), 0 0 0 1px var(--color-border);
+  --elevation-200: var(--shadow-200), 0 0 0 1px var(--color-border);
+
+  /* Special / Illustration — Figma retargets each token in dark mode. */
+  --illustration-green-50:  var(--green-400);
+  --illustration-green-100: var(--green-500);
+  --illustration-green-200: var(--green-700);
+  --illustration-green-300: var(--green-700);
+  --illustration-green-400: var(--green-600);
+  --illustration-green-500: var(--green-500);
+  --illustration-stone-0:   var(--stone-400);
+  --illustration-stone-200: var(--stone-600);
+  --illustration-stone-400: var(--stone-800);
+  --illustration-stone-500: var(--stone-600);
+  --illustration-stone-600: var(--stone-600);
 }

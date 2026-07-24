@@ -1,10 +1,14 @@
 /* =============================================================================
    LAYER 1 — Primitive tokens (raw values from Figma)
-   Source: IND2QtUbTsYEOMpEefLwCz / Colors node 24446:44118
+   Source: IND2QtUbTsYEOMpEefLwCz — Figma variable export
+   (~/Desktop/Pallet and tokens/{Light,Dark} mode.tokens.json)
+   Colour primitives carry per-mode values; the dark set is redefined in the
+   [data-theme="dark"] block below. Non-colour tokens are mode-independent.
    DO NOT use these directly in components — use aliases.css instead
    ============================================================================= */
 
-:root {
+:root,
+[data-theme="light"] {
 
   /* ---------------------------------------------------------------------------
      Stone (Neutral)
@@ -65,10 +69,12 @@
   /* ---------------------------------------------------------------------------
      Info / Blue
      --------------------------------------------------------------------------- */
+  --blue-25:  #F7FBFF;
   --blue-50:  #E6F2FD;
   --blue-500: #5DA3EF;
-  --blue-600: #2977CC;
+  --blue-600: #2B7DD6;
   --blue-700: #2468B2;
+  --blue-800: #3E52C2;
 
   /* ---------------------------------------------------------------------------
      Support / Tag colors
@@ -171,8 +177,8 @@
   /* ---------------------------------------------------------------------------
      Shadows / Elevation
      --------------------------------------------------------------------------- */
-  --shadow-100: 0px 4px 12px rgba(31, 33, 41, 0.16);  /* dropdowns, popovers */
-  --shadow-200: 0px 8px 32px rgba(0, 0, 0, 0.16);     /* modals, drawers */
+  --shadow-100: 0px 4px 12px rgba(0, 0, 0, 0.16);   /* dropdowns, popovers · #000 @ 16% */
+  --shadow-200: 0px 8px 32px rgba(0, 0, 0, 0.16);   /* modals, drawers · #000 @ 16% */
 
   /* ---------------------------------------------------------------------------
      Transitions
@@ -188,4 +194,96 @@
   --z-modal:    200;
   --z-toast:    300;
   --z-tooltip:  400;
+}
+
+/* =============================================================================
+   DARK MODE — primitive flip (values from Dark mode.tokens.json).
+   Only colour primitives are redefined; the semantic layer (aliases.css) keeps
+   its primitive references and resolves per-mode automatically. Applies both at
+   the root (global toggle) and on any nested [data-theme="dark"] container
+   (side-by-side previews).
+   ============================================================================= */
+[data-theme="dark"] {
+
+  /* Stone (Neutral) — mirror-inverts the light ramp */
+  --stone-0:    #1F2129;
+  --stone-100:  #23252E;
+  --stone-200:  #262833;
+  --stone-300:  #2B2F3E;
+  --stone-400:  #353847;
+  --stone-500:  #464852;
+  --stone-600:  #5F6066;
+  --stone-700:  #A7A9B2;
+  --stone-800:  #AFB1B8;
+  --stone-900:  #E4E5EA;
+  --stone-1000: #FFFFFF;
+
+  /* Accent / Green — ramp inverts; green-500 anchor unchanged */
+  --green-25:  #022E34;
+  --green-50:  #063837;
+  --green-100: #0E5247;
+  --green-200: #205948;
+  --green-300: #247158;
+  --green-400: #288867;
+  --green-500: #2C9C74;
+  --green-600: #56B090;
+  --green-700: #76BFA5;
+  --green-800: #96CEBA;
+  --green-900: #B5DCCE;
+
+  /* Error / Red */
+  --red-50:  #63170D;
+  --red-100: #7E2F28;
+  --red-200: #C64F40;
+  --red-500: #EC6353;
+  --red-600: #F7998E;
+  --red-700: #E6A49E;
+
+  /* Warning / Orange */
+  --orange-50:  #463213;
+  --orange-500: #EAA215;
+  --orange-600: #FFC045;
+  --orange-700: #FFCF72;
+
+  /* Highlight / Yellow */
+  --yellow-50:  #724600;
+  --yellow-500: #DBBB00;
+  --yellow-600: #FFDA02;
+  --yellow-700: #FFE75C;
+
+  /* Info / Blue */
+  --blue-25:  #101633;
+  --blue-50:  #17295E;
+  --blue-500: #5995D6;
+  --blue-600: #5F9DE0;
+  --blue-700: #8CC3FF;
+  --blue-800: #97C9FF;
+
+  /* Support / Tag colors */
+  --tag-kepeel:   #2B867F;
+  --tag-green:    #4F9464;
+  --tag-red:      #BB5D5D;
+  --tag-orange:   #BE6835;
+  --tag-navyblue: #5766AC;
+  --tag-blue:     #4B80BA;
+  --tag-beetroot: #7E3662;
+
+  /* Support / Badge background colors */
+  --badge-blue:   #263950;
+  --badge-green:  #1C3B3C;
+  --badge-berry:  #372033;
+  --badge-yellow: #4F4616;
+  --badge-purple: #2A304B;
+  --badge-olive:  #323523;
+
+  /* Transparent — semi-opaque overlays (base colour flips, alpha kept) */
+  --transparent-stone-1000-60: #1F212999;
+  --transparent-blue-800-10:   #9BADFF1A;
+  --transparent-blue-800-20:   #9BADFF33;
+  --transparent-green-700-10:  #28B8A21A;
+  --transparent-green-700-20:  #28B8A233;
+  --transparent-orange-700-10: #F5B12D1A;
+  --transparent-orange-700-20: #F5B12D33;
+  --transparent-red-700-10:    #FF988B1A;
+  --transparent-red-700-20:    #FF988B33;
 }

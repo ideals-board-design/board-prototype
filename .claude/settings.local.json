@@ -96,7 +96,13 @@
       "Bash(curl -sL -o rc-default.png \"https://www.figma.com/api/mcp/asset/10b3b216-d097-4f04-91a0-57041b9a86a3\")",
       "Bash(curl -sL -o rc-drag.png \"https://www.figma.com/api/mcp/asset/666ee63f-a341-4806-96e0-374f32b8b9dd\")",
       "Bash(curl -sL -o rc-chip.png \"https://www.figma.com/api/mcp/asset/14111739-a242-4181-bcb4-53bae5181499\")",
-      "Bash(grep -oE 'name: \"drag\", svg: `<svg[^`]*`' src/icons/functional.ts)"
+      "Bash(grep -oE 'name: \"drag\", svg: `<svg[^`]*`' src/icons/functional.ts)",
+      "Bash(curl -sL -o figma-node.png \"https://www.figma.com/api/mcp/asset/939abbcb-78d4-47bc-95d2-ccfb5300bd16\")",
+      "Bash([ -d \"$SRC\" ])",
+      "Read(//Users/jaroslav.getman/Documents/DS assets/Illustrations pack/**)",
+      "Bash(cd \"/Users/jaroslav.getman/Documents/Projects/Board design system\" && echo \"=== trash ellipse \\(cx=88 cy=24\\) in generated illustrations.ts ===\" && grep -oE 'name: \"trash\"[^}]*' src/illustrations/illustrations.ts | grep -oE '<ellipse cx=\"88\" cy=\"24\"[^/]*/>' ; echo \"=== raw new-pack Trash.svg — the rim ellipse ===\" && grep -n 'cx=\"88\" cy=\"24\"\\\\|ellipse' \"/Users/jaroslav.getman/Documents/DS assets/Illustrations pack for dark supported/Type=Trash.svg\")",
+      "Bash(grep -oE '\\\\{ name: \"format-folder\", svg: `[^`]*` \\\\}' src/icons/fileFormat.ts)",
+      "Bash(grep -oE '\\\\{ name: \"format-doc-request\", svg: `[^`]*` \\\\}' src/icons/fileFormat.ts)"
     ]
   }
 }

@@ -15,8 +15,10 @@
   z-index: 9000;
   pointer-events: none;
 
-  background: var(--stone-1000);
-  color: var(--color-text-inverse);
+  /* Inverse surface: bg + text flip together so it stays readable in both modes
+     (dark bubble + light text in light → light bubble + dark text in dark). */
+  background: var(--color-bg-inverse);
+  color: var(--color-text-on-inverse);
   padding: var(--space-4) var(--space-12);
   border-radius: var(--radius-sm);
 

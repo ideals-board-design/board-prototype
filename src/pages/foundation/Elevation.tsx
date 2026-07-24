@@ -13,10 +13,10 @@ interface ShadowToken {
 const tokens: ShadowToken[] = [
   {
     name: '--shadow-100',
-    cssValue: '0px 4px 12px rgba(31, 33, 41, 0.16)',
+    cssValue: '0px 4px 12px rgba(0, 0, 0, 0.16)',
     offsetY: '4px',
     blur: '12px',
-    color: '#1F2129',
+    color: '#000000',
     opacity: '16%',
     usage: 'Dropdowns, popovers, tooltips',
   },

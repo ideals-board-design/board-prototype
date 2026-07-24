@@ -95,6 +95,7 @@ import { actions } from '../icons/actions'
 - **All styles via CSS Modules** (`.module.css` files)
 - **Component heights**: S=32px, M=40px, L=48px (via padding, not height property)
 - **Tertiary icon-button spacing**: adjacent tertiary icon buttons (in field trailing slots, table action cells, toolbars, headers, row-hover actions, calendar nav — anywhere two or more sit together) are separated by exactly **2px** — set `gap: var(--space-2)` on the container. This is the single source of truth; never use 0px "abut" spacing or ad-hoc gaps (12/16px) between them. Does not apply to a text button sitting next to an icon button (e.g. Banner action + dismiss).
+- **Elevation → shadow always, +border ring in dark**: every floating/elevated surface (dropdown, menu, popover, modal, autocomplete/search panel, calendar, toast, workspace switcher, etc.) MUST set its shadow via `box-shadow: var(--elevation-100)` (or `--elevation-200` for modals) — never the raw `--shadow-*` tokens. Light mode = the drop shadow. Dark mode = the **same drop shadow** (colour not inverted) **plus** a 1px divider ring (`0 0 0 1px var(--color-border)`) so the surface edge reads on dark. Defined once in `aliases.css`; do not re-implement per component.
 
 ### Icons
 - **Only from `src/icons/*.ts`** — never create inline SVGs
@@ -105,7 +106,7 @@ import { actions } from '../icons/actions'
 - Spacing: `--space-4` through `--space-72`
 - Text: `--text-xs` (12px) `--text-sm` (14px) `--text-base` (15px) `--text-md` (16px) `--text-xl` (32px)
 - Radius: `--radius-sm` (4px) `--radius-md` (4px) `--radius-lg` (12px)
-- Shadows: `--shadow-100` (dropdowns/popovers), `--shadow-200` (modals only — drawers use border-left, never shadow)
+- Elevation: `--elevation-100` (dropdowns/popovers/menus), `--elevation-200` (modals). Light = drop shadow, dark = 1px `--color-border` ring. Raw `--shadow-100/200` are the light-mode source values only — reference `--elevation-*`, not these. Drawers use border-left, never shadow.
 
 ---
 

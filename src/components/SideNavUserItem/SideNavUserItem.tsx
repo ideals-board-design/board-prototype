@@ -9,6 +9,7 @@ import { users }     from '../../icons/users'
 import { actions }   from '../../icons/actions'
 import { location }  from '../../icons/location'
 import { arrows }    from '../../icons/arrows'
+import { useTheme, type ThemePref } from '../../hooks/useTheme'
 import styles from './SideNavUserItem.module.css'
 
 const shieldCheckSvg       = condition.find(i => i.name === 'shield-check')!.svg
@@ -16,8 +17,15 @@ const shieldExclamationSvg = condition.find(i => i.name === 'shield-exclamation'
 const userSvg        = users.find(i => i.name === 'user')!.svg
 const linkSvg        = actions.find(i => i.name === 'link')!.svg
 const globeSvg       = location.find(i => i.name === 'globe')!.svg
+const themeSvg       = condition.find(i => i.name === 'chart-50%')!.svg
 const angleRightSvg  = arrows.find(i => i.name === 'angle-right-fill')!.svg
 const exitSvg        = actions.find(i => i.name === 'exit')!.svg
+
+const THEMES: { value: ThemePref; label: string }[] = [
+  { value: 'dark',   label: 'Dark' },
+  { value: 'light',  label: 'Light' },
+  { value: 'system', label: 'Match system' },
+]
 
 export interface SideNavUserItemProps {
   src?:                string
@@ -49,8 +57,11 @@ export function SideNavUserItem({
   const [open, setOpen]         = useState(defaultOpen)
   const [langOpen, setLangOpen] = useState(false)
   const [activeLang, setActiveLang] = useState('en')
+  const [themeOpen, setThemeOpen] = useState(false)
+  const { theme, setTheme } = useTheme()
   const rootRef        = useRef<HTMLDivElement>(null)
   const langTimerRef   = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const themeTimerRef  = useRef<ReturnType<typeof setTimeout>>(undefined)
 
   // Close on outside click
   useEffect(() => {
@@ -83,6 +94,14 @@ export function SideNavUserItem({
   }
   const handleLangLeave = () => {
     langTimerRef.current = setTimeout(() => setLangOpen(false), 120)
+  }
+
+  const handleThemeEnter = () => {
+    clearTimeout(themeTimerRef.current)
+    setThemeOpen(true)
+  }
+  const handleThemeLeave = () => {
+    themeTimerRef.current = setTimeout(() => setThemeOpen(false), 120)
   }
 
   return (
@@ -155,6 +174,39 @@ export function SideNavUserItem({
                     onClick={() => { setActiveLang(lang.code); setOpen(false) }}
                   >
                     <span className={styles.itemLabel}>{lang.label}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Theme — hover reveals sublist (mirrors Language) */}
+          <div
+            className={[styles.item, styles.langItem].join(' ')}
+            onMouseEnter={handleThemeEnter}
+            onMouseLeave={handleThemeLeave}
+          >
+            <span className={styles.icon} dangerouslySetInnerHTML={{ __html: themeSvg }} />
+            <span className={styles.itemLabel}>Theme</span>
+            <span className={styles.chevronRight} dangerouslySetInnerHTML={{ __html: angleRightSvg }} />
+
+            {themeOpen && (
+              <div
+                className={styles.sublist}
+                onMouseEnter={handleThemeEnter}
+                onMouseLeave={handleThemeLeave}
+              >
+                {THEMES.map(t => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    className={[
+                      styles.item,
+                      t.value === theme ? styles.itemActive : '',
+                    ].filter(Boolean).join(' ')}
+                    onClick={() => { setTheme(t.value); setOpen(false) }}
+                  >
+                    <span className={styles.itemLabel}>{t.label}</span>
                   </button>
                 ))}
               </div>

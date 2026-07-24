@@ -12,6 +12,22 @@ const OUT_DIR  = path.join(__dirname, '../src/icons')
 // Categories that keep their original colors (multi-color / branded)
 const KEEP_COLORS = new Set(['Services', 'File format'])
 
+// Categories that keep brand colours but must adapt their NEUTRAL stone parts
+// (document paper/border/lines) to dark mode. Applied after KEEP_COLORS.
+const FLIP_NEUTRALS = new Set(['File format'])
+const NEUTRAL_TOKENS = {
+  '#fbfbfb': 'var(--stone-100)',
+  '#f7f7f7': 'var(--stone-200)',
+  '#eceef9': 'var(--stone-300)',
+  '#dee0eb': 'var(--stone-400)',
+  '#bbbdc8': 'var(--stone-500)',
+  '#9c9ea8': 'var(--stone-600)',
+  '#e6f2fd': 'var(--blue-50)',
+  // folder file-type icon (amber) — adapt to a dark amber in dark mode
+  '#fff9d5': 'var(--yellow-50)',
+  '#d18a00': 'var(--orange-500)',
+}
+
 // Category folder → output file name + display label
 const CATEGORIES = [
   { folder: 'Arrows',            file: 'arrows',      label: 'Arrows' },
@@ -34,7 +50,7 @@ const CATEGORIES = [
 
 // ── SVG processing ────────────────────────────────────────────────────────────
 
-function processSvg(raw, keepColors) {
+function processSvg(raw, keepColors, flipNeutrals) {
   let svg = raw.trim()
 
   // Remove XML declaration if present
@@ -44,8 +60,43 @@ function processSvg(raw, keepColors) {
   svg = svg.replace(/(<svg[^>]*)\s+width="[^"]*"/, '$1')
   svg = svg.replace(/(<svg[^>]*)\s+height="[^"]*"/, '$1')
 
-  // Remove all id="..." attributes to avoid conflicts when multiple SVGs on page
-  svg = svg.replace(/\s+id="[^"]*"/g, '')
+  // Remove id attributes to avoid conflicts when multiple SVGs are on the page.
+  // EXCEPTION: brand logos (keepColors) rely on gradient/mask/clip ids via
+  // url(#...) refs — stripping them blanks the icon. Those ids carry unique
+  // suffixes (no cross-icon collisions), so keep them; strip only a root <svg id>.
+  if (keepColors) {
+    svg = svg.replace(/(<svg[^>]*?)\s+id="[^"]*"/, '$1')
+  } else {
+    svg = svg.replace(/\s+id="[^"]*"/g, '')
+  }
+
+  // Remove full-canvas white background rect (Figma export artifact): invisible
+  // on a light page but a solid white square in dark. Only the one directly
+  // after <svg>; clipPath rects live in <defs> and must be kept.
+  svg = svg.replace(/(<svg[^>]*>)\s*<rect width="20" height="20" fill="white"\s*\/>/i, '$1')
+
+  // Same artifact expressed as a full-canvas white PATH (e.g. Microsoft logo:
+  // "M0 0H20V20H0V0Z"). Unambiguously a background — remove wherever it appears.
+  svg = svg.replace(/<path d="M0 0H\d+(?:\.\d+)?V\d+(?:\.\d+)?H0V0Z" fill="white"\s*\/>\s*/gi, '')
+
+  if (flipNeutrals) {
+    // Keep brand colours, but adapt neutral document paper/border to dark mode.
+    for (const [hex, token] of Object.entries(NEUTRAL_TOKENS)) {
+      svg = svg.replace(new RegExp(`fill="${hex}"`, 'gi'), `fill="${token}"`)
+    }
+  }
+
+  if (keepColors) {
+    // Single-colour brand icons (only #1F2129, no other brand hue) adapt to the
+    // theme. The tile/shape → currentColor; any white knockout glyph → surface,
+    // so it inverts against the tile (dark tile+white glyph in light → white
+    // tile+dark glyph in dark). Multi-colour brand logos are left untouched.
+    const hexes = (svg.match(/#[0-9a-fA-F]{6}/g) || []).map(h => h.toUpperCase())
+    if (hexes.length && hexes.every(h => h === '#1F2129')) {
+      svg = svg.replace(/(fill|stroke)="#1F2129"/gi, '$1="currentColor"')
+      svg = svg.replace(/(fill|stroke)="white"/gi, '$1="var(--color-bg-surface)"')
+    }
+  }
 
   if (!keepColors) {
     // Primary dark → currentColor
@@ -109,7 +160,7 @@ for (const cat of CATEGORIES) {
 
   for (const file of files) {
     const raw = fs.readFileSync(path.join(folderPath, file), 'utf8')
-    const svg = processSvg(raw, keepColors)
+    const svg = processSvg(raw, keepColors, FLIP_NEUTRALS.has(cat.folder))
     const name = iconNameFromFile(file)
     icons.push({ name, svg })
   }
