@@ -8,9 +8,9 @@ import { Button } from '../../components/Button/Button'
 import styles from './ToastPage.module.css'
 import { SourceLink } from '../SourceLink'
 
-type Intent = 'default' | 'info' | 'warning' | 'danger'
+type Intent = 'default' | 'info' | 'warning' | 'danger' | 'success'
 const ACTION_INTENT: Record<ToastState, Intent> = {
-  success: 'default',
+  success: 'success',
   info:    'info',
   warning: 'warning',
   error:   'danger',

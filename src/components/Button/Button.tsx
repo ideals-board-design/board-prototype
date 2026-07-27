@@ -6,7 +6,7 @@ const loaderSvg = condition.find(i => i.name === 'loader-round')!.svg
 
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'link'
 export type ButtonSize    = 'l' | 'm' | 's'
-export type ButtonIntent  = 'default' | 'danger' | 'info' | 'warning' | 'neutral'
+export type ButtonIntent  = 'default' | 'danger' | 'info' | 'warning' | 'neutral' | 'success'
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?:   ButtonVariant
@@ -35,6 +35,7 @@ const intentCls: Record<ButtonIntent, string> = {
   neutral: styles.neutral,
   info:    styles.info,
   warning: styles.warning,
+  success: styles.success,
 }
 
 export function Button({

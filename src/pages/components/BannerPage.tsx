@@ -10,11 +10,11 @@ const MSG  = 'Banner message text'
 const MSG2 = 'This is a longer banner message that may wrap onto a second line when the container is narrow enough to trigger it.'
 
 /* Action button intent per state */
-type Intent = 'default' | 'info' | 'neutral' | 'warning' | 'danger'
+type Intent = 'default' | 'info' | 'neutral' | 'warning' | 'danger' | 'success'
 const ACTION_INTENT: Record<BannerState, Intent> = {
   'info-primary':   'info',
   'info-secondary': 'neutral',
-  success:          'default',
+  success:          'success',
   error:            'danger',
   warning:          'warning',
 }

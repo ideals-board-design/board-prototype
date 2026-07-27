@@ -184,6 +184,13 @@
 .tertiary.warning:active:not(:disabled):not([data-loading]),
 .tertiary.warning[data-state="active"] { background: var(--transparent-orange-700-20); color: var(--orange-700); }
 
+/* Tertiary — Success (fixed status green — does not follow branding accent) */
+.tertiary.success { color: var(--green-500); }
+.tertiary.success:hover:not(:disabled):not([data-loading]),
+.tertiary.success[data-state="hover"]  { background: var(--transparent-green-700-10); color: var(--green-600); }
+.tertiary.success:active:not(:disabled):not([data-loading]),
+.tertiary.success[data-state="active"] { background: var(--transparent-green-700-20); color: var(--green-700); }
+
 /* Tertiary — compact scale S=28 / M=32 / L=36px. Height via real padding
    (line-height is 20px, so pad = (h-20)/2). Hover fill = the padding box.
    No negative margins, no ::before bleed — footprint == hit area == fill. */
