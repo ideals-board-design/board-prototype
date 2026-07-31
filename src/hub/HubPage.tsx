@@ -12,6 +12,7 @@ import { arrows } from '../icons/arrows'
 import styles from './HubPage.module.css'
 
 const angleLeftSvg = arrows.find(i => i.name === 'angle-left-b')!.svg
+const angleRightSvg = arrows.find(i => i.name === 'angle-right-b')!.svg
 
 /* ── Features registry ─────────────────────────────────────
    Add a new entry here whenever a new feature page is built.
@@ -77,21 +78,24 @@ export default function HubPage() {
           <h1 className={styles.sectionTitle}>Prototypes</h1>
           <div className={styles.list}>
             {FEATURES.map(f => (
-              <div key={f.id} className={styles.row}>
-                <span className={styles.featureName}>{f.name}</span>
-                <span className={styles.designerName}>{f.designer}</span>
-                {f.view ? (
-                  <button
-                    type="button"
-                    className={styles.protoLink}
-                    onClick={() => setView(f.view!)}
-                  >
-                    Open prototype
-                  </button>
-                ) : (
-                  <a href={f.href} className={styles.protoLink}>Open prototype</a>
-                )}
-              </div>
+              f.view ? (
+                <button
+                  key={f.id}
+                  type="button"
+                  className={styles.row}
+                  onClick={() => setView(f.view!)}
+                >
+                  <span className={styles.featureName}>{f.name}</span>
+                  <span className={styles.designerName}>{f.designer}</span>
+                  <span className={styles.rowChevron} dangerouslySetInnerHTML={{ __html: angleRightSvg }} />
+                </button>
+              ) : (
+                <a key={f.id} href={f.href} className={styles.row}>
+                  <span className={styles.featureName}>{f.name}</span>
+                  <span className={styles.designerName}>{f.designer}</span>
+                  <span className={styles.rowChevron} dangerouslySetInnerHTML={{ __html: angleRightSvg }} />
+                </a>
+              )
             ))}
           </div>
         </main>
@@ -116,10 +120,10 @@ export default function HubPage() {
               <h2 className={styles.groupTitle}>{group.title}</h2>
               <div className={styles.list}>
                 {group.flows.map(flow => (
-                  <div key={flow.id} className={styles.row}>
+                  <a key={flow.id} href={flow.href} className={styles.row}>
                     <span className={styles.featureName}>{flow.name}</span>
-                    <a href={flow.href} className={styles.protoLink}>Open prototype</a>
-                  </div>
+                    <span className={styles.rowChevron} dangerouslySetInnerHTML={{ __html: angleRightSvg }} />
+                  </a>
                 ))}
               </div>
             </section>
