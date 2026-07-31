@@ -16,6 +16,7 @@ export default defineConfig({
         tasks:            'tasks.html',
         dashboard:        'dashboard.html',
         'cs-before-meeting': 'cs-before-meeting.html',
+        'meeting-creation-public': 'meeting-creation-public.html',
         blank:            'blank.html',
         form:             'form.html',
         documents:        'documents.html',

@@ -10,6 +10,8 @@ import styles from './App.module.css'
 type AppPage = NavMenuItemKey
 /** Which dashboard variant to render when `page === 'dashboard'` */
 export type DashboardVariant = 'default' | 'cs-before-meeting'
+/** Which meetings variant to render when `page === 'meetings'` */
+export type MeetingsVariant = 'default' | 'create-public'
 
 const WORKSPACES = [
   { id: 'star', name: 'STAR Enterprises', initials: 'ST', color: 'var(--color-brand)' },
@@ -36,7 +38,8 @@ const PAGE_META: Record<Exclude<AppPage, 'tasks'>, { title: string; illustration
 export default function App({
   initialPage = 'tasks',
   dashboardVariant = 'default',
-}: { initialPage?: AppPage; dashboardVariant?: DashboardVariant } = {}) {
+  meetingsVariant = 'default',
+}: { initialPage?: AppPage; dashboardVariant?: DashboardVariant; meetingsVariant?: MeetingsVariant } = {}) {
   const [page, setPage]        = useState<AppPage>(initialPage)
   const [workspaceId, setWsId] = useState('star')
 
@@ -63,7 +66,12 @@ export default function App({
             ? <CSBeforeMeetingPage />
             : <DashboardPage />
         )}
-        {page !== 'tasks' && page !== 'dashboard' && <GenericPage {...PAGE_META[page]} />}
+        {page === 'meetings' && (
+          meetingsVariant === 'create-public'
+            ? <GenericPage title="Meeting creation public" illustration="calendar" />
+            : <GenericPage {...PAGE_META.meetings} />
+        )}
+        {page !== 'tasks' && page !== 'dashboard' && page !== 'meetings' && <GenericPage {...PAGE_META[page]} />}
       </main>
     </div>
   )

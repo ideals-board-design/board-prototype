@@ -1,9 +1,10 @@
 /* HubPage — Ideals Board overview landing
    Figma node 35372-4538
 
-   Two views:
+   Three views:
    - 'list'      → the prototypes registry (default)
-   - 'dashboard' → Dashboard flows (opened from the Dashboard row) */
+   - 'dashboard' → Dashboard flows (opened from the Dashboard row)
+   - 'public'    → Public page flows (opened from the Public page row) */
 
 import { useState } from 'react'
 import { HubHeader } from './HubHeader'
@@ -17,7 +18,9 @@ const angleRightSvg = arrows.find(i => i.name === 'angle-right-b')!.svg
 /* ── Features registry ─────────────────────────────────────
    Add a new entry here whenever a new feature page is built.
    `href` opens a prototype directly; `view` opens an in-hub sub-page. */
-const FEATURES: { id: string; name: string; designer: string; href?: string; view?: 'dashboard' }[] = [
+type SubView = 'dashboard' | 'public'
+
+const FEATURES: { id: string; name: string; designer: string; href?: string; view?: SubView }[] = [
   {
     id: 'tasks',
     name: 'Tasks',
@@ -41,6 +44,12 @@ const FEATURES: { id: string; name: string; designer: string; href?: string; vie
     name: 'Documents',
     designer: 'Jaroslav Getman',
     href: '/documents.html',
+  },
+  {
+    id: 'public-page',
+    name: 'Public page',
+    designer: 'Jaroslav Getman',
+    view: 'public',
   },
 ]
 
@@ -66,8 +75,27 @@ const DASHBOARD_FLOWS: { title: string; flows: { id: string; name: string; href:
   },
 ]
 
+/* ── Public page flows ─────────────────────────────────────
+   Grouped under "Create". Each flow links to its prototype. */
+const PUBLIC_PAGE_FLOWS: { title: string; flows: { id: string; name: string; href: string }[] }[] = [
+  {
+    title: 'Create',
+    flows: [
+      { id: 'public-web',     name: 'Web',                      href: '/blank.html?title=Web+%E2%80%94+Public+page' },
+      { id: 'public-meeting', name: 'Meeting creation public',  href: '/meeting-creation-public.html' },
+      { id: 'public-agenda',  name: 'Agenda public',            href: '/blank.html?title=Agenda+public' },
+      { id: 'public-minutes', name: 'Minutes public',           href: '/blank.html?title=Minutes+public' },
+    ],
+  },
+]
+
+const SUB_PAGES: Record<SubView, { title: string; groups: typeof DASHBOARD_FLOWS }> = {
+  dashboard: { title: 'Dashboard', groups: DASHBOARD_FLOWS },
+  public: { title: 'Public page', groups: PUBLIC_PAGE_FLOWS },
+}
+
 export default function HubPage() {
-  const [view, setView] = useState<'list' | 'dashboard'>('list')
+  const [view, setView] = useState<'list' | SubView>('list')
 
   return (
     <div className={styles.shell}>
@@ -112,10 +140,10 @@ export default function HubPage() {
               onClick={() => setView('list')}
               aria-label="Back to prototypes"
             />
-            <h1 className={styles.flowsTitle}>Dashboard</h1>
+            <h1 className={styles.flowsTitle}>{SUB_PAGES[view].title}</h1>
           </div>
 
-          {DASHBOARD_FLOWS.map(group => (
+          {SUB_PAGES[view].groups.map(group => (
             <section key={group.title} className={styles.flowGroup}>
               <h2 className={styles.groupTitle}>{group.title}</h2>
               <div className={styles.list}>
