@@ -23,7 +23,7 @@ export default function BlankPage() {
           title={title}
           description="This prototype is coming soon."
           action={
-            <Button variant="secondary" intent="neutral" size="m" href="/board.html">
+            <Button variant="secondary" intent="neutral" size="m" href="/">
               Back to prototypes
             </Button>
           }
