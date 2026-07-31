@@ -13,7 +13,7 @@ import { arrows } from '../icons/arrows'
 import styles from './HubPage.module.css'
 
 const angleLeftSvg = arrows.find(i => i.name === 'angle-left-b')!.svg
-const angleRightSvg = arrows.find(i => i.name === 'angle-right-b')!.svg
+const angleRightSvg = arrows.find(i => i.name === 'angle-right-fill')!.svg
 
 /* ── Features registry ─────────────────────────────────────
    Add a new entry here whenever a new feature page is built.
@@ -48,7 +48,7 @@ const FEATURES: { id: string; name: string; designer: string; href?: string; vie
   {
     id: 'public-page',
     name: 'Public page',
-    designer: 'Jaroslav Getman',
+    designer: 'Elena Skurtova',
     view: 'public',
   },
 ]
@@ -94,6 +94,10 @@ const SUB_PAGES: Record<SubView, { title: string; groups: typeof DASHBOARD_FLOWS
   public: { title: 'Public page', groups: PUBLIC_PAGE_FLOWS },
 }
 
+/* Top-level Prototypes list is always shown alphabetically by name,
+   regardless of registration order above. */
+const SORTED_FEATURES = [...FEATURES].sort((a, b) => a.name.localeCompare(b.name))
+
 export default function HubPage() {
   const [view, setView] = useState<'list' | SubView>('list')
 
@@ -105,7 +109,7 @@ export default function HubPage() {
         <main className={styles.main}>
           <h1 className={styles.sectionTitle}>Prototypes</h1>
           <div className={styles.list}>
-            {FEATURES.map(f => (
+            {SORTED_FEATURES.map(f => (
               f.view ? (
                 <button
                   key={f.id}
