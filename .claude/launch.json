@@ -3,8 +3,8 @@
   "configurations": [
     {
       "name": "dev",
-      "runtimeExecutable": "/Users/jaroslav.getman/.nvm/versions/node/v24.14.1/bin/node",
-      "runtimeArgs": ["node_modules/.bin/vite"],
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
       "autoPort": true,
       "port": 5173
     }
