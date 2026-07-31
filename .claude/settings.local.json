@@ -103,7 +103,10 @@
       "Bash(cd \"/Users/jaroslav.getman/Documents/Projects/Board design system\" && echo \"=== trash ellipse \\(cx=88 cy=24\\) in generated illustrations.ts ===\" && grep -oE 'name: \"trash\"[^}]*' src/illustrations/illustrations.ts | grep -oE '<ellipse cx=\"88\" cy=\"24\"[^/]*/>' ; echo \"=== raw new-pack Trash.svg — the rim ellipse ===\" && grep -n 'cx=\"88\" cy=\"24\"\\\\|ellipse' \"/Users/jaroslav.getman/Documents/DS assets/Illustrations pack for dark supported/Type=Trash.svg\")",
       "Bash(grep -oE '\\\\{ name: \"format-folder\", svg: `[^`]*` \\\\}' src/icons/fileFormat.ts)",
       "Bash(grep -oE '\\\\{ name: \"format-doc-request\", svg: `[^`]*` \\\\}' src/icons/fileFormat.ts)",
-      "Bash(sort -t: -k2 -rn)"
+      "Bash(sort -t: -k2 -rn)",
+      "Bash(git stash *)",
+      "Bash(echo \"EXIT:$?\")",
+      "Bash(npx tsc *)"
     ]
   }
 }
