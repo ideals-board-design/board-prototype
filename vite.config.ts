@@ -20,6 +20,7 @@ export default defineConfig({
         blank:            'blank.html',
         form:             'form.html',
         documents:        'documents.html',
+        chats:            'chats.html',
       },
     },
   },

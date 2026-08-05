@@ -1,0 +1,130 @@
+/* MessageBubble — Figma component set "Message" (70:5055) */
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+  max-width: 400px;
+}
+
+/* First message of a run (new sender, or switching mine/theirs) gets extra
+   breathing room; continuations rely on the messages list's 4px base gap alone,
+   matching Figma's tight run-grouping frame (node 1405:17990). */
+.groupStart {
+  margin-top: var(--space-12);
+}
+
+.rowMine    { align-self: flex-end;  flex-direction: row-reverse; }
+.rowTheirs  { align-self: flex-start; }
+
+/* Avatar/name only render for the first message in a group-chat run — top-aligned
+   with the sender name, per Figma node 1405:17990. */
+.avatarSlot {
+  flex-shrink: 0;
+  display: flex;
+}
+
+.content {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Continuation messages in a group-chat run (no avatar/name of their own) get a
+   flat 40px indent — 32px avatar + 8px gap — so the bubble stays aligned under the
+   run's first bubble instead of collapsing flush left. Figma applies this as literal
+   padding-left on the message instance rather than a reserved avatar column. */
+.contentIndented {
+  padding-left: 40px;
+}
+
+.senderName {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* ── Bubble + hover actions — sit in the same row, matching Figma exactly ── */
+
+.bubbleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.bubbleRowMine { justify-content: flex-end; }
+
+/* Bubble is a column: message text, then a time(+status) row — both live inside
+   the box, per Figma's "Text" frame (node 1388:15709), not below it. */
+.bubble {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-sm);
+  max-width: 320px;
+}
+
+.bubbleMine    { background: var(--color-success-bg); }
+.bubbleTheirs  { background: var(--stone-200); }
+
+.bubbleText {
+  font-size: var(--text-sm);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* Reply/copy/more — hidden until the message row is hovered. */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);   /* 2px between adjacent tertiary icon buttons (DS rule) */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.row:hover .actions,
+.row:focus-within .actions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Always right-aligned within the bubble, per Figma's Time frame
+   (alignSelf: stretch, justifyContent: flex-end) — regardless of mine/theirs. */
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-8);
+}
+
+.checkIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.checkIcon.checkRead { color: var(--color-icon-brand); }
+.checkIcon svg { width: 100%; height: 100%; }
+
+.time {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ── Skeleton ─────────────────────────────────────────────────────────── */
+
+.skeletonBlock {
+  display: block;
+  background: var(--color-bg-disabled);
+  border-radius: var(--radius-sm);
+}
+
+.skeletonAvatar { width: 32px; height: 32px; border-radius: 120px; }
+.skeletonBubble { width: 200px; height: 36px; }

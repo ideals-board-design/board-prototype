@@ -26,6 +26,7 @@ const USER = {
 /* Title + illustration for every nav key except tasks (which has TasksPage) */
 const PAGE_META: Record<Exclude<AppPage, 'tasks'>, { title: string; illustration: string }> = {
   search:    { title: 'Search',    illustration: 'folder-no-results'   },
+  chats:     { title: 'Chats',     illustration: 'cards-chats'         },
   dashboard: { title: 'Dashboard', illustration: 'cards-stack-pending' },
   meetings:  { title: 'Meetings',  illustration: 'calendar'            },
   documents: { title: 'Documents', illustration: 'document'            },

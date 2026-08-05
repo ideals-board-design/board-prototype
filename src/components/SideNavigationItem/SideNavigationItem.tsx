@@ -5,6 +5,7 @@ import { navigation } from '../../icons/navigation'
 import styles from './SideNavigationItem.module.css'
 
 export type NavMenuItemKey =
+  | 'chats'
   | 'dashboard'
   | 'directory'
   | 'documents'

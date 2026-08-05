@@ -1,0 +1,109 @@
+/* ChatListItem — Figma "Chat list item" (1365:14381), 456px content width */
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+}
+
+.item:hover      { background: var(--color-bg-hover); }
+.item.selected   { background: var(--color-bg-selected); }
+.item:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+/* ── Content ──────────────────────────────────────────────────────────── */
+
+.container {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dot {
+  flex-shrink: 0;
+  width: var(--space-8);
+  height: var(--space-8);
+  border-radius: 50%;
+  background: var(--red-500);
+}
+
+.time {
+  flex-shrink: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.checkIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.checkIcon.checkRead { color: var(--color-icon-brand); }
+.checkIcon svg { width: 100%; height: 100%; }
+
+.preview {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.previewUnread {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* ── Skeleton ─────────────────────────────────────────────────────────── */
+
+.skeletonBlock {
+  display: block;
+  background: var(--color-bg-disabled);
+  border-radius: var(--radius-sm);
+}
+
+.skeletonAvatar { width: 40px; height: 40px; border-radius: 120px; }
+.skeletonLineShort { width: 160px; height: 16px; margin-bottom: var(--space-8); }
+.skeletonLineLong  { width: 240px; height: 16px; }

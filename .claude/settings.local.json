@@ -106,7 +106,11 @@
       "Bash(sort -t: -k2 -rn)",
       "Bash(git stash *)",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npm ls *)",
+      "Read(//Users/jaroslav.getman/.claude/**)",
+      "Bash(find / -maxdepth 4 -iname \"claude\" -type f)",
+      "mcp__figma__get_figma_data"
     ]
   }
 }

@@ -18,6 +18,7 @@ export const DEFAULT_NAV_ITEMS: SideNavItem[] = [
   { key: 'dashboard', label: 'Dashboard' },
   { key: 'meetings',  label: 'Meetings'  },
   { key: 'tasks',     label: 'Tasks'     },
+  { key: 'chats',     label: 'Chats'     },
   { key: 'documents', label: 'Documents' },
   { key: 'directory', label: 'Directory' },
   { key: 'reports',   label: 'Reports'   },

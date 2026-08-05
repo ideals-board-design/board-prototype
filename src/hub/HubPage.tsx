@@ -22,6 +22,12 @@ type SubView = 'dashboard' | 'public'
 
 const FEATURES: { id: string; name: string; designer: string; href?: string; view?: SubView }[] = [
   {
+    id: 'chats',
+    name: 'Chats',
+    designer: 'Jaroslav Getman',
+    href: '/chats.html',
+  },
+  {
     id: 'tasks',
     name: 'Tasks',
     designer: 'Jaroslav Getman',
