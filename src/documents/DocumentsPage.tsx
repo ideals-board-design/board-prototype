@@ -39,11 +39,14 @@ const FORMAT_ICON: Record<'folder' | 'pdf' | 'word', string> = {
 /* ── Column model ──────────────────────────────────────── */
 type ColKey = 'name' | 'addedBy' | 'access' | 'size' | 'addedOn' | 'viewedOn'
 
-const COL: Record<ColKey, { label: string; locked: boolean; width: number | null }> = {
+const COL: Record<ColKey, { label: string; locked: boolean; width: number | null; endGutter?: number }> = {
   name:     { label: 'Name',           locked: true,  width: null },
   addedBy:  { label: 'Added by',       locked: true,  width: 240 },
-  access:   { label: 'Who can access', locked: false, width: 200 },
-  size:     { label: 'Size',           locked: false, width: 112 },
+  // 'access'/'size' are narrow enough that their label + sort icon can reach
+  // into the sticky 52px columns-button zone when they land last — the wider
+  // columns never do, so they keep their exact spec width in that position.
+  access:   { label: 'Who can access', locked: false, width: 200, endGutter: 24 },
+  size:     { label: 'Size',           locked: false, width: 112, endGutter: 24 },
   addedOn:  { label: 'Added on',       locked: false, width: 180 },
   viewedOn: { label: 'Viewed on',      locked: false, width: 180 },
 }
@@ -225,8 +228,16 @@ export default function DocumentsPage() {
 
   /* Columns visible in the table, in order (locked stay visible) */
   const visibleKeys = order.filter(k => COL[k].locked || !hidden.has(k))
+  /* The last visible column sits right against the sticky 52px "configure
+     columns" header button. Most columns are wide enough that their label +
+     sort icon never reach it; the couple that aren't declare `endGutter` in
+     COL so only they grow when they land last — every other column (and the
+     default order) keeps its exact spec width. 'name' is always locked
+     first, so it's never the last column here. */
+  const lastVisibleKey = visibleKeys[visibleKeys.length - 1]
+  const lastColEndGutter = COL[lastVisibleKey]?.endGutter ?? 0
   const tableMinWidth =
-    CHECKBOX_W + STAR_W + NAME_MIN +
+    CHECKBOX_W + STAR_W + NAME_MIN + lastColEndGutter +
     visibleKeys.filter(k => k !== 'name').reduce((sum, k) => sum + (COL[k].width ?? 0), 0)
 
   const dropItems: ColumnRow[] = order.map(k => ({
@@ -315,7 +326,7 @@ export default function DocumentsPage() {
                 <col style={{ width: CHECKBOX_W }} />
                 {visibleKeys.map(k => (
                   <Fragment key={k}>
-                    <col style={COL[k].width != null ? { width: COL[k].width! } : undefined} />
+                    <col style={COL[k].width != null ? { width: COL[k].width! + (k === lastVisibleKey ? lastColEndGutter : 0) } : undefined} />
                     {k === 'name' && <col style={{ width: STAR_W }} />}
                   </Fragment>
                 ))}
