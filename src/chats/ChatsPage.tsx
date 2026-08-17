@@ -17,6 +17,7 @@ import { actions } from '../icons/actions'
 import styles from './ChatsPage.module.css'
 
 const plusSvg = actions.find(i => i.name === 'plus')!.svg
+const editFieldSvg = actions.find(i => i.name === 'edit-field')!.svg
 
 /* ── SideNavigation config ─────────────────────────────── */
 const WORKSPACES = [{ id: 'star', name: 'STAR Enterprises', initials: 'ST', color: '#28a560' }]
@@ -185,7 +186,7 @@ export default function ChatsPage() {
                 intent="neutral"
                 size="m"
                 aria-label="New chat"
-                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: plusSvg }} />}
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: editFieldSvg }} />}
               />
             </div>
 
