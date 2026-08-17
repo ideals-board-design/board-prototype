@@ -256,7 +256,10 @@ export default function ChatsPage() {
                   status={selectedChat.headerStatus}
                   avatarInitials={selectedChat.avatarInitials}
                   avatarSrc={selectedChat.avatarSrc}
-                  onMoreClick={() => console.log('more')}
+                  onSearchClick={() => console.log('search in conversation')}
+                  onAddUsersClick={() => console.log('add users')}
+                  onAddTopicClick={() => console.log('add topic')}
+                  onDeleteClick={() => console.log('delete conversation')}
                 />
 
                 <div className={styles.messages}>
