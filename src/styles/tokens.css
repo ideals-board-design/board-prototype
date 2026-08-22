@@ -202,11 +202,29 @@
   --shadow-200: 0px 8px 32px rgba(0, 0, 0, 0.16);   /* modals, drawers · #000 @ 16% */
 
   /* ---------------------------------------------------------------------------
-     Transitions
+     Motion — duration
+     Single source of truth. No hardcoded ms in component code.
      --------------------------------------------------------------------------- */
-  --transition-fast:   100ms ease;
-  --transition-normal: 200ms ease;
-  --transition-slow:   300ms ease;
+  --dur-instant: 0ms;
+  --dur-fast:    200ms;   /* press feedback, exits */
+  --dur-snap:    300ms;   /* hover, focus, dropdown, checkbox, radio */
+  --dur-base:    400ms;   /* toggle, toast, skeleton, modal enter */
+  --dur-slow:    600ms;   /* drawer enter */
+
+  --dur-skeleton-pulse: 1600ms;   /* skeleton opacity pulse cycle */
+
+  /* ---------------------------------------------------------------------------
+     Motion — easing
+     enter = --ease-out · exit = --ease-in · state-to-state = --ease-in-out
+     --------------------------------------------------------------------------- */
+  --ease-out:    cubic-bezier(0, 0, 0.2, 1);
+  --ease-in:     cubic-bezier(0.6, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.6, 0, 0.2, 1);
+
+  /* ---------------------------------------------------------------------------
+     Motion — distance
+     --------------------------------------------------------------------------- */
+  --motion-offset-toast: 8px;
 
   /* ---------------------------------------------------------------------------
      Z-index scale

@@ -19,6 +19,7 @@ import { Tooltip }  from '../Tooltip/Tooltip'
 import { Button }   from '../Button/Button'
 import { arrows }   from '../../icons/arrows'
 import { actions }  from '../../icons/actions'
+import { usePresence } from '../shared/usePresence'
 import styles from './Dropdown.module.css'
 
 /* ── Icons ────────────────────────────────────────────────────────────────── */
@@ -196,6 +197,9 @@ export function Dropdown({
   const isNoBorder = variant === 'no-border'
 
   const [open, setOpen]                     = useState(false)
+
+  // Keeps the panel mounted through its fade-out (motion spec §3).
+  const { mounted, state } = usePresence(open)
   const [pos,  setPos]                      = useState({ top: 0, left: 0, width: 0 })
   const [openSublistFor, setOpenSublistFor] = useState<string | null>(null)
   const [sublistPos, setSublistPos]         = useState({ top: 0, left: 0 })
@@ -586,13 +590,15 @@ export function Dropdown({
       )}
 
       {/* Sublist portal — hover-triggered panel to the right of a parent item */}
-      {open && openSublistFor && (() => {
+      {mounted && openSublistFor && (() => {
         const parentOpt = options.filter(isSelectable).find(o => o.value === openSublistFor)
         if (!parentOpt?.children?.length) return null
         return createPortal(
           <div
             ref={sublistRef}
             className={`${styles.droplist} ${styles.sublist} ${sizeCls[size]}`}
+            data-state={state}
+            aria-hidden={state === 'closed'}
             style={{ top: sublistPos.top, left: sublistPos.left }}
             role="listbox"
             onMouseEnter={cancelCloseSublist}
@@ -621,10 +627,12 @@ export function Dropdown({
       })()}
 
       {/* Droplist — rendered in document.body via portal */}
-      {open && createPortal(
+      {mounted && createPortal(
         <div
           ref={droplistRef}
           className={[styles.droplist, sizeCls[size], isNoBorder ? styles.droplistNoBorder : ''].filter(Boolean).join(' ')}
+          data-state={state}
+          aria-hidden={state === 'closed'}
           style={{ top: pos.top, left: pos.left, ...(isNoBorder ? {} : { width: pos.width }) }}
           role="listbox"
           aria-multiselectable={mode !== 'single' || undefined}

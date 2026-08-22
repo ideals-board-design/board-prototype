@@ -139,8 +139,10 @@ export default function ToastPage() {
         <ul className={styles.guidelines}>
           <li>Fixed width: 400px. Position toasts at the top-right of the viewport via <code>ToastContainer</code>.</li>
           <li><strong>Stacking:</strong> newest toast at top, 8px gap. Older toasts push downward.</li>
-          <li><strong>Enter:</strong> slide in from top + fade in, 400ms <code>cubic-bezier(0.22, 1, 0.36, 1)</code>.</li>
-          <li><strong>Exit:</strong> slide out top + fade out, 300ms same easing.</li>
+          <li><strong>Enter:</strong> slides down from &minus;8px while fading in &mdash; <code>--dur-base</code> / <code>--ease-out</code>. Opacity and transform share duration and easing so the toast reads as one object.</li>
+          <li><strong>Exit:</strong> fades out while sliding back up &mdash; <code>--dur-snap</code> / <code>--ease-in</code>. Exit is always faster than enter.</li>
+          <li><strong>Stack reflow:</strong> remaining toasts move with <code>transform: translateY</code> at <code>--dur-base</code> / <code>--ease-in-out</code> &mdash; never <code>top</code> or <code>margin</code>.</li>
+          <li><strong>Auto-dismiss</strong> pauses on hover and on focus within the toast.</li>
           <li><strong>Primary message:</strong> max 2 lines, then ellipsis. Use <code>--font-weight-medium</code>.</li>
           <li><strong>Optional text:</strong> max 3 lines, then ellipsis.</li>
           <li><strong>Action:</strong> tertiary button with intent matching the state. Appears below optional text.</li>

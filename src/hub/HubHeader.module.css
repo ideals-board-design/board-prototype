@@ -41,10 +41,12 @@
   font-weight: var(--font-weight-regular);
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
-.navLink:hover { color: var(--color-text-primary); }
+@media (hover: hover) {
+  .navLink:hover { color: var(--color-text-primary); }
+}
 
 /* Active — current page, not a link */
 .navLinkActive {
@@ -64,10 +66,12 @@
   border-radius: var(--radius-md);
   padding: var(--space-4) var(--space-12);
   cursor: pointer;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  transition: color var(--dur-snap) var(--ease-out), border-color var(--dur-snap) var(--ease-out);
 }
 
-.themeToggle:hover {
-  color: var(--color-text-primary);
-  border-color: var(--color-border-strong);
+@media (hover: hover) {
+  .themeToggle:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-border-strong);
+  }
 }

@@ -9,6 +9,7 @@
 import { type ReactNode, useState, useRef, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './Tooltip.module.css'
+import { usePresence } from '../shared/usePresence'
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right'
 
@@ -63,6 +64,9 @@ export function Tooltip({ label, position = 'top', children, maxWidth, wrapperCl
   // Cleanup timer on unmount
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
+  // Keeps the tooltip mounted through its fade-out (motion spec §3).
+  const { mounted, state } = usePresence(visible)
+
   const tooltipCls = [
     styles.tooltip,
     styles[position],
@@ -78,9 +82,11 @@ export function Tooltip({ label, position = 'top', children, maxWidth, wrapperCl
     >
       {children}
 
-      {visible && createPortal(
+      {mounted && createPortal(
         <div
           className={tooltipCls}
+          data-state={state}
+          aria-hidden={state === 'closed'}
           role="tooltip"
           style={{
             left: anchor.left,

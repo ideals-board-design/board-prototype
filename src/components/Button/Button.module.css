@@ -19,14 +19,25 @@
   outline: none;
   -webkit-font-smoothing: antialiased;
   transition:
-    background var(--transition-fast),
-    color var(--transition-fast),
-    box-shadow var(--transition-fast);
+    background-color var(--dur-snap) var(--ease-out),
+    color var(--dur-snap) var(--ease-out),
+    box-shadow var(--dur-snap) var(--ease-out);
 }
 
 .button:focus-visible {
   outline: 2px solid var(--color-border-focus);
   outline-offset: 2px;
+}
+
+/* ── Press (§2) ──────────────────────────────────────────────────────────────
+   Press in is shorter and sharper than hover; the release inherits the base
+   transition above, so it eases back out at --dur-snap. Colour-only — no scale,
+   no translate. Deliberately NOT wrapped in @media (hover: hover): press
+   feedback is wanted on touch. */
+.button:active:not(:disabled):not([data-loading]),
+.button[data-state="active"] {
+  transition-duration: var(--dur-fast);
+  transition-timing-function: var(--ease-in);
 }
 
 /* ── Sizes ───────────────────────────────────────────────────────────────── */
@@ -99,15 +110,19 @@
   color: var(--color-icon-inverse);
 }
 
-.primary:hover:not(:disabled):not([data-loading]),
-.primary[data-state="hover"]  { background: var(--accent-600); }
+.primary[data-state="hover"] { background: var(--accent-600); }
+@media (hover: hover) {
+  .primary:hover:not(:disabled):not([data-loading]) { background: var(--accent-600); }
+}
 .primary:active:not(:disabled):not([data-loading]),
 .primary[data-state="active"] { background: var(--accent-700); }
 
 /* Primary — Danger */
 .primary.danger { background: var(--red-500); }
-.primary.danger:hover:not(:disabled):not([data-loading]),
-.primary.danger[data-state="hover"]  { background: var(--red-600); }
+.primary.danger[data-state="hover"] { background: var(--red-600); }
+@media (hover: hover) {
+  .primary.danger:hover:not(:disabled):not([data-loading]) { background: var(--red-600); }
+}
 .primary.danger:active:not(:disabled):not([data-loading]),
 .primary.danger[data-state="active"] { background: var(--red-700); }
 
@@ -119,11 +134,15 @@
   box-shadow: inset 0 0 0 1px var(--stone-500);
 }
 
-/* Hover (10%) / pressed (20%) fill composited over the white surface so the button
-   stays opaque. Default = neutral Utility tokens (Hover/Pressed background); Danger = red. */
-.secondary:hover:not(:disabled):not([data-loading]),
 .secondary[data-state="hover"] {
   background: linear-gradient(var(--color-bg-hover-fill), var(--color-bg-hover-fill)), var(--color-bg-surface);
+}
+@media (hover: hover) {
+  /* Hover (10%) / pressed (20%) fill composited over the white surface so the button
+     stays opaque. Default = neutral Utility tokens (Hover/Pressed background); Danger = red. */
+  .secondary:hover:not(:disabled):not([data-loading]) {
+    background: linear-gradient(var(--color-bg-hover-fill), var(--color-bg-hover-fill)), var(--color-bg-surface);
+  }
 }
 .secondary:active:not(:disabled):not([data-loading]),
 .secondary[data-state="active"] {
@@ -135,9 +154,13 @@
   color: var(--red-600);
   box-shadow: inset 0 0 0 1px var(--red-200);
 }
-.secondary.danger:hover:not(:disabled):not([data-loading]),
 .secondary.danger[data-state="hover"] {
   background: linear-gradient(var(--transparent-red-700-10), var(--transparent-red-700-10)), var(--color-bg-surface);
+}
+@media (hover: hover) {
+  .secondary.danger:hover:not(:disabled):not([data-loading]) {
+    background: linear-gradient(var(--transparent-red-700-10), var(--transparent-red-700-10)), var(--color-bg-surface);
+  }
 }
 .secondary.danger:active:not(:disabled):not([data-loading]),
 .secondary.danger[data-state="active"] {
@@ -151,43 +174,55 @@
   color: var(--accent-500);
 }
 
-.tertiary:hover:not(:disabled):not([data-loading]),
-.tertiary[data-state="hover"]  { background: var(--color-brand-fill-hover); color: var(--accent-600); }
+.tertiary[data-state="hover"] { background: var(--color-brand-fill-hover); color: var(--accent-600); }
+@media (hover: hover) {
+  .tertiary:hover:not(:disabled):not([data-loading]) { background: var(--color-brand-fill-hover); color: var(--accent-600); }
+}
 .tertiary:active:not(:disabled):not([data-loading]),
 .tertiary[data-state="active"] { background: var(--color-brand-fill-active); color: var(--accent-700); }
 
 /* Tertiary — Neutral */
 .tertiary.neutral { color: var(--color-text-secondary); }
-.tertiary.neutral:hover:not(:disabled):not([data-loading]),
-.tertiary.neutral[data-state="hover"]  { background: var(--color-bg-hover-fill); color: var(--color-text-primary); }
+.tertiary.neutral[data-state="hover"] { background: var(--color-bg-hover-fill); color: var(--color-text-primary); }
+@media (hover: hover) {
+  .tertiary.neutral:hover:not(:disabled):not([data-loading]) { background: var(--color-bg-hover-fill); color: var(--color-text-primary); }
+}
 .tertiary.neutral:active:not(:disabled):not([data-loading]),
 .tertiary.neutral[data-state="active"] { background: var(--color-bg-hover-fill-strong); color: var(--color-text-primary); }
 
 /* Tertiary — Danger */
 .tertiary.danger { color: var(--red-500); }
-.tertiary.danger:hover:not(:disabled):not([data-loading]),
-.tertiary.danger[data-state="hover"]  { background: var(--transparent-red-700-10); color: var(--red-600); }
+.tertiary.danger[data-state="hover"] { background: var(--transparent-red-700-10); color: var(--red-600); }
+@media (hover: hover) {
+  .tertiary.danger:hover:not(:disabled):not([data-loading]) { background: var(--transparent-red-700-10); color: var(--red-600); }
+}
 .tertiary.danger:active:not(:disabled):not([data-loading]),
 .tertiary.danger[data-state="active"] { background: var(--transparent-red-700-20); color: var(--red-700); }
 
 /* Tertiary — Info */
 .tertiary.info { color: var(--blue-500); }
-.tertiary.info:hover:not(:disabled):not([data-loading]),
-.tertiary.info[data-state="hover"]  { background: var(--transparent-blue-800-10); color: var(--blue-600); }
+.tertiary.info[data-state="hover"] { background: var(--transparent-blue-800-10); color: var(--blue-600); }
+@media (hover: hover) {
+  .tertiary.info:hover:not(:disabled):not([data-loading]) { background: var(--transparent-blue-800-10); color: var(--blue-600); }
+}
 .tertiary.info:active:not(:disabled):not([data-loading]),
 .tertiary.info[data-state="active"] { background: var(--transparent-blue-800-20); color: var(--blue-700); }
 
 /* Tertiary — Warning */
 .tertiary.warning { color: var(--orange-500); }
-.tertiary.warning:hover:not(:disabled):not([data-loading]),
-.tertiary.warning[data-state="hover"]  { background: var(--transparent-orange-700-10); color: var(--orange-600); }
+.tertiary.warning[data-state="hover"] { background: var(--transparent-orange-700-10); color: var(--orange-600); }
+@media (hover: hover) {
+  .tertiary.warning:hover:not(:disabled):not([data-loading]) { background: var(--transparent-orange-700-10); color: var(--orange-600); }
+}
 .tertiary.warning:active:not(:disabled):not([data-loading]),
 .tertiary.warning[data-state="active"] { background: var(--transparent-orange-700-20); color: var(--orange-700); }
 
 /* Tertiary — Success (fixed status green — does not follow branding accent) */
 .tertiary.success { color: var(--green-500); }
-.tertiary.success:hover:not(:disabled):not([data-loading]),
-.tertiary.success[data-state="hover"]  { background: var(--transparent-green-700-10); color: var(--green-600); }
+.tertiary.success[data-state="hover"] { background: var(--transparent-green-700-10); color: var(--green-600); }
+@media (hover: hover) {
+  .tertiary.success:hover:not(:disabled):not([data-loading]) { background: var(--transparent-green-700-10); color: var(--green-600); }
+}
 .tertiary.success:active:not(:disabled):not([data-loading]),
 .tertiary.success[data-state="active"] { background: var(--transparent-green-700-20); color: var(--green-700); }
 
@@ -218,8 +253,10 @@
   text-underline-offset: 2px;
 }
 
-.link:hover:not(:disabled):not([data-loading]),
-.link[data-state="hover"]  { color: var(--accent-600); }
+.link[data-state="hover"] { color: var(--accent-600); }
+@media (hover: hover) {
+  .link:hover:not(:disabled):not([data-loading]) { color: var(--accent-600); }
+}
 .link:active:not(:disabled):not([data-loading]),
 .link[data-state="active"] { color: var(--accent-700); }
 
@@ -254,7 +291,7 @@
 .spinner svg {
   width: 100%;
   height: 100%;
-  animation: spin 600ms linear infinite;
+  animation: spin var(--dur-slow) linear infinite;
 }
 
 @keyframes spin {

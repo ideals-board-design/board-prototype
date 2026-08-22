@@ -32,7 +32,8 @@
 
 /* ── Draggable ─────────────────────────────────────────── */
 
-.draggable         { cursor: grab; transition: clip-path var(--transition-fast); }
+/* clip-path is not an animatable property in this system — the shape change is instant */
+.draggable         { cursor: grab; }
 .draggable:active  { cursor: grabbing; }
 .dragging          { clip-path: inset(0 round 9999px); }
 
@@ -145,7 +146,9 @@
   box-sizing: border-box;
 }
 
-.menuItem:hover  { background: var(--color-bg-hover-fill); }         /* blue-800 · 10% */
+@media (hover: hover) {
+  .menuItem:hover  { background: var(--color-bg-hover-fill); }   /* blue-800 · 10% */
+}
 .menuItem:active { background: var(--color-bg-hover-fill-strong); }  /* blue-800 · 20% */
 
 .menuItemDanger { color: var(--color-text-error); }

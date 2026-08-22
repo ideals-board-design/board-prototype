@@ -13,6 +13,7 @@ import { ChatListItem, type ChatType, type ReadStatus } from './components/ChatL
 import { ConversationHeader } from './components/ConversationHeader'
 import { MessageBubble } from './components/MessageBubble'
 import { Composer } from './components/Composer'
+import { SkeletonSwap } from '../components/Skeleton/Skeleton'
 import { actions } from '../icons/actions'
 import styles from './ChatsPage.module.css'
 
@@ -191,14 +192,18 @@ export default function ChatsPage() {
             </div>
 
             <div className={styles.listScroll}>
-              {listLoading ? (
-                <>
-                  <ChatListItem type="one-to-one" name="" preview="" time="" skeleton />
-                  <ChatListItem type="one-to-one" name="" preview="" time="" skeleton />
-                  <ChatListItem type="one-to-one" name="" preview="" time="" skeleton />
-                </>
-              ) : (
-                filteredChats.map(c => (
+              <SkeletonSwap
+                loading={listLoading}
+                className={styles.listItems}
+                skeleton={
+                  <>
+                    <ChatListItem type="one-to-one" name="" preview="" time="" skeleton />
+                    <ChatListItem type="one-to-one" name="" preview="" time="" skeleton />
+                    <ChatListItem type="one-to-one" name="" preview="" time="" skeleton />
+                  </>
+                }
+              >
+                {filteredChats.map(c => (
                   <ChatListItem
                     key={c.id}
                     type={c.type}
@@ -212,8 +217,8 @@ export default function ChatsPage() {
                     readStatus={c.readStatus}
                     onClick={() => handleSelect(c.id)}
                   />
-                ))
-              )}
+                ))}
+              </SkeletonSwap>
             </div>
           </div>
 
@@ -234,22 +239,26 @@ export default function ChatsPage() {
                   </Button>
                 }
               />
-            ) : conversationLoading ? (
-              <>
-                <ConversationHeader
-                  type={selectedChat.type}
-                  name=""
-                  status=""
-                  skeleton
-                />
-                <div className={styles.messages}>
-                  <MessageBubble mine={false} isGroup={selectedChat.type === 'group'} text="" time="" skeleton />
-                  <MessageBubble mine={true}  isGroup={selectedChat.type === 'group'} text="" time="" skeleton />
-                  <MessageBubble mine={false} isGroup={selectedChat.type === 'group'} text="" time="" skeleton />
-                </div>
-              </>
             ) : (
-              <>
+              <SkeletonSwap
+                loading={conversationLoading}
+                className={styles.conversationSwap}
+                skeleton={
+                  <>
+                    <ConversationHeader
+                      type={selectedChat.type}
+                      name=""
+                      status=""
+                      skeleton
+                    />
+                    <div className={styles.messages}>
+                      <MessageBubble mine={false} isGroup={selectedChat.type === 'group'} text="" time="" skeleton />
+                      <MessageBubble mine={true}  isGroup={selectedChat.type === 'group'} text="" time="" skeleton />
+                      <MessageBubble mine={false} isGroup={selectedChat.type === 'group'} text="" time="" skeleton />
+                    </div>
+                  </>
+                }
+              >
                 <ConversationHeader
                   type={selectedChat.type}
                   name={selectedChat.name}
@@ -295,7 +304,7 @@ export default function ChatsPage() {
                 </div>
 
                 <Composer value={draft} onChange={setDraft} onSend={handleSend} />
-              </>
+              </SkeletonSwap>
             )}
           </div>
         </div>

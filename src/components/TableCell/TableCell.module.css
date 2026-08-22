@@ -8,6 +8,10 @@
   padding: 0;
   vertical-align: middle;
   white-space: nowrap;
+  /* Row hover/selected paints the cell background, and row highlights are a
+     cursor-position indicator — instant in both directions (motion spec §1
+     "Rows and menu items are instant"). Do not add a transition back here. */
+  transition: none;
 }
 
 /* ── Inner flex wrapper (shared) ─────────────────────────── */
@@ -68,7 +72,8 @@
   width: 20px;
   height: 20px;
   opacity: 0;
-  transition: opacity 120ms ease;
+  /* Revealed by header-row hover — row highlights are instant (motion spec §1) */
+  transition: none;
 }
 
 .sortIcon svg {
@@ -76,9 +81,11 @@
   height: 100%;
 }
 
-/* Show sort icon on header row hover */
-.sortable:hover .sortIcon {
-  opacity: 1;
+@media (hover: hover) {
+  /* Show sort icon on header row hover */
+  .sortable:hover .sortIcon {
+    opacity: 1;
+  }
 }
 
 /* Always show when actively sorted */

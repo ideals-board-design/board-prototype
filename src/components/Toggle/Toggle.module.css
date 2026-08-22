@@ -36,7 +36,12 @@
   flex-shrink: 0;
   border-radius: var(--radius-full);
   background: var(--stone-600);
-  transition: background var(--transition-fast);
+
+  /* §4 — track colour and knob travel share duration + easing so the switch
+     reads as one object moving between two states. */
+  transition:
+    background-color var(--dur-base) var(--ease-in-out),
+    border-color var(--dur-base) var(--ease-in-out);
 }
 
 /* Thumb via ::after */
@@ -50,7 +55,10 @@
   border-radius: 50%;
   background: var(--color-icon-inverse);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  transition: transform var(--transition-fast);
+
+  /* translateX only — never left/margin. No scale, no bounce. */
+  transform: translateX(0);
+  transition: transform var(--dur-base) var(--ease-in-out);
 }
 
 /* Focus ring */
@@ -70,14 +78,18 @@
   transform: translateX(14px);
 }
 
-/* ── Hover states ────────────────────────────────────────────────────────── */
+@media (hover: hover) {
+  /* ── Hover states ────────────────────────────────────────────────────────── */
 
-.wrapper:not(.disabled):hover .input:not(:checked) + .track {
-  background: var(--stone-800);
+  .wrapper:not(.disabled):hover .input:not(:checked) + .track {
+    background: var(--stone-800);
+  }
 }
 
-.wrapper:not(.disabled):hover .input:checked + .track {
-  background: var(--color-brand-hover);
+@media (hover: hover) {
+  .wrapper:not(.disabled):hover .input:checked + .track {
+    background: var(--color-brand-hover);
+  }
 }
 
 /* ── Label ───────────────────────────────────────────────────────────────── */

@@ -42,17 +42,21 @@
   cursor: pointer;
   text-decoration: none;
   -webkit-font-smoothing: antialiased;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out), color var(--dur-snap) var(--ease-out);
   border-radius: var(--radius-sm);
 }
 
-.crumb:hover {
-  color: var(--color-text-primary);
+@media (hover: hover) {
+  .crumb:hover {
+    color: var(--color-text-primary);
+  }
 }
 
 /* Hover / pressed fill is the crumb's own padded box. Hover = 10%, pressed = 20%.
    Only the clickable crumbs (not the current-page .active span). */
-.crumb:not(.active):hover  { background: var(--color-bg-hover-fill); }
+@media (hover: hover) {
+  .crumb:not(.active):hover { background: var(--color-bg-hover-fill); }
+}
 .crumb:not(.active):active { background: var(--color-bg-hover-fill-strong); }
 
 /* Active (last item) — non-interactive */
@@ -113,7 +117,9 @@
   box-sizing: border-box;
 }
 
-.menuItem:hover  { background: var(--color-bg-hover-fill); }
+@media (hover: hover) {
+  .menuItem:hover  { background: var(--color-bg-hover-fill); }
+}
 .menuItem:active { background: var(--color-bg-hover-fill-strong); }
 
 /* ── Separator ───────────────────────────────────────────────────────────── */

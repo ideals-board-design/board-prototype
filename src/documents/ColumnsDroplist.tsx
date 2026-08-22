@@ -159,10 +159,17 @@ export function ColumnsDroplist({
     if (dragRef.current?.returning) update(null)
   }
 
+  // The chip is pinned at its origin and moved with `transform` — never left/top —
+  // so the return home animates a compositor-only property.
   const chipStyle: CSSProperties | undefined = drag
-    ? drag.returning
-      ? { left: drag.originLeft, top: drag.originTop, width: drag.chipWidth }
-      : { left: drag.x - drag.offsetX, top: drag.y - drag.offsetY, width: drag.chipWidth }
+    ? {
+        left:      drag.originLeft,
+        top:       drag.originTop,
+        width:     drag.chipWidth,
+        transform: drag.returning
+          ? 'translate(0, 0)'
+          : `translate(${drag.x - drag.offsetX - drag.originLeft}px, ${drag.y - drag.offsetY - drag.originTop}px)`,
+      }
     : undefined
 
   const dragItem = drag ? items.find(i => i.key === drag.key) : null

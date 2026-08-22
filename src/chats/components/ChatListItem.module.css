@@ -11,7 +11,9 @@
   outline: none;
 }
 
-.item:hover      { background: var(--color-bg-hover); }
+@media (hover: hover) {
+  .item:hover      { background: var(--color-bg-hover); }
+}
 .item.selected   { background: var(--color-bg-selected); }
 .item:focus-visible {
   outline: 2px solid var(--color-border-focus);
@@ -98,12 +100,6 @@
 
 /* ── Skeleton ─────────────────────────────────────────────────────────── */
 
-.skeletonBlock {
-  display: block;
-  background: var(--color-bg-disabled);
-  border-radius: var(--radius-sm);
-}
-
-.skeletonAvatar { width: 40px; height: 40px; border-radius: 120px; }
-.skeletonLineShort { width: 160px; height: 16px; margin-bottom: var(--space-8); }
-.skeletonLineLong  { width: 240px; height: 16px; }
+/* Skeleton shapes come from the Skeleton component; the container just supplies
+   the 8px gap between the two placeholder lines. */
+.containerSkeleton { gap: var(--space-8); }

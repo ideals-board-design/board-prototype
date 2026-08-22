@@ -8,6 +8,7 @@ import {
   type KeyboardEvent, type ClipboardEvent,
 } from 'react'
 import { createPortal } from 'react-dom'
+import { usePresence } from '../shared/usePresence'
 import styles from './TimeField.module.css'
 
 export type TimeFieldVariant = 'outline' | 'no-border'
@@ -57,6 +58,9 @@ export function TimeField({
   const [mm, setMm]   = useState(init.mm)
   const [mer, setMer] = useState<Meridiem>(init.mer)
   const [open, setOpen] = useState(false)
+
+  // Keeps the panel mounted through its fade-out (motion spec §3).
+  const { mounted, state } = usePresence(open)
   const [pos, setPos]   = useState({ top: 0, left: 0 })
 
   const rootRef = useRef<HTMLDivElement>(null)
@@ -259,10 +263,12 @@ export function TimeField({
         role="spinbutton" aria-label="AM or PM" aria-valuetext={mer || 'Empty'}
       />
 
-      {open && createPortal(
+      {mounted && createPortal(
         <div
           ref={listRef}
           className={styles.list}
+          data-state={state}
+          aria-hidden={state === 'closed'}
           style={{ top: pos.top, left: pos.left }}
           role="listbox"
           aria-label={ariaLabel ? `${ariaLabel} options` : 'Time options'}

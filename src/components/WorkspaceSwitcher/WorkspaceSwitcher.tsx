@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { arrows } from '../../icons/arrows'
+import { usePresence } from '../shared/usePresence'
 import styles from './WorkspaceSwitcher.module.css'
 
 const chevronDownSvg = arrows.find(i => i.name === 'angle-down-fill')!.svg
@@ -41,6 +42,9 @@ export function WorkspaceSwitcher({ workspaces, activeId, onSelect, defaultOpen 
   const rootRef = useRef<HTMLDivElement>(null)
 
   const active = workspaces.find(w => w.id === activeId)
+
+  // Keeps the panel mounted through its fade-out (motion spec §3).
+  const { mounted, state } = usePresence(open)
 
   // Close on outside click
   useEffect(() => {
@@ -83,8 +87,14 @@ export function WorkspaceSwitcher({ workspaces, activeId, onSelect, defaultOpen 
         </span>
       </button>
 
-      {open && (
-        <div className={styles.dropdown} role="listbox" aria-label="Select workspace">
+      {mounted && (
+        <div
+          className={styles.dropdown}
+          data-state={state}
+          aria-hidden={state === 'closed'}
+          role="listbox"
+          aria-label="Select workspace"
+        >
           {workspaces.map(w => (
             <button
               key={w.id}

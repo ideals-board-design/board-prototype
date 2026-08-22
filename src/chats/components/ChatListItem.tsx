@@ -4,6 +4,7 @@
    Hover is real :hover CSS, not a prop — matches every other row in this repo. */
 
 import { Avatar } from '../../components/Avatar/Avatar'
+import { Skeleton } from '../../components/Skeleton/Skeleton'
 import { communication } from '../../icons/communication'
 import styles from './ChatListItem.module.css'
 
@@ -47,10 +48,10 @@ export function ChatListItem({
   if (skeleton) {
     return (
       <div className={styles.item} aria-hidden="true">
-        <span className={[styles.skeletonBlock, styles.skeletonAvatar].join(' ')} />
-        <div className={styles.container}>
-          <span className={[styles.skeletonBlock, styles.skeletonLineShort].join(' ')} />
-          <span className={[styles.skeletonBlock, styles.skeletonLineLong].join(' ')} />
+        <Skeleton variant="circle" width={40} />
+        <div className={[styles.container, styles.containerSkeleton].join(' ')}>
+          <Skeleton variant="text" width={160} height={16} />
+          <Skeleton variant="text" width={240} height={16} />
         </div>
       </div>
     )

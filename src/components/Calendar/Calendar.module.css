@@ -42,13 +42,17 @@
   inset: -6px;
   border-radius: var(--radius-sm);
   background: transparent;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
   z-index: -1;
 }
 
-.monthBtn:hover::before,
 .monthBtn[aria-expanded="true"]::before {
   background: var(--color-bg-hover-fill);
+}
+@media (hover: hover) {
+  .monthBtn:hover::before {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 .monthLabel {
@@ -60,8 +64,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.monthBtn:hover .monthLabel {
-  color: var(--color-text-primary);
+@media (hover: hover) {
+  .monthBtn:hover .monthLabel {
+    color: var(--color-text-primary);
+  }
 }
 
 .chevron {
@@ -70,15 +76,17 @@
   height: 20px;
   color: var(--color-icon-secondary);
   flex-shrink: 0;
-  transition: transform var(--transition-fast);
+  transition: transform var(--dur-snap) var(--ease-out);
 }
 
 .chevronUp {
   transform: rotate(180deg);
 }
 
-.monthBtn:hover .chevron {
-  color: var(--color-icon-primary);
+@media (hover: hover) {
+  .monthBtn:hover .chevron {
+    color: var(--color-icon-primary);
+  }
 }
 
 .navGroup {

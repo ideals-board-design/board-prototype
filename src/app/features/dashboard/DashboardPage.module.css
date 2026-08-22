@@ -84,11 +84,15 @@
   border-radius: var(--radius-sm);
   background: var(--color-bg-surface);
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color     var(--dur-snap) var(--ease-out),
+    background-color var(--dur-snap) var(--ease-out);
 }
 
-.card:hover {
-  background: var(--color-bg-hover);
+@media (hover: hover) {
+  .card:hover {
+    background: var(--color-bg-hover);
+  }
 }
 
 .card:focus-visible {

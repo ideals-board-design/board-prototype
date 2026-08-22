@@ -67,11 +67,13 @@
   border: none;
   cursor: pointer;
   outline: none;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
-.item:hover {
-  background: var(--color-bg-hover-fill);
+@media (hover: hover) {
+  .item:hover {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 .item:active {
@@ -121,13 +123,6 @@
 
 /* ── Skeleton ─────────────────────────────────────────────────────────── */
 
-.skeletonBlock {
-  display: block;
-  background: var(--color-bg-disabled);
-  border-radius: var(--radius-sm);
-}
-
-.skeletonAvatar    { width: 40px; height: 40px; border-radius: 120px; flex-shrink: 0; }
-.skeletonLineShort { width: 160px; height: 16px; margin-bottom: var(--space-8); }
-.skeletonLineLong  { width: 240px; height: 16px; }
-.skeletonButton    { width: 20px; height: 20px; flex-shrink: 0; }
+/* Skeleton shapes come from the Skeleton component; the info column just
+   supplies the 8px gap between the two placeholder lines. */
+.infoSkeleton { gap: var(--space-8); }

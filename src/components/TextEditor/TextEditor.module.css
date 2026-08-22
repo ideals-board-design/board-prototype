@@ -34,15 +34,19 @@
   box-shadow: inset 0 0 0 1px var(--stone-500);
   overflow: hidden;
   transition:
-    box-shadow var(--transition-fast),
-    background var(--transition-fast);
+    box-shadow var(--dur-snap) var(--ease-out),
+    background-color var(--dur-snap) var(--ease-out);
   width: 100%;
 }
 
 /* Hover & focus: green (only when not disabled, not error) */
-.wrapper:not(.isDisabled):not(.hasError) .fieldWrapper:hover,
 .wrapper:not(.isDisabled):not(.hasError) .fieldWrapper:focus-within {
   box-shadow: inset 0 0 0 1px var(--accent-500);
+}
+@media (hover: hover) {
+  .wrapper:not(.isDisabled):not(.hasError) .fieldWrapper:hover {
+    box-shadow: inset 0 0 0 1px var(--accent-500);
+  }
 }
 
 /* Error: always red */
@@ -63,10 +67,15 @@
    only — no bottom action bar (toolbar={false}). */
 
 /* Rest + hover: transparent, borderless (override the outline green border). */
-.noBorder .fieldWrapper,
-.noBorder:not(.isDisabled):not(.hasError) .fieldWrapper:not(:focus-within):hover {
+.noBorder .fieldWrapper {
   background: transparent;
   box-shadow: none;
+}
+@media (hover: hover) {
+  .noBorder:not(.isDisabled):not(.hasError) .fieldWrapper:not(:focus-within):hover {
+    background: transparent;
+    box-shadow: none;
+  }
 }
 .noBorder .fieldWrapper {
   overflow: visible;           /* don't clip the hover-fill ::before */
@@ -80,14 +89,16 @@
   inset: -6px;
   border-radius: var(--radius-sm);
   background: transparent;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
   pointer-events: none;
   z-index: -1;
 }
-/* Resting "active zone": hover (light) + pressed (strong). Suppressed once the
-   editor is focused (it then shows its border instead). */
-.noBorder:not(.isDisabled) .fieldWrapper:not(:focus-within):hover::before {
-  background: var(--color-bg-hover-fill);
+@media (hover: hover) {
+  /* Resting "active zone": hover (light) + pressed (strong). Suppressed once the
+     editor is focused (it then shows its border instead). */
+  .noBorder:not(.isDisabled) .fieldWrapper:not(:focus-within):hover::before {
+    background: var(--color-bg-hover-fill);
+  }
 }
 .noBorder:not(.isDisabled) .fieldWrapper:not(:focus-within):active::before {
   background: var(--color-bg-hover-fill-strong);

@@ -53,8 +53,8 @@
   align-items: center;
   justify-content: center;
   transition:
-    background var(--transition-fast),
-    box-shadow var(--transition-fast);
+    background-color var(--dur-snap) var(--ease-out),
+    box-shadow var(--dur-snap) var(--ease-out);
 }
 
 /* Focus ring */
@@ -69,30 +69,45 @@
   box-shadow: inset 0 0 0 1px var(--accent-500);
 }
 
-/* Inner dot via ::after */
-.input:checked + .hitArea .circle::after {
+/* Inner dot via ::after — always rendered so it can fade in on opacity (§5).
+   It does not scale, and its size never animates. */
+.circle::after {
   content: '';
   position: absolute;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--accent-500);
+  opacity: 0;
+  transition:
+    opacity var(--dur-snap) var(--ease-out),
+    background-color var(--dur-snap) var(--ease-out);
 }
 
-/* ── Hover states ────────────────────────────────────────────────────────── */
-
-/* Unchecked hover */
-.wrapper:not(.disabled):hover .input:not(:checked) + .hitArea .circle {
-  box-shadow: inset 0 0 0 1px var(--accent-600);
+.input:checked + .hitArea .circle::after {
+  opacity: 1;
 }
 
-/* Checked hover */
-.wrapper:not(.disabled):hover .input:checked + .hitArea .circle {
-  box-shadow: inset 0 0 0 1px var(--accent-600);
+@media (hover: hover) {
+  /* ── Hover states ────────────────────────────────────────────────────────── */
+
+  /* Unchecked hover */
+  .wrapper:not(.disabled):hover .input:not(:checked) + .hitArea .circle {
+    box-shadow: inset 0 0 0 1px var(--accent-600);
+  }
 }
 
-.wrapper:not(.disabled):hover .input:checked + .hitArea .circle::after {
-  background: var(--accent-600);
+@media (hover: hover) {
+  /* Checked hover */
+  .wrapper:not(.disabled):hover .input:checked + .hitArea .circle {
+    box-shadow: inset 0 0 0 1px var(--accent-600);
+  }
+}
+
+@media (hover: hover) {
+  .wrapper:not(.disabled):hover .input:checked + .hitArea .circle::after {
+    background: var(--accent-600);
+  }
 }
 
 /* ── Label text ──────────────────────────────────────────────────────────── */

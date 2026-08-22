@@ -38,8 +38,8 @@
   cursor: pointer;
   outline: none;
   transition:
-    box-shadow var(--transition-fast),
-    background var(--transition-fast);
+    box-shadow var(--dur-snap) var(--ease-out),
+    background-color var(--dur-snap) var(--ease-out);
 }
 
 /* Sizes — padding drives height (no explicit height) */
@@ -72,8 +72,10 @@
 }
 
 /* Hover — green border (not disabled, not error) */
-.outline.wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
-  box-shadow: inset 0 0 0 1px var(--accent-500);
+@media (hover: hover) {
+  .outline.wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
+    box-shadow: inset 0 0 0 1px var(--accent-500);
+  }
 }
 
 /* Open — green border */
@@ -137,7 +139,9 @@
 .noBorder .trigger.hasClearSlot .triggerText,
 .noBorder .trigger.hasClearSlot .editInput { padding-right: var(--space-8); }
 
-.noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
+@media (hover: hover) {
+  .noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
+}
 .noBorder.isOpen:not(.isDisabled):not(.hasError) .trigger { box-shadow: none; }
 .noBorder.hasError .trigger { box-shadow: none; }
 
@@ -152,16 +156,20 @@
   inset: -6px;
   border-radius: var(--radius-sm);
   background: transparent;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
   pointer-events: auto;  /* the full 32px fill zone triggers hover */
   z-index: -1;
 }
 /* Fill kept on hover, while editing (focus) and while open. */
-.noBorder:not(.isDisabled) .trigger:hover::before,
 .noBorder:not(.isDisabled) .trigger:focus-within::before,
 .noBorder.isOpen:not(.isDisabled) .trigger::before,
 .noBorder.isEditing:not(.isDisabled) .trigger::before {
   background: var(--color-bg-hover-fill);
+}
+@media (hover: hover) {
+  .noBorder:not(.isDisabled) .trigger:hover::before {
+    background: var(--color-bg-hover-fill);
+  }
 }
 /* hasClearSlot rows already stand at the button's full height (28/32/36), so the
    hover fill matches the row exactly — no -6px text-line bleed. */
@@ -171,10 +179,12 @@
    (opacity, not display) so nothing shifts. */
 .noBorder .clearReveal {
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
-.noBorder .trigger:hover .clearReveal,
 .noBorder .trigger:focus-within .clearReveal { opacity: 1; }
+@media (hover: hover) {
+  .noBorder .trigger:hover .clearReveal { opacity: 1; }
+}
 
 /* Editing state — green border like focus */
 .outline.wrapper.isEditing:not(.isDisabled) .trigger {
@@ -253,10 +263,12 @@
   cursor: pointer;
   color: var(--color-icon-secondary);
   border-radius: var(--radius-xs);
-  transition: color var(--transition-fast);
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
-.clearBtn:hover { color: var(--color-text-primary); }
+@media (hover: hover) {
+  .clearBtn:hover { color: var(--color-text-primary); }
+}
 
 .clearBtnHidden {
   visibility: hidden;
@@ -288,4 +300,22 @@
   position: fixed;
   z-index: 8000;
   width: fit-content;
+}
+
+/* ── Motion: panel fade (motion spec §3) ──────────────────────────────────────
+   Opacity is the ONLY animated property — no translate, no scale, no
+   origin-based growth. Position is fully resolved before the fade starts, so the
+   panel never repositions mid-animation. Closing is faster than opening. */
+
+.popover {
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+.popover[data-state='open'] { opacity: 1; }
+
+.popover[data-state='closed'] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-in);
 }

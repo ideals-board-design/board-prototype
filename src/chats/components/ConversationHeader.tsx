@@ -5,6 +5,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { Avatar } from '../../components/Avatar/Avatar'
+import { Skeleton } from '../../components/Skeleton/Skeleton'
 import { Button } from '../../components/Button/Button'
 import { functional } from '../../icons/functional'
 import { actions } from '../../icons/actions'
@@ -65,12 +66,12 @@ export function ConversationHeader({
   if (skeleton) {
     return (
       <header className={styles.header} aria-hidden="true">
-        <span className={[styles.skeletonBlock, styles.skeletonAvatar].join(' ')} />
-        <div className={styles.info}>
-          <span className={[styles.skeletonBlock, styles.skeletonLineShort].join(' ')} />
-          <span className={[styles.skeletonBlock, styles.skeletonLineLong].join(' ')} />
+        <Skeleton variant="circle" width={40} />
+        <div className={[styles.info, styles.infoSkeleton].join(' ')}>
+          <Skeleton variant="text" width={160} height={16} />
+          <Skeleton variant="text" width={240} height={16} />
         </div>
-        <span className={[styles.skeletonBlock, styles.skeletonButton].join(' ')} />
+        <Skeleton width={20} height={20} />
       </header>
     )
   }

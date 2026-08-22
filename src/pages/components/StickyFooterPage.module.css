@@ -109,11 +109,15 @@
   color: var(--color-text-primary);
   text-align: left;
   -webkit-font-smoothing: antialiased;
-  transition: background var(--transition-fast);
+  /* Overflow-menu item in a repeating vertical list: hover and leave are both
+     instant (motion spec §1 "Rows and menu items are instant"). Menu items
+     also have no pressed state, hence no :active rule below. */
+  transition: none;
 }
 
-.overflowItem:hover  { background: var(--color-bg-hover); }
-.overflowItem:active { background: var(--color-border); }
+@media (hover: hover) {
+  .overflowItem:hover  { background: var(--color-bg-hover); }
+}
 
 /* ── Guidelines ──────────────────────────────────────── */
 

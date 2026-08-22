@@ -10,11 +10,13 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   color: var(--color-text-secondary);
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out), color var(--dur-snap) var(--ease-out);
 }
 
-.root:hover {
-  background: var(--color-bg-selected);
+@media (hover: hover) {
+  .root:hover {
+    background: var(--color-bg-selected);
+  }
 }
 
 .path {

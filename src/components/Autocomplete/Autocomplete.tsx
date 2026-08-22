@@ -17,6 +17,7 @@ import { Button }   from '../Button/Button'
 import { Avatar }   from '../Avatar/Avatar'
 import { Checkbox } from '../Checkbox/Checkbox'
 import { actions }  from '../../icons/actions'
+import { usePresence } from '../shared/usePresence'
 import styles from './Autocomplete.module.css'
 
 /* ── Icons ────────────────────────────────────────────────────────────────── */
@@ -132,6 +133,9 @@ export function Autocomplete({
   /** Filter query — empty on focus = show all options */
   const [query,     setQuery]     = useState('')
   const [open,      setOpen]      = useState(false)
+
+  // Keeps the panel mounted through its fade-out (motion spec §3).
+  const { mounted, state } = usePresence(open)
   const [activeIdx, setActiveIdx] = useState(-1)
   const [pos,       setPos]       = useState({ top: 0, left: 0, width: 0 })
 
@@ -423,11 +427,13 @@ export function Autocomplete({
       )}
 
       {/* Droplist — portal */}
-      {open && createPortal(
+      {mounted && createPortal(
         <div
           id={`${uid}-list`}
           ref={droplistRef}
           className={`${styles.droplist} ${sizeCls[size]}`}
+          data-state={state}
+          aria-hidden={state === 'closed'}
           style={{ top: pos.top, left: pos.left, width: pos.width }}
           role="listbox"
         >

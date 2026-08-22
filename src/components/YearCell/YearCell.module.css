@@ -10,7 +10,9 @@
   user-select: none;
   box-sizing: border-box;
   border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
+  /* Year picker cells are grid cells, not items in a repeating vertical list,
+     so the instant rows/menu-items rule (motion spec §1) does not apply. */
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
 .year {
@@ -37,14 +39,18 @@
   color: var(--color-text-inverse);
 }
 
-/* ── Hover ────────────────────────────────── */
+@media (hover: hover) {
+  /* ── Hover ────────────────────────────────── */
 
-.typeDefault:hover:not(.isDisabled) {
-  background: var(--color-bg-hover-fill);
+  .typeDefault:hover:not(.isDisabled) {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
-.typeSelected:hover:not(.isDisabled) {
-  background: var(--accent-600);
+@media (hover: hover) {
+  .typeSelected:hover:not(.isDisabled) {
+    background: var(--accent-600);
+  }
 }
 
 /* ── Disabled ─────────────────────────────── */

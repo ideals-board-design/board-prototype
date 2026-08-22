@@ -13,10 +13,21 @@
   box-sizing: border-box;
 }
 
+/* Backdrop and panel start at the same moment and share a duration — no delay
+   between them (motion spec §6). */
 .backdrop {
   position: absolute;
   inset: 0;
   background: var(--color-bg-overlay);
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.backdrop[data-state='open'] { opacity: 1; }
+
+.backdrop[data-state='closed'] {
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-in);
 }
 
 /* ── Dialog ──────────────────────────────────────────────── */
@@ -31,7 +42,31 @@
   flex-direction: column;
   overflow: hidden;
   font-family: var(--font-family);
+
+  /* The modal panel is the ONLY element in this system permitted to scale.
+     Range is exactly 0.96 → 1 — no overshoot, no spring. */
+  opacity: 0;
+  transform: scale(0.96);
+  transform-origin: center center;
+  transition:
+    opacity   var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
 }
+
+.dialog[data-state='open'] {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dialog[data-state='closed'] {
+  opacity: 0;
+  transform: scale(0.96);
+  transition:
+    opacity   var(--dur-snap) var(--ease-in),
+    transform var(--dur-snap) var(--ease-in);
+}
+
+.dialog:focus-visible { outline: none; }
 
 /* ── Header (68px = 18 + 32 + 18) — Figma node 19863-14962 ── */
 

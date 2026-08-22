@@ -31,6 +31,7 @@ import BadgeStatusPage from './pages/components/BadgeStatusPage'
 import ChipPage from './pages/components/ChipPage'
 import PageHeaderPage from './pages/components/PageHeaderPage'
 import DrawerHeaderPage from './pages/components/DrawerHeaderPage'
+import DrawerPage from './pages/components/DrawerPage'
 import ModalPage from './pages/components/ModalPage'
 import StickyFooterPage from './pages/components/StickyFooterPage'
 import BannerPage from './pages/components/BannerPage'
@@ -38,6 +39,7 @@ import ToastPage  from './pages/components/ToastPage'
 import SideNavigationPage from './pages/components/SideNavigationPage'
 import EmptyStatePage from './pages/components/EmptyStatePage'
 import TableCellPage from './pages/components/TableCellPage'
+import SkeletonPage from './pages/components/SkeletonPage'
 
 type Page =
   | 'foundation/components-overview'
@@ -69,6 +71,7 @@ type Page =
   | 'components/badge-status'
   | 'components/chip'
   | 'components/page-header'
+  | 'components/drawer'
   | 'components/drawer-header'
   | 'components/modal'
   | 'components/sticky-footer'
@@ -77,6 +80,7 @@ type Page =
   | 'components/side-navigation'
   | 'components/empty-state'
   | 'components/table-cell'
+  | 'components/skeleton'
 
 const nav = [
   // Foundation stays on top as the base layer
@@ -124,6 +128,7 @@ const nav = [
       { id: 'components/badge-counter' as Page, label: 'Badge Counter' },
       { id: 'components/badge-status' as Page,  label: 'Badge Status' },
       { id: 'components/chip' as Page,          label: 'Chip' },
+      { id: 'components/skeleton' as Page,      label: 'Skeleton' },
       { id: 'components/table-cell' as Page,    label: 'Table Cell' },
       { id: 'components/tooltip' as Page,       label: 'Tooltip' },
     ],
@@ -143,6 +148,7 @@ const nav = [
   {
     section: 'Layout',
     items: [
+      { id: 'components/drawer' as Page,        label: 'Drawer' },
       { id: 'components/drawer-header' as Page, label: 'Drawer Header' },
       { id: 'components/empty-state' as Page,   label: 'Empty State' },
       { id: 'components/modal' as Page,         label: 'Modal' },
@@ -234,6 +240,7 @@ export default function App() {
         {page === 'components/badge-status'    && <BadgeStatusPage />}
         {page === 'components/chip'            && <ChipPage />}
         {page === 'components/page-header'     && <PageHeaderPage />}
+        {page === 'components/drawer'          && <DrawerPage />}
         {page === 'components/drawer-header'   && <DrawerHeaderPage />}
         {page === 'components/modal'           && <ModalPage />}
         {page === 'components/sticky-footer'   && <StickyFooterPage />}
@@ -242,6 +249,7 @@ export default function App() {
         {page === 'components/side-navigation'    && <SideNavigationPage />}
         {page === 'components/empty-state'        && <EmptyStatePage />}
         {page === 'components/table-cell'         && <TableCellPage />}
+        {page === 'components/skeleton'           && <SkeletonPage />}
       </main>
       </div>
 

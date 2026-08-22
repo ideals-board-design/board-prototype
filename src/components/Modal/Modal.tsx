@@ -3,6 +3,7 @@
 import { type ReactNode, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import styles from './Modal.module.css'
+import { usePresence } from '../shared/usePresence'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { Button } from '../Button/Button'
 import { actions } from '../../icons/actions'
@@ -29,6 +30,10 @@ export function Modal({
   className,
 }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null)
+  const triggerRef = useRef<HTMLElement | null>(null)
+
+  // Exit runs at --dur-snap (motion spec §6), so hold the node that long.
+  const { mounted, state } = usePresence(open, '--dur-snap')
 
   useEffect(() => {
     if (!open) return
@@ -37,21 +42,46 @@ export function Modal({
     return () => document.removeEventListener('keydown', handler)
   }, [open, onClose])
 
+  // Keyed on `mounted`, not `open`, so the lock releases only after the exit
+  // transition has finished and the dialog is actually gone.
   useEffect(() => {
-    if (open) { document.body.style.overflow = 'hidden' }
+    if (!mounted) return
+    document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
+  }, [mounted])
+
+  // Focus moves into the dialog on open and returns to the trigger on close.
+  //
+  // Split in two because they're on different clocks: the trigger must be
+  // captured (and focus returned) the instant `open` flips, but focus can only
+  // move INTO the dialog once it's actually in the DOM — one render later than
+  // `open`, when `mounted` catches up via usePresence.
+  useEffect(() => {
+    if (open) triggerRef.current = document.activeElement as HTMLElement | null
+    else triggerRef.current?.focus?.()
   }, [open])
 
-  if (!open) return null
+  useEffect(() => {
+    if (mounted && open) dialogRef.current?.focus()
+  }, [mounted, open])
+
+  if (!mounted) return null
 
   return createPortal(
     <div className={styles.overlay} role="presentation">
-      <div className={styles.backdrop} onClick={onClose} aria-hidden="true" />
+      <div
+        className={styles.backdrop}
+        data-state={state}
+        onClick={onClose}
+        aria-hidden="true"
+      />
       <div
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-title"
+        tabIndex={-1}
+        data-state={state}
         className={[styles.dialog, className].filter(Boolean).join(' ')}
         style={{ width }}
       >

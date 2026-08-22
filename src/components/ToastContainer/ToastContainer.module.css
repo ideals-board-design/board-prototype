@@ -1,16 +1,4 @@
-/* ToastContainer — viewport positioning + enter/exit animations */
-
-/* ── Keyframes ───────────────────────────────────────────── */
-
-@keyframes toastSlideIn {
-  from { opacity: 0; transform: translateY(calc(-100% - var(--space-16))); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes toastSlideOut {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(calc(-100% - var(--space-16))); }
-}
+/* ToastContainer — viewport positioning + enter/exit motion (motion spec §9) */
 
 /* ── Container ───────────────────────────────────────────── */
 
@@ -29,12 +17,33 @@
   pointer-events: auto;
 }
 
-/* ── Animation states ────────────────────────────────────── */
+/* ── Enter / exit ────────────────────────────────────────────
+   Enter: slides in from above while fading in.
+   Exit:  fades out while sliding back up.
+   The direction is always the top, regardless of where the stack is anchored.
+   Opacity and transform share duration and easing so the toast reads as one
+   object, not two effects. */
 
-.entering {
-  animation: toastSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+.toast {
+  opacity: 0;
+  transform: translateY(calc(var(--motion-offset-toast) * -1));
+  transition:
+    opacity   var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
 }
 
-.exiting {
-  animation: toastSlideOut 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+.toast[data-state='open'] {
+  opacity: 1;
+  transform: translateY(0);
 }
+
+.toast[data-state='closed'] {
+  opacity: 0;
+  transform: translateY(calc(var(--motion-offset-toast) * -1));
+  transition:
+    opacity   var(--dur-snap) var(--ease-in),
+    transform var(--dur-snap) var(--ease-in);
+}
+
+/* Stack reflow after a dismissal is driven from JS (FLIP) using the same
+   transform property — never `top` or `margin`. */

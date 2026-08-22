@@ -31,8 +31,8 @@
   border-radius: var(--radius-sm);   /* 4px */
   background: var(--stone-0);
   transition:
-    box-shadow var(--transition-fast),
-    background var(--transition-fast);
+    box-shadow var(--dur-snap) var(--ease-out),
+    background-color var(--dur-snap) var(--ease-out);
   width: 100%;
 }
 
@@ -50,9 +50,13 @@
 }
 
 /* Hover & focus: green border (only when not disabled, not error) */
-.outline:not(.isDisabled):not(.hasError) .inputWrapper:hover,
 .outline:not(.isDisabled):not(.hasError) .inputWrapper:focus-within {
   box-shadow: inset 0 0 0 1px var(--accent-500);
+}
+@media (hover: hover) {
+  .outline:not(.isDisabled):not(.hasError) .inputWrapper:hover {
+    box-shadow: inset 0 0 0 1px var(--accent-500);
+  }
 }
 
 /* Error: always red, regardless of hover/focus */
@@ -99,23 +103,29 @@
    convention already used in Autocomplete/DatePicker no-border variants. */
 .noBorder .suffixReveal {
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
-.noBorder .inputWrapper:hover .suffixReveal,
 .noBorder .inputWrapper:focus-within .suffixReveal { opacity: 1; }
+@media (hover: hover) {
+  .noBorder .inputWrapper:hover .suffixReveal { opacity: 1; }
+}
 .noBorder .inputWrapper::before {
   content: '';
   position: absolute;
   inset: -6px;
   border-radius: var(--radius-sm);
   background: transparent;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
   pointer-events: none;
   z-index: -1;
 }
-.noBorder:not(.isDisabled) .inputWrapper:hover::before,
 .noBorder:not(.isDisabled) .inputWrapper:focus-within::before {
   background: var(--color-bg-hover-fill);
+}
+@media (hover: hover) {
+  .noBorder:not(.isDisabled) .inputWrapper:hover::before {
+    background: var(--color-bg-hover-fill);
+  }
 }
 /* hasSuffix rows already stand at the button's full height (28/32/36), so the hover
    fill matches the row exactly — no -6px text-line bleed. */
@@ -202,7 +212,7 @@
 
 /* Loading spinner */
 .spinner { color: var(--accent-500); }
-.spinner svg { animation: tfSpin 600ms linear infinite; }
+.spinner svg { animation: tfSpin var(--dur-slow) linear infinite; }
 
 @keyframes tfSpin {
   to { transform: rotate(360deg); }

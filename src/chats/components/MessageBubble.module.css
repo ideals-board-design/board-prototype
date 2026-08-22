@@ -84,13 +84,18 @@
   gap: var(--space-2);   /* 2px between adjacent tertiary icon buttons (DS rule) */
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
 
-.row:hover .actions,
 .row:focus-within .actions {
   opacity: 1;
   pointer-events: auto;
+}
+@media (hover: hover) {
+  .row:hover .actions {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 /* Always right-aligned within the bubble, per Figma's Time frame
@@ -118,13 +123,4 @@
   color: var(--color-text-secondary);
 }
 
-/* ── Skeleton ─────────────────────────────────────────────────────────── */
-
-.skeletonBlock {
-  display: block;
-  background: var(--color-bg-disabled);
-  border-radius: var(--radius-sm);
-}
-
-.skeletonAvatar { width: 32px; height: 32px; border-radius: 120px; }
-.skeletonBubble { width: 200px; height: 36px; }
+/* Skeleton shapes come from the Skeleton component — no bespoke CSS needed. */

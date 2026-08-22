@@ -10,6 +10,7 @@
      shown inline alongside the bubble, not below it. */
 
 import { Avatar } from '../../components/Avatar/Avatar'
+import { Skeleton } from '../../components/Skeleton/Skeleton'
 import { Button } from '../../components/Button/Button'
 import { Tooltip } from '../../components/Tooltip/Tooltip'
 import { communication } from '../../icons/communication'
@@ -73,8 +74,8 @@ export function MessageBubble({
   if (skeleton) {
     return (
       <div className={[styles.row, mine ? styles.rowMine : styles.rowTheirs, styles.groupStart].join(' ')} aria-hidden="true">
-        {!mine && isGroup && <span className={[styles.skeletonBlock, styles.skeletonAvatar].join(' ')} />}
-        <span className={[styles.skeletonBlock, styles.skeletonBubble].join(' ')} />
+        {!mine && isGroup && <Skeleton variant="circle" width={32} />}
+        <Skeleton width={200} height={36} />
       </div>
     )
   }

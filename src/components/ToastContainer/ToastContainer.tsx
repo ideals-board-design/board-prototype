@@ -1,16 +1,26 @@
 /* ToastContainer — fixed viewport stacking for Toast notifications
-   Top-right, newest toast at top (column-reverse), 8px gap
-   Enter: 300ms slide-in + FLIP push-down for existing toasts
-   Auto-dismiss: 4 s, paused on hover. Call clear() on navigation. */
+   Top-right, newest toast at top (column-reverse), 8px gap.
+
+   Motion spec §9:
+   - Enter slides down from -8px while fading in (--dur-base / --ease-out);
+     exit reverses it faster (--dur-snap / --ease-in).
+   - When a toast leaves the stack the remaining toasts reflow with
+     transform: translateY at --dur-base / --ease-in-out — never top or margin.
+   - Auto-dismiss (4s) pauses on hover and on focus within the toast.
+
+   Element split matters: the OUTER wrapper owns the FLIP reflow transform, the
+   INNER wrapper owns the enter/exit transform. Putting both on one element would
+   have them fight over the same property. */
 
 import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Toast } from '../Toast/Toast'
 import type { ToastState } from '../Toast/Toast'
+import { tokenEase, tokenMs } from '../shared/motion'
+import type { PresenceState } from '../shared/usePresence'
 import styles from './ToastContainer.module.css'
 
 const AUTO_DISMISS_MS = 4000
-const ENTER_MS        = 300
 
 export interface ToastItem {
   id:        string
@@ -21,8 +31,7 @@ export interface ToastItem {
 }
 
 interface InternalItem extends ToastItem {
-  entered: boolean   // true after enter animation completes — needed for FLIP
-  exiting: boolean
+  presence: PresenceState
 }
 
 interface TimerEntry {
@@ -43,15 +52,15 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
     const timerMap          = useRef(new Map<string, TimerEntry>())
     const containerRef      = useRef<HTMLDivElement>(null)
     const snapshotRef       = useRef(new Map<string, number>())   // id → previous top
+    const frames            = useRef(new Set<number>())
 
-    // ── FLIP: smoothly push existing toasts down ───────────────────
-    //
-    // CSS `animation` fill-mode overrides inline styles, so FLIP only works
-    // on `entered` items (no active animation). New items use `entering` class
-    // independently and are skipped (no previous snapshot entry).
+    // ── FLIP: smoothly push existing toasts down / pull them up ────
     useLayoutEffect(() => {
       const container = containerRef.current
       if (!container) return
+
+      const reflowMs   = tokenMs('--dur-base', 400)
+      const reflowEase = tokenEase('--ease-in-out')
 
       // 1. Read new logical positions (after React layout, before any transforms)
       const newPositions = new Map<string, number>()
@@ -59,7 +68,7 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
         newPositions.set(el.dataset.toastId!, el.getBoundingClientRect().top)
       })
 
-      // 2. Apply FLIP for items that moved (existing items have a previous snapshot)
+      // 2. Apply FLIP for items that moved (new items have no previous snapshot)
       container.querySelectorAll<HTMLElement>('[data-toast-id]').forEach(el => {
         const id     = el.dataset.toastId!
         const oldTop = snapshotRef.current.get(id)
@@ -71,7 +80,7 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
         el.style.transition = 'none'
         el.getBoundingClientRect()                                         // force reflow
         el.style.transform  = ''
-        el.style.transition = `transform ${ENTER_MS}ms cubic-bezier(0.22, 1, 0.36, 1)`
+        el.style.transition = `transform ${reflowMs}ms ${reflowEase}`
       })
 
       // 3. Save positions for next render
@@ -94,24 +103,36 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
 
     useEffect(() => () => {
       timerMap.current.forEach(t => { if (t.timerId) clearTimeout(t.timerId) })
+      frames.current.forEach(cancelAnimationFrame)
     }, [])
 
     // ── Dismiss ────────────────────────────────────────────────────
+    //
+    // Flip to the closed state first so the exit transition can run, then unmount
+    // once it has finished — no instant disappearance.
 
     const dismiss = (id: string) => {
       clearItemTimer(id)
-      setItems(prev => prev.map(item => item.id === id ? { ...item, exiting: true } : item))
-      setTimeout(() => setItems(prev => prev.filter(item => item.id !== id)), 310)
+      setItems(prev => prev.map(item =>
+        item.id === id ? { ...item, presence: 'closed' } : item))
+      setTimeout(
+        () => setItems(prev => prev.filter(item => item.id !== id)),
+        tokenMs('--dur-snap', 300),
+      )
     }
 
-    // ── Hover pause / resume ───────────────────────────────────────
+    // ── Hover / focus pause ────────────────────────────────────────
 
     const pauseTimer = (id: string) => {
       const t = timerMap.current.get(id)
       if (!t?.timerId) return
       clearTimeout(t.timerId)
       const elapsed = Date.now() - t.startedAt
-      timerMap.current.set(id, { timerId: null, remaining: Math.max(0, t.remaining - elapsed), startedAt: t.startedAt })
+      timerMap.current.set(id, {
+        timerId:   null,
+        remaining: Math.max(0, t.remaining - elapsed),
+        startedAt: t.startedAt,
+      })
     }
 
     const resumeTimer = (id: string) => {
@@ -125,13 +146,18 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
     useImperativeHandle(ref, () => ({
       add(toast) {
         const id = Date.now().toString(36) + Math.random().toString(36).slice(2)
-        setItems(prev => [...prev, { ...toast, id, entered: false, exiting: false }])
+        // Mount closed, then flip open on the next frame so the browser has a
+        // "from" value to animate out of.
+        setItems(prev => [...prev, { ...toast, id, presence: 'closed' }])
+        const outer = requestAnimationFrame(() => {
+          const inner = requestAnimationFrame(() => {
+            setItems(prev => prev.map(item =>
+              item.id === id ? { ...item, presence: 'open' } : item))
+          })
+          frames.current.add(inner)
+        })
+        frames.current.add(outer)
         scheduleTimer(id, AUTO_DISMISS_MS)
-        // After enter animation completes, remove the class so FLIP can work freely
-        setTimeout(
-          () => setItems(prev => prev.map(item => item.id === id ? { ...item, entered: true } : item)),
-          ENTER_MS,
-        )
       },
       clear() {
         timerMap.current.forEach((_, id) => clearItemTimer(id))
@@ -151,15 +177,18 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
             data-toast-id={item.id}
             onMouseEnter={() => pauseTimer(item.id)}
             onMouseLeave={() => resumeTimer(item.id)}
+            onFocus={() => pauseTimer(item.id)}
+            onBlur={() => resumeTimer(item.id)}
           >
-            <Toast
-              state={item.state}
-              message={item.message}
-              optional={item.optional}
-              action={item.action}
-              onDismiss={() => dismiss(item.id)}
-              className={item.exiting ? styles.exiting : item.entered ? undefined : styles.entering}
-            />
+            <div className={styles.toast} data-state={item.presence}>
+              <Toast
+                state={item.state}
+                message={item.message}
+                optional={item.optional}
+                action={item.action}
+                onDismiss={() => dismiss(item.id)}
+              />
+            </div>
           </div>
         ))}
       </div>

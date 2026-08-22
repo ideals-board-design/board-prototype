@@ -1,0 +1,79 @@
+/* Drawer — right side only. Motion spec §7. */
+
+/* ── Overlay shell ───────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Backdrop fades in at --dur-slow with the panel's slide, out at --dur-base. */
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-overlay);
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.backdrop[data-state='open'] { opacity: 1; }
+
+.backdrop[data-state='closed'] {
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-in);
+}
+
+/* ── Panel ────────────────────────────────────────────────────
+   Slides on transform only — never `right`, never `width`. It does
+   not fade: the panel travels at full opacity, only the backdrop fades.
+   Elevation is a border-left, never a box-shadow (CLAUDE.md). */
+
+.panel {
+  box-sizing: border-box;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--color-bg-surface);
+  border-left: 1px solid var(--color-border);
+  font-family: var(--font-family);
+
+  transform: translateX(100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+  will-change: transform;
+}
+
+.panel[data-state='open'] { transform: translateX(0); }
+
+.panel[data-state='closed'] {
+  transform: translateX(100%);
+  transition: transform var(--dur-base) var(--ease-in);
+}
+
+.panel:focus-visible { outline: none; }
+
+/* Dropped once the enter transition has finished and the drawer just sits there. */
+.settled { will-change: auto; }
+
+.panelOverlay {
+  position: relative;
+  height: 100%;
+}
+
+/* In-flow side column — the page behind stays live, so no backdrop. */
+.panelInline {
+  flex-shrink: 0;
+}
+
+/* ── Body ─────────────────────────────────────────────────── */
+
+.body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-24);
+  box-sizing: border-box;
+}

@@ -20,11 +20,15 @@
   padding: var(--space-12);
   padding-left: var(--space-8);
   border-radius: var(--radius-sm);
-  transition: background 150ms ease;
+  /* Nav item — listed under the animated hover rule (motion spec §1), NOT the
+     instant rows/menu-items rule. Keep --dur-snap. */
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
-.item:hover .inner {
-  background: var(--color-bg-hover-fill);
+@media (hover: hover) {
+  .item:hover .inner {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 .item.selected .inner {
@@ -57,18 +61,22 @@
 .iconDefault { display: flex; }
 .iconActive  { display: none; }
 
-/* On hover or selected: swap to active icon */
-.item:hover .iconDefault,
+/* Selected: swap to the active icon. Not hover-gated — the selected state must
+   render on touch devices too. Icon swap is instant (no cross-fade, spec rule 2). */
 .item.selected .iconDefault { display: none; }
-
-.item:hover .iconActive,
 .item.selected .iconActive  { display: flex; }
 
 /* Active icon outline follows primary (matches the label + the Navigation icon
    spec: default = secondary, active = primary + green). currentColor drives the
    icon's stroke; the green accent is baked in. Flips light/dark via the token. */
-.item:hover .icon,
 .item.selected .icon { color: var(--color-text-primary); }
+
+@media (hover: hover) {
+  /* Same swap on hover */
+  .item:hover .iconDefault { display: none; }
+  .item:hover .iconActive  { display: flex; }
+  .item:hover .icon        { color: var(--color-text-primary); }
+}
 
 /* ── Label ─────────────────────────────────────────────────── */
 

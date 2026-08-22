@@ -1,0 +1,31 @@
+/* =============================================================================
+   Motion — global rules
+   Duration/easing tokens live in tokens.css. This file holds the two system-wide
+   overrides that must apply to every component regardless of authoring order.
+   ============================================================================= */
+
+/* ── Reduced motion ───────────────────────────────────────────────────────────
+   All state changes stay fully functional — only their duration collapses.
+   Nothing disappears, nothing becomes unreachable. */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ── Disabled ─────────────────────────────────────────────────────────────────
+   No transition entering or leaving disabled. The change is instant by design. */
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled,
+[aria-disabled='true'] {
+  transition: none;
+}

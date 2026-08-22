@@ -68,11 +68,13 @@
   inset: -6px;
   border-radius: var(--radius-sm);
   background: transparent;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
   pointer-events: auto;  /* the full 32px fill zone triggers hover */
   z-index: -1;
 }
-.hoverRow:hover::before { background: var(--color-bg-hover-fill); }
+@media (hover: hover) {
+  .hoverRow:hover::before { background: var(--color-bg-hover-fill); }
+}
 
 .itemName {
   font-size: var(--text-base);
@@ -92,10 +94,12 @@
   gap: var(--space-2);   /* 2px between adjacent tertiary icon buttons (DS rule) */
   margin-left: auto;
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
-.hoverRow:hover .rowActions,
 .rowActions:focus-within { opacity: 1; }
+@media (hover: hover) {
+  .hoverRow:hover .rowActions { opacity: 1; }
+}
 
 /* Inline action buttons use the DS tertiary icon-only sizing (32px hit area,
    20px footprint) — no override needed. */

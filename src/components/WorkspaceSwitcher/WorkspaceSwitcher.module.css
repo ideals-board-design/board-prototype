@@ -28,12 +28,16 @@
   gap: var(--space-12);
   padding: var(--space-8) var(--space-4) var(--space-8) var(--space-8);
   border-radius: var(--radius-sm);
-  transition: background 150ms ease;
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
-.trigger:hover .triggerInner,
 .triggerOpen .triggerInner {
   background: var(--color-bg-hover-fill);
+}
+@media (hover: hover) {
+  .trigger:hover .triggerInner {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 .trigger:focus-visible .triggerInner {
@@ -120,10 +124,15 @@
   outline: none;
   text-align: left;
   box-sizing: border-box;
+  /* Menu items are cursor-position indicators, not objects that change state —
+     the highlight must track the cursor, never trail it (motion spec §1). */
+  transition: none;
 }
 
-.listItem:hover {
-  background: var(--color-bg-hover-fill);
+@media (hover: hover) {
+  .listItem:hover {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 .listItemActive {
@@ -148,4 +157,22 @@
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-base);
   color: var(--color-text-primary);
+}
+
+/* ── Motion: panel fade (motion spec §3) ──────────────────────────────────────
+   Opacity is the ONLY animated property — no translate, no scale, no
+   origin-based growth. Position is fully resolved before the fade starts, so the
+   panel never repositions mid-animation. Closing is faster than opening. */
+
+.dropdown {
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+.dropdown[data-state='open'] { opacity: 1; }
+
+.dropdown[data-state='closed'] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-in);
 }

@@ -45,22 +45,38 @@
   background: var(--stone-200);
 }
 
+/* Row highlight tracks the cursor — instant in both directions, including the
+   reveal of the actions overlay below (motion spec §1 "Rows and menu items are
+   instant"). Do not add a transition back; rows also have no :active state. */
+.rowOdd,
+.rowEven,
+.rowOdd td,
+.rowEven td,
+.rowOdd td:last-child > div,
+.rowEven td:last-child > div {
+  transition: none;
+}
+
 .rowOdd  { background: var(--stone-0); }
 .rowEven { background: var(--stone-100); }
 
-.rowOdd:hover,
-.rowEven:hover {
-  background: var(--color-bg-hover);
+@media (hover: hover) {
+  .rowOdd:hover,
+  .rowEven:hover {
+    background: var(--color-bg-hover);
+  }
 }
 
 /* Reveal the sticky actions overlay on row hover — CSS-driven so moving
-   between rows never triggers a React re-render (no flicker, no lag), and
+   between rows never triggers a React re-render (no flicker, no lag) and
    the actions appear in sync with the row-hover background.
    Targets the last cell's absolutely-positioned overlay structurally. */
-.rowOdd:hover td:last-child > div,
-.rowEven:hover td:last-child > div {
-  opacity: 1;
-  pointer-events: auto;
+@media (hover: hover) {
+  .rowOdd:hover td:last-child > div,
+  .rowEven:hover td:last-child > div {
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 /* Zero-width sticky column header for the actions overlay */

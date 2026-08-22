@@ -37,8 +37,8 @@
   cursor: pointer;
   outline: none;
   transition:
-    box-shadow var(--transition-fast),
-    background var(--transition-fast);
+    box-shadow var(--dur-snap) var(--ease-out),
+    background-color var(--dur-snap) var(--ease-out);
   /* height via padding */
 }
 
@@ -64,10 +64,11 @@
 }
 /* Outline only: pull the group toward the edge by the button's centring inset so the
    trailing glyph lands on the trigger padding (symmetric with the left icon). */
-
 /* Hover — green border (not disabled, not error) */
-.wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
-  box-shadow: inset 0 0 0 1px var(--accent-500);
+@media (hover: hover) {
+  .wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
+    box-shadow: inset 0 0 0 1px var(--accent-500);
+  }
 }
 
 /* Open — green border (same as focus) */
@@ -204,10 +205,12 @@
   cursor: pointer;
   color: var(--color-icon-secondary);
   border-radius: var(--radius-xs);
-  transition: color var(--transition-fast);
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
-.clearBtn:hover { color: var(--color-text-primary); }
+@media (hover: hover) {
+  .clearBtn:hover { color: var(--color-text-primary); }
+}
 
 /* Hidden state — space is reserved but button is invisible + non-interactive */
 .clearBtnHidden {
@@ -256,7 +259,9 @@
   gap: var(--space-8);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  /* Menu items are cursor-position indicators, not objects that change state —
+     the highlight must track the cursor, never trail it (motion spec §1). */
+  transition: none;
   box-sizing: border-box;
 }
 
@@ -265,9 +270,12 @@
 .sizeM .item { padding: var(--space-10) var(--space-12); }
 .sizeL .item { padding: var(--space-14) var(--space-12); }
 
-/* States — apply to all items including selected */
-.item:hover  { background: var(--color-bg-hover-fill); }         /* blue-800 · 10% */
-.item:active { background: var(--color-bg-hover-fill-strong); }  /* blue-800 · 20% */
+@media (hover: hover) {
+  /* States — apply to all items including selected */
+  .item:hover { background: var(--color-bg-hover-fill); }   /* blue-800 · 10% */
+}
+
+/* Options have no pressed state (motion spec §1) — hover and selected only. */
 
 /* Selected resting state only — hover/press reuse the same tokens above */
 .itemSelected { background: var(--color-bg-selected); }  /* #EBF8EF */
@@ -427,11 +435,13 @@
   color: var(--color-icon-secondary);
   border-radius: var(--radius-xs);
   transition:
-    transform var(--transition-fast),
-    color var(--transition-fast);
+    transform var(--dur-snap) var(--ease-out),
+    color var(--dur-snap) var(--ease-out);
 }
 
-.treeChevron:hover { color: var(--color-text-primary); }
+@media (hover: hover) {
+  .treeChevron:hover { color: var(--color-text-primary); }
+}
 
 .treeChevron span {
   display: flex;
@@ -495,8 +505,10 @@
 .noBorder.sizeM .trigger,
 .noBorder.sizeL .trigger { padding: 0; }
 
-/* Override hover/open/error box-shadow from outline rules */
-.noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
+@media (hover: hover) {
+  /* Override hover/open/error box-shadow from outline rules */
+  .noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
+}
 .noBorder.isOpen:not(.isDisabled):not(.hasError) .trigger { box-shadow: none; }
 .noBorder.hasError .trigger { box-shadow: none; }
 
@@ -510,10 +522,14 @@
 .noBorder .trigger .chevron,
 .noBorder .trigger .iconLeft { color: var(--color-icon-secondary); }
 
-/* Hover: text and icons go primary */
-.noBorder .trigger:hover .triggerText { color: var(--color-text-primary); }
-.noBorder .trigger:hover .chevron,
-.noBorder .trigger:hover .iconLeft { color: var(--color-icon-primary); }
+@media (hover: hover) {
+  /* Hover: text and icons go primary */
+  .noBorder .trigger:hover .triggerText { color: var(--color-text-primary); }
+}
+@media (hover: hover) {
+  .noBorder .trigger:hover .chevron,
+  .noBorder .trigger:hover .iconLeft { color: var(--color-icon-primary); }
+}
 
 /* Disabled: keep transparent bg */
 .noBorder.isDisabled .trigger { background: transparent; }
@@ -527,15 +543,19 @@
   inset: -6px;
   border-radius: var(--radius-sm);
   background: transparent;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
   pointer-events: auto;  /* the full 32px fill zone triggers hover */
   z-index: -1;
 }
 /* Fill kept on hover, while editing (focus) and while open. */
-.noBorder:not(.isDisabled) .trigger:hover::before,
 .noBorder:not(.isDisabled) .trigger:focus-within::before,
 .noBorder.isOpen:not(.isDisabled) .trigger::before {
   background: var(--color-bg-hover-fill);
+}
+@media (hover: hover) {
+  .noBorder:not(.isDisabled) .trigger:hover::before {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 /* Droplist for no-border: content-width with a sensible minimum */
@@ -600,3 +620,21 @@
 .sizeS .noOptions { font-size: var(--text-sm);   padding: var(--space-6)  var(--space-8);  }
 .sizeM .noOptions { font-size: var(--text-base);  padding: var(--space-10) var(--space-12); }
 .sizeL .noOptions { font-size: var(--text-md);    padding: var(--space-14) var(--space-12); }
+
+/* ── Motion: panel fade (motion spec §3) ──────────────────────────────────────
+   Opacity is the ONLY animated property — no translate, no scale, no
+   origin-based growth. Position is fully resolved before the fade starts, so the
+   panel never repositions mid-animation. Closing is faster than opening. */
+
+.droplist {
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+.droplist[data-state='open'] { opacity: 1; }
+
+.droplist[data-state='closed'] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-in);
+}

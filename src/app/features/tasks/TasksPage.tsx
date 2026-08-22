@@ -1,9 +1,9 @@
 /* TasksPage — Table-based feature page
    Figma: 35354-11450 (default) · 35354-11460 (drawer open) */
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { PageHeader }     from '../../../components/PageHeader/PageHeader'
-import { DrawerHeader }   from '../../../components/DrawerHeader/DrawerHeader'
+import { Drawer }         from '../../../components/Drawer/Drawer'
 import { StickyFooter }   from '../../../components/StickyFooter/StickyFooter'
 import { Button }   from '../../../components/Button/Button'
 import { Tooltip }  from '../../../components/Tooltip/Tooltip'
@@ -86,6 +86,12 @@ export default function TasksPage() {
   )
   const sorted = sortRows(filtered, sortCol, sortDir)
   const selectedRow = ROWS.find(r => r.id === selectedId) ?? null
+
+  /* The drawer stays mounted for its exit slide, so it needs the row it was
+     showing even after the selection has been cleared. */
+  const lastRow = useRef<Row | null>(null)
+  if (selectedRow) lastRow.current = selectedRow
+  const drawerRow = selectedRow ?? lastRow.current
 
   const ROW_ACTIONS = [
     { icon: editSvg,    label: 'Edit',   onClick: () => console.log('edit') },
@@ -191,15 +197,12 @@ export default function TasksPage() {
       </div>
 
       {/* ── Drawer column ─────────────────────────────── */}
-      {selectedRow && (
-        <div className={styles.drawer}>
-          <DrawerHeader
-            title="Drawer header"
-            onClose={() => setSelectedId(null)}
-          />
-          <div className={styles.drawerBody}>
-            <p className={styles.drawerPlaceholder}>{selectedRow.name}</p>
-          </div>
+      <Drawer
+        variant="inline"
+        open={selectedRow !== null}
+        onClose={() => setSelectedId(null)}
+        title="Drawer header"
+        footer={
           <StickyFooter
             variant="drawer"
             left={
@@ -230,8 +233,10 @@ export default function TasksPage() {
               </Tooltip>
             }
           />
-        </div>
-      )}
+        }
+      >
+        <p className={styles.drawerPlaceholder}>{drawerRow?.name}</p>
+      </Drawer>
 
     </div>
   )

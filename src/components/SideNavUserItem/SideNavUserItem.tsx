@@ -11,6 +11,7 @@ import { location }  from '../../icons/location'
 import { arrows }    from '../../icons/arrows'
 import { useTheme, type ThemePref } from '../../hooks/useTheme'
 import { useBranding, BRANDING_THEMES } from '../../hooks/useBranding'
+import { usePresence } from '../shared/usePresence'
 import styles from './SideNavUserItem.module.css'
 
 const shieldCheckSvg       = condition.find(i => i.name === 'shield-check')!.svg
@@ -68,6 +69,9 @@ export function SideNavUserItem({
   const themeTimerRef    = useRef<ReturnType<typeof setTimeout>>(undefined)
   const brandingTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
+  // Keeps the panel mounted through its fade-out (motion spec §3).
+  const { mounted, state } = usePresence(open)
+
   // Close on outside click
   useEffect(() => {
     if (!open) return
@@ -121,8 +125,14 @@ export function SideNavUserItem({
     <div className={styles.root} ref={rootRef}>
 
       {/* ── Dropdown (rendered above trigger) ──────────────── */}
-      {open && (
-        <div className={styles.dropdown} role="dialog" aria-label="User menu">
+      {mounted && (
+        <div
+          className={styles.dropdown}
+          data-state={state}
+          aria-hidden={state === 'closed'}
+          role="dialog"
+          aria-label="User menu"
+        >
 
           {/* 2FA banner — Figma 3196-1375 / 3196-1383 */}
           <div className={[styles.twoFaBanner, twoFaEnabled ? '' : styles.twoFaBannerWarning].filter(Boolean).join(' ')}>

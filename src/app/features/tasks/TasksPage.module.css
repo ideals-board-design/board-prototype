@@ -98,9 +98,11 @@
 .rowEven td:first-child { background: var(--stone-100); }
 .rowSelected td:first-child { background: var(--color-bg-selected); }
 
-.rowOdd:hover  td:first-child,
-.rowEven:hover td:first-child,
-.rowSelected:hover td:first-child { background: var(--color-bg-hover); }
+@media (hover: hover) {
+  .rowOdd:hover  td:first-child,
+  .rowEven:hover td:first-child,
+  .rowSelected:hover td:first-child { background: var(--color-bg-hover); }
+}
 
 /* ── Row rounded corners — right side ──────────────────────
    nth-last-child(2) = last visible column (before 0-width
@@ -127,28 +129,16 @@
 .rowEven { background: var(--stone-100); cursor: pointer; }
 .rowSelected { background: var(--color-bg-selected); }
 
-/* Hover overrides selected (rule comes after) */
-.rowOdd:hover,
-.rowEven:hover,
-.rowSelected:hover { background: var(--color-bg-hover); }
-
-/* ── Drawer — 460px ─────────────────────────────────────── */
-
-.drawer {
-  width: 460px;
-  flex-shrink: 0;
-  border-left: 1px solid var(--color-border);
-  background: var(--color-bg-surface);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+@media (hover: hover) {
+  /* Hover overrides selected (rule comes after) */
+  .rowOdd:hover,
+  .rowEven:hover,
+  .rowSelected:hover { background: var(--color-bg-hover); }
 }
 
-.drawerBody {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--space-24);
-}
+/* ── Drawer ───────────────────────────────────────────────
+   Layout, border-left and the slide all come from the Drawer
+   component (variant="inline", 460px default). */
 
 .drawerPlaceholder {
   font-family: var(--font-family);

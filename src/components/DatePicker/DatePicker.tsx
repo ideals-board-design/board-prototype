@@ -17,6 +17,7 @@ import { Button }     from '../Button/Button'
 import { Calendar }   from '../Calendar/Calendar'
 import { dateTime }   from '../../icons/dateTime'
 import { actions }    from '../../icons/actions'
+import { usePresence } from '../shared/usePresence'
 import styles from './DatePicker.module.css'
 
 /* ── Helpers ──────────────────────────────────────────────────────────────── */
@@ -139,6 +140,9 @@ export function DatePicker({
     : hasValue ? formatDate(value as Date, format) : placeholder
 
   const [open, setOpen] = useState(false)
+
+  // Keeps the panel mounted through its fade-out (motion spec §3).
+  const { mounted, state } = usePresence(open)
   const [pos,  setPos]  = useState({ top: 0, left: 0 })
   const triggerRef      = useRef<HTMLDivElement>(null)
   const popoverRef      = useRef<HTMLDivElement>(null)
@@ -395,10 +399,12 @@ export function DatePicker({
       )}
 
       {/* Popover — Calendar, rendered via portal */}
-      {open && createPortal(
+      {mounted && createPortal(
         <div
           ref={popoverRef}
           className={styles.popover}
+          data-state={state}
+          aria-hidden={state === 'closed'}
           style={{ top: pos.top, left: pos.left }}
           role="dialog"
           aria-label="Date picker"

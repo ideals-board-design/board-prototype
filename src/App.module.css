@@ -76,12 +76,14 @@
   cursor: pointer;
   text-align: left;
   width: 100%;
-  transition: background var(--transition-fast), color var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out), color var(--dur-snap) var(--ease-out);
 }
 
-.navItem:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-text-primary);
+@media (hover: hover) {
+  .navItem:hover {
+    background: var(--color-bg-hover);
+    color: var(--color-text-primary);
+  }
 }
 
 .navItemActive {
@@ -90,9 +92,11 @@
   font-weight: var(--font-weight-medium);
 }
 
-.navItemActive:hover {
-  background: var(--color-bg-selected);
-  color: var(--color-text-brand);
+@media (hover: hover) {
+  .navItemActive:hover {
+    background: var(--color-bg-selected);
+    color: var(--color-text-brand);
+  }
 }
 
 /* Sub-item — indented child nav entry */

@@ -14,7 +14,10 @@
   user-select: none;
   border-radius: 0;
   box-sizing: border-box;
-  transition: background var(--transition-fast);
+  /* Calendar day cells are grid cells, not items in a repeating vertical list,
+     so the instant rows/menu-items rule (motion spec §1) does not apply — they
+     animate at hover speed like any other hover surface. */
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
 /* ── Day label ────────────────────────────────────────────────────────────── */
@@ -61,30 +64,46 @@
    Hover states
    Applied by :hover and .isHover (forced)
    ═══════════════════════════════════════════ */
-
 /* Default hover — stone-300 bg, 4px radius */
-.typeDefault:hover:not(.isDisabled),
 .typeDefault.isHover:not(.isDisabled) {
   background: var(--color-bg-hover-fill);
   border-radius: var(--radius-sm);
 }
+@media (hover: hover) {
+  .typeDefault:hover:not(.isDisabled) {
+    background: var(--color-bg-hover-fill);
+    border-radius: var(--radius-sm);
+  }
+}
 
-/* Date range hover — green-50 bg */
-.typeDateRange:hover:not(.isDisabled),
 .typeDateRange.isHover:not(.isDisabled) {
   background: var(--accent-50);    /* #CBF1DA */
 }
+@media (hover: hover) {
+  /* Date range hover — green-50 bg */
+  .typeDateRange:hover:not(.isDisabled) {
+    background: var(--accent-50);    /* #CBF1DA */
+  }
+}
 
-/* Selected hover — green-600 bg */
-.typeSelected:hover:not(.isDisabled),
 .typeSelected.isHover:not(.isDisabled) {
   background: var(--accent-600);
 }
+@media (hover: hover) {
+  /* Selected hover — green-600 bg */
+  .typeSelected:hover:not(.isDisabled) {
+    background: var(--accent-600);
+  }
+}
 
-/* Today hover — stone-300 bg + green border */
-.typeToday:hover:not(.isDisabled),
 .typeToday.isHover:not(.isDisabled) {
   background: var(--color-bg-hover-fill);
+}
+@media (hover: hover) {
+  /* Today hover — stone-300 bg + green border */
+  .typeToday:hover:not(.isDisabled) {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 /* ═══════════════════════════════════════════
