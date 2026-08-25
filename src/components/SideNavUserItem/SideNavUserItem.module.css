@@ -22,11 +22,11 @@
 }
 
 .triggerInner {
-  flex: 1;
   display: flex;
   align-items: center;
   gap: var(--space-12);
-  padding: var(--space-8) var(--space-12);
+  padding: var(--space-6) var(--space-8);
+  flex: 1 0 0;
   border-radius: var(--radius-sm);
   transition: background-color var(--dur-snap) var(--ease-out);
 }
@@ -43,6 +43,107 @@
 .trigger:focus-visible .triggerInner {
   outline: 2px solid var(--color-border-focus);
   outline-offset: -2px;
+}
+
+/* ── Rail (laptop tier, icon-only) ─────────────────────── */
+
+.trigger.rail .triggerInner {
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+.railTooltipWrapper {
+  display: block;
+  width: 100%;
+}
+
+/* ── Inline profile row (tablet/mobile drawer) ─────────── */
+/* Same visual footprint as .triggerInner but non-interactive text, no
+   hover/press fill — the row above it (or the sheet trigger) owns that. */
+
+.inlineProfileRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  width: 100%;
+  padding: var(--space-8) var(--space-12);
+  box-sizing: border-box;
+}
+
+/* ── Nav-style items (inline/sheet: My profile, Connections, Language,
+   Log out) — exact same box model as SideNavigationItem's main menu rows
+   (4px outer padding, 12px inner padding with 8px on the left, radius-sm,
+   instant hover — not the desktop dropdown's .item metrics), so the drawer
+   reads as one consistent list. Duplicated rather than importing
+   SideNavigationItem's module to keep the two components decoupled. */
+
+.navItem {
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-4);
+  width: 100%;
+  box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  background: none;
+  border: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.navItemInner {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  padding: var(--space-12);
+  padding-left: var(--space-8);
+  border-radius: var(--radius-sm);
+  transition: none;
+}
+
+@media (hover: hover) {
+  .navItem:hover .navItemInner {
+    background: var(--color-bg-hover-fill);
+  }
+}
+
+.navItem:focus-visible .navItemInner {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+.navItemIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--space-32);
+  height: var(--space-24);
+  color: var(--color-text-secondary);
+}
+
+.navItemIcon svg {
+  width: var(--space-24);
+  height: var(--space-24);
+}
+
+.navItemLabel {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+}
+
+.navItemDanger .navItemLabel,
+.navItemDanger .navItemIcon {
+  color: var(--color-text-error);
 }
 
 /* ── Text block ─────────────────────────────────────────── */
@@ -327,4 +428,21 @@
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--dur-fast) var(--ease-in);
+}
+
+/* ── Mobile bottom sheet body (variant="sheet") ─────────────────────────────
+   Figma "Droplist" frame (node 4729-8283): 4px padding on three sides, 24px
+   on the bottom, items stacked with no gap. !important: overriding Drawer's
+   own .body class (24px all round, min-height/flex sizing) via the
+   bodyClassName escape hatch — as CSS Modules, the two classes' cascade
+   order isn't something this file can guarantee, so the override has to win
+   outright rather than relying on source order (same reasoning as
+   App.module.css's .navDrawerBody). */
+.sheetBody {
+  display: flex !important;
+  width: 100% !important;
+  padding: var(--space-4) var(--space-4) var(--space-24) var(--space-4) !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: var(--space-0) !important;
 }

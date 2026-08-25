@@ -66,7 +66,12 @@ function ParticipantRow({ p }: { p: Participant }) {
   )
 }
 
-export default function CSBeforeMeetingPage() {
+export interface CSBeforeMeetingPageProps {
+  /** Mobile/tablet tier (390–1023px) — shows the nav drawer's hamburger trigger. */
+  onMenuClick?: () => void
+}
+
+export default function CSBeforeMeetingPage({ onMenuClick }: CSBeforeMeetingPageProps = {}) {
   const [participantsOpen, setParticipantsOpen] = useState(false)
   const [rsvp, setRsvp] = useState('yes-person')
   const closeTimer = useRef<number | undefined>(undefined)
@@ -84,7 +89,7 @@ export default function CSBeforeMeetingPage() {
     <div className={styles.page}>
       <div className={styles.content}>
 
-        <PageHeader title="Dashboard" />
+        <PageHeader title="Dashboard" onMenuClick={onMenuClick} />
 
         <div className={styles.body}>
           <div className={styles.container}>

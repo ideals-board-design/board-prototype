@@ -141,6 +141,14 @@
   color: var(--color-icon-secondary);
 }
 
+/* Single icon, rotated — not swapped between up/down assets (motion spec hard
+   rule: no icon swapping as animation; matches .treeChevron's pattern). */
+.chevron {
+  transition: transform var(--dur-snap) var(--ease-out);
+}
+
+.chevronOpen { transform: rotate(180deg); }
+
 .sizeS .iconLeft,
 .sizeS .chevron { width: 16px; height: 16px; }
 

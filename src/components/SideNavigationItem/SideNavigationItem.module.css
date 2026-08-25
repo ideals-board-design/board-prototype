@@ -20,9 +20,11 @@
   padding: var(--space-12);
   padding-left: var(--space-8);
   border-radius: var(--radius-sm);
-  /* Nav item — listed under the animated hover rule (motion spec §1), NOT the
-     instant rows/menu-items rule. Keep --dur-snap. */
-  transition: background-color var(--dur-snap) var(--ease-out);
+  /* Instant, like table rows — the nav list is a repeating vertical list of
+     destinations, so the highlight should track the cursor/keyboard focus
+     without a trailing fade (design feedback overrides motion spec §1's
+     literal "nav item" listing for this component). */
+  transition: none;
 }
 
 @media (hover: hover) {
@@ -92,4 +94,20 @@
 
 .item.selected .label {
   color: var(--color-text-primary);
+}
+
+/* ── Rail (laptop tier, icon-only) ────────────────────────────
+   Centers the icon in the same 4px outer / 12+8px inner padding footprint
+   the labeled row uses, so the rail and full sidebar share identical row
+   heights — only the label disappears. */
+
+.item.rail .inner {
+  justify-content: center;
+  padding: var(--space-12) var(--space-8);
+  gap: 0;
+}
+
+.railTooltipWrapper {
+  display: block;
+  width: 100%;
 }

@@ -17,33 +17,24 @@
   pointer-events: auto;
 }
 
-/* ── Enter / exit ────────────────────────────────────────────
-   Enter: slides in from above while fading in.
-   Exit:  fades out while sliding back up.
-   The direction is always the top, regardless of where the stack is anchored.
-   Opacity and transform share duration and easing so the toast reads as one
-   object, not two effects. */
+/* ── Exit ────────────────────────────────────────────────────
+   Slide only — no opacity. `translateY(-100%)` moves it by exactly its own
+   height regardless of content (1 vs 2 lines), so it travels far enough to
+   pass behind whichever toast sits above it — and for a lone toast, the same
+   motion simply carries it out the top of the stack. Painting order does the
+   rest: earlier toasts are earlier DOM siblings, so an older toast sliding up
+   is painted underneath (behind) a newer one without any z-index needed.
+
+   Entrance is NOT here — it's driven by the same JS FLIP effect that reflows
+   the rest of the stack (see ToastContainer.tsx), so a new toast's slide-in
+   and the existing toasts' "make room" shift are perfectly synchronized and
+   the 8px gap holds throughout, not just at rest. */
 
 .toast {
-  opacity: 0;
-  transform: translateY(calc(var(--motion-offset-toast) * -1));
-  transition:
-    opacity   var(--dur-base) var(--ease-out),
-    transform var(--dur-base) var(--ease-out);
-}
-
-.toast[data-state='open'] {
-  opacity: 1;
   transform: translateY(0);
 }
 
 .toast[data-state='closed'] {
-  opacity: 0;
-  transform: translateY(calc(var(--motion-offset-toast) * -1));
-  transition:
-    opacity   var(--dur-snap) var(--ease-in),
-    transform var(--dur-snap) var(--ease-in);
+  transform: translateY(-100%);
+  transition: transform var(--dur-snap) var(--ease-in);
 }
-
-/* Stack reflow after a dismissal is driven from JS (FLIP) using the same
-   transform property — never `top` or `margin`. */

@@ -2,6 +2,7 @@
    Width: 240px, inner pad 12px, gap 16px, icon 24×24, text Inter Medium 15px/20px */
 
 import { navigation } from '../../icons/navigation'
+import { Tooltip } from '../Tooltip/Tooltip'
 import styles from './SideNavigationItem.module.css'
 
 export type NavMenuItemKey =
@@ -21,21 +22,25 @@ export interface SideNavigationItemProps {
   label:     string
   selected?: boolean
   onClick?:  () => void
+  /** Icon-only rail mode (laptop tier, 1024–1439px) — hides the label, wraps
+   *  the row in a tooltip showing it instead. */
+  rail?:     boolean
 }
 
 function getIcon(name: string) {
   return navigation.find(i => i.name === name)?.svg ?? ''
 }
 
-export function SideNavigationItem({ menuItem, label, selected, onClick }: SideNavigationItemProps) {
-  return (
+export function SideNavigationItem({ menuItem, label, selected, onClick, rail }: SideNavigationItemProps) {
+  const item = (
     <div
-      className={[styles.item, selected ? styles.selected : ''].filter(Boolean).join(' ')}
+      className={[styles.item, rail ? styles.rail : '', selected ? styles.selected : ''].filter(Boolean).join(' ')}
       role="button"
       tabIndex={0}
       onClick={onClick}
       onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') onClick?.() }}
       aria-current={selected ? 'page' : undefined}
+      aria-label={rail ? label : undefined}
     >
       <div className={styles.inner}>
         <span
@@ -48,10 +53,14 @@ export function SideNavigationItem({ menuItem, label, selected, onClick }: SideN
           aria-hidden="true"
           dangerouslySetInnerHTML={{ __html: getIcon(`${menuItem}-hover-selected`) }}
         />
-        <span className={styles.label}>{label}</span>
+        {!rail && <span className={styles.label}>{label}</span>}
       </div>
     </div>
   )
+
+  return rail
+    ? <Tooltip label={label} position="right" wrapperClassName={styles.railTooltipWrapper}>{item}</Tooltip>
+    : item
 }
 
 export default SideNavigationItem

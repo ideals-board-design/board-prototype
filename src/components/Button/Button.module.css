@@ -128,43 +128,49 @@
 
 /* ── Secondary ───────────────────────────────────────────────────────────── */
 
+/* Fill is an inset box-shadow layered under the border ring, not a `background`
+   gradient — a gradient is a background-IMAGE, which the browser cannot
+   interpolate, so it used to snap instantly regardless of the transition on
+   `.button`. A huge inset spread clips to the border-box (respecting
+   border-radius) and reads as a solid fill; because it's a plain colour behind
+   `box-shadow`, hover/press now animate correctly (motion spec §1/§2). */
 .secondary {
   background: var(--color-bg-surface);
   color: var(--color-text-primary);
-  box-shadow: inset 0 0 0 1px var(--stone-500);
+  box-shadow: inset 0 0 0 1px var(--stone-500), inset 0 0 0 999px transparent;
 }
 
 .secondary[data-state="hover"] {
-  background: linear-gradient(var(--color-bg-hover-fill), var(--color-bg-hover-fill)), var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--stone-500), inset 0 0 0 999px var(--color-bg-hover-fill);
 }
 @media (hover: hover) {
-  /* Hover (10%) / pressed (20%) fill composited over the white surface so the button
-     stays opaque. Default = neutral Utility tokens (Hover/Pressed background); Danger = red. */
+  /* Hover (10%) / pressed (20%) fill over the white surface so the button stays
+     opaque. Default = neutral Utility tokens (Hover/Pressed background); Danger = red. */
   .secondary:hover:not(:disabled):not([data-loading]) {
-    background: linear-gradient(var(--color-bg-hover-fill), var(--color-bg-hover-fill)), var(--color-bg-surface);
+    box-shadow: inset 0 0 0 1px var(--stone-500), inset 0 0 0 999px var(--color-bg-hover-fill);
   }
 }
 .secondary:active:not(:disabled):not([data-loading]),
 .secondary[data-state="active"] {
-  background: linear-gradient(var(--color-bg-hover-fill-strong), var(--color-bg-hover-fill-strong)), var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--stone-500), inset 0 0 0 999px var(--color-bg-hover-fill-strong);
 }
 
 /* Secondary — Danger */
 .secondary.danger {
   color: var(--red-600);
-  box-shadow: inset 0 0 0 1px var(--red-200);
+  box-shadow: inset 0 0 0 1px var(--red-200), inset 0 0 0 999px transparent;
 }
 .secondary.danger[data-state="hover"] {
-  background: linear-gradient(var(--transparent-red-700-10), var(--transparent-red-700-10)), var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--red-200), inset 0 0 0 999px var(--transparent-red-700-10);
 }
 @media (hover: hover) {
   .secondary.danger:hover:not(:disabled):not([data-loading]) {
-    background: linear-gradient(var(--transparent-red-700-10), var(--transparent-red-700-10)), var(--color-bg-surface);
+    box-shadow: inset 0 0 0 1px var(--red-200), inset 0 0 0 999px var(--transparent-red-700-10);
   }
 }
 .secondary.danger:active:not(:disabled):not([data-loading]),
 .secondary.danger[data-state="active"] {
-  background: linear-gradient(var(--transparent-red-700-20), var(--transparent-red-700-20)), var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--red-200), inset 0 0 0 999px var(--transparent-red-700-20);
 }
 
 /* ── Tertiary ────────────────────────────────────────────────────────────── */

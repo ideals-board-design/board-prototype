@@ -25,7 +25,6 @@ import styles from './Dropdown.module.css'
 /* ── Icons ────────────────────────────────────────────────────────────────── */
 
 const chevronDownSvg  = arrows.find(i => i.name === 'angle-down-fill')!.svg
-const chevronUpSvg    = arrows.find(i => i.name === 'angle-up-fill')!.svg
 const clearSvg        = actions.find(i => i.name === 'multiply')!.svg
 const expandArrowSvg  = arrows.find(i => i.name === 'angle-right-fill')!.svg
 
@@ -565,15 +564,15 @@ export function Dropdown({
             spacing/alignment is unchanged. No-border: a bare icon (minimal inline). */}
         {isNoBorder ? (
           <span
-            className={styles.chevron}
+            className={`${styles.chevron} ${open ? styles.chevronOpen : ''}`}
             aria-hidden="true"
-            dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
+            dangerouslySetInnerHTML={{ __html: chevronDownSvg }}
           />
         ) : (
           <span className={styles.chevronBox} aria-hidden="true">
             <span
-              className={styles.chevron}
-              dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
+              className={`${styles.chevron} ${open ? styles.chevronOpen : ''}`}
+              dangerouslySetInnerHTML={{ __html: chevronDownSvg }}
             />
           </span>
         )}

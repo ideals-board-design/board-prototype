@@ -10,3 +10,30 @@
   display: flex;   /* full-page features control their own layout */
   min-width: 0;
 }
+
+/* ── Mobile/tablet nav drawer chrome (390–1023px) ─────────
+   The drawer's own header is just the close (X) button — SideNavigation
+   supplies its own workspace/nav-list/user content beneath it, edge to edge,
+   so the body slot's default padding is reset and its scrolling is left to
+   SideNavigation's own internal .navList instead of double-scrolling. */
+
+.navDrawerHeader {
+  display: flex;
+  align-items: center;
+  padding: var(--space-6) var(--space-16) var(--space-6) var(--space-10);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+/* !important: overriding Drawer's own .body class (24px padding, auto
+   overflow) via the bodyClassName escape hatch — as CSS Modules, the two
+   classes' cascade order isn't something this file can guarantee, so the
+   override has to win outright rather than relying on source order. */
+.navDrawerBody {
+  flex: 1 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}

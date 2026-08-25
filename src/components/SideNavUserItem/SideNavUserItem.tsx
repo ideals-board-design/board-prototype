@@ -4,6 +4,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Avatar } from '../Avatar/Avatar'
+import { Drawer } from '../Drawer/Drawer'
+import { Tooltip } from '../Tooltip/Tooltip'
 import { condition } from '../../icons/condition'
 import { users }     from '../../icons/users'
 import { actions }   from '../../icons/actions'
@@ -39,6 +41,15 @@ export interface SideNavUserItemProps {
   onProfileClick?:     () => void
   onConnectionsClick?: () => void
   onLogoutClick?:      () => void
+  /** Icon-only trigger (laptop rail, 1024–1439px). `variant="dropdown"` only. */
+  rail?:               boolean
+  /** 'dropdown' (default, desktop/laptop) — full menu incl. 2FA banner, Theme
+   *  and Branding submenus. 'inline' (tablet drawer) — just My profile /
+   *  Connections / Language / Log out as plain rows, no dropdown. 'sheet'
+   *  (mobile drawer) — same 4 items, opened from the profile row as a
+   *  bottom sheet. Theme/Branding are desktop+laptop-only features, so
+   *  'inline'/'sheet' don't carry them (matches the Figma mobile/tablet spec). */
+  variant?:            'dropdown' | 'inline' | 'sheet'
 }
 
 const LANGUAGES = [
@@ -46,6 +57,49 @@ const LANGUAGES = [
   { code: 'es', label: 'Español'  },
   { code: 'fr', label: 'Français' },
 ]
+
+/** My profile / Connections / Language / Log out — shared by 'inline' and
+ *  'sheet', which both show this exact set with no submenus. */
+function UserMenuItems({
+  activeLangLabel,
+  onProfileClick,
+  onConnectionsClick,
+  onLogoutClick,
+}: {
+  activeLangLabel:     string
+  onProfileClick?:     () => void
+  onConnectionsClick?: () => void
+  onLogoutClick?:      () => void
+}) {
+  return (
+    <>
+      <button type="button" className={styles.navItem} onClick={onProfileClick}>
+        <span className={styles.navItemInner}>
+          <span className={styles.navItemIcon} dangerouslySetInnerHTML={{ __html: userSvg }} />
+          <span className={styles.navItemLabel}>My profile</span>
+        </span>
+      </button>
+      <button type="button" className={styles.navItem} onClick={onConnectionsClick}>
+        <span className={styles.navItemInner}>
+          <span className={styles.navItemIcon} dangerouslySetInnerHTML={{ __html: linkSvg }} />
+          <span className={styles.navItemLabel}>Connections</span>
+        </span>
+      </button>
+      <div className={styles.navItem}>
+        <span className={styles.navItemInner}>
+          <span className={styles.navItemIcon} dangerouslySetInnerHTML={{ __html: globeSvg }} />
+          <span className={styles.navItemLabel}>Language ({activeLangLabel})</span>
+        </span>
+      </div>
+      <button type="button" className={[styles.navItem, styles.navItemDanger].join(' ')} onClick={onLogoutClick}>
+        <span className={styles.navItemInner}>
+          <span className={styles.navItemIcon} dangerouslySetInnerHTML={{ __html: exitSvg }} />
+          <span className={styles.navItemLabel}>Log out</span>
+        </span>
+      </button>
+    </>
+  )
+}
 
 export function SideNavUserItem({
   src,
@@ -56,6 +110,8 @@ export function SideNavUserItem({
   onProfileClick,
   onConnectionsClick,
   onLogoutClick,
+  rail          = false,
+  variant       = 'dropdown',
 }: SideNavUserItemProps) {
   const [open, setOpen]         = useState(defaultOpen)
   const [langOpen, setLangOpen] = useState(false)
@@ -96,6 +152,68 @@ export function SideNavUserItem({
     .join('')
     .slice(0, 2)
     .toUpperCase()
+
+  const activeLangLabel = LANGUAGES.find(l => l.code === activeLang)?.label ?? 'English'
+
+  // 'inline' (tablet drawer) — profile summary row + the 4 items in normal
+  // flow, no dropdown, no 2FA/Theme/Branding (Figma tablet spec).
+  if (variant === 'inline') {
+    return (
+      <div className={styles.root}>
+        <div className={styles.inlineProfileRow}>
+          <Avatar size="m" variant="picture" src={src} initials={initials} alt={name} />
+          <span className={styles.textBlock}>
+            <span className={styles.triggerName}>{name}</span>
+            <span className={styles.triggerEmail}>{email}</span>
+          </span>
+        </div>
+        <UserMenuItems
+          activeLangLabel={activeLangLabel}
+          onProfileClick={onProfileClick}
+          onConnectionsClick={onConnectionsClick}
+          onLogoutClick={onLogoutClick}
+        />
+      </div>
+    )
+  }
+
+  // 'sheet' (mobile drawer) — the profile row opens the 4 items in a bottom
+  // sheet instead of showing them inline (Figma mobile spec).
+  if (variant === 'sheet') {
+    return (
+      <div className={styles.root}>
+        <button
+          type="button"
+          className={styles.trigger}
+          onClick={() => setOpen(true)}
+          aria-haspopup="dialog"
+        >
+          <span className={styles.triggerInner}>
+            <Avatar size="m" variant="picture" src={src} initials={initials} alt={name} />
+            <span className={styles.textBlock}>
+              <span className={styles.triggerName}>{name}</span>
+              <span className={styles.triggerEmail}>{email}</span>
+            </span>
+          </span>
+        </button>
+        <Drawer
+          variant="overlay"
+          side="bottom"
+          open={open}
+          onClose={() => setOpen(false)}
+          ariaLabel="User menu"
+          bodyClassName={styles.sheetBody}
+        >
+          <UserMenuItems
+            activeLangLabel={activeLangLabel}
+            onProfileClick={() => { onProfileClick?.(); setOpen(false) }}
+            onConnectionsClick={() => { onConnectionsClick?.(); setOpen(false) }}
+            onLogoutClick={() => { onLogoutClick?.(); setOpen(false) }}
+          />
+        </Drawer>
+      </div>
+    )
+  }
 
   const handleLangEnter = () => {
     clearTimeout(langTimerRef.current)
@@ -284,21 +402,31 @@ export function SideNavUserItem({
       )}
 
       {/* ── Trigger ──────────────────────────────────────────── */}
-      <button
-        type="button"
-        className={[styles.trigger, open ? styles.triggerOpen : ''].filter(Boolean).join(' ')}
-        onClick={() => setOpen(o => !o)}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-      >
-        <span className={styles.triggerInner}>
-          <Avatar size="m" variant="picture" src={src} initials={initials} alt={name} />
-          <span className={styles.textBlock}>
-            <span className={styles.triggerName}>{name}</span>
-            <span className={styles.triggerEmail}>{email}</span>
-          </span>
-        </span>
-      </button>
+      {(() => {
+        const trigger = (
+          <button
+            type="button"
+            className={[styles.trigger, open ? styles.triggerOpen : '', rail ? styles.rail : ''].filter(Boolean).join(' ')}
+            onClick={() => setOpen(o => !o)}
+            aria-haspopup="dialog"
+            aria-expanded={open}
+            aria-label={rail ? name : undefined}
+          >
+            <span className={styles.triggerInner}>
+              <Avatar size="m" variant="picture" src={src} initials={initials} alt={name} />
+              {!rail && (
+                <span className={styles.textBlock}>
+                  <span className={styles.triggerName}>{name}</span>
+                  <span className={styles.triggerEmail}>{email}</span>
+                </span>
+              )}
+            </span>
+          </button>
+        )
+        return rail
+          ? <Tooltip label={name} position="right" wrapperClassName={styles.railTooltipWrapper}>{trigger}</Tooltip>
+          : trigger
+      })()}
 
     </div>
   )

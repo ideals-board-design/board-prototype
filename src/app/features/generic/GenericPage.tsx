@@ -8,14 +8,16 @@ import styles from './GenericPage.module.css'
 interface GenericPageProps {
   title:        string
   illustration: string
+  /** Mobile/tablet tier (390–1023px) — shows the nav drawer's hamburger trigger. */
+  onMenuClick?: () => void
 }
 
-export default function GenericPage({ title, illustration }: GenericPageProps) {
+export default function GenericPage({ title, illustration, onMenuClick }: GenericPageProps) {
   return (
     <div className={styles.page}>
       <div className={styles.content}>
 
-        <PageHeader title={title} />
+        <PageHeader title={title} onMenuClick={onMenuClick} />
 
         <div className={styles.body}>
           <EmptyState

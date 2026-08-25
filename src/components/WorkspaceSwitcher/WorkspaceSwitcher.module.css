@@ -45,6 +45,18 @@
   outline-offset: -2px;
 }
 
+/* ── Rail (laptop tier, icon-only) ─────────────────────── */
+
+.trigger.rail .triggerInner {
+  justify-content: center;
+  padding: var(--space-8) var(--space-4);
+}
+
+.railTooltipWrapper {
+  display: block;
+  width: 100%;
+}
+
 /* ── Workspace avatar ──────────────────────────────────── */
 
 .wsAvatar {
@@ -107,6 +119,23 @@
   padding: var(--space-4);
   z-index: var(--z-dropdown, 200);
   box-shadow: var(--elevation-100);
+}
+
+/* Rail trigger is 56px wide — too narrow for the list itself, so the panel
+   keeps a usable fixed width instead of matching the trigger. */
+.dropdownRail {
+  left: 0;
+  width: 232px;
+}
+
+/* Inline (accordion, mobile/tablet drawer) — expands in normal flow below
+   the trigger instead of floating. No elevation: it reads as part of the
+   drawer's own surface, not a separate floating panel. */
+.dropdownInline {
+  position: static;
+  width: 100%;
+  box-shadow: none;
+  padding: 0;
 }
 
 /* ── List item ─────────────────────────────────────────── */

@@ -4,14 +4,20 @@ import { type ReactNode } from 'react'
 import { Button }  from '../Button/Button'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { arrows }  from '../../icons/arrows'
+import { functional } from '../../icons/functional'
 import styles from './PageHeader.module.css'
 
 const angleLeftSvg   = arrows.find(i => i.name === 'angle-left-b')!.svg
 const chevronDownSvg = arrows.find(i => i.name === 'angle-down-fill')!.svg
+const menuSvg        = functional.find(i => i.name === 'menu')!.svg
 
 export interface PageHeaderProps {
   /** Page title. Omit when using `breadcrumbs`. */
   title?:       string
+  /** Shows a hamburger menu button before the title — the mobile/tablet nav
+   *  drawer's trigger (390–1023px). Takes precedence over `onBack` when both
+   *  are given (they're not expected to be used together). */
+  onMenuClick?: () => void
   /** Shows a back button before the title (Meeting layout). */
   onBack?:      () => void
   /** Shows a dropdown chevron after the title (title switcher). */
@@ -27,6 +33,7 @@ export interface PageHeaderProps {
 
 export function PageHeader({
   title,
+  onMenuClick,
   onBack,
   onTitleMenu,
   badge,
@@ -34,8 +41,10 @@ export function PageHeader({
   breadcrumbs,
   className,
 }: PageHeaderProps) {
-  /* Padding/gap follow the leading content (Figma types). */
-  const typeCls = breadcrumbs ? styles.typeDocuments : onBack ? styles.typeMeeting : styles.typeDefault
+  /* Padding/gap follow the leading content (Figma types). A menu button is
+     the same leading-icon-button shape as the back button, so it shares
+     typeMeeting's tighter left padding. */
+  const typeCls = breadcrumbs ? styles.typeDocuments : (onMenuClick || onBack) ? styles.typeMeeting : styles.typeDefault
   const cls = [styles.header, typeCls, className].filter(Boolean).join(' ')
 
   if (breadcrumbs) {
@@ -44,7 +53,18 @@ export function PageHeader({
 
   return (
     <header className={cls}>
-      {onBack && (
+      {onMenuClick ? (
+        <Button
+          variant="tertiary"
+          intent="neutral"
+          size="l"
+          iconOnly={
+            <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: menuSvg }} />
+          }
+          onClick={onMenuClick}
+          aria-label="Open navigation menu"
+        />
+      ) : onBack && (
         <Tooltip label="Back" position="bottom">
           <Button
             variant="tertiary"

@@ -7,8 +7,15 @@
   inset: 0;
   z-index: var(--z-modal);
   display: flex;
-  justify-content: flex-end;
 }
+
+/* ── Side ──────────────────────────────────────────────────────
+   Positions the panel within the overlay. Applied to both .overlay (which
+   edge it hugs) and .panel (which edge it slides from) — see Drawer.tsx. */
+
+.overlay.sideRight  { justify-content: flex-end; }
+.overlay.sideLeft   { justify-content: flex-start; }
+.overlay.sideBottom { align-items: flex-end; }
 
 /* Backdrop fades in at --dur-slow with the panel's slide, out at --dur-base. */
 .backdrop {
@@ -27,21 +34,25 @@
 }
 
 /* ── Panel ────────────────────────────────────────────────────
-   Slides on transform only — never `right`, never `width`. It does
-   not fade: the panel travels at full opacity, only the backdrop fades.
-   Elevation is a border-left, never a box-shadow (CLAUDE.md). */
+   Overlay slides on transform only — never `right`/`left`/`top`, never
+   `width` (its width never affects any sibling's layout, so transform is
+   strictly better). Inline instead animates `width` — see .panelInline below
+   for why. None of the three fade: the panel travels at full opacity, only
+   the overlay's backdrop fades.
+
+   Elevation: the right/left side variants are persistent page furniture, so
+   per CLAUDE.md they get a border, never a shadow. The bottom sheet is
+   different — it behaves like a floating menu/popover (a transient action
+   list, not page furniture), so it follows the OTHER CLAUDE.md rule instead:
+   floating surfaces always get `box-shadow: var(--elevation-100)`. */
 
 .panel {
   box-sizing: border-box;
   max-width: 100%;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
   background: var(--color-bg-surface);
-  border-left: 1px solid var(--color-border);
-  font-family: var(--font-family);
 
-  transform: translateX(100%);
   transition: transform var(--dur-slow) var(--ease-out);
   will-change: transform;
 }
@@ -49,24 +60,98 @@
 .panel[data-state='open'] { transform: translateX(0); }
 
 .panel[data-state='closed'] {
-  transform: translateX(100%);
   transition: transform var(--dur-base) var(--ease-in);
 }
 
 .panel:focus-visible { outline: none; }
 
-/* Dropped once the enter transition has finished and the drawer just sits there. */
-.settled { will-change: auto; }
+.panel.sideRight {
+  border-left: 1px solid var(--color-border);
+  transform: translateX(100%);
+}
+.panel.sideRight[data-state='open']   { transform: translateX(0); }
+.panel.sideRight[data-state='closed'] { transform: translateX(100%); }
+
+.panel.sideLeft {
+  border-right: 1px solid var(--color-border);
+  transform: translateX(-100%);
+}
+.panel.sideLeft[data-state='open']   { transform: translateX(0); }
+.panel.sideLeft[data-state='closed'] { transform: translateX(-100%); }
+
+/* .panelOverlay unconditionally sets height:100% (right/left panels need to
+   be full-height); this compound selector beats it on specificity so the
+   bottom sheet can size to its content instead — otherwise align-items:
+   flex-end on .overlay.sideBottom has no visible effect, since align-items
+   only sizes items whose cross-size is auto. */
+.panelOverlay.sideBottom {
+  height: auto;
+  width: 100%;
+  max-height: 100%;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  box-shadow: var(--elevation-100);
+  transform: translateY(100%);
+}
+.panel.sideBottom[data-state='open']   { transform: translateY(0); }
+.panel.sideBottom[data-state='closed'] { transform: translateY(100%); }
+
+/* Fixed-width inner box — always rendered at the drawer's target width, never
+   at the outer .panel's (possibly animating, possibly 0) width. Pinned to the
+   outer box's right edge so, while the outer box is narrower mid-animation,
+   it's the content's RIGHT side that stays put and its left side that's
+   clipped — the reveal direction matches the drawer sliding in from the
+   right. This is what keeps header/body layout constant throughout: the
+   outer box is what resizes, this box never does. */
+.panelContent {
+  flex-shrink: 0;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-family);
+}
+
+/* Bottom sheet has no meaningful "width" — Drawer.tsx omits the inline width
+   style for it, so this is the only rule sizing .panelContent in that case. */
+.panel.sideBottom .panelContent {
+  width: 100%;
+  height: auto;
+  margin-left: 0;
+}
 
 .panelOverlay {
   position: relative;
   height: 100%;
 }
 
-/* In-flow side column — the page behind stays live, so no backdrop. */
+/* In-flow side column — the page behind stays live, so no backdrop.
+   Animates `width` (its actual layout width, driven from the `style` prop by
+   Drawer.tsx toggling between 0 and its target) instead of the base .panel's
+   transform slide — see the rationale at the top of Drawer.tsx. The three
+   rules below override .panel's transform motion for this variant only; they
+   match its attribute-selector specificity so the cascade tie breaks on
+   source order (these come later in the file). */
+.panelInline,
+.panelInline[data-state='open'],
+.panelInline[data-state='closed'] {
+  transform: none;
+}
+
 .panelInline {
   flex-shrink: 0;
+  will-change: width;
+  transition: width var(--dur-slow) var(--ease-out);
 }
+
+.panelInline[data-state='closed'] {
+  transition: width var(--dur-base) var(--ease-in);
+}
+
+/* Dropped once the enter transition has finished and the drawer just sits
+   there. Declared after .panel/.panelInline so it wins the `will-change` tie
+   regardless of which variant is settled. */
+.settled { will-change: auto; }
 
 /* ── Body ─────────────────────────────────────────────────── */
 

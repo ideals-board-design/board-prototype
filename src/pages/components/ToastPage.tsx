@@ -139,8 +139,8 @@ export default function ToastPage() {
         <ul className={styles.guidelines}>
           <li>Fixed width: 400px. Position toasts at the top-right of the viewport via <code>ToastContainer</code>.</li>
           <li><strong>Stacking:</strong> newest toast at top, 8px gap. Older toasts push downward.</li>
-          <li><strong>Enter:</strong> slides down from &minus;8px while fading in &mdash; <code>--dur-base</code> / <code>--ease-out</code>. Opacity and transform share duration and easing so the toast reads as one object.</li>
-          <li><strong>Exit:</strong> fades out while sliding back up &mdash; <code>--dur-snap</code> / <code>--ease-in</code>. Exit is always faster than enter.</li>
+          <li><strong>Enter:</strong> slides down from directly above &mdash; <code>--dur-base</code> / <code>--ease-out</code>. No opacity change.</li>
+          <li><strong>Exit:</strong> slides back up and out &mdash; <code>--dur-snap</code> / <code>--ease-in</code>, faster than enter. A toast lower in the stack slides out behind the one above it; a lone toast just slides out the top.</li>
           <li><strong>Stack reflow:</strong> remaining toasts move with <code>transform: translateY</code> at <code>--dur-base</code> / <code>--ease-in-out</code> &mdash; never <code>top</code> or <code>margin</code>.</li>
           <li><strong>Auto-dismiss</strong> pauses on hover and on focus within the toast.</li>
           <li><strong>Primary message:</strong> max 2 lines, then ellipsis. Use <code>--font-weight-medium</code>.</li>
