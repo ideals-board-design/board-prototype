@@ -76,63 +76,7 @@ const LANGUAGE_OPTIONS: DropdownSelectableOption[] = [
   { value: 'lang-fr', label: 'Français' },
 ]
 
-/* ── Multi-level sublist demo data (Board metaphors) ──────────────────────
-   Sublist nesting is unbounded — these three menus exercise 2, 3 and 4
-   levels deep using real board-portal concepts (board books, meetings,
-   voting, governance committees). */
 
-const BOARD_BOOK_MENU: DropdownSelectableOption[] = [
-  { value: 'view-book',  label: 'View book' },
-  {
-    value: 'download', label: 'Download', children: [
-      { value: 'download-pdf',       label: 'PDF' },
-      { value: 'download-annotated', label: 'PDF with annotations' },
-      { value: 'download-print',     label: 'Print-ready PDF' },
-    ],
-  },
-  { value: 'share-book', label: 'Share with board' },
-]
-
-const MEETING_MENU: DropdownSelectableOption[] = [
-  { value: 'agenda',  label: 'Agenda' },
-  { value: 'minutes', label: 'Minutes' },
-  {
-    value: 'voting', label: 'Voting', children: [
-      { value: 'cast-vote', label: 'Cast a vote' },
-      {
-        value: 'voting-settings', label: 'Voting settings', children: [
-          { value: 'anonymous-voting', label: 'Anonymous voting' },
-          { value: 'weighted-voting',  label: 'Weighted voting' },
-          { value: 'quorum-rules',     label: 'Quorum rules' },
-        ],
-      },
-    ],
-  },
-  { value: 'attendance', label: 'Attendance' },
-]
-
-const GOVERNANCE_MENU: DropdownSelectableOption[] = [
-  { value: 'directory', label: 'Board directory' },
-  {
-    value: 'committees', label: 'Committees', children: [
-      { value: 'audit-committee', label: 'Audit committee' },
-      {
-        value: 'governance-committee', label: 'Governance committee', children: [
-          { value: 'charter', label: 'Committee charter' },
-          {
-            value: 'policies', label: 'Policies', children: [
-              { value: 'conflict-of-interest', label: 'Conflict of interest' },
-              { value: 'code-of-conduct',      label: 'Code of conduct' },
-              { value: 'data-retention',        label: 'Data retention' },
-            ],
-          },
-        ],
-      },
-      { value: 'compensation-committee', label: 'Compensation committee' },
-    ],
-  },
-  { value: 'settings', label: 'Settings' },
-]
 
 /* ── User & Group item data ───────────────────────────────────────────────── */
 
@@ -211,9 +155,7 @@ export default function DropdownPage() {
   const [grp1,    setGrp1]    = useState<string>('')
   const [grp2,    setGrp2]    = useState<string[]>([])
   const [menu1,   setMenu1]   = useState<string>('lang-en')
-  const [bookMenu,       setBookMenu]       = useState<string>('')
-  const [meetingMenu,    setMeetingMenu]    = useState<string>('')
-  const [governanceMenu, setGovernanceMenu] = useState<string>('')
+
 
   /* No-border demos */
   const [nb1, setNb1] = useState<string>('cherry')
@@ -479,6 +421,23 @@ export default function DropdownPage() {
           value={governanceMenu}
           onChange={v => setGovernanceMenu(v as string)}
           placeholder="Governance actions"
+        />
+      </div>
+
+      {/* ── Deep sublist (live) ────────────────────────────────────────── */}
+      <h2 className={styles.sectionTitle}>Deep sublist</h2>
+      <p className={styles.description}>
+        Sublists nest recursively to any depth — this menu is 4 levels deep,
+        each with the same 4 rows. Every row with children shows the chevron
+        and cascades a new panel to the right on hover.
+      </p>
+      <div className={styles.demoRow}>
+        <Dropdown
+          label="4-level menu"
+          options={DEEP_SUBLIST_OPTIONS}
+          value={deepMenu}
+          onChange={v => setDeepMenu(v as string)}
+          placeholder="Open menu"
         />
       </div>
 

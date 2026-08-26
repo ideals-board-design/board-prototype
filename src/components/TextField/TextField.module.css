@@ -70,16 +70,22 @@
 }
 
 /* ── No-border variant ───────────────────────────── */
-/* Inline: transparent, no padding → the field is a single text line (20px),
-   matching the Figma no-border spec. Soft fill extends 6px per side (radius 4),
-   kept on hover AND while editing (focus). */
+/* Real per-size padding IS the hit-area/hover-fill footprint — no negative-inset
+   bleed (same "footprint == hit area == fill" rule as Button tertiary/link and
+   Dropdown/DatePicker no-border, see button-tertiary-link-no-negative-margins /
+   field-icon-button-spacing). Horizontal padding is 8px at every size; vertical
+   padding is (row height − 20px line)/2 = 4/6/8/6 for S/M/L/XL (XL's 24px line
+   keeps the same 36px footprint as L) — verified against Figma "Input: Text
+   field no border" (node 24213-5317). Fill paints the wrapper's own padding box
+   directly via background-color, no pseudo-element. */
 .noBorder .inputWrapper {
   background: transparent;
   box-shadow: none;
-  padding: 0;
-  position: relative;
-  z-index: 0;
+  padding: var(--space-4) var(--space-8);
 }
+.noBorder.sizeM  .inputWrapper,
+.noBorder.sizeXL .inputWrapper { padding: var(--space-6) var(--space-8); }
+.noBorder.sizeL  .inputWrapper { padding: var(--space-8) var(--space-8); }
 /* No-border WITH a trailing icon-button (suffix) — Figma node 36407-19010 / 36209-4953:
    the row height matches the tertiary icon-only Button's own compact footprint exactly
    (S=28/M=32/L=36), with zero vertical padding, so the button fills the row
@@ -109,36 +115,21 @@
 @media (hover: hover) {
   .noBorder .inputWrapper:hover .suffixReveal { opacity: 1; }
 }
-.noBorder .inputWrapper::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  transition: background-color var(--dur-snap) var(--ease-out);
-  pointer-events: none;
-  z-index: -1;
-}
-.noBorder:not(.isDisabled) .inputWrapper:focus-within::before {
+/* No-border hover-fill paints the wrapper's own real padding box directly — no
+   oversized pseudo-element, no expansion beyond the layout footprint. Fill kept
+   on hover and while editing (focus). Applies equally to hasSuffix rows since
+   they already stand at their own real footprint (28/32/36). */
+.noBorder:not(.isDisabled) .inputWrapper:focus-within {
   background: var(--color-bg-hover-fill);
 }
 @media (hover: hover) {
-  .noBorder:not(.isDisabled) .inputWrapper:hover::before {
+  .noBorder:not(.isDisabled) .inputWrapper:hover {
     background: var(--color-bg-hover-fill);
   }
 }
-/* hasSuffix rows already stand at the button's full height (28/32/36), so the hover
-   fill matches the row exactly — no -6px text-line bleed. */
-.noBorder .inputWrapper.hasSuffix::before { inset: 0; }
-/* The input owns the full 32px zone (6px padding, cancelled by negative margin),
-   so hovering/clicking anywhere in it focuses the field. Hand cursor by default;
-   text caret only while editing (focused). */
-.noBorder .input {
-  padding: var(--space-6) 0;
-  margin: calc(-1 * var(--space-6)) 0;
-  cursor: pointer;
-}
-/* Filled (has text) or focused → text caret; empty placeholder → hand. */
+/* Hand cursor by default (click anywhere to enter edit mode); text caret once
+   filled or focused. */
+.noBorder .input { cursor: pointer; }
 .noBorder .input:focus,
 .noBorder .input:not(:placeholder-shown) { cursor: text; }
 
@@ -149,11 +140,6 @@
   resize: none;
   overflow: hidden;
 }
-/* No-border multiline: drop the single-line hit-area negative-margin trick so the
-   6px padding adds real height (one line = line-height + 12px), and match the
-   hover-fill to the full row (no −6px text-line bleed). */
-.noBorder.multiline .input { margin: 0; }
-.noBorder.multiline .inputWrapper::before { inset: 0; }
 
 /* ── Disabled state ──────────────────────────────── */
 .isDisabled .inputWrapper {

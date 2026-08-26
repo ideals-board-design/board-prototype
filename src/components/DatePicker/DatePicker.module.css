@@ -112,17 +112,24 @@
   width: fit-content;
 }
 
+/* Real per-size padding IS the hit-area/hover-fill footprint — no negative-inset
+   bleed (same "footprint == hit area == fill" rule as Button tertiary/link and
+   Dropdown no-border, see button-tertiary-link-no-negative-margins). Horizontal
+   padding is 8px at every size; vertical padding is (row height − 20px line)/2 =
+   4/6/8, giving the correct S=28/M=32/L=36 footprint — verified against Figma
+   "Date picker no border" (node 24984-12392, M size: 6px vertical / 8px
+   horizontal padding at a fixed 32px height). */
 .noBorder .trigger {
   background: transparent;
   box-shadow: none;
-  padding: 0;
+  padding: var(--space-4) var(--space-8);
   gap: var(--space-8);  /* 8px to the single clear button (no adjacent icon-buttons here) */
-  cursor: pointer; /* hand across the whole 32px hover zone */
+  border-radius: var(--radius-sm);
+  cursor: pointer; /* hand across the whole hover zone */
 }
 
-.noBorder.sizeS .trigger,
-.noBorder.sizeM .trigger,
-.noBorder.sizeL .trigger { padding: 0; }
+.noBorder.sizeM .trigger { padding: var(--space-6) var(--space-8); }
+.noBorder.sizeL .trigger { padding: var(--space-8) var(--space-8); }
 
 /* No-border WITH a clear button present (hasValue) — Figma node 36407-19010. The
    row height matches the tertiary icon-only Button's own compact footprint exactly
@@ -147,33 +154,21 @@
 
 .noBorder.isDisabled .trigger { background: transparent; }
 
-/* No-border hover-fill (experimental): soft background extending 6px per side.
-   z-index:-1 sits behind text/icon; z-index:0 = own stacking context. */
-.noBorder .trigger { position: relative; z-index: 0; }
-.noBorder .trigger::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  transition: background-color var(--dur-snap) var(--ease-out);
-  pointer-events: auto;  /* the full 32px fill zone triggers hover */
-  z-index: -1;
-}
-/* Fill kept on hover, while editing (focus) and while open. */
-.noBorder:not(.isDisabled) .trigger:focus-within::before,
-.noBorder.isOpen:not(.isDisabled) .trigger::before,
-.noBorder.isEditing:not(.isDisabled) .trigger::before {
+/* No-border hover-fill paints the trigger's own real padding box directly — no
+   oversized pseudo-element, no expansion beyond the layout footprint. Fill kept
+   on hover, while editing (focus) and while open. Applies equally to
+   hasClearSlot rows since they already stand at their own real footprint
+   (28/32/36). */
+.noBorder:not(.isDisabled) .trigger:focus-within,
+.noBorder.isOpen:not(.isDisabled) .trigger,
+.noBorder.isEditing:not(.isDisabled) .trigger {
   background: var(--color-bg-hover-fill);
 }
 @media (hover: hover) {
-  .noBorder:not(.isDisabled) .trigger:hover::before {
+  .noBorder:not(.isDisabled) .trigger:hover {
     background: var(--color-bg-hover-fill);
   }
 }
-/* hasClearSlot rows already stand at the button's full height (28/32/36), so the
-   hover fill matches the row exactly — no -6px text-line bleed. */
-.noBorder .trigger.hasClearSlot::before { inset: 0; }
 
 /* No-border clear button: revealed only on field hover / focus. Footprint reserved
    (opacity, not display) so nothing shifts. */

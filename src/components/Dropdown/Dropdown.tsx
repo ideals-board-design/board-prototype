@@ -139,17 +139,7 @@ const BASE_PAD_LEFT: Record<DropdownSize, number> = { s: 8, m: 12, l: 12 }
 /** Indent per tree level = chevron (20px) + gap (8px) */
 const TREE_INDENT = 28
 
-/** Gap between a parent item and its flyout sublist panel */
-const SUBLIST_GAP = 4
 
-/** Matches .sublist min-width in CSS — used for the right-edge overflow check */
-const SUBLIST_MIN_WIDTH = 160
-
-/** One entry per open nesting level — level 0 is triggered from the root droplist,
- *  level 1 from inside level 0's panel, and so on (unbounded depth). */
-interface SublistLevel {
-  value: string
-  pos:   { top: number; left: number }
 }
 
 /** Returns all descendant values of a tree node (uses the full flat options array) */
@@ -213,15 +203,21 @@ export function Dropdown({
   // Keeps the panel mounted through its fade-out (motion spec §3).
   const { mounted, state } = usePresence(open)
   const [pos,  setPos]                      = useState({ top: 0, left: 0, width: 0 })
-  // One entry per open flyout level — unbounded depth (level 0 = triggered from
-  // the root droplist, level 1 = from inside level 0's panel, ...).
-  const [sublistChain, setSublistChain]     = useState<SublistLevel[]>([])
+
   const [droplistQuery, setDroplistQuery]   = useState('')
   const triggerRef        = useRef<HTMLDivElement>(null)
   const droplistRef       = useRef<HTMLDivElement>(null)
   const sublistRefs        = useRef<Map<number, HTMLDivElement>>(new Map())
   const droplistSearchRef = useRef<HTMLDivElement>(null)
-  const sublistCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  /* Every scheduled sublist close, across every nesting level — a plain array,
+     not a single ref, because at any moment there can be more than one pending
+     close in flight (e.g. leaving a level-2 item schedules its own close, then
+     the mouse also leaves the level-1 panel a moment later while crossing the
+     gap, scheduling a second one). A single-ref version can only ever cancel
+     the *latest* timer, so earlier ones survive as "zombies" and still fire —
+     snapping a deeper, currently-hovered panel shut. Clearing the whole array
+     on every re-entry avoids that. */
+  const sublistCloseTimers = useRef<ReturnType<typeof setTimeout>[]>([])
   const uid               = useId()
 
   /* Whether the droplist should include an inline search field */
@@ -322,44 +318,20 @@ export function Dropdown({
     setOpen(true)
   }, [disabled])
 
+  /** Cancels every pending sublist close, at every level — see the comment on
+   *  `sublistCloseTimers` for why a single timer isn't enough. */
+  const clearSublistCloseTimers = useCallback(() => {
+    sublistCloseTimers.current.forEach(clearTimeout)
+    sublistCloseTimers.current = []
+  }, [])
+
   const closeDroplist = useCallback(() => {
     setOpen(false)
-    setSublistChain([])
-    if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current)
-  }, [])
-
-  /* ── Sublist open/close (recursive — any depth) ──────────────────────────
-     Opening is always synchronous (no timer), so switching the hovered
-     sublist trigger — whether a sibling at the same depth or a shallower
-     item that collapses a deeper chain — happens on the very next pointer
-     event with no perceptible delay. Only *closing* (leaving to empty space)
-     gets a short grace period, so the cursor can travel diagonally from a
-     parent item into its own panel without it vanishing underneath it. */
-
-  const openSublistAt = useCallback((level: number, value: string, itemEl: HTMLElement) => {
-    if (sublistCloseTimer.current) { clearTimeout(sublistCloseTimer.current); sublistCloseTimer.current = null }
-    const r = itemEl.getBoundingClientRect()
-    const overflowsRight = r.right + SUBLIST_GAP + SUBLIST_MIN_WIDTH > window.innerWidth
-    const left = overflowsRight
-      ? Math.max(SUBLIST_GAP, r.left - SUBLIST_GAP - SUBLIST_MIN_WIDTH)
-      : r.right + SUBLIST_GAP
-    setSublistChain(prev => {
-      const next = prev.slice(0, level)
-      next[level] = { value, pos: { top: r.top, left } }
-      return next
-    })
-  }, [])
-
-  /** Closes this level and everything deeper — called on leaving an item or panel */
-  const scheduleCloseFrom = useCallback((level: number) => {
-    sublistCloseTimer.current = setTimeout(() => {
-      setSublistChain(prev => prev.slice(0, level))
-    }, 150)
   }, [])
 
   const cancelCloseSublist = useCallback(() => {
-    if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current)
-  }, [])
+    clearSublistCloseTimers()
+  }, [clearSublistCloseTimers])
 
   /** Walks the option tree down `sublistChain` to find the children shown by panel `level` */
   const getSublistOptsAt = useCallback((level: number): DropdownSelectableOption[] | null => {
@@ -376,9 +348,9 @@ export function Dropdown({
 
   const toggle = () => (open ? closeDroplist() : openDroplist())
 
-  /* Cleanup sublist timer on unmount */
+  /* Cleanup pending sublist close timers on unmount */
   useEffect(() => {
-    return () => { if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current) }
+    return () => { sublistCloseTimers.current.forEach(clearTimeout) }
   }, [])
 
   /* Close on outside click */
@@ -631,60 +603,6 @@ export function Dropdown({
         />
       )}
 
-      {/* Sublist portals — one flyout panel per open nesting level, each hover-
-          triggered to the right of its parent item. Unbounded depth. */}
-      {mounted && sublistChain.map((lvl, level) => {
-        const childOpts = getSublistOptsAt(level)
-        if (!childOpts) return null
-        return createPortal(
-          <div
-            key={level}
-            ref={el => { if (el) sublistRefs.current.set(level, el); else sublistRefs.current.delete(level) }}
-            className={`${styles.droplist} ${styles.sublist} ${sizeCls[size]}`}
-            data-state={state}
-            aria-hidden={state === 'closed'}
-            style={{ top: lvl.pos.top, left: lvl.pos.left }}
-            role="listbox"
-            onMouseEnter={cancelCloseSublist}
-            onMouseLeave={() => scheduleCloseFrom(level)}
-          >
-            {childOpts.map(child => {
-              const childHasChildren = Boolean(child.children?.length)
-              const sel = !childHasChildren && isSelected(child.value)
-              return (
-                <div
-                  key={child.value}
-                  className={`${styles.item} ${sel ? styles.itemSelected : ''}`}
-                  role="option"
-                  aria-selected={sel}
-                  aria-haspopup={childHasChildren ? 'listbox' : undefined}
-                  onMouseEnter={childHasChildren ? e => openSublistAt(level + 1, child.value, e.currentTarget) : undefined}
-                  onMouseLeave={childHasChildren ? () => scheduleCloseFrom(level + 1) : undefined}
-                  onClick={childHasChildren ? undefined : () => selectOption(child.value)}
-                >
-                  {child.icon && (
-                    <span className={styles.itemIcon} aria-hidden="true">{child.icon}</span>
-                  )}
-                  <span className={styles.itemLabel}>
-                    {child.label}
-                    {child.sublistLabel && (
-                      <span className={styles.itemLabelInlineSecondary}>{child.sublistLabel}</span>
-                    )}
-                  </span>
-                  {childHasChildren && (
-                    <span
-                      className={styles.sublistChevron}
-                      aria-hidden="true"
-                      dangerouslySetInnerHTML={{ __html: expandArrowSvg }}
-                    />
-                  )}
-                </div>
-              )
-            })}
-          </div>,
-          document.body,
-        )
-      })}
 
       {/* Droplist — rendered in document.body via portal */}
       {mounted && createPortal(
@@ -819,8 +737,7 @@ export function Dropdown({
                 role="option"
                 aria-selected={selected}
                 aria-haspopup={hasChildren ? 'listbox' : undefined}
-                onMouseEnter={hasChildren ? e => openSublistAt(0, opt.value, e.currentTarget) : undefined}
-                onMouseLeave={hasChildren ? () => scheduleCloseFrom(0) : undefined}
+
                 onClick={hasChildren ? undefined : () => selectOption(opt.value)}
               >
                 {mode === 'multi' && !hasChildren && (
