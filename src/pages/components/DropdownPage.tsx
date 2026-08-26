@@ -76,6 +76,20 @@ const LANGUAGE_OPTIONS: DropdownSelectableOption[] = [
   { value: 'lang-fr', label: 'Français' },
 ]
 
+/** Builds a 4-row menu that recurses `depth` levels deep — every row has a
+ *  nested sublist except the leaves at the final level. */
+function buildDeepOptions(pathPrefix: string, depth: number): DropdownSelectableOption[] {
+  return Array.from({ length: 4 }, (_, i) => {
+    const value = `${pathPrefix}-${i + 1}`
+    return {
+      value,
+      label: 'Text',
+      children: depth > 1 ? buildDeepOptions(value, depth - 1) : undefined,
+    }
+  })
+}
+const DEEP_SUBLIST_OPTIONS = buildDeepOptions('deep', 4)
+
 /* ── User & Group item data ───────────────────────────────────────────────── */
 
 const PEOPLE: DropdownSelectableOption[] = [
@@ -153,6 +167,7 @@ export default function DropdownPage() {
   const [grp1,    setGrp1]    = useState<string>('')
   const [grp2,    setGrp2]    = useState<string[]>([])
   const [menu1,   setMenu1]   = useState<string>('lang-en')
+  const [deepMenu, setDeepMenu] = useState<string>('')
 
   /* No-border demos */
   const [nb1, setNb1] = useState<string>('cherry')
@@ -394,6 +409,23 @@ export default function DropdownPage() {
           options={menuOptions}
           value={menu1}
           onChange={v => setMenu1(v as string)}
+          placeholder="Open menu"
+        />
+      </div>
+
+      {/* ── Deep sublist (live) ────────────────────────────────────────── */}
+      <h2 className={styles.sectionTitle}>Deep sublist</h2>
+      <p className={styles.description}>
+        Sublists nest recursively to any depth — this menu is 4 levels deep,
+        each with the same 4 rows. Every row with children shows the chevron
+        and cascades a new panel to the right on hover.
+      </p>
+      <div className={styles.demoRow}>
+        <Dropdown
+          label="4-level menu"
+          options={DEEP_SUBLIST_OPTIONS}
+          value={deepMenu}
+          onChange={v => setDeepMenu(v as string)}
           placeholder="Open menu"
         />
       </div>

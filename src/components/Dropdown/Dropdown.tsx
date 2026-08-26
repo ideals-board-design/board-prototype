@@ -139,6 +139,19 @@ const BASE_PAD_LEFT: Record<DropdownSize, number> = { s: 8, m: 12, l: 12 }
 /** Indent per tree level = chevron (20px) + gap (8px) */
 const TREE_INDENT = 28
 
+/** Walks a nested-children option tree by a chain of values, returning the
+ *  option found at the end of the path (or undefined if the chain breaks). */
+function getOptionAtPath(opts: DropdownOption[], path: string[]): DropdownSelectableOption | undefined {
+  let list = opts.filter(isSelectable)
+  let found: DropdownSelectableOption | undefined
+  for (const v of path) {
+    found = list.find(o => o.value === v)
+    if (!found) return undefined
+    list = found.children ?? []
+  }
+  return found
+}
+
 /** Returns all descendant values of a tree node (uses the full flat options array) */
 function getDescendantValues(opts: DropdownTreeOption[], nodeValue: string): string[] {
   const idx = opts.findIndex(o => o.value === nodeValue)
@@ -200,14 +213,25 @@ export function Dropdown({
   // Keeps the panel mounted through its fade-out (motion spec §3).
   const { mounted, state } = usePresence(open)
   const [pos,  setPos]                      = useState({ top: 0, left: 0, width: 0 })
-  const [openSublistFor, setOpenSublistFor] = useState<string | null>(null)
-  const [sublistPos, setSublistPos]         = useState({ top: 0, left: 0 })
+  /** Values of the currently-hovered item at each nested sublist depth —
+   *  openPath[k] is the item whose children are shown in panel k. Supports
+   *  arbitrary nesting depth (children of children of children …). */
+  const [openPath, setOpenPath]             = useState<string[]>([])
+  const [panelPositions, setPanelPositions] = useState<{ top: number; left: number }[]>([])
   const [droplistQuery, setDroplistQuery]   = useState('')
   const triggerRef        = useRef<HTMLDivElement>(null)
   const droplistRef       = useRef<HTMLDivElement>(null)
   const sublistRef        = useRef<HTMLDivElement>(null)
   const droplistSearchRef = useRef<HTMLDivElement>(null)
-  const sublistCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  /* Every scheduled sublist close, across every nesting level — a plain array,
+     not a single ref, because at any moment there can be more than one pending
+     close in flight (e.g. leaving a level-2 item schedules its own close, then
+     the mouse also leaves the level-1 panel a moment later while crossing the
+     gap, scheduling a second one). A single-ref version can only ever cancel
+     the *latest* timer, so earlier ones survive as "zombies" and still fire —
+     snapping a deeper, currently-hovered panel shut. Clearing the whole array
+     on every re-entry avoids that. */
+  const sublistCloseTimers = useRef<ReturnType<typeof setTimeout>[]>([])
   const uid               = useId()
 
   /* Whether the droplist should include an inline search field */
@@ -308,34 +332,50 @@ export function Dropdown({
     setOpen(true)
   }, [disabled])
 
+  /** Cancels every pending sublist close, at every level — see the comment on
+   *  `sublistCloseTimers` for why a single timer isn't enough. */
+  const clearSublistCloseTimers = useCallback(() => {
+    sublistCloseTimers.current.forEach(clearTimeout)
+    sublistCloseTimers.current = []
+  }, [])
+
   const closeDroplist = useCallback(() => {
     setOpen(false)
-    setOpenSublistFor(null)
-    if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current)
-  }, [])
+    setOpenPath([])
+    setPanelPositions([])
+    clearSublistCloseTimers()
+  }, [clearSublistCloseTimers])
 
   /* ── Sublist open/close ────────────────────────────────────────────────── */
+  /* level = the depth of the hovered item itself: 0 for a main-list item,
+     i+1 for an item inside panel i. Opening at `level` truncates any deeper
+     panels that were open from a previously-hovered branch. */
 
-  const openSublist = useCallback((value: string, itemEl: HTMLElement) => {
-    if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current)
+  const openSublist = useCallback((level: number, value: string, itemEl: HTMLElement) => {
+    clearSublistCloseTimers()
     const r = itemEl.getBoundingClientRect()
-    setSublistPos({ top: r.top, left: r.right + 4 })
-    setOpenSublistFor(value)
-  }, [])
+    setOpenPath(prev => [...prev.slice(0, level), value])
+    setPanelPositions(prev => [...prev.slice(0, level), { top: r.top, left: r.right + 4 }])
+  }, [clearSublistCloseTimers])
 
-  const scheduleCloseSublist = useCallback(() => {
-    sublistCloseTimer.current = setTimeout(() => setOpenSublistFor(null), 150)
+  /** Schedules closing panel `level` (and everything deeper). Pushed onto the
+   *  array rather than replacing a single ref — see `sublistCloseTimers`. */
+  const scheduleCloseSublist = useCallback((level: number) => {
+    sublistCloseTimers.current.push(setTimeout(() => {
+      setOpenPath(prev => prev.slice(0, level))
+      setPanelPositions(prev => prev.slice(0, level))
+    }, 150))
   }, [])
 
   const cancelCloseSublist = useCallback(() => {
-    if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current)
-  }, [])
+    clearSublistCloseTimers()
+  }, [clearSublistCloseTimers])
 
   const toggle = () => (open ? closeDroplist() : openDroplist())
 
-  /* Cleanup sublist timer on unmount */
+  /* Cleanup pending sublist close timers on unmount */
   useEffect(() => {
-    return () => { if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current) }
+    return () => { sublistCloseTimers.current.forEach(clearTimeout) }
   }, [])
 
   /* Close on outside click */
@@ -588,42 +628,69 @@ export function Dropdown({
         />
       )}
 
-      {/* Sublist portal — hover-triggered panel to the right of a parent item */}
-      {mounted && openSublistFor && (() => {
-        const parentOpt = options.filter(isSelectable).find(o => o.value === openSublistFor)
-        if (!parentOpt?.children?.length) return null
-        return createPortal(
-          <div
-            ref={sublistRef}
-            className={`${styles.droplist} ${styles.sublist} ${sizeCls[size]}`}
-            data-state={state}
-            aria-hidden={state === 'closed'}
-            style={{ top: sublistPos.top, left: sublistPos.left }}
-            role="listbox"
-            onMouseEnter={cancelCloseSublist}
-            onMouseLeave={scheduleCloseSublist}
-          >
-            {parentOpt.children.map(child => {
-              const sel = isSelected(child.value)
-              return (
-                <div
-                  key={child.value}
-                  className={`${styles.item} ${sel ? styles.itemSelected : ''}`}
-                  role="option"
-                  aria-selected={sel}
-                  onClick={() => selectOption(child.value)}
-                >
-                  {child.icon && (
-                    <span className={styles.itemIcon} aria-hidden="true">{child.icon}</span>
-                  )}
-                  <span className={styles.itemLabel}>{child.label}</span>
-                </div>
-              )
-            })}
-          </div>,
-          document.body,
-        )
-      })()}
+      {/* Sublist portals — one hover-triggered panel per open nesting depth, each
+          cascading to the right of the item that opened it. Recurses to whatever
+          depth the `children` data actually has. */}
+      {mounted && openPath.length > 0 && createPortal(
+        <div ref={sublistRef}>
+          {openPath.map((_, i) => {
+            const parentOpt = getOptionAtPath(options, openPath.slice(0, i + 1))
+            if (!parentOpt?.children?.length) return null
+            const panelPos = panelPositions[i]
+            if (!panelPos) return null
+            return (
+              <div
+                key={i}
+                className={`${styles.droplist} ${styles.sublist} ${sizeCls[size]}`}
+                data-state={state}
+                aria-hidden={state === 'closed'}
+                style={{ top: panelPos.top, left: panelPos.left }}
+                role="listbox"
+                onMouseEnter={cancelCloseSublist}
+                onMouseLeave={() => scheduleCloseSublist(i)}
+              >
+                {parentOpt.children!.map(child => {
+                  const childHasChildren = Boolean(child.children?.length)
+                  const sel = !childHasChildren && isSelected(child.value)
+                  return (
+                    <div
+                      key={child.value}
+                      className={`${styles.item} ${sel ? styles.itemSelected : ''}`}
+                      role="option"
+                      aria-selected={sel}
+                      aria-haspopup={childHasChildren ? 'listbox' : undefined}
+                      onMouseEnter={childHasChildren ? e => openSublist(i + 1, child.value, e.currentTarget) : undefined}
+                      onMouseLeave={childHasChildren ? () => scheduleCloseSublist(i + 1) : undefined}
+                      onClick={childHasChildren ? undefined : () => selectOption(child.value)}
+                    >
+                      {child.icon && (
+                        <span className={styles.itemIcon} aria-hidden="true">{child.icon}</span>
+                      )}
+                      <span className={styles.itemLabel}>
+                        {child.label}
+                        {child.sublistLabel && (
+                          <span className={styles.itemLabelInlineSecondary}>{child.sublistLabel}</span>
+                        )}
+                      </span>
+                      {!childHasChildren && child.secondaryText && (
+                        <span className={styles.itemSecondary}>{child.secondaryText}</span>
+                      )}
+                      {childHasChildren && (
+                        <span
+                          className={styles.sublistChevron}
+                          aria-hidden="true"
+                          dangerouslySetInnerHTML={{ __html: expandArrowSvg }}
+                        />
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )
+          })}
+        </div>,
+        document.body,
+      )}
 
       {/* Droplist — rendered in document.body via portal */}
       {mounted && createPortal(
@@ -750,8 +817,8 @@ export function Dropdown({
                 role="option"
                 aria-selected={selected}
                 aria-haspopup={hasChildren ? 'listbox' : undefined}
-                onMouseEnter={hasChildren ? e => openSublist(opt.value, e.currentTarget) : undefined}
-                onMouseLeave={hasChildren ? scheduleCloseSublist : undefined}
+                onMouseEnter={hasChildren ? e => openSublist(0, opt.value, e.currentTarget) : undefined}
+                onMouseLeave={hasChildren ? () => scheduleCloseSublist(0) : undefined}
                 onClick={hasChildren ? undefined : () => selectOption(opt.value)}
               >
                 {mode === 'multi' && !hasChildren && (
