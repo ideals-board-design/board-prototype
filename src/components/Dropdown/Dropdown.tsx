@@ -221,7 +221,15 @@ export function Dropdown({
   const droplistRef       = useRef<HTMLDivElement>(null)
   const sublistRefs        = useRef<Map<number, HTMLDivElement>>(new Map())
   const droplistSearchRef = useRef<HTMLDivElement>(null)
-  const sublistCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  /* Every scheduled sublist close, across every nesting level — a plain array,
+     not a single ref, because at any moment there can be more than one pending
+     close in flight (e.g. leaving a level-2 item schedules its own close, then
+     the mouse also leaves the level-1 panel a moment later while crossing the
+     gap, scheduling a second one). A single-ref version can only ever cancel
+     the *latest* timer, so earlier ones survive as "zombies" and still fire —
+     snapping a deeper, currently-hovered panel shut even though the pointer
+     never left it. Clearing the whole array on every re-entry avoids that. */
+  const sublistCloseTimers = useRef<ReturnType<typeof setTimeout>[]>([])
   const uid               = useId()
 
   /* Whether the droplist should include an inline search field */
@@ -322,11 +330,18 @@ export function Dropdown({
     setOpen(true)
   }, [disabled])
 
+  /** Cancels every pending sublist close, at every level — see the comment on
+   *  `sublistCloseTimers` for why a single timer isn't enough. */
+  const clearSublistCloseTimers = useCallback(() => {
+    sublistCloseTimers.current.forEach(clearTimeout)
+    sublistCloseTimers.current = []
+  }, [])
+
   const closeDroplist = useCallback(() => {
     setOpen(false)
     setSublistChain([])
-    if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current)
-  }, [])
+    clearSublistCloseTimers()
+  }, [clearSublistCloseTimers])
 
   /* ── Sublist open/close (recursive — any depth) ──────────────────────────
      Opening is always synchronous (no timer), so switching the hovered
@@ -337,7 +352,7 @@ export function Dropdown({
      parent item into its own panel without it vanishing underneath it. */
 
   const openSublistAt = useCallback((level: number, value: string, itemEl: HTMLElement) => {
-    if (sublistCloseTimer.current) { clearTimeout(sublistCloseTimer.current); sublistCloseTimer.current = null }
+    clearSublistCloseTimers()
     const r = itemEl.getBoundingClientRect()
     const overflowsRight = r.right + SUBLIST_GAP + SUBLIST_MIN_WIDTH > window.innerWidth
     const left = overflowsRight
@@ -348,18 +363,20 @@ export function Dropdown({
       next[level] = { value, pos: { top: r.top, left } }
       return next
     })
-  }, [])
+  }, [clearSublistCloseTimers])
 
-  /** Closes this level and everything deeper — called on leaving an item or panel */
+  /** Schedules closing this level and everything deeper — called on leaving an
+   *  item or panel. Pushed onto the array rather than replacing a single ref
+   *  — see `sublistCloseTimers`. */
   const scheduleCloseFrom = useCallback((level: number) => {
-    sublistCloseTimer.current = setTimeout(() => {
+    sublistCloseTimers.current.push(setTimeout(() => {
       setSublistChain(prev => prev.slice(0, level))
-    }, 150)
+    }, 150))
   }, [])
 
   const cancelCloseSublist = useCallback(() => {
-    if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current)
-  }, [])
+    clearSublistCloseTimers()
+  }, [clearSublistCloseTimers])
 
   /** Walks the option tree down `sublistChain` to find the children shown by panel `level` */
   const getSublistOptsAt = useCallback((level: number): DropdownSelectableOption[] | null => {
@@ -376,9 +393,9 @@ export function Dropdown({
 
   const toggle = () => (open ? closeDroplist() : openDroplist())
 
-  /* Cleanup sublist timer on unmount */
+  /* Cleanup pending sublist close timers on unmount */
   useEffect(() => {
-    return () => { if (sublistCloseTimer.current) clearTimeout(sublistCloseTimer.current) }
+    return () => { sublistCloseTimers.current.forEach(clearTimeout) }
   }, [])
 
   /* Close on outside click */
