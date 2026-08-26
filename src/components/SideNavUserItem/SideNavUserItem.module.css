@@ -357,12 +357,6 @@
   color: var(--color-text-primary);
 }
 
-/* ── Language item (has sublist) ────────────────────────── */
-
-.langItem {
-  position: relative;
-}
-
 /* Chevron for sublist */
 .chevronRight {
   display: flex;
@@ -379,12 +373,14 @@
   height: 100%;
 }
 
-/* ── Language sublist ───────────────────────────────────── */
+/* ── Flyout submenu (Language / Theme / Branding) ────────────
+   Rendered via portal to document.body; position: fixed with top/left (or
+   left/bottom for Branding) set inline from a getBoundingClientRect
+   measurement — see `positionSublist` in SideNavUserItem.tsx. Matches how
+   the DS Dropdown component positions its own sublist panels. */
 
 .sublist {
-  position: absolute;
-  left: calc(100% + var(--space-4));
-  top: calc(-1 * var(--space-4));
+  position: fixed;
   width: 168px;
   background: var(--color-bg-surface);
   border-radius: var(--radius-md);
@@ -393,11 +389,9 @@
   box-shadow: var(--elevation-100);
 }
 
-/* Branding sublist — anchored to the item's bottom (grows upward) and capped,
+/* Branding sublist — grows upward from the item's bottom edge and capped,
    since it lists every scheme and the trigger sits near the viewport bottom. */
 .brandingSublist {
-  top: auto;
-  bottom: calc(-1 * var(--space-4));
   width: 200px;
   max-height: 320px;
   overflow-y: auto;
@@ -425,6 +419,22 @@
 .dropdown[data-state='open'] { opacity: 1; }
 
 .dropdown[data-state='closed'] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-in);
+}
+
+/* Flyout submenu (Language / Theme / Branding) — same fade, independent of
+   the dropdown panel's own fade (motion spec §3). */
+
+.sublist {
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+.sublist[data-state='open'] { opacity: 1; }
+
+.sublist[data-state='closed'] {
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--dur-fast) var(--ease-in);

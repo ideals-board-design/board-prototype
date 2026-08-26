@@ -2,7 +2,8 @@
    Droplist: 3194-1280. Language sublist: 3194-1374.
    Trigger: 240×48px. Dropdown: 320px wide, above trigger. */
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, type ReactNode, type RefObject } from 'react'
+import { createPortal } from 'react-dom'
 import { Avatar } from '../Avatar/Avatar'
 import { Drawer } from '../Drawer/Drawer'
 import { Tooltip } from '../Tooltip/Tooltip'
@@ -57,6 +58,72 @@ const LANGUAGES = [
   { code: 'es', label: 'Español'  },
   { code: 'fr', label: 'Français' },
 ]
+
+/** Flyout submenus off the main dropdown — positioned the same way as the DS
+ *  `Dropdown` component's sublist panels (getBoundingClientRect + portal to
+ *  document.body + position: fixed), instead of a static CSS offset, so they
+ *  can't drift out of sync with the panel they're anchored to. */
+type SublistKey = 'lang' | 'theme' | 'branding'
+
+const SUBLIST_GAP = 4
+const SUBLIST_WIDTH: Record<SublistKey, number> = { lang: 168, theme: 168, branding: 200 }
+
+function positionSublist(key: SublistKey, itemEl: HTMLElement) {
+  const r = itemEl.getBoundingClientRect()
+  const width = SUBLIST_WIDTH[key]
+  const overflowsRight = r.right + SUBLIST_GAP + width > window.innerWidth
+  const left = overflowsRight
+    ? Math.max(SUBLIST_GAP, r.left - SUBLIST_GAP - width)
+    : r.right + SUBLIST_GAP
+  // Branding grows upward from the item's bottom edge (it lists every scheme
+  // and the trigger sits near the viewport bottom); the rest align to the top.
+  return key === 'branding'
+    ? { left, bottom: window.innerHeight - r.bottom - SUBLIST_GAP }
+    : { left, top: r.top - SUBLIST_GAP }
+}
+
+type SublistPos = { left: number; top?: number; bottom?: number }
+
+/** One flyout submenu (Language / Theme / Branding). Runs its own `usePresence`
+ *  off `isOpen` so it fades in/out independently of the other two — switching
+ *  the hovered row (e.g. Branding → Language) fades the old one out and the
+ *  new one in at the same time, the same as opening from closed, instead of
+ *  snapping straight to the new content because "some sublist" stayed open
+ *  the whole time. Mirrors `Dropdown.tsx`'s per-level `SublistPanel`. */
+function SublistFlyout({
+  isOpen,
+  panelRef,
+  className,
+  pos,
+  onMouseEnter,
+  onMouseLeave,
+  children,
+}: {
+  isOpen:       boolean
+  panelRef:     RefObject<HTMLDivElement | null>
+  className:    string
+  pos:          SublistPos
+  onMouseEnter: () => void
+  onMouseLeave: () => void
+  children:     ReactNode
+}) {
+  const { mounted, state } = usePresence(isOpen)
+  if (!mounted) return null
+  return createPortal(
+    <div
+      ref={panelRef}
+      className={className}
+      data-state={state}
+      aria-hidden={state === 'closed'}
+      style={pos}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+    </div>,
+    document.body,
+  )
+}
 
 /** My profile / Connections / Language / Log out — shared by 'inline' and
  *  'sheet', which both show this exact set with no submenus. */
@@ -113,26 +180,79 @@ export function SideNavUserItem({
   rail          = false,
   variant       = 'dropdown',
 }: SideNavUserItemProps) {
-  const [open, setOpen]         = useState(defaultOpen)
-  const [langOpen, setLangOpen] = useState(false)
+  const [open, setOpen]             = useState(defaultOpen)
   const [activeLang, setActiveLang] = useState('en')
-  const [themeOpen, setThemeOpen] = useState(false)
-  const [brandingOpen, setBrandingOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   const { branding, setBranding } = useBranding()
-  const rootRef          = useRef<HTMLDivElement>(null)
-  const langTimerRef     = useRef<ReturnType<typeof setTimeout>>(undefined)
-  const themeTimerRef    = useRef<ReturnType<typeof setTimeout>>(undefined)
-  const brandingTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const rootRef            = useRef<HTMLDivElement>(null)
+
+  // Flyout submenu (Language / Theme / Branding) — see `positionSublist`.
+  // Position is tracked per key (not one shared value) so a panel that's
+  // mid-exit keeps its own last position instead of jumping to wherever the
+  // newly-opened one is.
+  const [activeSublist, setActiveSublist]   = useState<SublistKey | null>(null)
+  const [sublistPosByKey, setSublistPosByKey] = useState<Record<SublistKey, SublistPos>>({
+    lang: { left: 0 }, theme: { left: 0 }, branding: { left: 0 },
+  })
+  const sublistCloseTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined)
+  const sublistTriggerElRef  = useRef<HTMLElement | null>(null)
+  const langPanelRef         = useRef<HTMLDivElement>(null)
+  const themePanelRef        = useRef<HTMLDivElement>(null)
+  const brandingPanelRef     = useRef<HTMLDivElement>(null)
+  const langItemRef          = useRef<HTMLDivElement>(null)
+  const themeItemRef         = useRef<HTMLDivElement>(null)
+  const brandingItemRef      = useRef<HTMLDivElement>(null)
 
   // Keeps the panel mounted through its fade-out (motion spec §3).
   const { mounted, state } = usePresence(open)
+
+  const openSublist = (key: SublistKey, itemEl: HTMLElement | null) => {
+    if (!itemEl) return
+    clearTimeout(sublistCloseTimerRef.current)
+    sublistTriggerElRef.current = itemEl
+    setSublistPosByKey(prev => ({ ...prev, [key]: positionSublist(key, itemEl) }))
+    setActiveSublist(key)
+  }
+  const scheduleCloseSublist = () => {
+    sublistCloseTimerRef.current = setTimeout(() => setActiveSublist(null), 120)
+  }
+  const cancelCloseSublist = () => clearTimeout(sublistCloseTimerRef.current)
+
+  // The sublist is portaled independently of the dropdown panel, so closing
+  // the dropdown (outside click, Escape, item selection) must explicitly
+  // close it too — it won't unmount along with `mounted` on its own.
+  useEffect(() => {
+    if (!open) setActiveSublist(null)
+  }, [open])
+
+  // Reposition while open, same as the DS Dropdown's sublist panels.
+  useEffect(() => {
+    if (!activeSublist) return
+    const key = activeSublist
+    const update = () => {
+      if (!sublistTriggerElRef.current) return
+      setSublistPosByKey(prev => ({ ...prev, [key]: positionSublist(key, sublistTriggerElRef.current!) }))
+    }
+    window.addEventListener('scroll', update, true)
+    window.addEventListener('resize', update)
+    return () => {
+      window.removeEventListener('scroll', update, true)
+      window.removeEventListener('resize', update)
+    }
+  }, [activeSublist])
+
+  useEffect(() => () => clearTimeout(sublistCloseTimerRef.current), [])
 
   // Close on outside click
   useEffect(() => {
     if (!open) return
     const handler = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false)
+      const t = e.target as Node
+      if (rootRef.current?.contains(t)) return
+      if (langPanelRef.current?.contains(t)) return
+      if (themePanelRef.current?.contains(t)) return
+      if (brandingPanelRef.current?.contains(t)) return
+      setOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
@@ -215,30 +335,6 @@ export function SideNavUserItem({
     )
   }
 
-  const handleLangEnter = () => {
-    clearTimeout(langTimerRef.current)
-    setLangOpen(true)
-  }
-  const handleLangLeave = () => {
-    langTimerRef.current = setTimeout(() => setLangOpen(false), 120)
-  }
-
-  const handleThemeEnter = () => {
-    clearTimeout(themeTimerRef.current)
-    setThemeOpen(true)
-  }
-  const handleThemeLeave = () => {
-    themeTimerRef.current = setTimeout(() => setThemeOpen(false), 120)
-  }
-
-  const handleBrandingEnter = () => {
-    clearTimeout(brandingTimerRef.current)
-    setBrandingOpen(true)
-  }
-  const handleBrandingLeave = () => {
-    brandingTimerRef.current = setTimeout(() => setBrandingOpen(false), 120)
-  }
-
   return (
     <div className={styles.root} ref={rootRef}>
 
@@ -288,104 +384,40 @@ export function SideNavUserItem({
             <span className={styles.itemLabel}>Connections</span>
           </button>
 
-          {/* Language — hover reveals sublist */}
+          {/* Language — hover reveals flyout submenu */}
           <div
-            className={[styles.item, styles.langItem].join(' ')}
-            onMouseEnter={handleLangEnter}
-            onMouseLeave={handleLangLeave}
+            ref={langItemRef}
+            className={styles.item}
+            onMouseEnter={() => openSublist('lang', langItemRef.current)}
+            onMouseLeave={scheduleCloseSublist}
           >
             <span className={styles.icon} dangerouslySetInnerHTML={{ __html: globeSvg }} />
             <span className={styles.itemLabel}>Language</span>
             <span className={styles.chevronRight} dangerouslySetInnerHTML={{ __html: angleRightSvg }} />
-
-            {langOpen && (
-              <div
-                className={styles.sublist}
-                onMouseEnter={handleLangEnter}
-                onMouseLeave={handleLangLeave}
-              >
-                {LANGUAGES.map(lang => (
-                  <button
-                    key={lang.code}
-                    type="button"
-                    className={[
-                      styles.item,
-                      lang.code === activeLang ? styles.itemActive : '',
-                    ].filter(Boolean).join(' ')}
-                    onClick={() => { setActiveLang(lang.code); setOpen(false) }}
-                  >
-                    <span className={styles.itemLabel}>{lang.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* Theme — hover reveals sublist (mirrors Language) */}
+          {/* Theme — hover reveals flyout submenu (mirrors Language) */}
           <div
-            className={[styles.item, styles.langItem].join(' ')}
-            onMouseEnter={handleThemeEnter}
-            onMouseLeave={handleThemeLeave}
+            ref={themeItemRef}
+            className={styles.item}
+            onMouseEnter={() => openSublist('theme', themeItemRef.current)}
+            onMouseLeave={scheduleCloseSublist}
           >
             <span className={styles.icon} dangerouslySetInnerHTML={{ __html: themeSvg }} />
             <span className={styles.itemLabel}>Theme</span>
             <span className={styles.chevronRight} dangerouslySetInnerHTML={{ __html: angleRightSvg }} />
-
-            {themeOpen && (
-              <div
-                className={styles.sublist}
-                onMouseEnter={handleThemeEnter}
-                onMouseLeave={handleThemeLeave}
-              >
-                {THEMES.map(t => (
-                  <button
-                    key={t.value}
-                    type="button"
-                    className={[
-                      styles.item,
-                      t.value === theme ? styles.itemActive : '',
-                    ].filter(Boolean).join(' ')}
-                    onClick={() => { setTheme(t.value); setOpen(false) }}
-                  >
-                    <span className={styles.itemLabel}>{t.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
-          {/* Branding — hover reveals scheme sublist (mirrors Theme) */}
+          {/* Branding — hover reveals scheme flyout submenu (mirrors Theme) */}
           <div
-            className={[styles.item, styles.langItem].join(' ')}
-            onMouseEnter={handleBrandingEnter}
-            onMouseLeave={handleBrandingLeave}
+            ref={brandingItemRef}
+            className={styles.item}
+            onMouseEnter={() => openSublist('branding', brandingItemRef.current)}
+            onMouseLeave={scheduleCloseSublist}
           >
             <span className={styles.icon} dangerouslySetInnerHTML={{ __html: brandingSvg }} />
             <span className={styles.itemLabel}>Branding</span>
             <span className={styles.chevronRight} dangerouslySetInnerHTML={{ __html: angleRightSvg }} />
-
-            {brandingOpen && (
-              <div
-                className={[styles.sublist, styles.brandingSublist].join(' ')}
-                onMouseEnter={handleBrandingEnter}
-                onMouseLeave={handleBrandingLeave}
-              >
-                {BRANDING_THEMES.map(scheme => (
-                  <button
-                    key={scheme.key}
-                    type="button"
-                    className={[
-                      styles.item,
-                      scheme.key === branding ? styles.itemActive : '',
-                    ].filter(Boolean).join(' ')}
-                    onClick={() => { setBranding(scheme.key); setOpen(false) }}
-                  >
-                    <span className={styles.brandingSwatch} style={{ background: scheme.swatch }} />
-                    <span className={styles.itemLabel}>{scheme.label}</span>
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           {/* Log out */}
@@ -400,6 +432,69 @@ export function SideNavUserItem({
 
         </div>
       )}
+
+      {/* ── Flyout submenus — each fades independently (see `SublistFlyout`),
+           so switching between them always animates the same way ──────── */}
+      <SublistFlyout
+        isOpen={activeSublist === 'lang'}
+        panelRef={langPanelRef}
+        className={styles.sublist}
+        pos={sublistPosByKey.lang}
+        onMouseEnter={cancelCloseSublist}
+        onMouseLeave={scheduleCloseSublist}
+      >
+        {LANGUAGES.map(lang => (
+          <button
+            key={lang.code}
+            type="button"
+            className={[styles.item, lang.code === activeLang ? styles.itemActive : ''].filter(Boolean).join(' ')}
+            onClick={() => { setActiveLang(lang.code); setOpen(false) }}
+          >
+            <span className={styles.itemLabel}>{lang.label}</span>
+          </button>
+        ))}
+      </SublistFlyout>
+
+      <SublistFlyout
+        isOpen={activeSublist === 'theme'}
+        panelRef={themePanelRef}
+        className={styles.sublist}
+        pos={sublistPosByKey.theme}
+        onMouseEnter={cancelCloseSublist}
+        onMouseLeave={scheduleCloseSublist}
+      >
+        {THEMES.map(t => (
+          <button
+            key={t.value}
+            type="button"
+            className={[styles.item, t.value === theme ? styles.itemActive : ''].filter(Boolean).join(' ')}
+            onClick={() => { setTheme(t.value); setOpen(false) }}
+          >
+            <span className={styles.itemLabel}>{t.label}</span>
+          </button>
+        ))}
+      </SublistFlyout>
+
+      <SublistFlyout
+        isOpen={activeSublist === 'branding'}
+        panelRef={brandingPanelRef}
+        className={[styles.sublist, styles.brandingSublist].join(' ')}
+        pos={sublistPosByKey.branding}
+        onMouseEnter={cancelCloseSublist}
+        onMouseLeave={scheduleCloseSublist}
+      >
+        {BRANDING_THEMES.map(scheme => (
+          <button
+            key={scheme.key}
+            type="button"
+            className={[styles.item, scheme.key === branding ? styles.itemActive : ''].filter(Boolean).join(' ')}
+            onClick={() => { setBranding(scheme.key); setOpen(false) }}
+          >
+            <span className={styles.brandingSwatch} style={{ background: scheme.swatch }} />
+            <span className={styles.itemLabel}>{scheme.label}</span>
+          </button>
+        ))}
+      </SublistFlyout>
 
       {/* ── Trigger ──────────────────────────────────────────── */}
       {(() => {

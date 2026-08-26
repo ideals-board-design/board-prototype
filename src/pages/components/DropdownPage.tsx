@@ -82,7 +82,12 @@ const LANGUAGE_OPTIONS: DropdownSelectableOption[] = [
    voting, governance committees). */
 
 const BOARD_BOOK_MENU: DropdownSelectableOption[] = [
-  { value: 'view-book',  label: 'View book' },
+  {
+    value: 'view-book', label: 'View book', children: [
+      { value: 'view-book-browser', label: 'Open in browser' },
+      { value: 'view-book-app',     label: 'Open in app' },
+    ],
+  },
   {
     value: 'download', label: 'Download', children: [
       { value: 'download-pdf',       label: 'PDF' },
@@ -90,12 +95,27 @@ const BOARD_BOOK_MENU: DropdownSelectableOption[] = [
       { value: 'download-print',     label: 'Print-ready PDF' },
     ],
   },
-  { value: 'share-book', label: 'Share with board' },
+  {
+    value: 'share-book', label: 'Share with board', children: [
+      { value: 'share-book-board',     label: 'With board' },
+      { value: 'share-book-committee', label: 'With committee' },
+    ],
+  },
 ]
 
 const MEETING_MENU: DropdownSelectableOption[] = [
-  { value: 'agenda',  label: 'Agenda' },
-  { value: 'minutes', label: 'Minutes' },
+  {
+    value: 'agenda', label: 'Agenda', children: [
+      { value: 'agenda-view', label: 'View agenda' },
+      { value: 'agenda-edit', label: 'Edit agenda' },
+    ],
+  },
+  {
+    value: 'minutes', label: 'Minutes', children: [
+      { value: 'minutes-view',    label: 'View minutes' },
+      { value: 'minutes-approve', label: 'Approve minutes' },
+    ],
+  },
   {
     value: 'voting', label: 'Voting', children: [
       { value: 'cast-vote', label: 'Cast a vote' },
@@ -108,11 +128,21 @@ const MEETING_MENU: DropdownSelectableOption[] = [
       },
     ],
   },
-  { value: 'attendance', label: 'Attendance' },
+  {
+    value: 'attendance', label: 'Attendance', children: [
+      { value: 'attendance-view', label: 'View attendance' },
+      { value: 'attendance-mark', label: 'Mark attendance' },
+    ],
+  },
 ]
 
 const GOVERNANCE_MENU: DropdownSelectableOption[] = [
-  { value: 'directory', label: 'Board directory' },
+  {
+    value: 'directory', label: 'Board directory', children: [
+      { value: 'directory-view',   label: 'View directory' },
+      { value: 'directory-export', label: 'Export directory' },
+    ],
+  },
   {
     value: 'committees', label: 'Committees', children: [
       { value: 'audit-committee', label: 'Audit committee' },
@@ -131,7 +161,12 @@ const GOVERNANCE_MENU: DropdownSelectableOption[] = [
       { value: 'compensation-committee', label: 'Compensation committee' },
     ],
   },
-  { value: 'settings', label: 'Settings' },
+  {
+    value: 'settings', label: 'Settings', children: [
+      { value: 'settings-general',     label: 'General' },
+      { value: 'settings-permissions', label: 'Permissions' },
+    ],
+  },
 ]
 
 /* ── User & Group item data ───────────────────────────────────────────────── */
@@ -230,14 +265,29 @@ export default function DropdownPage() {
 
   const selectedLangLabel = LANGUAGE_OPTIONS.find(o => o.value === menu1)?.label
   const menuOptions: DropdownSelectableOption[] = [
-    { value: 'my-profile',  label: 'My profile',  icon: <Icon svg={userSvg} /> },
-    { value: 'connections', label: 'Connections', icon: <Icon svg={settingsSvg} /> },
+    {
+      value: 'my-profile', label: 'My profile', icon: <Icon svg={userSvg} />, children: [
+        { value: 'view-profile', label: 'View profile' },
+        { value: 'edit-profile', label: 'Edit profile' },
+      ],
+    },
+    {
+      value: 'connections', label: 'Connections', icon: <Icon svg={settingsSvg} />, children: [
+        { value: 'all-connections',    label: 'All connections' },
+        { value: 'pending-connections', label: 'Pending requests' },
+      ],
+    },
     {
       value: 'language', label: 'Language', icon: <Icon svg={plusSvg} />,
       sublistLabel: selectedLangLabel ? `(${selectedLangLabel})` : undefined,
       children: LANGUAGE_OPTIONS,
     },
-    { value: 'log-out', label: 'Log out', icon: <Icon svg={exitSvg} /> },
+    {
+      value: 'log-out', label: 'Log out', icon: <Icon svg={exitSvg} />, children: [
+        { value: 'log-out-device', label: 'This device' },
+        { value: 'log-out-all',    label: 'All devices' },
+      ],
+    },
   ]
 
   return (
