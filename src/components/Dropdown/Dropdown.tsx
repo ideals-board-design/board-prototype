@@ -139,7 +139,21 @@ const BASE_PAD_LEFT: Record<DropdownSize, number> = { s: 8, m: 12, l: 12 }
 /** Indent per tree level = chevron (20px) + gap (8px) */
 const TREE_INDENT = 28
 
+/** Gap between a parent item and its flyout sublist panel */
+const SUBLIST_GAP = 4
 
+/** Matches .sublist min-width in CSS — used for the right-edge overflow check */
+const SUBLIST_MIN_WIDTH = 160
+
+/** One entry per open nesting level — level 0 is triggered from the root droplist,
+ *  level 1 from inside level 0's panel, and so on (unbounded depth). `children`
+ *  is captured at open time (from the item that triggered this level) rather
+ *  than re-derived from `options` on every render, so a closing panel still has
+ *  its content available for the fade-out even after it's no longer "current". */
+interface SublistLevel {
+  value:    string
+  children: DropdownSelectableOption[]
+  pos:      { top: number; left: number }
 }
 
 /** Returns all descendant values of a tree node (uses the full flat options array) */
@@ -175,6 +189,97 @@ function ItemAvatar({ avatar }: { avatar: DropdownItemAvatar }) {
   )
 }
 
+/* ── Sublist flyout panel ─────────────────────────────────────────────────── */
+
+/** One nesting level's flyout panel. Runs its own `usePresence` off `isOpen`
+ *  so it fades in/out independently of the root droplist and of sibling
+ *  panels at other depths — matching every other droplist in the system
+ *  (motion spec §3) instead of popping in/out with the hover state. Reports
+ *  back via `onExited` once its own close-fade finishes, which is the signal
+ *  the parent uses to actually drop it from `sublistChain`. */
+function SublistPanel({
+  level,
+  isOpen,
+  childOpts,
+  pos,
+  sizeClass,
+  isSelected,
+  selectOption,
+  openSublistAt,
+  scheduleCloseFrom,
+  cancelCloseSublist,
+  onExited,
+  registerRef,
+}: {
+  level:         number
+  isOpen:        boolean
+  childOpts:     DropdownSelectableOption[]
+  pos:           { top: number; left: number }
+  sizeClass:     string
+  isSelected:    (v: string) => boolean
+  selectOption:  (v: string) => void
+  openSublistAt: (level: number, value: string, children: DropdownSelectableOption[], itemEl: HTMLElement) => void
+  scheduleCloseFrom:  (level: number) => void
+  cancelCloseSublist: () => void
+  onExited:      (level: number) => void
+  registerRef:   (level: number, el: HTMLDivElement | null) => void
+}) {
+  const { mounted, state } = usePresence(isOpen)
+
+  useEffect(() => {
+    if (!mounted) onExited(level)
+  }, [mounted, level, onExited])
+
+  if (!mounted) return null
+
+  return (
+    <div
+      ref={el => registerRef(level, el)}
+      className={`${styles.droplist} ${styles.sublist} ${sizeClass}`}
+      data-state={state}
+      aria-hidden={state === 'closed'}
+      style={{ top: pos.top, left: pos.left }}
+      role="listbox"
+      onMouseEnter={cancelCloseSublist}
+      onMouseLeave={() => scheduleCloseFrom(level)}
+    >
+      {childOpts.map(child => {
+        const childHasChildren = Boolean(child.children?.length)
+        const sel = !childHasChildren && isSelected(child.value)
+        return (
+          <div
+            key={child.value}
+            className={`${styles.item} ${sel ? styles.itemSelected : ''}`}
+            role="option"
+            aria-selected={sel}
+            aria-haspopup={childHasChildren ? 'listbox' : undefined}
+            onMouseEnter={childHasChildren ? e => openSublistAt(level + 1, child.value, child.children!, e.currentTarget) : undefined}
+            onMouseLeave={childHasChildren ? () => scheduleCloseFrom(level + 1) : undefined}
+            onClick={childHasChildren ? undefined : () => selectOption(child.value)}
+          >
+            {child.icon && (
+              <span className={styles.itemIcon} aria-hidden="true">{child.icon}</span>
+            )}
+            <span className={styles.itemLabel}>
+              {child.label}
+              {child.sublistLabel && (
+                <span className={styles.itemLabelInlineSecondary}>{child.sublistLabel}</span>
+              )}
+            </span>
+            {childHasChildren && (
+              <span
+                className={styles.sublistChevron}
+                aria-hidden="true"
+                dangerouslySetInnerHTML={{ __html: expandArrowSvg }}
+              />
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 /* ── Component ────────────────────────────────────────────────────────────── */
 
 export function Dropdown({
@@ -203,7 +308,19 @@ export function Dropdown({
   // Keeps the panel mounted through its fade-out (motion spec §3).
   const { mounted, state } = usePresence(open)
   const [pos,  setPos]                      = useState({ top: 0, left: 0, width: 0 })
-
+  // One entry per open flyout level — unbounded depth (level 0 = triggered from
+  // the root droplist, level 1 = from inside level 0's panel, ...). This is the
+  // *rendered* stack, which can be one render ahead of what's actually "open" —
+  // see `openDepth` and the `SublistPanel` component for why.
+  const [sublistChain, setSublistChain]     = useState<SublistLevel[]>([])
+  /* How many entries of `sublistChain`, counting from the front, are currently
+     open. A level can still be present in `sublistChain` (so its content stays
+     available to render) while sitting at index >= openDepth — that's a panel
+     mid-way through its own close-fade. Each `SublistPanel` derives its own
+     `isOpen` from this and drives its `usePresence` off it, so opening and
+     closing fade independently per level instead of popping in/out with the
+     rest of the dropdown (motion spec §3, same as every other droplist). */
+  const [openDepth, setOpenDepth]           = useState(0)
   const [droplistQuery, setDroplistQuery]   = useState('')
   const triggerRef        = useRef<HTMLDivElement>(null)
   const droplistRef       = useRef<HTMLDivElement>(null)
@@ -215,8 +332,8 @@ export function Dropdown({
      the mouse also leaves the level-1 panel a moment later while crossing the
      gap, scheduling a second one). A single-ref version can only ever cancel
      the *latest* timer, so earlier ones survive as "zombies" and still fire —
-     snapping a deeper, currently-hovered panel shut. Clearing the whole array
-     on every re-entry avoids that. */
+     snapping a deeper, currently-hovered panel shut even though the pointer
+     never left it. Clearing the whole array on every re-entry avoids that. */
   const sublistCloseTimers = useRef<ReturnType<typeof setTimeout>[]>([])
   const uid               = useId()
 
@@ -327,24 +444,60 @@ export function Dropdown({
 
   const closeDroplist = useCallback(() => {
     setOpen(false)
+    setSublistChain([])
+    setOpenDepth(0)
+    clearSublistCloseTimers()
+  }, [clearSublistCloseTimers])
+
+  /* ── Sublist open/close (recursive — any depth) ──────────────────────────
+     Opening is always synchronous (no timer), so switching the hovered
+     sublist trigger — whether a sibling at the same depth or a shallower
+     item that collapses a deeper chain — happens on the very next pointer
+     event with no perceptible delay. Only *closing* (leaving to empty space)
+     gets a short grace period, so the cursor can travel diagonally from a
+     parent item into its own panel without it vanishing underneath it.
+
+     Note `sublistChain` itself is never truncated here, only *replaced* at
+     `level` — any deeper entries are left in place so their own `SublistPanel`
+     notices `openDepth` dropped below its index and fades itself out, instead
+     of being yanked out of the DOM mid-hover. */
+
+  const openSublistAt = useCallback((level: number, value: string, children: DropdownSelectableOption[], itemEl: HTMLElement) => {
+    clearSublistCloseTimers()
+    const r = itemEl.getBoundingClientRect()
+    const overflowsRight = r.right + SUBLIST_GAP + SUBLIST_MIN_WIDTH > window.innerWidth
+    const left = overflowsRight
+      ? Math.max(SUBLIST_GAP, r.left - SUBLIST_GAP - SUBLIST_MIN_WIDTH)
+      : r.right + SUBLIST_GAP
+    setSublistChain(prev => {
+      const next = [...prev]
+      next[level] = { value, children, pos: { top: r.top, left } }
+      return next
+    })
+    setOpenDepth(level + 1)
+  }, [clearSublistCloseTimers])
+
+  /** Schedules closing this level and everything deeper — called on leaving an
+   *  item or panel. Pushed onto the array rather than replacing a single ref
+   *  — see `sublistCloseTimers`. Only touches `openDepth`; the closing panel(s)
+   *  keep their content in `sublistChain` until their own fade-out finishes. */
+  const scheduleCloseFrom = useCallback((level: number) => {
+    sublistCloseTimers.current.push(setTimeout(() => {
+      setOpenDepth(d => Math.min(d, level))
+    }, 150))
   }, [])
 
   const cancelCloseSublist = useCallback(() => {
     clearSublistCloseTimers()
   }, [clearSublistCloseTimers])
 
-  /** Walks the option tree down `sublistChain` to find the children shown by panel `level` */
-  const getSublistOptsAt = useCallback((level: number): DropdownSelectableOption[] | null => {
-    let opts: DropdownSelectableOption[] | undefined = options.filter(isSelectable)
-    for (let i = 0; i <= level; i++) {
-      const entry = sublistChain[i]
-      if (!entry) return null
-      const parent: DropdownSelectableOption | undefined = opts.find(o => o.value === entry.value)
-      opts = parent?.children
-      if (!opts?.length) return null
-    }
-    return opts
-  }, [options, sublistChain])
+  /** Called by a `SublistPanel` once its own close-fade finishes — safe to drop
+   *  it from `sublistChain` for good. Only trims from the end, and only if
+   *  `level` is still the deepest entry, so a panel that finishes exiting
+   *  before a shallower sibling doesn't cut that sibling off mid-fade. */
+  const handleSublistExited = useCallback((level: number) => {
+    setSublistChain(prev => (prev.length === level + 1 ? prev.slice(0, level) : prev))
+  }, [])
 
   const toggle = () => (open ? closeDroplist() : openDroplist())
 
@@ -603,6 +756,32 @@ export function Dropdown({
         />
       )}
 
+      {/* Sublist portals — one flyout panel per open nesting level, each hover-
+          triggered to the right of its parent item, cascading with its own
+          independent fade (motion spec §3) via `SublistPanel`'s own
+          `usePresence` — not tied to the root droplist's `state`. Unbounded
+          depth. Rendered from `sublistChain` (which can lag one panel behind
+          `openDepth` while that panel fades out) rather than gating on the
+          root `mounted` flag. */}
+      {sublistChain.map((lvl, level) => createPortal(
+        <SublistPanel
+          key={level}
+          level={level}
+          isOpen={level < openDepth}
+          childOpts={lvl.children}
+          pos={lvl.pos}
+          sizeClass={sizeCls[size]}
+          isSelected={isSelected}
+          selectOption={selectOption}
+          openSublistAt={openSublistAt}
+          scheduleCloseFrom={scheduleCloseFrom}
+          cancelCloseSublist={cancelCloseSublist}
+          onExited={handleSublistExited}
+          registerRef={(lv, el) => { if (el) sublistRefs.current.set(lv, el); else sublistRefs.current.delete(lv) }}
+        />,
+        document.body,
+        level,
+      ))}
 
       {/* Droplist — rendered in document.body via portal */}
       {mounted && createPortal(
@@ -737,7 +916,8 @@ export function Dropdown({
                 role="option"
                 aria-selected={selected}
                 aria-haspopup={hasChildren ? 'listbox' : undefined}
-
+                onMouseEnter={hasChildren ? e => openSublistAt(0, opt.value, opt.children!, e.currentTarget) : undefined}
+                onMouseLeave={hasChildren ? () => scheduleCloseFrom(0) : undefined}
                 onClick={hasChildren ? undefined : () => selectOption(opt.value)}
               >
                 {mode === 'multi' && !hasChildren && (
