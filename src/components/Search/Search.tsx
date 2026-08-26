@@ -16,6 +16,7 @@ import { actions } from '../../icons/actions'
 import { arrows } from '../../icons/arrows'
 import { Tooltip } from '../Tooltip/Tooltip'
 import { Button } from '../Button/Button'
+import { usePresence } from '../shared/usePresence'
 import styles from './Search.module.css'
 
 /* ── Icons ──────────────────────────────────────────────────────────────── */
@@ -96,6 +97,9 @@ export function Search({
   const fieldRef      = useRef<HTMLDivElement>(null)
   const inputRef      = useRef<HTMLInputElement>(null)
   const panelRef      = useRef<HTMLDivElement>(null)
+
+  // Keeps the filter panel mounted through its fade-out (motion spec §3).
+  const { mounted: filterPanelMounted, state: filterPanelState } = usePresence(filterPanelOpen)
 
   /* Sync internal state when value prop changes externally */
   useEffect(() => { setInputValue(value) }, [value])
@@ -331,10 +335,12 @@ export function Search({
       )}
 
       {/* Filter panel — portal, right-aligned to field */}
-      {filterPanelOpen && filterPanel && createPortal(
+      {filterPanelMounted && filterPanel && createPortal(
         <div
           ref={panelRef}
           className={styles.filterPanelPortal}
+          data-state={filterPanelState}
+          aria-hidden={filterPanelState === 'closed'}
           style={{ top: pos.top, right: `calc(100vw - ${pos.left + pos.width}px)` }}
         >
           {filterPanel}

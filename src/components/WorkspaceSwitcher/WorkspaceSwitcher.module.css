@@ -122,9 +122,12 @@
 }
 
 /* Rail trigger is 56px wide — too narrow for the list itself, so the panel
-   keeps a usable fixed width instead of matching the trigger. */
+   keeps a usable fixed width instead of matching the trigger. left:4px (not
+   0) keeps the list items' avatars aligned under the trigger's own avatar —
+   dropdown-left(4) + dropdown's own padding(4) + listItem's padding(4) = 12,
+   the same inset the centered 32px rail avatar lands on. */
 .dropdownRail {
-  left: 0;
+  left: var(--space-4);
   width: 232px;
 }
 

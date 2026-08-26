@@ -309,6 +309,24 @@
   z-index: 8000;
 }
 
+/* ── Motion: panel fade (motion spec §3) ──────────────────────────────────────
+   Opacity is the ONLY animated property — no translate, no scale, no
+   origin-based growth. Position is fully resolved before the fade starts, so the
+   panel never repositions mid-animation. Closing is faster than opening. */
+
+.filterPanelPortal {
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+.filterPanelPortal[data-state='open'] { opacity: 1; }
+
+.filterPanelPortal[data-state='closed'] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-fast) var(--ease-in);
+}
+
 /* ═══════════════════════════════════════════════
    Loading droplist — portal, position: fixed
    ═══════════════════════════════════════════════ */

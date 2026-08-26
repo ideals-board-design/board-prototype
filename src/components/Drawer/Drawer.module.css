@@ -140,6 +140,7 @@
 
 .panelInline {
   flex-shrink: 0;
+  border-left: 1px solid var(--color-border);
   will-change: width;
   transition: width var(--dur-slow) var(--ease-out);
 }
