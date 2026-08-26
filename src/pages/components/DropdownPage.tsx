@@ -76,19 +76,7 @@ const LANGUAGE_OPTIONS: DropdownSelectableOption[] = [
   { value: 'lang-fr', label: 'Français' },
 ]
 
-/** Builds a 4-row menu that recurses `depth` levels deep — every row has a
- *  nested sublist except the leaves at the final level. */
-function buildDeepOptions(pathPrefix: string, depth: number): DropdownSelectableOption[] {
-  return Array.from({ length: 4 }, (_, i) => {
-    const value = `${pathPrefix}-${i + 1}`
-    return {
-      value,
-      label: 'Text',
-      children: depth > 1 ? buildDeepOptions(value, depth - 1) : undefined,
-    }
-  })
-}
-const DEEP_SUBLIST_OPTIONS = buildDeepOptions('deep', 4)
+
 
 /* ── User & Group item data ───────────────────────────────────────────────── */
 
@@ -167,7 +155,7 @@ export default function DropdownPage() {
   const [grp1,    setGrp1]    = useState<string>('')
   const [grp2,    setGrp2]    = useState<string[]>([])
   const [menu1,   setMenu1]   = useState<string>('lang-en')
-  const [deepMenu, setDeepMenu] = useState<string>('')
+
 
   /* No-border demos */
   const [nb1, setNb1] = useState<string>('cherry')
@@ -399,17 +387,40 @@ export default function DropdownPage() {
       {/* ── Sublist (live) ──────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Sublist</h2>
       <p className={styles.description}>
-        Hover an item with a nested panel to reveal it on the right.
-        Select a sublist item to close both panels and update the selection.
-        The inline secondary text on the parent item reflects the current choice.
+        Hover an item with a nested panel to reveal it on the right. Nesting is unbounded —
+        every level opens and switches instantly on hover, whether to a sibling item or a
+        shallower one; only closing to empty space gets a short grace period so the cursor can
+        travel diagonally into the panel. Select a leaf item to close the whole chain and
+        update the selection.
       </p>
       <div className={styles.demoRow}>
         <Dropdown
-          label="User menu"
+          label="User menu — 2 levels"
           options={menuOptions}
           value={menu1}
           onChange={v => setMenu1(v as string)}
           placeholder="Open menu"
+        />
+        <Dropdown
+          label="Board book — 2 levels"
+          options={BOARD_BOOK_MENU}
+          value={bookMenu}
+          onChange={v => setBookMenu(v as string)}
+          placeholder="Book actions"
+        />
+        <Dropdown
+          label="Meeting — 3 levels"
+          options={MEETING_MENU}
+          value={meetingMenu}
+          onChange={v => setMeetingMenu(v as string)}
+          placeholder="Meeting actions"
+        />
+        <Dropdown
+          label="Governance — 4 levels"
+          options={GOVERNANCE_MENU}
+          value={governanceMenu}
+          onChange={v => setGovernanceMenu(v as string)}
+          placeholder="Governance actions"
         />
       </div>
 

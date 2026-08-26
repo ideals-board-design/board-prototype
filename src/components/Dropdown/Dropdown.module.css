@@ -429,38 +429,38 @@
 
 /* ── Expand / collapse chevron ────────────────────── */
 
-.treeChevron {
+/* 20×20 click-area slot (keeps the tree indentation math intact); the DS
+   Button instance inside it is sized S/M/L (28/32/36) and overflow-centres,
+   same technique as .chevronBox on the trigger. */
+.treeChevronWrap {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-icon-secondary);
-  border-radius: var(--radius-xs);
-  transition:
-    transform var(--dur-snap) var(--ease-out),
-    color var(--dur-snap) var(--ease-out);
 }
 
-@media (hover: hover) {
-  .treeChevron:hover { color: var(--color-text-primary); }
+/* The Button (32×32 at size M) is deliberately bigger than this 20px slot and
+   overflow-centres, matching Figma's Wrapper+Button offset (27974-2289). Flex's
+   default flex-shrink:1 would otherwise squash it to 20px wide while its height
+   stays 32px, making it non-square — flex-shrink:0 keeps it a true square. */
+.treeChevronWrap > button {
+  flex-shrink: 0;
 }
 
-.treeChevron span {
+/* Icon rotates — the Button itself never swaps or resizes (motion spec §1) */
+.treeChevronIcon {
   display: flex;
   width: 100%;
   height: 100%;
+  transition: transform var(--dur-snap) var(--ease-out);
 }
 
-.treeChevron svg { width: 100%; height: 100%; }
+.treeChevronIcon svg { width: 100%; height: 100%; }
 
 /* Rotated 90° when node is expanded */
-.treeChevronOpen { transform: rotate(90deg); }
+.treeChevronIconOpen { transform: rotate(90deg); }
 
 /* Spacer for leaf nodes — same 20px width as the chevron button,
    keeps cbWrap at the same horizontal position as expandable siblings */
@@ -505,6 +505,12 @@
   width: fit-content;
 }
 
+/* Real per-size padding IS the hit-area/hover-fill footprint — no negative-inset
+   bleed (same "footprint == hit area == fill" rule as Button tertiary/link, see
+   button-tertiary-link-no-negative-margins). Horizontal padding is 8px at every
+   size; vertical padding is (row height − 20px line)/2 = 4/6/8, giving the
+   correct S=28/M=32/L=36 footprint — verified against Figma 27057-4660
+   (nodes 27062-8431 / 27062-7857 / 27057-4661). */
 .noBorder .trigger {
   background: transparent;
   box-shadow: none;
@@ -546,9 +552,6 @@
 /* Disabled: keep transparent bg */
 .noBorder.isDisabled .trigger { background: transparent; }
 
-/* No-border hover-fill paints the trigger's own real padding box directly — no
-   oversized pseudo-element, no expansion beyond the layout footprint. Fill kept
-   on hover, while editing (focus) and while open. */
 .noBorder:not(.isDisabled) .trigger:focus-within,
 .noBorder.isOpen:not(.isDisabled) .trigger {
   background: var(--color-bg-hover-fill);
