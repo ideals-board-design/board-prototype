@@ -76,6 +76,64 @@ const LANGUAGE_OPTIONS: DropdownSelectableOption[] = [
   { value: 'lang-fr', label: 'Français' },
 ]
 
+/* ── Multi-level sublist demo data (Board metaphors) ──────────────────────
+   Sublist nesting is unbounded — these three menus exercise 2, 3 and 4
+   levels deep using real board-portal concepts (board books, meetings,
+   voting, governance committees). */
+
+const BOARD_BOOK_MENU: DropdownSelectableOption[] = [
+  { value: 'view-book',  label: 'View book' },
+  {
+    value: 'download', label: 'Download', children: [
+      { value: 'download-pdf',       label: 'PDF' },
+      { value: 'download-annotated', label: 'PDF with annotations' },
+      { value: 'download-print',     label: 'Print-ready PDF' },
+    ],
+  },
+  { value: 'share-book', label: 'Share with board' },
+]
+
+const MEETING_MENU: DropdownSelectableOption[] = [
+  { value: 'agenda',  label: 'Agenda' },
+  { value: 'minutes', label: 'Minutes' },
+  {
+    value: 'voting', label: 'Voting', children: [
+      { value: 'cast-vote', label: 'Cast a vote' },
+      {
+        value: 'voting-settings', label: 'Voting settings', children: [
+          { value: 'anonymous-voting', label: 'Anonymous voting' },
+          { value: 'weighted-voting',  label: 'Weighted voting' },
+          { value: 'quorum-rules',     label: 'Quorum rules' },
+        ],
+      },
+    ],
+  },
+  { value: 'attendance', label: 'Attendance' },
+]
+
+const GOVERNANCE_MENU: DropdownSelectableOption[] = [
+  { value: 'directory', label: 'Board directory' },
+  {
+    value: 'committees', label: 'Committees', children: [
+      { value: 'audit-committee', label: 'Audit committee' },
+      {
+        value: 'governance-committee', label: 'Governance committee', children: [
+          { value: 'charter', label: 'Committee charter' },
+          {
+            value: 'policies', label: 'Policies', children: [
+              { value: 'conflict-of-interest', label: 'Conflict of interest' },
+              { value: 'code-of-conduct',      label: 'Code of conduct' },
+              { value: 'data-retention',        label: 'Data retention' },
+            ],
+          },
+        ],
+      },
+      { value: 'compensation-committee', label: 'Compensation committee' },
+    ],
+  },
+  { value: 'settings', label: 'Settings' },
+]
+
 /* ── User & Group item data ───────────────────────────────────────────────── */
 
 const PEOPLE: DropdownSelectableOption[] = [
@@ -153,6 +211,9 @@ export default function DropdownPage() {
   const [grp1,    setGrp1]    = useState<string>('')
   const [grp2,    setGrp2]    = useState<string[]>([])
   const [menu1,   setMenu1]   = useState<string>('lang-en')
+  const [bookMenu,       setBookMenu]       = useState<string>('')
+  const [meetingMenu,    setMeetingMenu]    = useState<string>('')
+  const [governanceMenu, setGovernanceMenu] = useState<string>('')
 
   /* No-border demos */
   const [nb1, setNb1] = useState<string>('cherry')
@@ -384,17 +445,40 @@ export default function DropdownPage() {
       {/* ── Sublist (live) ──────────────────────────────────────────────── */}
       <h2 className={styles.sectionTitle}>Sublist</h2>
       <p className={styles.description}>
-        Hover an item with a nested panel to reveal it on the right.
-        Select a sublist item to close both panels and update the selection.
-        The inline secondary text on the parent item reflects the current choice.
+        Hover an item with a nested panel to reveal it on the right. Nesting is unbounded —
+        every level opens and switches instantly on hover, whether to a sibling item or a
+        shallower one; only closing to empty space gets a short grace period so the cursor can
+        travel diagonally into the panel. Select a leaf item to close the whole chain and
+        update the selection.
       </p>
       <div className={styles.demoRow}>
         <Dropdown
-          label="User menu"
+          label="User menu — 2 levels"
           options={menuOptions}
           value={menu1}
           onChange={v => setMenu1(v as string)}
           placeholder="Open menu"
+        />
+        <Dropdown
+          label="Board book — 2 levels"
+          options={BOARD_BOOK_MENU}
+          value={bookMenu}
+          onChange={v => setBookMenu(v as string)}
+          placeholder="Book actions"
+        />
+        <Dropdown
+          label="Meeting — 3 levels"
+          options={MEETING_MENU}
+          value={meetingMenu}
+          onChange={v => setMeetingMenu(v as string)}
+          placeholder="Meeting actions"
+        />
+        <Dropdown
+          label="Governance — 4 levels"
+          options={GOVERNANCE_MENU}
+          value={governanceMenu}
+          onChange={v => setGovernanceMenu(v as string)}
+          placeholder="Governance actions"
         />
       </div>
 
