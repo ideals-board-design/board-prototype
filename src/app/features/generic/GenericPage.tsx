@@ -10,14 +10,15 @@ interface GenericPageProps {
   illustration: string
   /** Mobile/tablet tier (390–1023px) — shows the nav drawer's hamburger trigger. */
   onMenuClick?: () => void
+  menuTier?:    'tablet' | 'mobile'
 }
 
-export default function GenericPage({ title, illustration, onMenuClick }: GenericPageProps) {
+export default function GenericPage({ title, illustration, onMenuClick, menuTier }: GenericPageProps) {
   return (
     <div className={styles.page}>
       <div className={styles.content}>
 
-        <PageHeader title={title} onMenuClick={onMenuClick} />
+        <PageHeader title={title} onMenuClick={onMenuClick} menuTier={menuTier} />
 
         <div className={styles.body}>
           <EmptyState

@@ -25,16 +25,17 @@ const STEPS = [
 export interface DashboardPageProps {
   /** Mobile/tablet tier (390–1023px) — shows the nav drawer's hamburger trigger. */
   onMenuClick?: () => void
+  menuTier?:    'tablet' | 'mobile'
 }
 
-export default function DashboardPage({ onMenuClick }: DashboardPageProps = {}) {
+export default function DashboardPage({ onMenuClick, menuTier }: DashboardPageProps = {}) {
   const [hideOnboarding, setHideOnboarding] = useState(false)
 
   return (
     <div className={styles.page}>
       <div className={styles.content}>
 
-        <PageHeader title="Dashboard" onMenuClick={onMenuClick} />
+        <PageHeader title="Dashboard" onMenuClick={onMenuClick} menuTier={menuTier} />
 
         <div className={styles.body}>
           <div className={styles.container}>

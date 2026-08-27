@@ -18,6 +18,10 @@ export interface PageHeaderProps {
    *  drawer's trigger (390–1023px). Takes precedence over `onBack` when both
    *  are given (they're not expected to be used together). */
   onMenuClick?: () => void
+  /** Only meaningful with `onMenuClick` — which of Figma's two "Header
+   *  mobile" specs to use: 'tablet' (640–1023px, 20px title) or 'mobile'
+   *  (390–639px, 16px title, tighter padding). Defaults to 'tablet'. */
+  menuTier?:    'tablet' | 'mobile'
   /** Shows a back button before the title (Meeting layout). */
   onBack?:      () => void
   /** Shows a dropdown chevron after the title (title switcher). */
@@ -34,6 +38,7 @@ export interface PageHeaderProps {
 export function PageHeader({
   title,
   onMenuClick,
+  menuTier = 'tablet',
   onBack,
   onTitleMenu,
   badge,
@@ -41,11 +46,18 @@ export function PageHeader({
   breadcrumbs,
   className,
 }: PageHeaderProps) {
-  /* Padding/gap follow the leading content (Figma types). A menu button is
-     the same leading-icon-button shape as the back button, so it shares
-     typeMeeting's tighter left padding. */
-  const typeCls = breadcrumbs ? styles.typeDocuments : (onMenuClick || onBack) ? styles.typeMeeting : styles.typeDefault
+  /* Padding/gap follow the leading content (Figma types). onMenuClick gets
+     its own two tier-specific types (see PageHeader.module.css); onBack
+     keeps the existing Meeting-layout padding, unaffected. */
+  const typeCls = breadcrumbs
+    ? styles.typeDocuments
+    : onMenuClick
+      ? (menuTier === 'mobile' ? styles.typeMobileMenuMobile : styles.typeMobileMenuTablet)
+      : onBack
+        ? styles.typeMeeting
+        : styles.typeDefault
   const cls = [styles.header, typeCls, className].filter(Boolean).join(' ')
+  const titleCls = [styles.title, onMenuClick && menuTier === 'mobile' ? styles.titleCompact : ''].filter(Boolean).join(' ')
 
   if (breadcrumbs) {
     return <header className={cls}>{breadcrumbs}</header>
@@ -57,7 +69,7 @@ export function PageHeader({
         <Button
           variant="tertiary"
           intent="neutral"
-          size="l"
+          size="m"
           iconOnly={
             <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: menuSvg }} />
           }
@@ -82,7 +94,7 @@ export function PageHeader({
       {title !== undefined && (
         onTitleMenu ? (
           <button type="button" className={styles.titleMenu} onClick={onTitleMenu} aria-haspopup="menu">
-            <h1 className={styles.title}>{title}</h1>
+            <h1 className={titleCls}>{title}</h1>
             <span
               className={styles.chevron}
               aria-hidden="true"
@@ -90,7 +102,7 @@ export function PageHeader({
             />
           </button>
         ) : (
-          <h1 className={styles.title}>{title}</h1>
+          <h1 className={titleCls}>{title}</h1>
         )
       )}
 

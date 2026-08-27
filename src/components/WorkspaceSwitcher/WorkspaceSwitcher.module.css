@@ -21,6 +21,23 @@
   box-sizing: border-box;
 }
 
+/* Inline variant (drawer tiers, Tablet/Mobile) — Figma's tighter drawer
+   inset. Dropdown (desktop/rail) keeps the original padding. */
+.trigger.inline {
+  padding: 0 var(--space-2);
+}
+
+/* Single workspace — a label, not a control: no pointer cursor, no hover
+   fill, no focus ring (there's nothing to activate). */
+.trigger.static {
+  cursor: default;
+}
+@media (hover: hover) {
+  .trigger.static:hover .triggerInner {
+    background: none;
+  }
+}
+
 .triggerInner {
   flex: 1;
   display: flex;
@@ -133,12 +150,20 @@
 
 /* Inline (accordion, mobile/tablet drawer) — expands in normal flow below
    the trigger instead of floating. No elevation: it reads as part of the
-   drawer's own surface, not a separate floating panel. */
+   drawer's own surface, not a separate floating panel. Figma node 4810-5082:
+   8px gap between workspace rows (the floating .dropdown has none — each
+   .listItem's own padding is the only spacing there), 4px top padding only. */
 .dropdownInline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-8);
+  flex: 1 0 0;
   position: static;
   width: 100%;
+  align-self: stretch;
   box-shadow: none;
-  padding: 0;
+  padding: var(--space-4) 0 0;
 }
 
 /* ── List item ─────────────────────────────────────────── */

@@ -32,6 +32,24 @@
   padding: var(--space-4) 0;
 }
 
+/* Drawer tiers only (Tablet/Mobile) — Figma's "Header mobile"/"Side
+   navigation" drawer spec. Full sidebar (desktop) and the laptop rail keep
+   their original padding, untouched. Column, not row: WorkspaceSwitcher's
+   `inline` variant skips its own wrapper div (nothing there needs its
+   `position: relative` — the accordion list renders `position: static`), so
+   the trigger and, once expanded, the workspace list arrive as two direct
+   children here and need to stack vertically rather than side by side.
+   align-items: stretch, not center — both children set their own
+   width: 100%, but stretch is what a column layout needs for that to apply. */
+.root.drawer .header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  align-self: stretch;
+  gap: var(--space-12);
+  padding: 0 var(--space-2);
+}
+
 /* ── Nav list ──────────────────────────────────────────── */
 
 .navList {
@@ -47,16 +65,30 @@
   padding: var(--space-4) 0 var(--space-8);
 }
 
+/* Drawer tiers only — see .root.drawer .header above. */
+.root.drawer .footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: stretch;
+  gap: var(--space-0);
+  padding: 0 0 var(--space-16);
+}
+
 /* ── Logo row ──────────────────────────────────────────────
-   One rule for every variant — same padding whether full, drawer, or the
-   56px rail, so the logo never jumps sideways when the desktop/laptop
-   breakpoint flips. 18px horizontal padding happens to leave exactly 20px
-   in the rail (56 − 18×2 = 20), an exact fit for the 20×20 symbol mark. */
+   One rule for full sidebar and the rail — same padding so the logo never
+   jumps sideways when the desktop/laptop breakpoint flips. Drawer tiers get
+   their own Figma-matched padding below. */
 
 .logoRow {
   display: flex;
   align-items: center;
   align-self: stretch;
   padding: var(--space-12) var(--space-18);
+}
+
+/* Drawer tiers only — see .root.drawer .header above. */
+.root.drawer .logoRow {
+  padding: var(--space-14) var(--space-14) var(--space-24) var(--space-16);
 }
 

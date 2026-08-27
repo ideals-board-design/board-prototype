@@ -75,22 +75,23 @@ export default function App({
   }
 
   const onMenuClick = tier === 'mobile' ? () => setNavOpen(true) : undefined
+  const menuTier = isCompact ? 'tablet' : 'mobile'
 
   const pageContent = (
     <>
-      {page === 'tasks'     && <TasksPage onMenuClick={onMenuClick} />}
+      {page === 'tasks'     && <TasksPage onMenuClick={onMenuClick} menuTier={menuTier} />}
       {page === 'dashboard' && (
         dashboardVariant === 'cs-before-meeting'
-          ? <CSBeforeMeetingPage onMenuClick={onMenuClick} />
-          : <DashboardPage onMenuClick={onMenuClick} />
+          ? <CSBeforeMeetingPage onMenuClick={onMenuClick} menuTier={menuTier} />
+          : <DashboardPage onMenuClick={onMenuClick} menuTier={menuTier} />
       )}
       {page === 'meetings' && (
         meetingsVariant === 'create-public'
-          ? <GenericPage title="Meeting creation public" illustration="calendar" onMenuClick={onMenuClick} />
-          : <GenericPage {...PAGE_META.meetings} onMenuClick={onMenuClick} />
+          ? <GenericPage title="Meeting creation public" illustration="calendar" onMenuClick={onMenuClick} menuTier={menuTier} />
+          : <GenericPage {...PAGE_META.meetings} onMenuClick={onMenuClick} menuTier={menuTier} />
       )}
       {page !== 'tasks' && page !== 'dashboard' && page !== 'meetings' && (
-        <GenericPage {...PAGE_META[page]} onMenuClick={onMenuClick} />
+        <GenericPage {...PAGE_META[page]} onMenuClick={onMenuClick} menuTier={menuTier} />
       )}
     </>
   )
@@ -108,11 +109,11 @@ export default function App({
           onClose={() => setNavOpen(false)}
           ariaLabel="Main navigation"
           header={
-            <div className={styles.navDrawerHeader}>
+            <div className={[styles.navDrawerHeader, isCompact ? styles.navDrawerHeaderTablet : styles.navDrawerHeaderMobile].join(' ')}>
               <Button
                 variant="tertiary"
                 intent="neutral"
-                size="l"
+                size="m"
                 iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: multiplySvg }} />}
                 onClick={() => setNavOpen(false)}
                 aria-label="Close navigation menu"

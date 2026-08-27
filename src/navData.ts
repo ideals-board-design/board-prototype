@@ -41,6 +41,7 @@ export type Page =
   | 'components/banner'
   | 'components/toast'
   | 'components/side-navigation'
+  | 'components/navigation-patterns'
   | 'components/empty-state'
   | 'components/table-cell'
   | 'components/skeleton'
@@ -134,9 +135,10 @@ export const nav: NavGroup[] = [
   {
     section: 'Navigation',
     items: [
-      { id: 'components/breadcrumbs',     label: 'Breadcrumbs' },
-      { id: 'components/side-navigation', label: 'Side Navigation' },
-      { id: 'components/tabs',            label: 'Tabs' },
+      { id: 'components/breadcrumbs',          label: 'Breadcrumbs' },
+      { id: 'components/side-navigation',      label: 'Side Navigation' },
+      { id: 'components/navigation-patterns',  label: 'Navigation Patterns' },
+      { id: 'components/tabs',                 label: 'Tabs' },
     ],
   },
 ]

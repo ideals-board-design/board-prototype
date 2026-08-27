@@ -1,0 +1,230 @@
+/* NavigationPatternsPage */
+
+.page {
+  padding: var(--space-32) var(--space-40);
+  max-width: 1100px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-8);
+  max-width: 640px;
+}
+
+.subtitle code {
+  font-family: monospace;
+  background: var(--stone-100);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
+/* ── Workspace count control (Tablet/Mobile frames below) ─── */
+
+.workspaceControl {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  margin-bottom: var(--space-8);
+}
+
+.workspaceControlLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* ── Quick reference table ────────────────────────────────── */
+
+.table {
+  margin: var(--space-32) 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.headerRow,
+.row {
+  display: grid;
+  grid-template-columns: 100px 140px 200px 1fr;
+  gap: var(--space-16);
+  padding: var(--space-12) var(--space-16);
+  align-items: center;
+}
+
+.headerRow {
+  background: var(--stone-200);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.row {
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+}
+
+.tierName {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.mono {
+  font-family: monospace;
+  color: var(--color-text-secondary);
+  font-size: 13px;
+}
+
+.usageText {
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-sm);
+}
+
+/* ── Sections ──────────────────────────────────────────────── */
+
+.section {
+  margin-top: var(--space-40);
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  margin-bottom: var(--space-4);
+}
+
+.sectionTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.badge {
+  font-family: monospace;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-brand);
+  background: var(--color-brand-fill-hover);
+  padding: var(--space-2) var(--space-8);
+  border-radius: var(--radius-sm);
+}
+
+.description {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-sm);
+  margin: 0 0 var(--space-16);
+  max-width: 640px;
+}
+
+.link {
+  color: var(--color-text-brand);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── Device frames ─────────────────────────────────────────── */
+
+.viewportOuter {
+  overflow-x: auto;
+}
+
+.viewport {
+  height: 640px;
+  display: flex;
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.mockContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: var(--stone-100);
+  min-width: 0;
+}
+
+/* Same token + motion Drawer's own backdrop uses for side="left"
+   (Drawer.module.css) — kept in sync by eye, not by import, since this is a
+   mockup, not a live Drawer. Positioned relative to .viewport (not
+   .mockContent), so it covers the PageHeader above it too — matching the
+   real overlay, which sits above everything but the drawer panel itself. */
+.mockBackdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-overlay);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--dur-slow) var(--ease-out);
+}
+
+.mockBackdrop[data-state='open'] { opacity: 1; }
+
+.mockBackdrop[data-state='closed'] {
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-in);
+}
+
+.mockPanel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  background: var(--color-bg-surface);
+  border-right: 1px solid var(--color-border);
+  box-sizing: border-box;
+  overflow: hidden;
+  transform: translateX(-100%);
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+
+.mockPanel[data-state='open'] { transform: translateX(0); }
+
+.mockPanel[data-state='closed'] {
+  transform: translateX(-100%);
+  transition: transform var(--dur-base) var(--ease-in);
+}
+
+/* Mirrors src/app/App.tsx's .navDrawerHeader — two tier-specific paddings
+   (same values as PageHeader's typeMobileMenuTablet/Mobile) so the close
+   button lands exactly where that frame's hamburger was. */
+.mockPanelHeader {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.mockPanelHeaderTablet {
+  padding: var(--space-8) var(--space-24) var(--space-8) var(--space-10);
+}
+.mockPanelHeaderMobile {
+  padding: var(--space-8) var(--space-16) var(--space-8) var(--space-10);
+}
+
+/* Mirrors .navDrawerBody — lets SideNavigation's own height:100% resolve
+   against the remaining space below .mockPanelHeader instead of the full
+   panel height (which would push it past the panel's clipped bottom edge). */
+.mockPanelBody {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

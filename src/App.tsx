@@ -40,6 +40,7 @@ import StickyFooterPage from './pages/components/StickyFooterPage'
 import BannerPage from './pages/components/BannerPage'
 import ToastPage  from './pages/components/ToastPage'
 import SideNavigationPage from './pages/components/SideNavigationPage'
+import NavigationPatternsPage from './pages/components/NavigationPatternsPage'
 import EmptyStatePage from './pages/components/EmptyStatePage'
 import TableCellPage from './pages/components/TableCellPage'
 import SkeletonPage from './pages/components/SkeletonPage'
@@ -153,6 +154,7 @@ export default function App() {
         {page === 'components/banner'          && <BannerPage />}
         {page === 'components/toast'           && <ToastPage />}
         {page === 'components/side-navigation'    && <SideNavigationPage />}
+        {page === 'components/navigation-patterns' && <NavigationPatternsPage />}
         {page === 'components/empty-state'        && <EmptyStatePage />}
         {page === 'components/table-cell'         && <TableCellPage />}
         {page === 'components/skeleton'           && <SkeletonPage />}

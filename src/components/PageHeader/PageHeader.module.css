@@ -27,6 +27,22 @@
   gap: var(--space-8);
 }
 
+/* Mobile-nav-drawer trigger (onMenuClick) — Figma "Header mobile" component,
+   two explicit variants (not a media query — the tier is already resolved in
+   JS by useBreakpoint() and threaded down as `menuTier`, same as every other
+   breakpoint-driven prop in this system; see useBreakpoint.ts's own note on
+   why CSS custom properties/media queries aren't used for these tiers). */
+.typeMobileMenuTablet {
+  min-height: 48px;
+  padding: var(--space-8) var(--space-24) var(--space-8) var(--space-10);
+  gap: var(--space-10);
+}
+.typeMobileMenuMobile {
+  min-height: 48px;
+  padding: var(--space-8) var(--space-16) var(--space-8) var(--space-10);
+  gap: var(--space-10);
+}
+
 /* ── Title ─────────────────────────────────────────── */
 
 .title {
@@ -38,6 +54,13 @@
   -webkit-font-smoothing: antialiased;
   margin: 0;
   white-space: nowrap;
+}
+
+/* Mobile-nav-drawer trigger, Mobile tier (390–639px) — Figma "Large/Large
+   Bold", one size down from the Tablet tier's default 20px/24px. */
+.titleCompact {
+  font-size: 16px;
+  line-height: 20px;
 }
 
 /* Title + dropdown chevron (title switcher) */

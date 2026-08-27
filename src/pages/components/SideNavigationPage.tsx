@@ -180,6 +180,12 @@ export default function SideNavigationPage() {
             <WorkspaceSwitcher workspaces={WS_WORKSPACES} activeId="st" defaultOpen />
           </div>
         </div>
+        <div className={styles.stateGroup}>
+          <div className={styles.stateLabel}>Single workspace</div>
+          <div className={styles.wsDemo}>
+            <WorkspaceSwitcher workspaces={[WS_WORKSPACES[3]]} activeId="st" />
+          </div>
+        </div>
       </div>
 
       {/* ── Guidelines ──────────────────────────────────────────────── */}
@@ -194,6 +200,7 @@ export default function SideNavigationPage() {
         <li>Each workspace needs: <code>id</code>, <code>name</code>, <code>initials</code> (2 chars), <code>color</code> (CSS value).</li>
         <li>Chevron: <code>angle-down-fill</code> closed, <code>angle-up-fill</code> opened. Both 16×16px inside a 32×32 icon button.</li>
         <li>Closes on outside click, Escape key, or workspace selection.</li>
+        <li>Exactly one workspace: renders as a static, non-interactive label instead — no chevron, no click, no dropdown. There's nothing to switch to.</li>
       </ul>
 
       {/* ══════════════ SIDE NAV — USER ITEM ════════════════════════ */}

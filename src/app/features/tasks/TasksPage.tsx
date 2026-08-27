@@ -67,9 +67,10 @@ function sortRows(rows: Row[], col: SortCol | null, dir: SortDir): Row[] {
 export interface TasksPageProps {
   /** Mobile/tablet tier (390–1023px) — shows the nav drawer's hamburger trigger. */
   onMenuClick?: () => void
+  menuTier?:    'tablet' | 'mobile'
 }
 
-export default function TasksPage({ onMenuClick }: TasksPageProps = {}) {
+export default function TasksPage({ onMenuClick, menuTier }: TasksPageProps = {}) {
   const [search,      setSearch]      = useState('')
   const [sortCol,     setSortCol]     = useState<SortCol | null>(null)
   const [sortDir,     setSortDir]     = useState<SortDir>(null)
@@ -110,7 +111,7 @@ export default function TasksPage({ onMenuClick }: TasksPageProps = {}) {
       <div className={styles.content}>
 
         {/* Header */}
-        <PageHeader title="Tasks" onMenuClick={onMenuClick} />
+        <PageHeader title="Tasks" onMenuClick={onMenuClick} menuTier={menuTier} />
 
         {/* Toolbar */}
         <div className={styles.toolbar}>

@@ -127,6 +127,7 @@ export function SideNavigation({
                 selected={activeItem === key}
                 onClick={() => onItemClick?.(key)}
                 rail={rail}
+                drawer={isDrawer}
               />
             ))}
           </div>

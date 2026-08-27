@@ -457,3 +457,11 @@
   align-items: flex-start !important;
   gap: var(--space-0) !important;
 }
+
+/* Figma spec's the sheet's rows in "Large/Large Default" (16px/regular) —
+   one size up from and one weight lighter than the same UserMenuItems markup
+   rendered inline at tablet width ("Medium/Medium Bold", 15px/medium). */
+.sheetBody .navItemLabel {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-regular);
+}

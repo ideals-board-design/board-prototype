@@ -62,96 +62,132 @@ export function WorkspaceSwitcher({
   const [open, setOpen] = useState(defaultOpen)
   const rootRef = useRef<HTMLDivElement>(null)
   const inline  = variant === 'inline'
+  // Nothing to switch to — no chevron, no click, no panel. A single
+  // workspace is a label, not a control.
+  const canSwitch = workspaces.length > 1
 
   useEffect(() => { onOpenChange?.(open) }, [open, onOpenChange])
 
   const active = workspaces.find(w => w.id === activeId)
 
   // Keeps the panel mounted through its fade-out (motion spec §3).
-  const { mounted, state } = usePresence(open, '--dur-instant')
+  const { mounted, state } = usePresence(open && canSwitch, '--dur-instant')
 
   // Close on outside click — dropdown only. An inline accordion has no
   // "outside" to close on; it just stays expanded until toggled again.
   useEffect(() => {
-    if (!open || inline) return
+    if (!open || inline || !canSwitch) return
     const handler = (e: MouseEvent) => {
       if (!rootRef.current?.contains(e.target as Node)) setOpen(false)
     }
     document.addEventListener('mousedown', handler)
     return () => document.removeEventListener('mousedown', handler)
-  }, [open, inline])
+  }, [open, inline, canSwitch])
 
   // Close on Escape — dropdown only, for the same reason.
   useEffect(() => {
-    if (!open || inline) return
+    if (!open || inline || !canSwitch) return
     const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
     document.addEventListener('keydown', handler)
     return () => document.removeEventListener('keydown', handler)
-  }, [open, inline])
+  }, [open, inline, canSwitch])
 
-  const trigger = (
+  const triggerInner = (
+    <span className={styles.triggerInner}>
+      <WorkspaceAvatar
+        initials={active?.initials ?? '?'}
+        color={active?.color ?? 'var(--stone-500)'}
+        size={32}
+      />
+      {!rail && <span className={styles.triggerName}>{active?.name ?? ''}</span>}
+      {!rail && canSwitch && (
+        <span
+          className={styles.chevron}
+          dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
+        />
+      )}
+    </span>
+  )
+
+  const trigger = canSwitch ? (
     <button
       type="button"
       className={[
         styles.trigger,
         open ? styles.triggerOpen : '',
         rail ? styles.rail : '',
+        inline ? styles.inline : '',
       ].filter(Boolean).join(' ')}
       onClick={() => setOpen(o => !o)}
       aria-haspopup="listbox"
       aria-expanded={open}
       aria-label={rail ? 'Change workspace' : undefined}
     >
-      <span className={styles.triggerInner}>
-        <WorkspaceAvatar
-          initials={active?.initials ?? '?'}
-          color={active?.color ?? 'var(--stone-500)'}
-          size={32}
-        />
-        {!rail && <span className={styles.triggerName}>{active?.name ?? ''}</span>}
-        {!rail && (
-          <span
-            className={styles.chevron}
-            dangerouslySetInnerHTML={{ __html: open ? chevronUpSvg : chevronDownSvg }}
-          />
-        )}
-      </span>
+      {triggerInner}
     </button>
+  ) : (
+    <div
+      className={[
+        styles.trigger,
+        styles.static,
+        rail ? styles.rail : '',
+        inline ? styles.inline : '',
+      ].filter(Boolean).join(' ')}
+      aria-label={rail ? active?.name : undefined}
+    >
+      {triggerInner}
+    </div>
   )
+
+  const dropdown = canSwitch && mounted && (
+    <div
+      className={[
+        styles.dropdown,
+        inline ? styles.dropdownInline : '',
+        rail ? styles.dropdownRail : '',
+      ].filter(Boolean).join(' ')}
+      data-state={state}
+      aria-hidden={state === 'closed'}
+      role="listbox"
+      aria-label="Select workspace"
+    >
+      {workspaces.map(w => (
+        <button
+          key={w.id}
+          type="button"
+          role="option"
+          aria-selected={w.id === activeId}
+          className={[styles.listItem, w.id === activeId ? styles.listItemActive : ''].filter(Boolean).join(' ')}
+          onClick={() => { onSelect?.(w.id); setOpen(false) }}
+        >
+          <WorkspaceAvatar initials={w.initials} color={w.color} size={32} />
+          <span className={styles.listItemName}>{w.name}</span>
+        </button>
+      ))}
+    </div>
+  )
+
+  // Inline (drawer tiers) doesn't need this wrapper: the outside-click/
+  // Escape handling above already skips itself for `inline` (there's no
+  // "outside" for an in-flow accordion to close on), and .dropdownInline
+  // renders `position: static`, so nothing here ever needs .root's
+  // `position: relative` to anchor against. SideNavigation's own .header
+  // (flex column for the drawer tiers) does the stacking instead.
+  if (inline) {
+    return (
+      <>
+        {trigger}
+        {dropdown}
+      </>
+    )
+  }
 
   return (
     <div className={styles.root} ref={rootRef}>
       {rail
-        ? <Tooltip label="Change workspace" position="right" wrapperClassName={styles.railTooltipWrapper}>{trigger}</Tooltip>
+        ? <Tooltip label={canSwitch ? 'Change workspace' : (active?.name ?? '')} position="right" wrapperClassName={styles.railTooltipWrapper}>{trigger}</Tooltip>
         : trigger}
-
-      {mounted && (
-        <div
-          className={[
-            styles.dropdown,
-            inline ? styles.dropdownInline : '',
-            rail ? styles.dropdownRail : '',
-          ].filter(Boolean).join(' ')}
-          data-state={state}
-          aria-hidden={state === 'closed'}
-          role="listbox"
-          aria-label="Select workspace"
-        >
-          {workspaces.map(w => (
-            <button
-              key={w.id}
-              type="button"
-              role="option"
-              aria-selected={w.id === activeId}
-              className={[styles.listItem, w.id === activeId ? styles.listItemActive : ''].filter(Boolean).join(' ')}
-              onClick={() => { onSelect?.(w.id); setOpen(false) }}
-            >
-              <WorkspaceAvatar initials={w.initials} color={w.color} size={32} />
-              <span className={styles.listItemName}>{w.name}</span>
-            </button>
-          ))}
-        </div>
-      )}
+      {dropdown}
     </div>
   )
 }
