@@ -107,7 +107,7 @@ function SublistFlyout({
   onMouseLeave: () => void
   children:     ReactNode
 }) {
-  const { mounted, state } = usePresence(isOpen)
+  const { mounted, state } = usePresence(isOpen, '--dur-instant')
   if (!mounted) return null
   return createPortal(
     <div
@@ -203,8 +203,8 @@ export function SideNavUserItem({
   const themeItemRef         = useRef<HTMLDivElement>(null)
   const brandingItemRef      = useRef<HTMLDivElement>(null)
 
-  // Keeps the panel mounted through its fade-out (motion spec §3).
-  const { mounted, state } = usePresence(open)
+  // Keeps the panel mounted through its (instant) fade-out (motion spec §3).
+  const { mounted, state } = usePresence(open, '--dur-instant')
 
   const openSublist = (key: SublistKey, itemEl: HTMLElement | null) => {
     if (!itemEl) return

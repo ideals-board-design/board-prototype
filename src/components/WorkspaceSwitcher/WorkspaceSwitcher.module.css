@@ -167,6 +167,14 @@
   }
 }
 
+/* Press animates in on --dur-fast/--ease-in, same feel as Button's press-in.
+   Release has no transition — it falls back to the instant hover swap above,
+   consistent with items being cursor-position indicators (motion spec §1). */
+.listItem:active {
+  background: var(--color-bg-hover-fill-strong);   /* blue-800 · 20% */
+  transition: background-color var(--dur-fast) var(--ease-in);
+}
+
 .listItemActive {
   background: var(--color-bg-selected);
 }
@@ -192,9 +200,10 @@
 }
 
 /* ── Motion: panel fade (motion spec §3) ──────────────────────────────────────
-   Opacity is the ONLY animated property — no translate, no scale, no
+   Opacity is the ONLY animated property on enter — no translate, no scale, no
    origin-based growth. Position is fully resolved before the fade starts, so the
-   panel never repositions mid-animation. Closing is faster than opening. */
+   panel never repositions mid-animation. Closing is instant — no exit
+   transition (per design direction; enter stays animated). */
 
 .dropdown {
   opacity: 0;
@@ -206,5 +215,5 @@
 .dropdown[data-state='closed'] {
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--dur-fast) var(--ease-in);
+  transition: none;
 }

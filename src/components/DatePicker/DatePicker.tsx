@@ -142,7 +142,7 @@ export function DatePicker({
   const [open, setOpen] = useState(false)
 
   // Keeps the panel mounted through its fade-out (motion spec §3).
-  const { mounted, state } = usePresence(open)
+  const { mounted, state } = usePresence(open, '--dur-instant')
   const [pos,  setPos]  = useState({ top: 0, left: 0 })
   const triggerRef      = useRef<HTMLDivElement>(null)
   const popoverRef      = useRef<HTMLDivElement>(null)

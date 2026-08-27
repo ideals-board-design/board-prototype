@@ -65,7 +65,7 @@ export function Tooltip({ label, position = 'top', children, maxWidth, wrapperCl
   useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
   // Keeps the tooltip mounted through its fade-out (motion spec §3).
-  const { mounted, state } = usePresence(visible)
+  const { mounted, state } = usePresence(visible, '--dur-instant')
 
   const tooltipCls = [
     styles.tooltip,

@@ -35,6 +35,14 @@
   margin: calc(-1 * var(--space-16)) 0 0;
 }
 
+.description code {
+  font-family: monospace;
+  background: var(--stone-100);
+  padding: 1px 4px;
+  border-radius: 3px;
+  font-size: 13px;
+}
+
 /* ── Row layout (full-page variants) ─────────────────── */
 
 .row {
@@ -76,6 +84,32 @@
 .drawerFrame {
   width: 460px;
   overflow: hidden;
+}
+
+/* Fixed height + the footer pinned via .dirtyFormFooterSlot below — so the
+   footer mounting/unmounting never changes this frame's height. It overlays
+   the bottom of the body instead of pushing it up, exactly like the real
+   `position: sticky` footer would over a scrolling body. Border lives on the
+   frame itself (not the body) so it stays a single closed box regardless of
+   whether the footer is showing. */
+.dirtyFormFrame {
+  height: 640px;
+  position: relative;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.dirtyFormBody {
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--space-16) var(--space-24);
+}
+
+.dirtyFormFooterSlot {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 /* ── Overflow menu (opens upward via portal) ─────────── */

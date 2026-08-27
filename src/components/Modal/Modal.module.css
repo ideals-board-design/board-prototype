@@ -25,9 +25,11 @@
 
 .backdrop[data-state='open'] { opacity: 1; }
 
+/* Closing is instant — no exit transition (per design direction; enter stays
+   animated above). */
 .backdrop[data-state='closed'] {
   opacity: 0;
-  transition: opacity var(--dur-snap) var(--ease-in);
+  transition: none;
 }
 
 /* ── Dialog ──────────────────────────────────────────────── */
@@ -58,12 +60,12 @@
   transform: scale(1);
 }
 
+/* Closing is instant — no exit transition (per design direction; enter stays
+   animated above). */
 .dialog[data-state='closed'] {
   opacity: 0;
   transform: scale(0.96);
-  transition:
-    opacity   var(--dur-snap) var(--ease-in),
-    transform var(--dur-snap) var(--ease-in);
+  transition: none;
 }
 
 .dialog:focus-visible { outline: none; }

@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { HubHeader } from './hub/HubHeader'
 import styles from './App.module.css'
-import ComponentsOverview from './pages/foundation/ComponentsOverview'
+import { type Page, nav, pageHref, readPageFromLocation, readSectionFromLocation } from './navData'
+import OverviewPage from './pages/foundation/Overview'
+import ComponentsPage from './pages/foundation/Components'
 import ColorsPage from './pages/foundation/Colors'
 import BrandingColorsPage from './pages/foundation/BrandingColors'
 import TypographyPage from './pages/foundation/Typography'
@@ -9,6 +11,7 @@ import IconsPage from './pages/foundation/Icons'
 import IllustrationsPage from './pages/foundation/Illustrations'
 import SpacingPage from './pages/foundation/Spacing'
 import ElevationPage from './pages/foundation/Elevation'
+import MotionPage from './pages/foundation/Motion'
 import ButtonsPage from './pages/components/Buttons'
 import BreadcrumbsPage from './pages/components/BreadcrumbsPage'
 import CheckboxPage from './pages/components/CheckboxPage'
@@ -41,150 +44,51 @@ import EmptyStatePage from './pages/components/EmptyStatePage'
 import TableCellPage from './pages/components/TableCellPage'
 import SkeletonPage from './pages/components/SkeletonPage'
 
-type Page =
-  | 'foundation/components-overview'
-  | 'foundation/colors'
-  | 'foundation/branding-colors'
-  | 'foundation/typography'
-  | 'foundation/icons'
-  | 'foundation/illustrations'
-  | 'foundation/spacing'
-  | 'foundation/elevation'
-  | 'components/buttons'
-  | 'components/breadcrumbs'
-  | 'components/checkbox'
-  | 'components/radio'
-  | 'components/tabs'
-  | 'components/segment-control'
-  | 'components/toggle'
-  | 'components/text-field'
-  | 'components/text-area'
-  | 'components/text-editor'
-  | 'components/tooltip'
-  | 'components/dropdown'
-  | 'components/autocomplete'
-  | 'components/search'
-  | 'components/avatar'
-  | 'components/avatars-group'
-  | 'components/date-picker'
-  | 'components/badge-counter'
-  | 'components/badge-status'
-  | 'components/chip'
-  | 'components/page-header'
-  | 'components/drawer'
-  | 'components/drawer-header'
-  | 'components/modal'
-  | 'components/sticky-footer'
-  | 'components/banner'
-  | 'components/toast'
-  | 'components/side-navigation'
-  | 'components/empty-state'
-  | 'components/table-cell'
-  | 'components/skeleton'
-
-const nav = [
-  // Foundation stays on top as the base layer
-  {
-    section: 'Foundation',
-    items: [
-      { id: 'foundation/components-overview' as Page, label: 'Components overview' },
-      { id: 'foundation/colors' as Page,        label: 'Colors' },
-      { id: 'foundation/branding-colors' as Page, label: 'Branding colors' },
-      { id: 'foundation/elevation' as Page,     label: 'Elevation' },
-      { id: 'foundation/icons' as Page,         label: 'Icons' },
-      { id: 'foundation/illustrations' as Page, label: 'Illustrations' },
-      { id: 'foundation/spacing' as Page,       label: 'Spacing' },
-      { id: 'foundation/typography' as Page,    label: 'Typography' },
-    ],
-  },
-  // Component sections — sorted A–Z
-  {
-    section: 'Actions',
-    items: [
-      { id: 'components/buttons' as Page, label: 'Button' },
-    ],
-  },
-  {
-    section: 'Alerts',
-    items: [
-      { id: 'components/banner' as Page, label: 'Banner' },
-      { id: 'components/toast' as Page,  label: 'Toast' },
-    ],
-  },
-  {
-    section: 'Controls',
-    items: [
-      { id: 'components/checkbox' as Page,        label: 'Checkbox' },
-      { id: 'components/radio' as Page,           label: 'Radio' },
-      { id: 'components/segment-control' as Page, label: 'Segment Control' },
-      { id: 'components/toggle' as Page,          label: 'Toggle' },
-    ],
-  },
-  {
-    section: 'Data Display',
-    items: [
-      { id: 'components/avatar' as Page,        label: 'Avatar' },
-      { id: 'components/avatars-group' as Page, label: 'Avatars Group' },
-      { id: 'components/badge-counter' as Page, label: 'Badge Counter' },
-      { id: 'components/badge-status' as Page,  label: 'Badge Status' },
-      { id: 'components/chip' as Page,          label: 'Chip' },
-      { id: 'components/skeleton' as Page,      label: 'Skeleton' },
-      { id: 'components/table-cell' as Page,    label: 'Table Cell' },
-      { id: 'components/tooltip' as Page,       label: 'Tooltip' },
-    ],
-  },
-  {
-    section: 'Fields',
-    items: [
-      { id: 'components/autocomplete' as Page, label: 'Autocomplete' },
-      { id: 'components/date-picker' as Page,  label: 'Date Picker' },
-      { id: 'components/dropdown' as Page,     label: 'Dropdown' },
-      { id: 'components/search' as Page,       label: 'Search' },
-      { id: 'components/text-area' as Page,    label: 'Text Area' },
-      { id: 'components/text-editor' as Page,  label: 'Text Editor' },
-      { id: 'components/text-field' as Page,   label: 'Text Field' },
-    ],
-  },
-  {
-    section: 'Layout',
-    items: [
-      { id: 'components/drawer' as Page,        label: 'Drawer' },
-      { id: 'components/drawer-header' as Page, label: 'Drawer Header' },
-      { id: 'components/empty-state' as Page,   label: 'Empty State' },
-      { id: 'components/modal' as Page,         label: 'Modal' },
-      { id: 'components/page-header' as Page,   label: 'Page Header' },
-      { id: 'components/sticky-footer' as Page, label: 'Sticky Footer' },
-    ],
-  },
-  {
-    section: 'Navigation',
-    items: [
-      { id: 'components/breadcrumbs' as Page,     label: 'Breadcrumbs' },
-      { id: 'components/side-navigation' as Page, label: 'Side Navigation' },
-      { id: 'components/tabs' as Page,            label: 'Tabs' },
-    ],
-  },
-]
-
-function NavItem({ label, active, indent, onClick }: {
-  id?: Page; label: string; active: boolean; indent?: boolean; onClick: () => void
+function NavItem({ id, label, active, indent, onNavigate }: {
+  id: Page; label: string; active: boolean; indent?: boolean; onNavigate: (id: Page) => void
 }) {
   return (
-    <button
+    <a
+      href={pageHref(id)}
       className={[
         styles.navItem,
         active  ? styles.navItemActive : '',
         indent  ? styles.navSubItem    : '',
       ].filter(Boolean).join(' ')}
-      onClick={onClick}
+      onClick={e => {
+        // Let cmd/ctrl/shift/middle-click open in a new tab as normal.
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return
+        e.preventDefault()
+        onNavigate(id)
+      }}
     >
       {label}
-    </button>
+    </a>
   )
 }
 
 export default function App() {
-  const [page, setPage] = useState<Page>('foundation/colors')
+  const [page, setPage]       = useState<Page>(readPageFromLocation)
+  const [section, setSection] = useState<string>(readSectionFromLocation)
+
+  /** Navigate to a page — `section` only matters for the Components page,
+   *  where it pre-filters the table (e.g. from an Overview category card). */
+  const navigate = (id: Page, nextSection?: string) => {
+    if (id !== page || nextSection !== section) {
+      window.history.pushState({}, '', pageHref(id, nextSection))
+      setPage(id)
+      setSection(nextSection ?? '')
+    }
+  }
+
+  useEffect(() => {
+    const onPopState = () => {
+      setPage(readPageFromLocation())
+      setSection(readSectionFromLocation())
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
 
   return (
     <div className={styles.shell}>
@@ -203,7 +107,7 @@ export default function App() {
                 label={item.label}
                 active={page === item.id}
                 indent={false}
-                onClick={() => setPage(item.id)}
+                onNavigate={navigate}
               />
             ))}
           </div>
@@ -211,12 +115,14 @@ export default function App() {
       </aside>
 
       <main className={styles.main}>
-        {page === 'foundation/components-overview' && <ComponentsOverview onNavigate={(id) => setPage(id as Page)} />}
+        {page === 'foundation/overview'       && <OverviewPage onNavigate={navigate} />}
+        {page === 'foundation/components'     && <ComponentsPage initialSection={section} onNavigate={navigate} />}
         {page === 'foundation/colors'         && <ColorsPage />}
         {page === 'foundation/branding-colors' && <BrandingColorsPage />}
         {page === 'foundation/typography'     && <TypographyPage />}
         {page === 'foundation/spacing'        && <SpacingPage />}
         {page === 'foundation/elevation'      && <ElevationPage />}
+        {page === 'foundation/motion'         && <MotionPage />}
         {page === 'foundation/icons'          && <IconsPage />}
         {page === 'foundation/illustrations'  && <IllustrationsPage />}
         {page === 'components/buttons'        && <ButtonsPage />}

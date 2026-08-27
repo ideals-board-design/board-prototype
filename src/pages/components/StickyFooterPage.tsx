@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom'
 import { StickyFooter } from '../../components/StickyFooter/StickyFooter'
 import { Button } from '../../components/Button/Button'
 import { Tooltip } from '../../components/Tooltip/Tooltip'
+import { TextField } from '../../components/TextField/TextField'
 import { functional } from '../../icons/functional'
 import { actions } from '../../icons/actions'
 import styles from './StickyFooterPage.module.css'
@@ -108,6 +109,49 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
   )
 }
 
+/* ── Trigger-driven demo — footer appears once the form goes dirty ────── */
+
+const ORIGINAL_VALUE = 'Quarterly roadmap'
+
+function DirtyFormDemo() {
+  const [value, setValue] = useState(ORIGINAL_VALUE)
+  const dirty = value !== ORIGINAL_VALUE
+
+  return (
+    <div className={styles.drawerCard}>
+      <span className={styles.drawerLabel}>
+        Edit the field below — the footer slides in once the value changes, and
+        slides out again on Cancel
+      </span>
+      <div className={[styles.drawerFrame, styles.dirtyFormFrame].join(' ')}>
+        <div className={styles.dirtyFormBody}>
+          <TextField
+            size="m"
+            variant="outline"
+            label="Title"
+            value={value}
+            onChange={e => setValue(e.target.value)}
+          />
+        </div>
+        <div className={styles.dirtyFormFooterSlot}>
+          <StickyFooter
+            variant="drawer"
+            open={dirty}
+            left={
+              <>
+                <Button variant="primary" size="m">Save</Button>
+                <Button variant="secondary" intent="neutral" size="m" onClick={() => setValue(ORIGINAL_VALUE)}>
+                  Cancel
+                </Button>
+              </>
+            }
+          />
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ── Page ────────────────────────────────────────────── */
 
 export default function StickyFooterPage() {
@@ -116,6 +160,15 @@ export default function StickyFooterPage() {
       <h1 className={styles.title}>Sticky Footer</h1>
       <p className={styles.subtitle}>Figma nodes 34928-9456 (full page) · 34928-9470 (drawer)</p>
       <SourceLink path="src/components/StickyFooter/StickyFooter.tsx" />
+
+      {/* ── Trigger-driven appearance ────────────────────── */}
+      <h2 className={styles.sectionTitle}>Appears on change</h2>
+      <p className={styles.description}>
+        Pass <code>open</code> to animate the footer in/out instead of always rendering it —
+        e.g. bound to a drawer form's dirty state. Enter runs at --dur-base, faster than the
+        Drawer it lives in (--dur-slow); exit is faster still, at --dur-snap.
+      </p>
+      <DirtyFormDemo />
 
       {/* ── Full page variant ─────────────────────────── */}
       <h2 className={styles.sectionTitle}>Full page</h2>

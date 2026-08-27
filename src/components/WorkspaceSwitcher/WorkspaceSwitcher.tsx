@@ -68,7 +68,7 @@ export function WorkspaceSwitcher({
   const active = workspaces.find(w => w.id === activeId)
 
   // Keeps the panel mounted through its fade-out (motion spec §3).
-  const { mounted, state } = usePresence(open)
+  const { mounted, state } = usePresence(open, '--dur-instant')
 
   // Close on outside click — dropdown only. An inline accordion has no
   // "outside" to close on; it just stays expanded until toggled again.

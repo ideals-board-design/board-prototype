@@ -224,7 +224,7 @@ function SublistPanel({
   onExited:      (level: number) => void
   registerRef:   (level: number, el: HTMLDivElement | null) => void
 }) {
-  const { mounted, state } = usePresence(isOpen)
+  const { mounted, state } = usePresence(isOpen, '--dur-instant')
 
   useEffect(() => {
     if (!mounted) onExited(level)
@@ -305,8 +305,8 @@ export function Dropdown({
 
   const [open, setOpen]                     = useState(false)
 
-  // Keeps the panel mounted through its fade-out (motion spec §3).
-  const { mounted, state } = usePresence(open)
+  // Keeps the panel mounted through its (instant) fade-out (motion spec §3).
+  const { mounted, state } = usePresence(open, '--dur-instant')
   const [pos,  setPos]                      = useState({ top: 0, left: 0, width: 0 })
   // One entry per open flyout level — unbounded depth (level 0 = triggered from
   // the root droplist, level 1 = from inside level 0's panel, ...). This is the

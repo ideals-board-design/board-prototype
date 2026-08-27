@@ -1,0 +1,321 @@
+.page {
+  padding: var(--space-40) var(--space-48);
+  max-width: 1100px;
+}
+
+.title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-xl);
+  letter-spacing: var(--letter-spacing-heading);
+  margin-bottom: var(--space-4);
+}
+
+.subtitle {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-48);
+  font-family: var(--font-family);
+}
+
+.sectionTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4);
+}
+
+.sectionDesc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 var(--space-24);
+  max-width: 68ch;
+}
+
+.section {
+  margin-bottom: var(--space-48);
+}
+
+/* ── Principles ────────────────────────────────────────────────────────── */
+
+.principles {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  background: var(--color-border);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.principle {
+  background: var(--color-bg-surface);
+  padding: var(--space-20) var(--space-24);
+}
+
+.principleTitle {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.principleDesc {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Duration table + demo ─────────────────────────────────────────────── */
+
+.table {
+  border: none;
+}
+
+.header,
+.row {
+  display: grid;
+  grid-template-columns: 160px 200px 1fr;
+  align-items: center;
+  padding: var(--space-12) 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-16);
+}
+
+.header {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+}
+
+.row {
+  padding: var(--space-20) 0;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.tokenName {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-medium);
+}
+
+.mono {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  font-family: var(--font-family);
+}
+
+.usageText {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Easing table + live demo ──────────────────────────────────────────── */
+
+.easingRow {
+  display: grid;
+  grid-template-columns: 160px 200px 1fr;
+  align-items: center;
+  padding: var(--space-20) 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-16);
+}
+
+.easingRow:last-child {
+  border-bottom: none;
+}
+
+/* ── Pattern cards ─────────────────────────────────────────────────────── */
+
+.patterns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.pattern {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-24) var(--space-24);
+  background: var(--color-bg-surface);
+}
+
+.patternHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-16);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-8);
+}
+
+.patternTitle {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.badge {
+  font-family: var(--font-family);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-brand);
+  background: var(--color-brand-fill-hover);
+  padding: var(--space-2) var(--space-8);
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+
+.pattern p {
+  margin: 0 0 var(--space-12);
+  color: var(--color-text-secondary);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.pattern p:last-of-type {
+  margin-bottom: 0;
+}
+
+.pattern strong {
+  color: var(--color-text-primary);
+}
+
+.note {
+  display: flex;
+  gap: var(--space-8);
+  background: var(--color-brand-fill-hover);
+  border-radius: var(--radius-sm);
+  padding: var(--space-10) var(--space-12);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  margin-top: var(--space-12);
+}
+
+.usedBy {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-6);
+  align-items: center;
+  margin-top: var(--space-12);
+  padding-top: var(--space-12);
+  border-top: 1px dashed var(--color-border);
+}
+
+.usedByLabel {
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--letter-spacing-upper);
+  font-size: 10.5px;
+  color: var(--color-text-secondary);
+  margin-right: var(--space-2);
+}
+
+.chip {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  background: var(--color-bg-secondary, #f7f7f7);
+  border: 1px solid var(--color-border);
+  padding: var(--space-2) var(--space-8);
+  border-radius: var(--radius-full);
+}
+
+/* ── Global behavior callouts ──────────────────────────────────────────── */
+
+.callouts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-16);
+}
+
+.callout {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-20) var(--space-24);
+  background: var(--color-bg-surface);
+}
+
+.callout h3 {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-8);
+}
+
+.callout p {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.callout .file {
+  display: inline-block;
+  margin-top: var(--space-12);
+  font-family: var(--font-family);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+/* ── Exceptions ─────────────────────────────────────────────────────────── */
+
+.exceptionRow {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: var(--space-16);
+  padding: var(--space-16) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.exceptionRow:last-child {
+  border-bottom: none;
+}
+
+.exceptionWhat {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.exceptionWhy {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+@media (max-width: 900px) {
+  .principles,
+  .callouts {
+    grid-template-columns: 1fr;
+  }
+  .header,
+  .row,
+  .easingRow {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+  .header {
+    display: none;
+  }
+  .exceptionRow {
+    grid-template-columns: 1fr;
+    gap: var(--space-4);
+  }
+}

@@ -24,16 +24,12 @@
 }
 
 /* ── Title ─────────────────────────────────────────────── */
-/* Editable = DS no-border TextField (multiline, size XL). Fills the row so the
-   close button is pushed to the edge; one line = 36px (24px line + 6px padding).
-   Give the field 8px horizontal padding to match the no-border input structure
-   (Figma: field padding-left 8, content padding-right 8). */
+/* Editable = DS no-border TextField (multiline, size XL) — used as-is, no local
+   padding override. Its own noBorder/sizeXL variant already gives the field
+   6px/8px padding; fills the row so the close button is pushed to the edge. */
 .titleField {
   flex: 1;
   min-width: 0;
-}
-.header .titleField textarea {
-  padding: var(--space-6) var(--space-8);
 }
 
 /* View only — plain text (not an input), same 36px row / 8px padding / 20px

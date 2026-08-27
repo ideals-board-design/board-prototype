@@ -298,9 +298,10 @@
 }
 
 /* ── Motion: panel fade (motion spec §3) ──────────────────────────────────────
-   Opacity is the ONLY animated property — no translate, no scale, no
+   Opacity is the ONLY animated property on enter — no translate, no scale, no
    origin-based growth. Position is fully resolved before the fade starts, so the
-   panel never repositions mid-animation. Closing is faster than opening. */
+   panel never repositions mid-animation. Closing is instant — no exit
+   transition (per design direction; enter stays animated). */
 
 .popover {
   opacity: 0;
@@ -312,5 +313,5 @@
 .popover[data-state='closed'] {
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--dur-fast) var(--ease-in);
+  transition: none;
 }

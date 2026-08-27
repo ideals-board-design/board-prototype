@@ -105,8 +105,11 @@ export function Drawer({
   const panelRef   = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
 
-  // Exit runs at --dur-base (spec §7), so hold the node in the DOM that long.
-  const { mounted, state } = usePresence(open, '--dur-base')
+  // Exit runs at --dur-base for right/left (spec §7); the bottom sheet exits
+  // one step faster at --dur-snap (floating-menu cadence, see Drawer.module.css)
+  // — hold the node mounted for exactly as long as its own exit transition.
+  const exitToken = variant === 'overlay' && side === 'bottom' ? '--dur-snap' : '--dur-base'
+  const { mounted, state } = usePresence(open, exitToken)
 
   // will-change is a standing promise to the compositor; drop it once the panel
   // has arrived and the drawer is just sitting there.

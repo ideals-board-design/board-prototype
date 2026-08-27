@@ -99,7 +99,7 @@ export function Search({
   const panelRef      = useRef<HTMLDivElement>(null)
 
   // Keeps the filter panel mounted through its fade-out (motion spec §3).
-  const { mounted: filterPanelMounted, state: filterPanelState } = usePresence(filterPanelOpen)
+  const { mounted: filterPanelMounted, state: filterPanelState } = usePresence(filterPanelOpen, '--dur-instant')
 
   /* Sync internal state when value prop changes externally */
   useEffect(() => { setInputValue(value) }, [value])

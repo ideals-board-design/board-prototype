@@ -17,7 +17,8 @@
 .overlay.sideLeft   { justify-content: flex-start; }
 .overlay.sideBottom { align-items: flex-end; }
 
-/* Backdrop fades in at --dur-slow with the panel's slide, out at --dur-base. */
+/* Backdrop fades in at --dur-slow with the panel's slide, out at --dur-base.
+   Bottom sheet is the exception — see the sideBottom override below. */
 .backdrop {
   position: absolute;
   inset: 0;
@@ -31,6 +32,17 @@
 .backdrop[data-state='closed'] {
   opacity: 0;
   transition: opacity var(--dur-base) var(--ease-in);
+}
+
+/* Bottom sheet reads as a floating menu (motion spec §7), not persistent page
+   furniture like the right/left drawer — it gets the floating-panel cadence
+   instead: --dur-base in, one step down (--dur-snap) out, keeping exit faster
+   than enter without borrowing the side drawer's heavier --dur-slow entrance. */
+.overlay.sideBottom .backdrop {
+  transition-duration: var(--dur-base);
+}
+.overlay.sideBottom .backdrop[data-state='closed'] {
+  transition-duration: var(--dur-snap);
 }
 
 /* ── Panel ────────────────────────────────────────────────────
@@ -94,6 +106,15 @@
 }
 .panel.sideBottom[data-state='open']   { transform: translateY(0); }
 .panel.sideBottom[data-state='closed'] { transform: translateY(100%); }
+
+/* Same faster cadence as the backdrop above — floating-menu timing, not the
+   side drawer's page-furniture --dur-slow entrance. */
+.panel.sideBottom {
+  transition-duration: var(--dur-base);
+}
+.panel.sideBottom[data-state='closed'] {
+  transition-duration: var(--dur-snap);
+}
 
 /* Fixed-width inner box — always rendered at the drawer's target width, never
    at the outer .panel's (possibly animating, possibly 0) width. Pinned to the

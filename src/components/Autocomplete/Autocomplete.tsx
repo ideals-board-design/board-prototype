@@ -135,7 +135,7 @@ export function Autocomplete({
   const [open,      setOpen]      = useState(false)
 
   // Keeps the panel mounted through its fade-out (motion spec §3).
-  const { mounted, state } = usePresence(open)
+  const { mounted, state } = usePresence(open, '--dur-instant')
   const [activeIdx, setActiveIdx] = useState(-1)
   const [pos,       setPos]       = useState({ top: 0, left: 0, width: 0 })
 

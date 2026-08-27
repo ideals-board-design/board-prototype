@@ -32,8 +32,9 @@ export function Modal({
   const dialogRef = useRef<HTMLDivElement>(null)
   const triggerRef = useRef<HTMLElement | null>(null)
 
-  // Exit runs at --dur-snap (motion spec §6), so hold the node that long.
-  const { mounted, state } = usePresence(open, '--dur-snap')
+  // Closing is instant (no exit transition — see Modal.module.css), so unmount
+  // right away instead of holding the node for a transition that no longer runs.
+  const { mounted, state } = usePresence(open, '--dur-instant')
 
   useEffect(() => {
     if (!open) return

@@ -157,11 +157,17 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
 
     // ── Dismiss ────────────────────────────────────────────────────
     //
-    // Flip to the closed state first so the exit transition can run, then unmount
-    // once it has finished — no instant disappearance.
+    // Auto-dismiss (timeout) flips to the closed state first so the exit
+    // transition can run, then unmounts once it's finished. Dismissing via the
+    // toast's own × button skips the exit transition entirely — removed
+    // immediately, per design direction (same as Modal's instant close).
 
-    const dismiss = (id: string) => {
+    const dismiss = (id: string, opts?: { instant?: boolean }) => {
       clearItemTimer(id)
+      if (opts?.instant) {
+        setItems(prev => prev.filter(item => item.id !== id))
+        return
+      }
       setItems(prev => prev.map(item =>
         item.id === id ? { ...item, presence: 'closed' } : item))
       setTimeout(
@@ -227,7 +233,7 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
                 message={item.message}
                 optional={item.optional}
                 action={item.action}
-                onDismiss={() => dismiss(item.id)}
+                onDismiss={() => dismiss(item.id, { instant: true })}
               />
             </div>
           </div>
