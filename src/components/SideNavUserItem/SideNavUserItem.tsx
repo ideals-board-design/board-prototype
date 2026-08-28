@@ -158,7 +158,7 @@ function UserMenuItems({
           <span className={styles.navItemLabel}>Language ({activeLangLabel})</span>
         </span>
       </div>
-      <button type="button" className={[styles.navItem, styles.navItemDanger].join(' ')} onClick={onLogoutClick}>
+      <button type="button" className={styles.navItem} onClick={onLogoutClick}>
         <span className={styles.navItemInner}>
           <span className={styles.navItemIcon} dangerouslySetInnerHTML={{ __html: exitSvg }} />
           <span className={styles.navItemLabel}>Log out</span>
@@ -423,10 +423,10 @@ export function SideNavUserItem({
           {/* Log out */}
           <button
             type="button"
-            className={[styles.item, styles.itemDanger].join(' ')}
+            className={styles.item}
             onClick={() => { onLogoutClick?.(); setOpen(false) }}
           >
-            <span className={[styles.icon, styles.iconDanger].join(' ')} dangerouslySetInnerHTML={{ __html: exitSvg }} />
+            <span className={styles.icon} dangerouslySetInnerHTML={{ __html: exitSvg }} />
             <span className={styles.itemLabel}>Log out</span>
           </button>
 

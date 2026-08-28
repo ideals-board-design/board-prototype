@@ -141,11 +141,6 @@
   color: var(--color-text-secondary);
 }
 
-.navItemDanger .navItemLabel,
-.navItemDanger .navItemIcon {
-  color: var(--color-text-error);
-}
-
 /* ── Text block ─────────────────────────────────────────── */
 
 .textBlock {
@@ -236,11 +231,6 @@
 
 .itemActive {
   background: var(--color-bg-selected);
-}
-
-/* Danger variant (Log out) */
-.itemDanger .itemLabel {
-  color: var(--color-text-error);
 }
 
 /* ── 2FA banner — Figma 3196-1375 / 3196-1383 ──────────── */
@@ -336,10 +326,6 @@
 
 .iconGreen {
   color: var(--color-icon-brand);
-}
-
-.iconDanger {
-  color: var(--color-text-error);
 }
 
 /* ── Item label ─────────────────────────────────────────── */
