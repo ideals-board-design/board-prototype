@@ -32,6 +32,29 @@
   .navBackBtn { display: none; }
 }
 
+/* Nav drawer (≤1023) header + body — mirrors the app shell so the SideNavigation
+   drawer variant fills the panel and gets a close button. */
+.navDrawerHeader {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+.navDrawerHeaderTablet {
+  padding: var(--space-8) var(--space-24) var(--space-8) var(--space-10);
+}
+.navDrawerHeaderMobile {
+  padding: var(--space-8) var(--space-16) var(--space-8) var(--space-10);
+}
+.navDrawerBody {
+  flex: 1 !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
 .navScrim {
   position: fixed;
   inset: 0;
@@ -407,7 +430,7 @@
   /* Default (resting) state has no visible outline/divider; the 1px border is kept
      transparent so hover/active can colour it in without shifting the layout. */
   border-color: transparent;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--dur-snap) var(--ease-out);
 }
 .detailItemView:hover {
   border-color: var(--color-border-strong);
@@ -439,7 +462,7 @@
   font-family: var(--font-family);
   text-align: left;
   cursor: pointer;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--dur-snap) var(--ease-out);
 }
 .detailItemCollapsed:hover {
   border-color: var(--color-border-strong);
@@ -627,7 +650,7 @@
   height: 32px;
   padding: var(--space-4) 0 var(--space-4) var(--space-8);
   border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 
 .presenterChipRow:hover {
@@ -636,7 +659,7 @@
 
 .presenterRemoveBtn {
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
 
 .presenterChipRow:hover .presenterRemoveBtn,
@@ -1043,7 +1066,7 @@
   color: var(--color-text-primary);
   white-space: nowrap;
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 .inviteRsvpCell + .inviteRsvpCell { border-left: 1px solid var(--color-border); }
 .inviteRsvpCell:hover { background: var(--color-bg-hover-fill); }
@@ -1102,7 +1125,7 @@
   z-index: -1;
   border-radius: var(--radius-sm);
   background: transparent;
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 .mtgGroupTrigger:hover::before,
 .mtgGroupTriggerOpen::before { background: var(--color-bg-hover-fill); }
@@ -1127,7 +1150,7 @@
   margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-8));
   padding: var(--space-4) var(--space-8);
   border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 .mtgGroupChip:hover,
 .mtgGroupChip:focus-within { background: var(--color-bg-hover-fill); }
@@ -1171,7 +1194,7 @@
   transform: translateY(-50%);
   display: flex;
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
 .mtgGroupChip:hover .mtgGroupClear,
 .mtgGroupChip:focus-within .mtgGroupClear { opacity: 1; }
@@ -1258,7 +1281,7 @@
 .mtgParticipantRemove {
   margin-left: auto;
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
 .mtgParticipantRow:hover .mtgParticipantRemove,
 .mtgParticipantRow:focus-within .mtgParticipantRemove { opacity: 1; }
@@ -1313,7 +1336,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   color: var(--color-text-primary);
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 .vcInput::placeholder { color: var(--color-text-secondary); }
 .vcInput:hover,
@@ -1422,7 +1445,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   color: var(--color-text-brand);
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 .calAddBtn:hover { background: var(--color-bg-hover-fill); }
 .calAddIcon,
@@ -1478,7 +1501,7 @@
   margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-8));
   padding: var(--space-4) var(--space-8);
   border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 .vcLinkRow:hover,
 .vcLinkRow:focus-within { background: var(--color-bg-hover-fill); }
@@ -1504,7 +1527,7 @@
   display: flex;
   gap: var(--space-2);
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
 .vcLinkRow:hover .vcActions,
 .vcLinkRow:focus-within .vcActions { opacity: 1; }

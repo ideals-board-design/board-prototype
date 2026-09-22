@@ -23,17 +23,17 @@ import { PageHeader }  from '../components/PageHeader/PageHeader'
 import { BadgeStatus } from '../components/BadgeStatus/BadgeStatus'
 import { Button }      from '../components/Button/Button'
 import { Tooltip }     from '../components/Tooltip/Tooltip'
+import { Drawer }      from '../components/Drawer/Drawer'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 import { Tabs, type TabItem } from '../components/Tabs/Tabs'
 import { EmptyState }  from '../components/EmptyState/EmptyState'
 import { StickyFooter } from '../components/StickyFooter/StickyFooter'
 import { functional } from '../icons/functional'
-import { arrows }     from '../icons/arrows'
 import { actions }    from '../icons/actions'
 import { AgendaPreview, MEETING_TITLE, type AgendaItem } from './MeetingPage'
 import styles from './MeetingPage.module.css'
 
-const menuSvg     = functional.find(i => i.name === 'menu')!.svg
-const backSvg     = arrows.find(i => i.name === 'angle-left-b')!.svg
+const removeSvg   = actions.find(i => i.name === 'multiply')!.svg
 const bookmarkSvg = functional.find(i => i.name === 'bookmark')!.svg
 const downloadSvg = actions.find(i => i.name === 'download-alt')!.svg
 const checkCircleSvg = actions.find(i => i.name === 'check-circle')!.svg
@@ -57,21 +57,6 @@ const TABS: TabItem[] = [
   { id: 'minutes',    label: 'Minutes' },
 ]
 type BoardTab = 'meeting' | 'agenda' | 'board-book' | 'tasks' | 'minutes'
-
-/* Track a CSS media query so the shell can swap the sidebar for a hamburger
-   drawer ≤1023px without unmounting (mirrors the Meeting page). */
-function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia(query).matches)
-  useEffect(() => {
-    const mql = window.matchMedia(query)
-    const onChange = () => setMatches(mql.matches)
-    onChange()
-    mql.addEventListener('change', onChange)
-    return () => mql.removeEventListener('change', onChange)
-  }, [query])
-  return matches
-}
 
 /* ── Published agenda (board-member visible data) ───────────────────────────
    Only the latest *published* version is ever shown — unpublished secretary
@@ -152,67 +137,37 @@ export default function BoardMemberPage() {
   const [boardBookDoc, setBoardBookDoc] = useState<string | null>(null)
   const openInBoardBook = (name: string) => { setBoardBookDoc(name); setActiveTab('board-book') }
 
-  const isCompact = useMediaQuery('(max-width: 1023px)')
+  const { tier, isCompact } = useBreakpoint()
   const [navOpen, setNavOpen] = useState(false)
-  useEffect(() => { if (!isCompact) setNavOpen(false) }, [isCompact])
+  useEffect(() => { if (tier !== 'mobile') setNavOpen(false) }, [tier])
 
-  const sideNav = (drawer: boolean) => (
-    <SideNavigation
-      workspaces={WORKSPACES}
-      activeWorkspaceId={workspace}
-      onWorkspaceSelect={setWorkspace}
-      navItems={DEFAULT_NAV_ITEMS}
-      activeItem={navItem}
-      collapsed={drawer ? false : undefined}
-      onItemClick={key => { setNavItem(key); setNavOpen(false) }}
-      {...BOARD_MEMBER}
-      onProfileClick={() => console.log('profile')}
-      onConnectionsClick={() => console.log('connections')}
-      onLogoutClick={() => console.log('logout')}
-    />
-  )
+  const onMenuClick = tier === 'mobile' ? () => setNavOpen(true) : undefined
+  const menuTier: 'tablet' | 'mobile' = isCompact ? 'tablet' : 'mobile'
+
+  const navProps = {
+    workspaces: WORKSPACES,
+    activeWorkspaceId: workspace,
+    onWorkspaceSelect: setWorkspace,
+    navItems: DEFAULT_NAV_ITEMS,
+    activeItem: navItem,
+    onItemClick: (key: NavMenuItemKey) => { setNavItem(key); setNavOpen(false) },
+    ...BOARD_MEMBER,
+    onProfileClick: () => console.log('profile'),
+    onConnectionsClick: () => console.log('connections'),
+    onLogoutClick: () => console.log('logout'),
+  }
 
   return (
     <div className={styles.shell}>
-      <div className={styles.sidebarInline}>{sideNav(false)}</div>
-
-      {isCompact && navOpen && (
-        <>
-          <div className={styles.navScrim} onClick={() => setNavOpen(false)} aria-hidden="true" />
-          <div className={styles.navDrawer} role="dialog" aria-modal="true" aria-label="Main navigation">
-            {sideNav(true)}
-          </div>
-        </>
+      {tier !== 'mobile' && (
+        <SideNavigation variant={tier === 'laptop' ? 'rail' : 'sidebar'} {...navProps} />
       )}
 
       <main className={styles.main}>
         <PageHeader
-          leading={
-            <>
-              <span className={styles.navMenuBtn}>
-                <Button
-                  variant="tertiary"
-                  intent="neutral"
-                  size="m"
-                  iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: menuSvg }} />}
-                  onClick={() => setNavOpen(true)}
-                  aria-label="Open navigation menu"
-                />
-              </span>
-              <span className={styles.navBackBtn}>
-                <Tooltip label="Back" position="bottom">
-                  <Button
-                    variant="tertiary"
-                    intent="neutral"
-                    size="m"
-                    iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: backSvg }} />}
-                    onClick={() => { window.location.href = '/' }}
-                    aria-label="Go back"
-                  />
-                </Tooltip>
-              </span>
-            </>
-          }
+          onMenuClick={onMenuClick}
+          menuTier={menuTier}
+          onBack={() => { window.location.href = '/' }}
           title={MEETING_TITLE}
           badge={published
             ? <BadgeStatus type="positive" label="Agenda published" />
@@ -310,6 +265,33 @@ export default function BoardMemberPage() {
           )}
         </div>
       </main>
+
+      {/* ≤1023 overlay nav drawer (Figma "Navigation behaviour"). */}
+      {tier === 'mobile' && (
+        <Drawer
+          variant="overlay"
+          side="left"
+          width={isCompact ? 460 : '100%'}
+          open={navOpen}
+          onClose={() => setNavOpen(false)}
+          ariaLabel="Main navigation"
+          header={
+            <div className={[styles.navDrawerHeader, isCompact ? styles.navDrawerHeaderTablet : styles.navDrawerHeaderMobile].join(' ')}>
+              <Button
+                variant="tertiary"
+                intent="neutral"
+                size="m"
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: removeSvg }} />}
+                onClick={() => setNavOpen(false)}
+                aria-label="Close navigation menu"
+              />
+            </div>
+          }
+          bodyClassName={styles.navDrawerBody}
+        >
+          <SideNavigation variant={isCompact ? 'drawer-tablet' : 'drawer-mobile'} {...navProps} />
+        </Drawer>
+      )}
     </div>
   )
 }

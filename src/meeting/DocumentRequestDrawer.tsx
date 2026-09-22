@@ -170,7 +170,7 @@ export function DocumentRequestDrawer({
   )
 
   return (
-    <Drawer open={open} onClose={onClose} overlay header={header} footer={footer}>
+    <Drawer open={open} onClose={onClose} header={header} footer={footer}>
       <div className={styles.form}>
         <div className={styles.fields}>
           {isPending && submitted.length > 0 && (

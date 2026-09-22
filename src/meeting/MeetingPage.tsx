@@ -7,6 +7,8 @@ import type { NavMenuItemKey } from '../components/SideNavigationItem/SideNaviga
 import { PageHeader }  from '../components/PageHeader/PageHeader'
 import { BadgeStatus } from '../components/BadgeStatus/BadgeStatus'
 import { Button }      from '../components/Button/Button'
+import { Drawer }      from '../components/Drawer/Drawer'
+import { useBreakpoint } from '../hooks/useBreakpoint'
 import { Tooltip }     from '../components/Tooltip/Tooltip'
 import { Tabs, type TabItem } from '../components/Tabs/Tabs'
 import { Dropdown, type DropdownSelectableOption, type DropdownOption } from '../components/Dropdown/Dropdown'
@@ -91,9 +93,6 @@ const spinnerSvg     = condition.find(i => i.name === 'loader-round')!.svg
 const sendSvg        = communication.find(i => i.name === 'envelope')!.svg
 const draftSvg       = filesIcons.find(i => i.name === 'file-default')!.svg
 const trashSvg       = actions.find(i => i.name === 'trash-alt')!.svg
-/* ≤1023px the sidebar collapses to a hamburger in the page header (Figma 17506-146087) */
-const menuSvg        = functional.find(i => i.name === 'menu')!.svg
-const backSvg        = arrows.find(i => i.name === 'angle-left-b')!.svg
 
 /* Track a CSS media query in React so layout mode changes drive behaviour
    (drawer vs. inline sidebar, edit vs. view-only) without unmounting — state,
@@ -2637,79 +2636,47 @@ export default function MeetingPage() {
   /* Document opened from an attachment — shown in the Board book tab. */
   const [boardBookDoc, setBoardBookDoc] = useState<string | null>(null)
 
-  /* ≤1023px the sidebar is hidden and reached through a hamburger, which opens
-     it as an overlay drawer (Figma 17506-146087). */
-  const isCompact = useMediaQuery('(max-width: 1023px)')
+  /* Responsive nav (main's "Navigation behaviour" model): an inline rail (laptop)
+     / full sidebar (desktop) ≥1024, and an overlay drawer below, opened from the
+     header hamburger. */
+  const { tier, isCompact } = useBreakpoint()
   const [navOpen, setNavOpen] = useState(false)
   /* Never leave the drawer stuck open when the layout grows back to the rail. */
-  useEffect(() => { if (!isCompact) setNavOpen(false) }, [isCompact])
+  useEffect(() => { if (tier !== 'mobile') setNavOpen(false) }, [tier])
 
   const openInBoardBook = (name: string) => { setBoardBookDoc(name); setActiveTab('board-book') }
   /* "View Boardbook" from the agenda — open the board book at its first page. */
   const viewBoardBook = () => { setBoardBookDoc(null); setActiveTab('board-book') }
 
-  const sideNav = (drawer: boolean) => (
-    <SideNavigation
-      workspaces={WORKSPACES}
-      activeWorkspaceId={workspace}
-      onWorkspaceSelect={setWorkspace}
-      navItems={DEFAULT_NAV_ITEMS}
-      activeItem={navItem}
-      /* Drawer always shows the full expanded sidebar regardless of viewport. */
-      collapsed={drawer ? false : undefined}
-      onItemClick={key => { setNavItem(key); setNavOpen(false) }}
-      {...USER}
-      twoFaEnabled
-      onProfileClick={() => console.log('profile')}
-      onConnectionsClick={() => console.log('connections')}
-      onLogoutClick={() => console.log('logout')}
-    />
-  )
+  const onMenuClick = tier === 'mobile' ? () => setNavOpen(true) : undefined
+  const menuTier: 'tablet' | 'mobile' = isCompact ? 'tablet' : 'mobile'
+
+  const navProps = {
+    workspaces: WORKSPACES,
+    activeWorkspaceId: workspace,
+    onWorkspaceSelect: setWorkspace,
+    navItems: DEFAULT_NAV_ITEMS,
+    activeItem: navItem,
+    onItemClick: (key: NavMenuItemKey) => { setNavItem(key); setNavOpen(false) },
+    ...USER,
+    twoFaEnabled: true,
+    onProfileClick: () => console.log('profile'),
+    onConnectionsClick: () => console.log('connections'),
+    onLogoutClick: () => console.log('logout'),
+  }
 
   return (
     <div className={styles.shell}>
-      {/* Inline rail — expanded ≥1440, icons-only 1024–1439, hidden ≤1023. */}
-      <div className={styles.sidebarInline}>{sideNav(false)}</div>
-
-      {/* ≤1023 overlay drawer + scrim. */}
-      {isCompact && navOpen && (
-        <>
-          <div className={styles.navScrim} onClick={() => setNavOpen(false)} aria-hidden="true" />
-          <div className={styles.navDrawer} role="dialog" aria-modal="true" aria-label="Main navigation">
-            {sideNav(true)}
-          </div>
-        </>
+      {/* Inline rail (laptop) / full sidebar (desktop); ≤1023 moves to a drawer. */}
+      {tier !== 'mobile' && (
+        <SideNavigation variant={tier === 'laptop' ? 'rail' : 'sidebar'} {...navProps} />
       )}
 
       <main className={styles.main}>
         <PageHeader
-          leading={
-            <>
-              {/* Hamburger ≤1023, back button ≥1024 (toggled via CSS). */}
-              <span className={styles.navMenuBtn}>
-                <Button
-                  variant="tertiary"
-                  intent="neutral"
-                  size="m"
-                  iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: menuSvg }} />}
-                  onClick={() => setNavOpen(true)}
-                  aria-label="Open navigation menu"
-                />
-              </span>
-              <span className={styles.navBackBtn}>
-                <Tooltip label="Back" position="bottom">
-                  <Button
-                    variant="tertiary"
-                    intent="neutral"
-                    size="m"
-                    iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: backSvg }} />}
-                    onClick={() => console.log('back')}
-                    aria-label="Go back"
-                  />
-                </Tooltip>
-              </span>
-            </>
-          }
+          onMenuClick={onMenuClick}
+          menuTier={menuTier}
+          onBack={() => console.log('back')}
           title={MEETING_TITLE}
           badge={<BadgeStatus type="neutral" label="Agenda not published" />}
           className={styles.pageHeader}
@@ -2758,6 +2725,33 @@ export default function MeetingPage() {
           {activeTab === 'minutes' && <MinutesTab />}
         </div>
       </main>
+
+      {/* ≤1023 overlay nav drawer (Figma "Navigation behaviour"). */}
+      {tier === 'mobile' && (
+        <Drawer
+          variant="overlay"
+          side="left"
+          width={isCompact ? 460 : '100%'}
+          open={navOpen}
+          onClose={() => setNavOpen(false)}
+          ariaLabel="Main navigation"
+          header={
+            <div className={[styles.navDrawerHeader, isCompact ? styles.navDrawerHeaderTablet : styles.navDrawerHeaderMobile].join(' ')}>
+              <Button
+                variant="tertiary"
+                intent="neutral"
+                size="m"
+                iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: removeSvg }} />}
+                onClick={() => setNavOpen(false)}
+                aria-label="Close navigation menu"
+              />
+            </div>
+          }
+          bodyClassName={styles.navDrawerBody}
+        >
+          <SideNavigation variant={isCompact ? 'drawer-tablet' : 'drawer-mobile'} {...navProps} />
+        </Drawer>
+      )}
     </div>
   )
 }

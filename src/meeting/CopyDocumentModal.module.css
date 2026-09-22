@@ -16,7 +16,7 @@
   padding: var(--space-8) var(--space-12);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 .row:hover { background: var(--color-bg-hover-fill); }
 

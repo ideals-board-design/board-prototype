@@ -55,7 +55,7 @@
   line-height: var(--line-height-base);
   color: var(--color-text-primary);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 
 .item:hover  { background: var(--color-bg-hover-fill); }

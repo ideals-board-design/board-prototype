@@ -54,7 +54,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition: background var(--dur-snap) var(--ease-out), border-color var(--dur-snap) var(--ease-out);
 }
 .card:hover { background: var(--color-bg-hover-fill); }
 .card:focus-visible {
@@ -135,7 +135,7 @@
   padding: var(--space-24);
   border: 1px dashed var(--color-border);
   border-radius: var(--radius-md);
-  transition: border-color var(--transition-fast), background var(--transition-fast);
+  transition: border-color var(--dur-snap) var(--ease-out), background var(--dur-snap) var(--ease-out);
 }
 
 .dropzoneText {
