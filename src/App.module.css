@@ -63,7 +63,7 @@
 .navItem {
   display: flex;
   align-items: center;
-  height: 32px;
+  height: var(--size-s);
   padding: 0 var(--space-8);
   border-radius: var(--radius-md);
   font-size: var(--text-sm);

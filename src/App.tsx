@@ -111,7 +111,7 @@ export default function App() {
                 onNavigate={navigate}
               />
             ))}
-          </div>
+        </div>
         ))}
       </aside>
 
@@ -159,8 +159,7 @@ export default function App() {
         {page === 'components/table-cell'         && <TableCellPage />}
         {page === 'components/skeleton'           && <SkeletonPage />}
       </main>
-      </div>
-
-    </div>
+  </div>
+  </div>
   )
 }

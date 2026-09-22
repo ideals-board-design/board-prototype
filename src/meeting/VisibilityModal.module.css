@@ -1,0 +1,125 @@
+/* VisibilityModal — "Set agenda item visibility" (Figma 11710-104380) */
+
+.body {
+  display: flex;
+  gap: var(--space-24);
+}
+
+/* ── Left: agenda item tree ─────────────────────────────────────────────── */
+.itemsPanel {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Table-header band — gray fill, rounded top, no border (matching reference). */
+.colHeader {
+  padding: var(--space-14) var(--space-16);
+  background: var(--stone-200);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.itemsList {
+  display: flex;
+  flex-direction: column;
+  max-height: 432px;
+  overflow-y: auto;
+  padding-top: var(--space-4);
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-10) var(--space-16);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family);
+}
+.itemRow:hover { background: var(--color-bg-hover); }
+.itemRowActive,
+.itemRowActive:hover { background: var(--color-bg-selected); }
+
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.eyeSlash {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon-secondary);
+}
+.eyeSlash svg { width: 100%; height: 100%; }
+
+/* ── Right: users + view checkbox ───────────────────────────────────────── */
+.usersPanel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.usersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-14) var(--space-16);
+  background: var(--stone-200);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.usersList {
+  display: flex;
+  flex-direction: column;
+  max-height: 432px;
+  overflow-y: auto;
+}
+
+.userRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-16);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.userName {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.userRole {
+  flex-shrink: 0;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}

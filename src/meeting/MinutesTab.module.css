@@ -1,0 +1,486 @@
+/* MinutesTab — Minutes → AI minutes, two-pane layout with sticky action-items
+   navigation banner. Figma 30567-64045. */
+
+.minutesTab {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------- left pane */
+
+.leftPane {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--color-border);
+}
+
+.segmentHeader {
+  flex-shrink: 0;
+  padding: var(--space-16) var(--space-24);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.leftScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
+  padding: 0 var(--space-24) var(--space-24);
+}
+
+/* outline ---------------------------------------------------------------- */
+
+.outline {
+  padding: var(--space-24) 0 var(--space-16);
+}
+
+.outlineHeading {
+  margin: 0 0 var(--space-12);
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.outlineList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.outlineRow {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.outlineRow:nth-child(3) {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.outlineNum {
+  color: var(--color-text-secondary);
+}
+
+.showMore {
+  margin-top: var(--space-12);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-success);
+}
+
+.showMoreIcon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.15s ease;
+}
+
+.showMoreIconUp {
+  transform: rotate(180deg);
+}
+
+/* sticky banner ---------------------------------------------------------- */
+
+.banner {
+  position: sticky;
+  top: var(--space-8);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-32);
+  padding: var(--space-4) var(--space-10) var(--space-4) var(--space-16);
+  margin-bottom: var(--space-16);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+}
+
+.bannerLabel {
+  font-size: var(--text-base);
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+.bannerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* AI summary blocks ------------------------------------------------------ */
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.blockHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-16);
+}
+
+.blockTitle {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.blockTime {
+  flex-shrink: 0;
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.para {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+.paraMuted {
+  color: var(--color-text-secondary);
+}
+
+/* action item card ------------------------------------------------------- */
+
+.actionCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-12);
+  background: var(--color-success-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  scroll-margin-top: var(--space-56);
+  scroll-margin-bottom: var(--space-24);
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+/* Hover: the card shifts to the neutral hover tint and reveals a floating
+   toolbar to act on the AI-identified item (create draft / dismiss). */
+.actionCard:hover {
+  background: var(--color-bg-hover);
+}
+
+/* Prev/Next on the banner jumps to an item: the card gives a quick "pop"
+   (gentle overshoot) and flashes a green border that eases back out — a
+   momentary "you jumped here" cue, not a persistent state. Uses the DS
+   enter/appear curve. The class rides onto a fresh element on every Prev/Next,
+   so the keyframes replay each jump. */
+.actionCardActive {
+  animation: actionHighlight 1600ms cubic-bezier(0, 0, 0.2, 1) forwards;
+  /* Keep the composited transform crisp while it scales. */
+  will-change: transform;
+}
+
+@keyframes actionHighlight {
+  0%   { transform: scale(0.985); border-color: var(--color-success); }
+  18%  { transform: scale(1.01); }
+  35%  { transform: scale(1); border-color: var(--color-success); }
+  100% { transform: scale(1); border-color: transparent; }
+}
+
+/* Respect reduced-motion: no pop/flash, just a brief static highlight. */
+@media (prefers-reduced-motion: reduce) {
+  .actionCardActive {
+    animation: none;
+    transform: none;
+    border-color: var(--color-success);
+  }
+}
+
+.actionCardHead {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.actionCardBody {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+.actionCardText {
+  margin: 0;
+  flex: 1;
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* hover action toolbar --------------------------------------------------- */
+
+/* Floating bar anchored to the card's lower-right (16px from the right edge),
+   overlapping its bottom edge. Hidden until the card is hovered. */
+.actionToolbar {
+  position: absolute;
+  right: var(--space-16);
+  bottom: calc(-1 * var(--space-16));
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-100);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.12s ease, visibility 0.12s ease;
+}
+
+.actionCard:hover .actionToolbar {
+  opacity: 1;
+  visibility: visible;
+}
+
+.actionToolbarBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-8);
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.12s ease;
+}
+
+.actionToolbarBtn:hover {
+  background: var(--color-bg-hover);
+}
+
+.actionToolbarIcon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.actionToolbarIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.iconSuccess {
+  color: var(--color-success);
+}
+
+.iconDanger {
+  color: var(--color-error);
+}
+
+.actionToolbarTime {
+  padding: 0 var(--space-8);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* left footer ------------------------------------------------------------ */
+
+.leftFooter {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--space-16) var(--space-24);
+  border-top: 1px solid var(--color-border);
+}
+
+/* ------------------------------------------------------------- right pane */
+
+.rightPane {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-12) var(--space-16);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.toolBtn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: var(--space-6);
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.toolBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.toolBtnFlip {
+  transform: scaleX(-1);
+}
+
+.toolDivider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 20px;
+  margin: 0 var(--space-6);
+  background: var(--color-border);
+}
+
+.toolSelect {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: 32px;
+  padding: 0 var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.toolSelectChevron {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.docScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-24);
+  background: var(--color-bg-page);
+}
+
+.doc {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-56) var(--space-56) var(--space-72);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.docTitle {
+  margin: 0 0 var(--space-24);
+  text-align: center;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.docCenter {
+  margin: 0 0 var(--space-4);
+  text-align: center;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.docSection {
+  margin: var(--space-24) 0 var(--space-12);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* One grid for the whole list so the name column sizes to the widest name
+   (dashes stay aligned) and each role fills the remaining width, wrapping with
+   a hanging indent inside its own column (Figma 23864-71908). */
+.docList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: max-content auto 1fr;
+  column-gap: var(--space-16);
+  row-gap: var(--space-8);
+  align-items: baseline;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.docListRow {
+  display: contents;
+}
+
+.docDash {
+  color: var(--color-text-secondary);
+}
+
+.docRole {
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------- responsive */
+
+@media (max-width: 960px) {
+  .minutesTab {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .leftPane,
+  .rightPane {
+    flex: 1 1 auto;
+    border-right: none;
+  }
+
+  .leftPane {
+    border-bottom: 1px solid var(--color-border);
+  }
+}

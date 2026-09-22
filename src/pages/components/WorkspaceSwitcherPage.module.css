@@ -77,6 +77,6 @@
   font-family: monospace;
   font-size: 13px;
   background: var(--color-bg-page);
-  padding: 1px 4px;
+  padding: 1px var(--space-4);
   border-radius: 3px;
 }

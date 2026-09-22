@@ -1,0 +1,76 @@
+/* MotionsField — edit-mode motions list (Figma 11710-104437) */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.rowWrap {
+  position: relative;
+}
+
+/* The dragged row dims while its ghost follows the cursor (HTML5 drag keeps the
+   element in place, so the card height doesn't jump). */
+.dragging { opacity: 0.4; }
+
+.row {
+  display: flex;
+  align-items: flex-start;   /* handle / × align to the field's first line */
+  gap: var(--space-8);
+}
+
+/* Drag handle — shown only with 2+ motions. 40px tall so its glyph centres on a
+   single-line field's text. */
+.handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 40px;
+  color: var(--color-icon-secondary);
+  cursor: grab;
+}
+.handle:active { cursor: grabbing; }
+.handle svg { width: 20px; height: 20px; }
+
+.field { flex: 1; min-width: 0; }
+
+/* Keep the × on the field's first line. */
+.remove {
+  flex-shrink: 0;
+  margin-top: var(--space-4);
+}
+
+/* Green drop indicator between rows. */
+.dropLine {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent-500);
+}
+
+/* "Add motion" — plain secondary text, left-aligned with the section labels (no
+   padding, so it lines up and sits exactly 2px below the "Motions" label). On
+   hover a full-width soft fill spreads 4px around via box-shadow (Figma
+   29649-120706) — height without shifting layout. Indented to align with the
+   fields when handles show. */
+.addBtn {
+  align-self: stretch;
+  text-align: left;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: background var(--dur-snap) var(--ease-out), box-shadow var(--dur-snap) var(--ease-out);
+}
+.addBtn:hover {
+  background: var(--color-bg-hover-fill);
+  box-shadow: 0 0 0 var(--space-4) var(--color-bg-hover-fill);
+}
+.addBtnIndented { margin-left: calc(20px + var(--space-8)); }

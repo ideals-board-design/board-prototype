@@ -5,8 +5,8 @@
 /* ── Base ─────────────────────────────────────────────────────────────────── */
 
 .cell {
-  width: 32px;
-  height: 32px;
+  width: var(--size-s);
+  height: var(--size-s);
   display: flex;
   align-items: center;
   justify-content: center;

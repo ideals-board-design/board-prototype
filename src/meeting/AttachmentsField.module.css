@@ -1,0 +1,177 @@
+/* AttachmentsField — agenda item attachments list + upload field
+   (Figma 11710-105059 / row component 29649-123669). */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.rowWrap { position: relative; }
+
+/* The dragged row dims while its ghost follows the cursor. */
+.dragging { opacity: 0.4; }
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+/* Drag handle — shown only with 2+ attachments (matches MotionsField). */
+.handle,
+.handleSpacer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 40px;
+}
+.handle {
+  color: var(--color-icon-secondary);
+  cursor: grab;
+}
+.handle:active { cursor: grabbing; }
+.handle svg { width: 20px; height: 20px; }
+
+/* Attachment card — 40px tall, format icon + name + trailing actions. */
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex: 1;
+  min-width: 0;
+  height: 40px;
+  padding: 0 var(--space-4) 0 var(--space-12);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--dur-snap) var(--ease-out), border-color var(--dur-snap) var(--ease-out);
+}
+.card:hover { background: var(--color-bg-hover-fill); }
+.card:focus-visible {
+  outline: none;
+  border-color: var(--color-border-focus);
+}
+
+/* Uploading — non-interactive, no hover affordance. */
+.cardUploading { cursor: default; }
+.cardUploading:hover { background: var(--color-bg-surface); }
+
+.formatIcon {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+.formatIcon svg { width: 100%; height: 100%; }
+
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.nameUploading { color: var(--color-text-secondary); }
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Document request row — badges sit between the title and the actions menu. */
+.requestBadges {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-shrink: 0;
+}
+
+/* Uploading spinner — static box, inner SVG rotates. */
+.spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--accent-500);
+}
+.spinner svg {
+  width: 20px;
+  height: 20px;
+  animation: attSpin 600ms linear infinite;
+}
+@keyframes attSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Green drop indicator between rows. */
+.dropLine {
+  height: 2px;
+  border-radius: 1px;
+  background: var(--accent-500);
+}
+
+/* ── Upload field / drop target ──────────────────────────────────────────── */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--dur-snap) var(--ease-out), background var(--dur-snap) var(--ease-out);
+}
+
+.dropzoneText {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.dropzoneActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── Document-request list (duplicate preview) ───────────────────────────── */
+.readOnlyList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+/* The list is a column, so `.card`'s `flex: 1` would collapse the row height to its
+   content on the main axis — pin it to the DS size-M height (40px) and full width. */
+.cardReadOnly {
+  flex: none;
+  width: 100%;
+  cursor: default;
+}
+.cardReadOnly:hover { background: var(--color-bg-surface); }

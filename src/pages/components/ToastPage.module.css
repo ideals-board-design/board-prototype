@@ -61,7 +61,7 @@
 .guidelines code {
   font-family: monospace;
   background: var(--stone-100);
-  padding: 1px 4px;
+  padding: 1px var(--space-4);
   border-radius: 3px;
   font-size: 13px;
 }

@@ -18,7 +18,7 @@ const angleRightSvg = arrows.find(i => i.name === 'angle-right-fill')!.svg
 /* ── Features registry ─────────────────────────────────────
    Add a new entry here whenever a new feature page is built.
    `href` opens a prototype directly; `view` opens an in-hub sub-page. */
-type SubView = 'dashboard' | 'public'
+type SubView = 'dashboard' | 'public' | 'meeting'
 
 const FEATURES: { id: string; name: string; designer: string; href?: string; view?: SubView }[] = [
   {
@@ -50,6 +50,12 @@ const FEATURES: { id: string; name: string; designer: string; href?: string; vie
     name: 'Documents',
     designer: 'Jaroslav Getman',
     href: '/documents.html',
+  },
+  {
+    id: 'meeting',
+    name: 'Meeting',
+    designer: 'Elena Skurtova',
+    view: 'meeting',
   },
   {
     id: 'public-page',
@@ -95,9 +101,23 @@ const PUBLIC_PAGE_FLOWS: { title: string; flows: { id: string; name: string; hre
   },
 ]
 
+/* ── Meeting flows ─────────────────────────────────────────
+   Role-selection: Secretary keeps the existing Meeting prototype; Board member
+   is a placeholder until its own flow is built. */
+const MEETING_FLOWS: { title: string; flows: { id: string; name: string; href: string }[] }[] = [
+  {
+    title: 'Select a role',
+    flows: [
+      { id: 'meeting-board-member', name: 'Board member', href: '/board-member.html' },
+      { id: 'meeting-secretary',    name: 'Secretary',    href: '/meeting.html' },
+    ],
+  },
+]
+
 const SUB_PAGES: Record<SubView, { title: string; groups: typeof DASHBOARD_FLOWS }> = {
   dashboard: { title: 'Dashboard', groups: DASHBOARD_FLOWS },
   public: { title: 'Public page', groups: PUBLIC_PAGE_FLOWS },
+  meeting: { title: 'Meeting', groups: MEETING_FLOWS },
 }
 
 /* Top-level Prototypes list is always shown alphabetically by name,

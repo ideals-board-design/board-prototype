@@ -22,7 +22,7 @@
   align-items: center;
   gap: var(--space-8);
   padding: 0 var(--space-16);
-  height: 48px;
+  height: var(--size-l);
 }
 
 /* ── Header cell (th) ────────────────────────────────────── */
@@ -39,7 +39,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-medium);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 
@@ -55,7 +55,7 @@
   font-family: var(--font-family);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
-  line-height: 20px;
+  line-height: var(--line-height-sm);
   color: var(--color-text-primary);
 }
 
@@ -125,7 +125,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 
@@ -157,7 +157,7 @@
   font-family: var(--font-family);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
-  line-height: 20px;
+  line-height: var(--line-height-sm);
   color: var(--color-text-primary);
 }
 
@@ -171,7 +171,7 @@
   font-family: var(--font-family);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-sm);
   color: var(--color-text-primary);
   white-space: nowrap;
 }
@@ -188,7 +188,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 

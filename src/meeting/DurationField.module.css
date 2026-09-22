@@ -1,0 +1,98 @@
+/* DurationField — chip trigger mirrors MeetingPage's .metaChip; the menu mirrors
+   the DS droplist (Autocomplete/Dropdown): elevation-100, brand-tinted selection,
+   blue hover fill. */
+
+/* ── Chip trigger ───────────────────────────────────────────────────────── */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-8);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.trigger:hover:not(:disabled) {
+  background: var(--color-bg-hover);
+}
+
+.trigger:disabled {
+  cursor: default;
+}
+
+.trigger span {
+  display: flex;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+.trigger span svg { width: 100%; height: 100%; }
+
+/* ── Menu (portal) ──────────────────────────────────────────────────────── */
+.menu {
+  position: fixed;
+  z-index: 8000;
+  min-width: 140px;
+  background: var(--stone-0);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-100);
+  padding: var(--space-4);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-10) var(--space-12);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  transition: background var(--dur-snap) var(--ease-out);
+}
+
+.item:hover  { background: var(--color-bg-hover-fill); }
+.item:active { background: var(--color-bg-hover-fill-strong); }
+
+/* Currently selected duration — brand-tinted, matching the DS droplist */
+.itemSelected { background: var(--color-bg-selected); }
+
+/* ── Custom minutes input ───────────────────────────────────────────────── */
+.customWrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-8);
+}
+
+.customInput {
+  width: 40px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  padding: 0;
+  border-bottom: 1px solid var(--accent-500);
+}
+
+/* Hide the native number spinners — the chip stays visually minimal */
+.customInput::-webkit-outer-spin-button,
+.customInput::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+.customInput { appearance: textfield; }
+
+.customSuffix {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
