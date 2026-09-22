@@ -134,26 +134,11 @@
 
 /* ── Drawer — 460px ─────────────────────────────────────── */
 
-.drawer {
-  width: 460px;
-  flex-shrink: 0;
-  border-left: 1px solid var(--color-border);
-  background: var(--color-bg-surface);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.drawerBody {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--space-24);
-}
-
 .drawerPlaceholder {
   font-family: var(--font-family);
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
-  line-height: 20px;
+  line-height: var(--line-height-sm);
   margin: 0;
+  padding: var(--space-24);
 }

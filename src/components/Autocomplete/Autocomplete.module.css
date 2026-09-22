@@ -325,6 +325,11 @@
 /* Keyboard-active highlight (↑ / ↓ navigation) — matches hover */
 .itemActive { background: var(--color-bg-hover-fill); }
 
+/* ── "Add …" action row (custom value rendered via customValueLabel) ──
+   No checkbox / avatar — the absent checkbox is what distinguishes it as a
+   "create new entry" action; label keeps the primary text colour. */
+.itemAction .itemLabel { color: var(--color-text-primary); }
+
 /* ── "No options" state — Figma: same box, opacity 0.4 ── */
 
 .noOptions {

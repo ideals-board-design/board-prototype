@@ -239,7 +239,9 @@
 
 .droplist {
   position: fixed;
-  z-index: 8000;
+  /* Above the modal overlay (9000) so a Dropdown opened inside a modal — e.g. the
+     "Change time zone" modal — renders in front of it rather than behind. */
+  z-index: 9500;
   background: var(--stone-0);
   border-radius: var(--radius-md);
   box-shadow: var(--elevation-100);

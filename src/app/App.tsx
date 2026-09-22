@@ -6,6 +6,7 @@ import DashboardPage     from './features/dashboard/DashboardPage'
 import CSBeforeMeetingPage from './features/cs-before-meeting/CSBeforeMeetingPage'
 import GenericPage       from './features/generic/GenericPage'
 import styles from './App.module.css'
+import { Agentation } from 'agentation'
 
 type AppPage = NavMenuItemKey
 /** Which dashboard variant to render when `page === 'dashboard'` */
@@ -44,6 +45,7 @@ export default function App({
   const [workspaceId, setWsId] = useState('star')
 
   return (
+    <>
     <div className={styles.shell}>
       <SideNavigation
         workspaces={WORKSPACES}
@@ -74,5 +76,7 @@ export default function App({
         {page !== 'tasks' && page !== 'dashboard' && page !== 'meetings' && <GenericPage {...PAGE_META[page]} />}
       </main>
     </div>
+    {process.env.NODE_ENV === 'development' && <Agentation />}
+    </>
   )
 }

@@ -52,7 +52,7 @@
   color: inherit;
   text-align: center;
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: var(--radius-xs);
 }
 /* Each segment hugs its own content (value or mask) so the time reads tight —
    "12:00 AM" — yet the wider letter masks ("mm") are never clipped. min-width

@@ -3,6 +3,7 @@
 
 import { useState } from 'react'
 import { PageHeader }     from '../../../components/PageHeader/PageHeader'
+import { Drawer }         from '../../../components/Drawer/Drawer'
 import { DrawerHeader }   from '../../../components/DrawerHeader/DrawerHeader'
 import { StickyFooter }   from '../../../components/StickyFooter/StickyFooter'
 import { Button }   from '../../../components/Button/Button'
@@ -190,16 +191,17 @@ export default function TasksPage() {
         </div>
       </div>
 
-      {/* ── Drawer column ─────────────────────────────── */}
-      {selectedRow && (
-        <div className={styles.drawer}>
+      {/* ── Drawer column — shared <Drawer> shell (inline mode) ───────── */}
+      <Drawer
+        open={selectedRow != null}
+        onClose={() => setSelectedId(null)}
+        header={
           <DrawerHeader
             title="Drawer header"
             onClose={() => setSelectedId(null)}
           />
-          <div className={styles.drawerBody}>
-            <p className={styles.drawerPlaceholder}>{selectedRow.name}</p>
-          </div>
+        }
+        footer={
           <StickyFooter
             variant="drawer"
             left={
@@ -230,8 +232,10 @@ export default function TasksPage() {
               </Tooltip>
             }
           />
-        </div>
-      )}
+        }
+      >
+        <p className={styles.drawerPlaceholder}>{selectedRow?.name}</p>
+      </Drawer>
 
     </div>
   )

@@ -1,3 +1,4 @@
+import { Agentation } from 'agentation'
 import { useState } from 'react'
 import { HubHeader } from './hub/HubHeader'
 import styles from './App.module.css'
@@ -200,7 +201,7 @@ export default function App() {
                 onClick={() => setPage(item.id)}
               />
             ))}
-          </div>
+        </div>
         ))}
       </aside>
 
@@ -243,8 +244,9 @@ export default function App() {
         {page === 'components/empty-state'        && <EmptyStatePage />}
         {page === 'components/table-cell'         && <TableCellPage />}
       </main>
-      </div>
+  </div>
 
-    </div>
+    <Agentation />
+  </div>
   )
 }

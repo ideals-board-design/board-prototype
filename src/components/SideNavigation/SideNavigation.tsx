@@ -36,6 +36,10 @@ export interface SideNavigationProps {
   activeItem?: NavMenuItemKey
   onItemClick?: (key: NavMenuItemKey) => void
 
+  /* Force expanded / collapsed regardless of viewport. `undefined` (default)
+   *  lets the responsive rail decide (expanded ≥1440, icons-only below). */
+  collapsed?:  boolean
+
   /* User item */
   userSrc?:             string
   userName:             string
@@ -53,6 +57,7 @@ export function SideNavigation({
   navItems = DEFAULT_NAV_ITEMS,
   activeItem,
   onItemClick,
+  collapsed,
   userSrc,
   userName,
   userEmail,
@@ -62,7 +67,11 @@ export function SideNavigation({
   onLogoutClick,
 }: SideNavigationProps) {
   return (
-    <nav className={styles.root} aria-label="Main navigation">
+    <nav
+      className={styles.root}
+      aria-label="Main navigation"
+      data-nav-collapse={collapsed === undefined ? undefined : collapsed ? 'on' : 'off'}
+    >
 
       {/* ── Header ──────────────────────────────────────────── */}
       <div className={styles.header}>

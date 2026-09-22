@@ -10,6 +10,17 @@
   box-sizing: border-box;
 }
 
+/* Tablet-landscape and narrower (<1440px): collapse to an icons-only rail
+   (labels, workspace/user text hidden — see the item / user / workspace CSS). */
+@media (max-width: 1439px) {
+  .root { width: 56px; }
+}
+
+/* The consumer can force a state regardless of viewport (e.g. the mobile nav
+   drawer forces expanded). Overrides the viewport rule above. */
+.root[data-nav-collapse="off"] { width: 240px; }
+.root[data-nav-collapse="on"]  { width: 56px; }
+
 /* ── Header ────────────────────────────────────────────── */
 
 .header {

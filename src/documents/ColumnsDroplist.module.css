@@ -20,7 +20,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-8);
-  height: 40px;
+  height: var(--size-m);
   padding: var(--space-10) var(--space-12);
   border-radius: var(--radius-sm);
   flex-shrink: 0;
@@ -45,7 +45,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -105,7 +105,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-8);
-  height: 40px;
+  height: var(--size-m);
   padding: var(--space-10) var(--space-12);
   background: var(--color-bg-surface);
   border: 1px solid var(--green-500);   /* green border while dragging — selected or not */

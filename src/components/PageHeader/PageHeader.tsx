@@ -12,6 +12,9 @@ const chevronDownSvg = arrows.find(i => i.name === 'angle-down-fill')!.svg
 export interface PageHeaderProps {
   /** Page title. Omit when using `breadcrumbs`. */
   title?:       string
+  /** Leading slot rendered before the title (e.g. a responsive menu/back button).
+   *  Takes the place of the built-in back button when provided. */
+  leading?:     ReactNode
   /** Shows a back button before the title (Meeting layout). */
   onBack?:      () => void
   /** Shows a dropdown chevron after the title (title switcher). */
@@ -27,6 +30,7 @@ export interface PageHeaderProps {
 
 export function PageHeader({
   title,
+  leading,
   onBack,
   onTitleMenu,
   badge,
@@ -35,7 +39,7 @@ export function PageHeader({
   className,
 }: PageHeaderProps) {
   /* Padding/gap follow the leading content (Figma types). */
-  const typeCls = breadcrumbs ? styles.typeDocuments : onBack ? styles.typeMeeting : styles.typeDefault
+  const typeCls = breadcrumbs ? styles.typeDocuments : (onBack || leading) ? styles.typeMeeting : styles.typeDefault
   const cls = [styles.header, typeCls, className].filter(Boolean).join(' ')
 
   if (breadcrumbs) {
@@ -44,7 +48,9 @@ export function PageHeader({
 
   return (
     <header className={cls}>
-      {onBack && (
+      {leading}
+
+      {!leading && onBack && (
         <Tooltip label="Back" position="bottom">
           <Button
             variant="tertiary"

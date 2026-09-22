@@ -1,0 +1,1533 @@
+/* MeetingPage — shell */
+
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Responsive sidebar (Figma 17506-146085/86/87) ──────────
+   ≥1440 expanded rail · 1024–1439 icons rail · ≤1023 hidden, reached through a
+   hamburger that opens the sidebar as an overlay drawer. */
+.sidebarInline {
+  display: flex;
+  flex-shrink: 0;
+}
+
+/* Header leading buttons: hamburger ≤1023, back ≥1024. */
+.navMenuBtn { display: none; }
+.navBackBtn { display: inline-flex; }
+
+@media (max-width: 1023px) {
+  .sidebarInline { display: none; }
+  .navMenuBtn { display: inline-flex; }
+  .navBackBtn { display: none; }
+}
+
+.navScrim {
+  position: fixed;
+  inset: 0;
+  z-index: 8999;
+  background: var(--color-bg-overlay);
+}
+
+.navDrawer {
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 9000;
+  display: flex;
+  box-shadow: var(--elevation-200);
+}
+
+/* ── Header override ──────────────────────────────────── */
+
+/* This page's tabs strip carries its own full-width divider directly below
+   the header, so the header's own bottom border would double it up. */
+.pageHeader {
+  border-bottom: none;
+}
+
+/* ── Tabs ────────────────────────────────────────────── */
+
+.tabsRoot {
+  flex-shrink: 0;
+}
+
+/* Pad the tab strip itself (not a wrapping element) so its border-bottom
+   still spans the full page width edge-to-edge. */
+.tabsRoot > div:first-child {
+  padding: 0 var(--space-24);
+}
+
+/* ── Tab content ─────────────────────────────────────── */
+
+.content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.agendaTab {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.starterToolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  border-bottom: 1px solid var(--color-border);
+  flex-shrink: 0;
+}
+
+.starterLabel {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.starterDropdown {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.orText {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+.emptyState {
+  flex: 1;
+}
+
+/* ── Duplicate-agenda preview ─────────────────────────── */
+
+.preview {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.previewBody {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ── Agenda builder responsive (Figma 17506-144631) ─────────────────────────
+   ≥1024px: outline + detail side-by-side. ≤1023px: a single column where the
+   "Agenda / Table of content" segment chooses which panel is shown.
+   NB: the ≤1023 overrides for .previewOutline / .previewDetail live in a media
+   query placed AFTER their base rules below, so they win at equal specificity. */
+.agendaSeg { display: none; }
+@media (max-width: 1023px) {
+  /* Segment-control bar: full-width control, 12×24 padding (Figma 17506-146087).
+     The control fills the bar and its two segments split it evenly — the DS
+     items are flex-shrink:0 by default, so grow them here (the `button` selector
+     outweighs the component's own `.item` rule regardless of stylesheet order). */
+  .agendaSeg {
+    display: block;
+    flex-shrink: 0;
+    padding: var(--space-12) var(--space-24);
+  }
+  .agendaSeg > * {
+    display: flex;
+    width: 100%;
+  }
+  .agendaSeg > * > button {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+/* View mode — an item the viewer isn't allowed to see collapses to a dimmed
+   "*Restricted*" placeholder (Figma 12025-114417). It keeps its number + time
+   slot so the sequence reads correctly, but title and meta grey out. */
+.outlineRowRestricted .outlineLabel {
+  color: var(--color-text-secondary);
+}
+
+.detailItemRestricted .detailTitle,
+.detailItemRestricted .detailNumber {
+  color: var(--color-text-secondary);
+}
+
+/* ── Outline column ────────────────────────────────────── */
+
+.previewOutline {
+  /* Fixed outline column (Table of content) — Figma 17506-146085/86. */
+  width: 432px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-16);
+  background: var(--color-bg-surface);
+  border-right: 1px solid var(--color-border);
+  overflow-y: auto;
+}
+
+.previewDuration {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  padding: 0 0 var(--space-8) var(--space-24);
+}
+
+/* Sidebar header: total duration + (optional) overtime warning badge stacked */
+.previewDurationRow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: 0 var(--space-16) var(--space-8) var(--space-24);
+}
+.previewDurationRow .previewDuration {
+  padding: 0;
+}
+
+.outlineItems {
+  display: flex;
+  flex-direction: column;
+  padding: 0 var(--space-16);
+}
+
+.outlineRow {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--space-4);
+  width: 100%;
+  height: var(--size-s);
+  padding: 0 var(--space-8);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-family);
+  cursor: pointer;
+  text-align: left;
+}
+
+.outlineRow:hover {
+  background: var(--color-bg-hover);
+}
+
+.outlineRowActive,
+.outlineRowActive:hover {
+  background: var(--color-bg-selected);
+}
+
+.dragHandle {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon-secondary);
+  cursor: grab;
+}
+.dragHandle:active { cursor: grabbing; }
+.dragHandle svg { width: 100%; height: 100%; }
+
+/* ── Sidebar drag & drop (subtree reorder) ─────────────────────────────── */
+
+/* Insertion preview — a horizontal line whose left inset marks the resulting
+   nesting level (matches the attachments drop-line pattern). */
+.outlineDropLine {
+  height: 2px;
+  margin-right: var(--space-16);
+  border-radius: 1px;
+  background: var(--accent-500);
+}
+
+/* The dragged item + its subtree stay in place but read as one disabled group
+   (Figma "Group" pattern): dimmed rows sharing a single rounded block. */
+.outlineRowDragging { opacity: 0.5; }
+.outlineItemsDragging .outlineRow { cursor: default; }
+.outlineRowGrouped,
+.outlineRowGrouped:hover { background: var(--color-bg-hover); border-radius: 0; }
+.outlineRowGroupStart {
+  border-top-left-radius: var(--radius-sm);
+  border-top-right-radius: var(--radius-sm);
+}
+.outlineRowGroupEnd {
+  border-bottom-left-radius: var(--radius-sm);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.outlineLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.addItemLink {
+  margin-top: var(--space-8);
+  margin-left: var(--space-8);
+  align-self: flex-start;
+}
+
+/* ── Detail column ─────────────────────────────────────── */
+
+/* Detail column — a grey canvas the white item cards float on. Cards are held to
+   a fixed max width and centred, so the canvas grows around them on wide screens
+   and the column shrinks with its side padding on narrow ones (Figma 16927-154852). */
+.previewDetail {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-24);
+  padding: var(--space-24);
+  background: var(--stone-200);
+  overflow-y: auto;
+}
+
+/* Agenda builder ≤1023 (Figma 17506-146087/146895): the segment toggle picks
+   which of the two panels is visible; the visible one spans the full single
+   column, and the detail cards stretch to fill it (no 720 centred cap). */
+@media (max-width: 1023px) {
+  .previewOutline {
+    width: 100%;
+    border-right: none;
+  }
+  .showAgenda .previewOutline { display: none; }
+  .showToc .previewDetail { display: none; }
+  .detailItemGroup { max-width: none; }
+}
+
+/* Wraps one card + its footer — 4px between them (Figma 30013-207761). Constrained
+   to the card width (720px) and centred within the canvas. */
+.detailItemGroup {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Builder card — white surface on the grey canvas: vertical-only outer padding
+   (children own their horizontal gutter), 12px radius, light border by default,
+   green border when active (Figma 16927-154852). */
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  width: 100%;
+  padding: var(--space-16) 0 var(--space-24);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.detailItemActive {
+  position: relative;
+  border-color: var(--color-border-focus);
+}
+
+/* Drag files over the active card → dashed green edge + a green wash and a
+   centered drop prompt (Figma 11998-186047). */
+.detailItemDropActive {
+  border-style: dashed;
+  border-color: var(--color-success);
+}
+
+.dropOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-lg);
+  pointer-events: none;
+}
+
+/* Semi-transparent green wash that still lets the card content read through. */
+.dropOverlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--green-50);
+  opacity: 0.5;
+  border-radius: inherit;
+}
+
+.dropOverlayCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-20) var(--space-14);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-100);
+}
+
+.dropOverlayIcon {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  color: var(--color-success);
+}
+.dropOverlayIcon svg { width: 100%; height: 100%; }
+
+.dropOverlayText {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+/* Inactive item — read-only card that still shows every saved value (Figma
+   12034-141449). Reuses .detailItem's card shell + section spacing; only adds the
+   click affordance. An item with no data collapses to just its title + meta row. */
+.detailItemView {
+  cursor: pointer;
+  /* Default (resting) state has no visible outline/divider; the 1px border is kept
+     transparent so hover/active can colour it in without shifting the layout. */
+  border-color: transparent;
+  transition: border-color var(--transition-fast);
+}
+.detailItemView:hover {
+  border-color: var(--color-border-strong);
+}
+.detailItemView:focus-visible {
+  outline: none;
+  border-color: var(--color-border-focus);
+}
+
+/* Read-only header row (number + title) — matches the active card's 24px inset
+   and the 4px number→title gap so switching states doesn't shift the title. */
+.viewHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 0 var(--space-24);
+}
+
+/* Inactive item — compact click-to-expand card showing only title + timing. */
+.detailItemCollapsed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-16) var(--space-24);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-family: var(--font-family);
+  text-align: left;
+  cursor: pointer;
+  transition: border-color var(--transition-fast);
+}
+.detailItemCollapsed:hover {
+  border-color: var(--color-border-strong);
+}
+
+.collapsedTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.collapsedTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.collapsedMeta {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  white-space: pre;
+}
+
+/* Builder — title row + time/duration/purpose meta row grouped tightly
+   (Figma 30000-141055 "Title" frame: 4px gap) — a separate, larger gap
+   (.detailItem's own) still separates this whole group from the sections
+   below (Presenter, Description, ...). */
+.detailTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.detailHeaderRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: 0 var(--space-18) 0 var(--space-24);
+}
+
+/* The "…" menu is a 32px icon button; its extra height must not inflate the
+   title row (which collapses to the 20px title text line), or it would push the
+   indicators row down. Negative vertical margins let it overhang instead, so the
+   indicators sit 4px below the title (Figma 30755-144088). */
+.detailMenuSlot {
+  display: flex;
+  align-items: center;
+  margin-top: calc(-1 * var(--space-6));
+  margin-bottom: calc(-1 * var(--space-6));
+}
+
+.detailTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  margin: 0;
+  /* Read-only preview title: share the 24px left inset of the meta row and the
+     sections below, so the item number lines up with everything under it
+     (Figma 12310-124323). */
+  padding: 0 var(--space-24);
+}
+
+/* Builder — editable title row (number label + no-border TextField) */
+.detailTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex: 1;
+  min-width: 0;
+}
+
+.detailNumber {
+  flex-shrink: 0;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+/* Active item title — same font size (16px) and weight as the number and the
+   collapsed title; the active state must NOT enlarge the title (Figma 30013-207761).
+   size="l" gives text-md; this only lifts the weight to medium to match the number. */
+.titleField input {
+  font-weight: var(--font-weight-medium);
+}
+
+.detailMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: 0 var(--space-24);
+}
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-8);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.metaChip:hover {
+  background: var(--color-bg-hover);
+}
+
+.metaChip span {
+  display: flex;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+.metaChip span svg { width: 100%; height: 100%; }
+
+.detailTime,
+.detailDuration {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+/* Read-only purpose tag (AgendaPreview) — coloured label glyph + name */
+.purposeTag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.purposeTagIcon {
+  display: flex;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+.purposeTagIcon svg { width: 100%; height: 100%; }
+
+/* Field sections (Presenter/Description/Motions) — label→field gap 2, left 24
+   (label sits at 24), right 18 to match the title row (Figma 30755-144088). */
+.detailSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: 0 var(--space-18) 0 var(--space-24);
+}
+
+/* Attachments section — larger label→field gap (8) and symmetric 24 insets so
+   the dashed upload field lines up with the schema. */
+.detailSectionAttachments {
+  gap: var(--space-8);
+  padding: 0 var(--space-24);
+}
+
+.detailLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+
+.presenterRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.presenterName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+/* Builder-only presenter row (Figma 30170-95194) — resting is transparent;
+   hovering (or keyboard-focusing the remove button inside it) tints the
+   whole row and reveals Remove. The button keeps its layout slot at all
+   times (opacity only) so revealing it never shifts the row's size/position. */
+.presenterChipRow {
+  height: 32px;
+  padding: var(--space-4) 0 var(--space-4) var(--space-8);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.presenterChipRow:hover {
+  background: var(--color-bg-hover);
+}
+
+.presenterRemoveBtn {
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.presenterChipRow:hover .presenterRemoveBtn,
+.presenterChipRow:focus-within .presenterRemoveBtn {
+  opacity: 1;
+}
+
+.detailText {
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+/* Read-only rendered rich-text description (view / published) */
+.richText {
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+.richText ul,
+.richText ol {
+  margin: 0;
+  padding-left: var(--space-24);
+}
+.richText strong,
+.richText b { font-weight: var(--font-weight-medium); }
+
+/* Attachments dropzone + list styling lives in AttachmentsField.module.css. */
+
+/* ── Builder — item footer actions (selected item only) ───────────────
+   Sits OUTSIDE the card (Figma 9752-68191: "Actions item" is a sibling of
+   "Context", not nested inside its border) — plain background, no bleed. */
+
+/* Footer actions hang to the card edges: the tertiary buttons carry 8px of
+   horizontal padding, pulled out with -8 margins so their icon/label line up
+   with the card's left/right edges (Figma 30755-144088). */
+.itemFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding: 0;
+}
+
+.itemFooterLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  margin-left: calc(-1 * var(--space-8));
+}
+
+.itemFooterRight {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  margin-right: calc(-1 * var(--space-8));
+}
+
+/* ═══ Meeting tab (creation / pre-publication) — Figma 27312-59491 ═══════════ */
+.meeting {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+/* ── Responsive two-column layout (IBP responsive) ──────────────────────────
+   ≥1024px: form (flex, min 592 / max 700 at ≥1440) beside a fixed 600px preview.
+   ≤1023px: the columns stack — form then preview, each full width. */
+.meetingBody {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+/* Left column: meeting details form */
+.meetingForm {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.meetingFormInner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-24);
+}
+
+/* Desktop spec (≥1440): the form flexes between 592 and 700px. */
+@media (min-width: 1440px) {
+  .meetingForm {
+    min-width: 592px;
+    max-width: 700px;
+  }
+}
+
+/* Mobile / tablet-portrait (≤1023): stack the two panels vertically, full width. */
+@media (max-width: 1023px) {
+  .meetingBody {
+    flex-direction: column;
+    overflow: visible;
+  }
+  .meetingForm {
+    flex: 0 0 auto;
+    overflow-y: visible;
+  }
+}
+
+/* Action entry point: persistent bottom bar ≥1024; header "···" overflow ≤1023. */
+.headerOverflow { display: none; }
+@media (max-width: 1023px) {
+  .meetingFooter { display: none; }
+  .headerOverflow { display: inline-flex; align-items: center; }
+}
+
+/* Field row: leading icon + body. The icon sits in a 24px line-box so it stays
+   vertically centred on the field's FIRST line (Figma 9355-71768 / 9355-79932),
+   while any secondary lines below it stack normally. */
+.mtgField {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+.mtgFieldIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: var(--space-24);
+  color: var(--color-icon-secondary);
+}
+.mtgFieldIcon svg { width: 20px; height: 20px; }
+.mtgFieldBody {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+/* Every field's first line shares the icon's 24px line-box and centres its content,
+   so the icon and the first line read on one baseline. */
+.mtgLabel,
+.mtgDateDay,
+.mtgPlaceholder,
+.mtgGroupSelect {
+  display: flex;
+  align-items: center;
+  min-height: var(--space-24);
+}
+
+/* Name — no-border text field. Its single line sits in the same 24px line-box as
+   the leading icon (so they align), and the value keeps the regular weight the
+   design specifies. */
+.mtgNameField,
+.mtgInlineField {
+  min-height: var(--space-24);
+  justify-content: center;
+}
+.mtgNameField input { font-weight: var(--font-weight-regular); }
+
+.mtgLabel {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.mtgRadioRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-24);
+}
+
+/* Group badge shown in the no-border Dropdown trigger — matches the DS droplist
+   group avatar (rounded square, --tag-kepeel). */
+.mtgGroupBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--tag-kepeel);
+  color: var(--color-text-inverse);
+  font-size: var(--text-sm);
+  line-height: 1;
+}
+
+.mtgDateDay {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.mtgDateTime {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+/* Empty optional fields render as a placeholder line (Add location / description…) */
+.mtgPlaceholder {
+  align-self: flex-start;
+  border: none;
+  background: none;
+  padding: 0;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  text-align: left;
+}
+.mtgPlaceholder:hover { color: var(--color-text-primary); }
+
+/* Add-participants / Add-to-calendar: DS tertiary buttons that hug their content and
+   left-align. The negative left margin cancels the tertiary's own left padding so the
+   "+" icon lines up with the field's content column, not 10px in (Figma 20108-237742). */
+.mtgAddLink {
+  align-self: flex-start;
+  margin-left: calc(-1 * var(--space-10));
+}
+
+/* ── Right column: invitation email preview ──────────────────────────────
+   ≥1024px: a fixed 600px column beside the form; ≤1023px: stacks full-width
+   below the form with a top divider instead of the left one. */
+.meetingInvite {
+  flex: 0 0 600px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-24);
+  border-left: 1px solid var(--color-border);
+  overflow-y: auto;
+}
+@media (max-width: 1023px) {
+  .meetingInvite {
+    flex: 0 0 auto;
+    border-left: none;
+    border-top: 1px solid var(--color-border);
+    overflow-y: visible;
+  }
+}
+.inviteHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: 0 var(--space-24) var(--space-24);
+}
+.inviteSubject {
+  font-size: var(--text-md);
+  line-height: var(--line-height-lg);
+  color: var(--color-text-primary);
+}
+.inviteSender {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.inviteEmail {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-32);
+  padding: var(--space-32) var(--space-24);
+  background: var(--stone-200);
+}
+.inviteBrand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+.inviteBrandMark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--color-brand-fill-hover);
+  color: var(--accent-500);
+}
+.inviteBrandMark svg { width: 20px; height: 20px; }
+.inviteBrandName {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.1;
+  color: var(--color-text-primary);
+}
+
+.inviteCard {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-24);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--accent-500);
+  border-radius: var(--radius-sm);
+}
+/* Title + intro sentence sit tight together (8px), while the card's major blocks
+   are 24px apart (Figma 10018-86238). */
+.inviteIntro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.inviteTitle {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+.inviteText {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.inviteMuted {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+/* Videoconference join link reflected in the invitation preview. */
+.inviteVcLink {
+  display: block;
+  margin-top: var(--space-8);
+  font-size: var(--text-base);
+  color: var(--accent-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Sanitized rich-text description rendered into the invitation preview. */
+.inviteBody {
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+.inviteBody p { margin: 0 0 var(--space-8); }
+.inviteBody p:last-child { margin-bottom: 0; }
+.inviteBody ul,
+.inviteBody ol { margin: 0 0 var(--space-8); padding-left: var(--space-24); }
+.inviteBody strong,
+.inviteBody b { font-weight: var(--font-weight-medium); }
+
+.inviteDate {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+.inviteDateInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+.inviteDateTitle {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+}
+.inviteDateTime {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.inviteRsvpGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.inviteRsvpLabel {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+/* Segmented control — one rounded, bordered container; cells split it evenly and
+   are divided by 1px lines (Figma 10018-86238). */
+.inviteRsvp {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.inviteRsvpCell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  min-height: 40px;
+  padding: var(--space-8) var(--space-12);
+  border: none;
+  background: var(--color-bg-surface);
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.inviteRsvpCell + .inviteRsvpCell { border-left: 1px solid var(--color-border); }
+.inviteRsvpCell:hover { background: var(--color-bg-hover-fill); }
+.inviteRsvpIcon {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  color: var(--color-icon-secondary);
+}
+.inviteRsvpIcon svg { width: 100%; height: 100%; }
+.rsvpIconAccent { color: var(--accent-500); }
+.rsvpIconWarn   { color: var(--orange-500); }
+.rsvpIconDanger { color: var(--red-500); }
+
+.inviteDetails {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.inviteDetailsLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+/* ── Meeting group + additional participants (Figma 12096-149425 / 149816) ─── */
+.mtgGroupField {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  align-self: stretch;
+}
+
+/* Empty state — "Choose group" placeholder field with a soft lavender fill on
+   hover / while its menu is open (matches the name field, Figma 12096-149425). */
+.mtgGroupTrigger {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: var(--space-24);
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-family);
+  cursor: pointer;
+  text-align: left;
+}
+.mtgGroupTrigger::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  z-index: -1;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  transition: background var(--transition-fast);
+}
+.mtgGroupTrigger:hover::before,
+.mtgGroupTriggerOpen::before { background: var(--color-bg-hover-fill); }
+.mtgGroupPlaceholder {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+/* Selected state — group chip that reveals a clear button + member popover on hover.
+   On hover the whole field gets a soft lavender fill (Figma 14305-105411). The fill
+   is a real background (extended with equal negative-margin/padding so siblings don't
+   shift) rather than a ::before, so the chip never becomes a stacking context that
+   would trap the member popover behind later fields. */
+.mtgGroupChip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  /* Container is exactly 32px tall — the 24px avatar with 4px top/bottom padding
+     (Figma 27312:53703). The clear button is taken out of flow (below) so it never
+     inflates the row; equal negative margin keeps siblings from shifting. */
+  margin: calc(-1 * var(--space-4)) calc(-1 * var(--space-8));
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+.mtgGroupChip:hover,
+.mtgGroupChip:focus-within { background: var(--color-bg-hover-fill); }
+.mtgGroupChipMain {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-family);
+  cursor: pointer;
+}
+.mtgGroupName {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mtgGroupBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--tag-kepeel);
+  color: var(--color-text-inverse);
+  font-size: var(--text-sm);
+  line-height: 1;
+}
+/* Clear (×) — floats at the right, out of flow so it never inflates the 32px row;
+   hidden until the chip is hovered/focused. */
+.mtgGroupClear {
+  position: absolute;
+  right: var(--space-8);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.mtgGroupChip:hover .mtgGroupClear,
+.mtgGroupChip:focus-within .mtgGroupClear { opacity: 1; }
+
+/* Member popover — revealed on hover of the selected group */
+.mtgMemberPop {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 20;
+  display: none;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 320px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: var(--space-8);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-100);
+}
+.mtgGroupChip:hover .mtgMemberPop { display: flex; }
+.mtgMemberRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-4) var(--space-8);
+}
+.mtgMemberName {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+/* Group menu (opens on click) */
+.mtgMenu {
+  position: absolute;
+  top: calc(100% + var(--space-4));
+  left: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  min-width: 240px;
+  padding: var(--space-4);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-100);
+}
+.mtgMenuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+.mtgMenuItem:hover { background: var(--color-bg-hover); }
+
+/* Selected additional participants */
+.mtgParticipants {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.mtgParticipantRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: 32px;
+}
+.mtgParticipantName {
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.mtgRoleTag {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+.mtgParticipantRemove {
+  margin-left: auto;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.mtgParticipantRow:hover .mtgParticipantRemove,
+.mtgParticipantRow:focus-within .mtgParticipantRemove { opacity: 1; }
+
+.mtgAddInput { align-self: stretch; }
+
+/* ── Date / time / timezone row (Figma 12096-149869) ───────────────────────── */
+.mtgTimeRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+.mtgTimeSep {
+  color: var(--color-text-secondary);
+}
+.mtgTzButton {
+  margin-left: var(--space-8);
+}
+.mtgTzField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.mtgTzFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-8);
+}
+
+/* ── Videoconference field (Figma 12096-149504) ────────────────────────────── */
+.vcField {
+  position: relative;
+  align-self: stretch;
+}
+/* Empty-state input — soft lavender fill on hover/focus, like the other no-border
+   fields; extends 8px each side so the fill matches the field row. */
+.vcInput {
+  display: block;
+  /* Full field-body width so the hover/focus fill spans the whole row (Figma
+     12096-149507/149558); the +16px absorbs the -8px side margins below. */
+  width: calc(100% + var(--space-16));
+  box-sizing: border-box;
+  min-height: var(--space-24);
+  /* 28px row centred on the 24px icon line-box: pull up (28-24)/2 = 2px. */
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-8));
+  padding: var(--space-4) var(--space-8);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  outline: none;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  transition: background var(--transition-fast);
+}
+.vcInput::placeholder { color: var(--color-text-secondary); }
+.vcInput:hover,
+.vcInput:focus { background: var(--color-bg-hover-fill); }
+
+/* Provider dropdown */
+.vcMenu {
+  position: absolute;
+  top: calc(100% + var(--space-4));
+  left: 0;
+  right: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-100);
+}
+.vcMenuItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8);
+  border-radius: var(--radius-sm);
+}
+.vcMenuItem:hover { background: var(--color-bg-hover); }
+.vcMenuMain {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  text-align: left;
+}
+.vcMenuMain:disabled { cursor: default; }
+/* Disconnected integrations read as muted (Figma 27319:80885). */
+.vcMenuItemDisabled .vcMenuName { color: var(--color-text-secondary); }
+.vcMenuItemDisabled .vcBadge,
+.vcMenuItemDisabled .calBadge { opacity: 0.55; }
+.vcMenuName { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Location autocomplete ──────────────────────────────────────────────── */
+/* Saved address reads as editable text (text cursor); click switches to editing. */
+.locText {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  cursor: text;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.locOption {
+  display: block;
+  width: 100%;
+  padding: var(--space-8) var(--space-12);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.locOption:hover { background: var(--color-bg-hover); }
+.locHint {
+  padding: var(--space-8) var(--space-12);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+/* ── Calendar field ─────────────────────────────────────────────────────────
+   All states (Add-to-calendar link, selected Google/Outlook) share the same
+   24px line-box row metrics as .vcLinkRow, so switching never shifts the layout
+   or the surrounding fields. A 20px icon in every state keeps the text baseline
+   in the same place. */
+.calAddBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--space-24);
+  /* 28px row centred on the 24px icon line-box: pull up (28-24)/2 = 2px. */
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-8));
+  padding: var(--space-4) var(--space-8);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-brand);
+  transition: background var(--transition-fast);
+}
+.calAddBtn:hover { background: var(--color-bg-hover-fill); }
+.calAddIcon,
+.calBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.calAddIcon svg,
+.calBadge svg { width: 20px; height: 20px; }
+
+/* Service badge (Zoom / MS Teams glyph) */
+.vcBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+.vcBadge svg { width: 24px; height: 24px; }
+
+/* Loading */
+.vcLoading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--space-24);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+.vcSpinner {
+  display: flex;
+  width: 20px;
+  height: 20px;
+  color: var(--accent-500);
+  animation: vcSpin 700ms linear infinite;
+}
+.vcSpinner svg { width: 100%; height: 100%; }
+@keyframes vcSpin { to { transform: rotate(360deg); } }
+
+/* Generated / manual link row — hover fill + copy/delete actions on the right. */
+.vcLinkRow {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--space-24);
+  /* 28px row centred on the 24px icon line-box: pull up (28-24)/2 = 2px. */
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-8));
+  padding: var(--space-4) var(--space-8);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+.vcLinkRow:hover,
+.vcLinkRow:focus-within { background: var(--color-bg-hover-fill); }
+.vcJoinLink {
+  font-size: var(--text-base);
+  color: var(--accent-600);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.vcManualLink {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.vcActions {
+  position: absolute;
+  right: var(--space-8);
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: var(--space-2);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+.vcLinkRow:hover .vcActions,
+.vcLinkRow:focus-within .vcActions { opacity: 1; }
+.vcAction { display: flex; }
+
+/* Connections modal */
+.connList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.connRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  min-height: 40px;
+}
+.connName {
+  flex: 1;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+.connStatus {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}

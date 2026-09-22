@@ -149,3 +149,18 @@
   line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
+
+/* Collapsed rail (<1440px): show only the workspace avatar. */
+@media (max-width: 1439px) {
+  .triggerName,
+  .chevron { display: none; }
+  .triggerInner { justify-content: center; }
+}
+
+/* Parent-forced state (mobile nav drawer forces expanded; overrides viewport). */
+:global([data-nav-collapse="off"]) .triggerName,
+:global([data-nav-collapse="off"]) .chevron { display: block; }
+:global([data-nav-collapse="off"]) .triggerInner { justify-content: flex-start; }
+:global([data-nav-collapse="on"]) .triggerName,
+:global([data-nav-collapse="on"]) .chevron { display: none; }
+:global([data-nav-collapse="on"]) .triggerInner { justify-content: center; }

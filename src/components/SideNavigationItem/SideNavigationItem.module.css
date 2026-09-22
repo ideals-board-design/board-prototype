@@ -85,3 +85,25 @@
 .item.selected .label {
   color: var(--color-text-primary);
 }
+
+/* Collapsed rail (<1440px by default): hide the label, centre the icon. */
+@media (max-width: 1439px) {
+  .label { display: none; }
+  .inner { justify-content: center; gap: 0; padding-left: var(--space-12); }
+}
+
+/* The parent SideNavigation can force a state regardless of viewport (e.g. the
+   mobile nav drawer forces expanded; a rail can be forced collapsed). These win
+   over the viewport rule above via the ancestor-attribute specificity. */
+:global([data-nav-collapse="off"]) .label { display: block; }
+:global([data-nav-collapse="off"]) .inner {
+  justify-content: flex-start;
+  gap: var(--space-12);
+  padding-left: var(--space-8);
+}
+:global([data-nav-collapse="on"]) .label { display: none; }
+:global([data-nav-collapse="on"]) .inner {
+  justify-content: center;
+  gap: 0;
+  padding-left: var(--space-12);
+}

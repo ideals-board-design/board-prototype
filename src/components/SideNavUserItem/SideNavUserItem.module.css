@@ -302,3 +302,15 @@
   border-radius: var(--radius-full);
   box-shadow: inset 0 0 0 1px var(--color-border);
 }
+
+/* Collapsed rail (<1440px): avatar only — hide name + email, centre the avatar. */
+@media (max-width: 1439px) {
+  .textBlock { display: none; }
+  .triggerInner { justify-content: center; }
+}
+
+/* Parent-forced state (mobile nav drawer forces expanded; overrides viewport). */
+:global([data-nav-collapse="off"]) .textBlock { display: flex; }
+:global([data-nav-collapse="off"]) .triggerInner { justify-content: flex-start; }
+:global([data-nav-collapse="on"]) .textBlock { display: none; }
+:global([data-nav-collapse="on"]) .triggerInner { justify-content: center; }

@@ -64,9 +64,9 @@
 .sectionTitle {
   width: 800px;
   font-family: var(--font-family);
-  font-size: 20px;
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-medium);
-  line-height: 24px;
+  line-height: var(--line-height-lg);
   letter-spacing: var(--letter-spacing-heading);
   color: var(--color-text-primary);
   margin: 0 0 var(--space-16);
@@ -166,9 +166,9 @@
 
 .flowsTitle {
   font-family: var(--font-family);
-  font-size: 20px;
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-medium);
-  line-height: 24px;
+  line-height: var(--line-height-lg);
   letter-spacing: var(--letter-spacing-heading);
   color: var(--color-text-primary);
   margin: 0;

@@ -1,4 +1,4 @@
-import { type InputHTMLAttributes, type TextareaHTMLAttributes, type ReactNode } from 'react'
+import { type InputHTMLAttributes, type TextareaHTMLAttributes, type ReactNode, type Ref } from 'react'
 import styles from './TextField.module.css'
 import { HintRow } from '../shared/HintRow'
 import { condition } from '../../icons/condition'
@@ -24,6 +24,8 @@ export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElemen
   /** Render a multi-line, auto-growing field (<textarea> that wraps) instead of
    *  a single-line <input>. All variant/size styling still applies. */
   multiline?: boolean
+  /** Forwarded to the underlying <input> (or <textarea> when multiline) */
+  ref?: Ref<HTMLInputElement | HTMLTextAreaElement>
 }
 
 export function TextField({
@@ -39,6 +41,7 @@ export function TextField({
   disabled,
   className,
   id,
+  ref,
   ...rest
 }: TextFieldProps) {
   const hasError  = Boolean(error)
@@ -72,6 +75,7 @@ export function TextField({
         {multiline ? (
           <textarea
             id={id}
+            ref={ref as Ref<HTMLTextAreaElement>}
             className={styles.input}
             rows={1}
             disabled={disabled}
@@ -81,6 +85,7 @@ export function TextField({
         ) : (
           <input
             id={id}
+            ref={ref as Ref<HTMLInputElement>}
             className={styles.input}
             disabled={disabled}
             aria-invalid={hasError || undefined}

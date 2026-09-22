@@ -1,8 +1,14 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  test: {
+    // jsdom gives the sanitizer/validation tests a real DOMParser + document.
+    environment: 'jsdom',
+    include: ['src/**/*.{test,spec}.{ts,tsx}'],
+  },
   server: {
     // Honor a harness-assigned port (autoPort) via the PORT env var;
     // falls back to Vite's default 5173 for a normal `npm run dev`.
@@ -20,6 +26,8 @@ export default defineConfig({
         blank:            'blank.html',
         form:             'form.html',
         documents:        'documents.html',
+        meeting:          'meeting.html',
+        'board-member':   'board-member.html',
       },
     },
   },

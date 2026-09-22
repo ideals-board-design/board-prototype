@@ -106,7 +106,29 @@
       "Bash(sort -t: -k2 -rn)",
       "Bash(git stash *)",
       "Bash(echo \"EXIT:$?\")",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(git checkout *)",
+      "mcp__Figma__get_design_context",
+      "Bash(grep -oE 'name: \"\\(check-circle|circle|draft-circle|overdue-circle\\)\"[^}]*svg: `[^`]*`' src/icons/actions.ts)",
+      "Bash(grep -oE 'name: \"clipboard-survay-duplicate\"[^}]{0,200}' src/illustrations/illustrations.ts)",
+      "Bash(grep -oE 'name: \"clipboard\"[^}]{0,600}' src/illustrations/illustrations.ts)",
+      "Bash(python3 -)",
+      "mcp__figma__get_figma_data",
+      "Bash(npx eslint *)",
+      "Bash(npx stylelint *)",
+      "Bash(cd /Users/elena.skurtova/Documents/board-prototype *)",
+      "Bash(cd /Users/elena.skurtama/Documents/board-prototype 2>/dev/null; cd /Users/elena.skurtova/Documents/board-prototype *)",
+      "mcp__figma__download_figma_images",
+      "Bash(sips -c 480 800 -p 480 800 --out card4_crop.png item-component-set.png)",
+      "mcp__mobbin__search_screens",
+      "Bash(echo \"---eslint exit:$?---\")",
+      "Bash(echo \"---stylelint exit:$?---\")",
+      "Bash(git -C /Users/elena.skurtova/Documents/board-prototype log --all --oneline -i --grep=\"key\")",
+      "Bash(git -C /Users/elena.skurtova/Documents/board-prototype log --all --diff-filter=A --name-only)",
+      "Bash(grep -n \"aria-invalid={hasError\" /Users/elena.skurtama/Documents/board-prototype/src/components/Autocomplete/Autocomplete.tsx 2>/dev/null; grep -n \"aria-invalid={hasError\" /Users/elena.skurtova/Documents/board-prototype/src/components/Autocomplete/Autocomplete.tsx)",
+      "Bash(curl -s \"http://localhost:5173/src/meeting/MeetingPage.tsx\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"http://localhost:5173/src/meeting/MeetingPage.tsx\")",
+      "Bash(echo \"--- exit code: $? ---\")"
     ]
   }
 }
