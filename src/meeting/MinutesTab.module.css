@@ -194,33 +194,21 @@
 }
 
 /* Prev/Next on the banner jumps to an item: the card gives a quick "pop"
-   (lift + gentle overshoot) and flashes a green border/shadow that eases back
-   out — a momentary "you jumped here" cue, not a persistent state. Uses the DS
+   (gentle overshoot) and flashes a green border that eases back out — a
+   momentary "you jumped here" cue, not a persistent state. Uses the DS
    enter/appear curve. The class rides onto a fresh element on every Prev/Next,
    so the keyframes replay each jump. */
 .actionCardActive {
-  animation: actionHighlight 1.8s cubic-bezier(0, 0, 0.2, 1) forwards;
+  animation: actionHighlight 1600ms cubic-bezier(0, 0, 0.2, 1) forwards;
   /* Keep the composited transform crisp while it scales. */
   will-change: transform;
 }
 
 @keyframes actionHighlight {
-  0% {
-    transform: scale(0.985);
-    border-color: var(--color-success);
-    box-shadow: var(--elevation-100);
-  }
-  18% { transform: scale(1.01); }
-  35% {
-    transform: scale(1);
-    border-color: var(--color-success);
-    box-shadow: var(--elevation-100);
-  }
-  100% {
-    transform: scale(1);
-    border-color: transparent;
-    box-shadow: 0 0 0 0 transparent;
-  }
+  0%   { transform: scale(0.985); border-color: var(--color-success); }
+  18%  { transform: scale(1.01); }
+  35%  { transform: scale(1); border-color: var(--color-success); }
+  100% { transform: scale(1); border-color: transparent; }
 }
 
 /* Respect reduced-motion: no pop/flash, just a brief static highlight. */
