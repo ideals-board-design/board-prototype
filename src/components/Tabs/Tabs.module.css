@@ -32,6 +32,9 @@
   font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   color: var(--color-text-secondary);
+
+  /* §1 hover surface — colour only. */
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
 .tab.disabled {
@@ -39,9 +42,11 @@
   cursor: not-allowed;
 }
 
-/* Hover: unselected tab text brightens */
-.tab:not(.disabled):not(.selected):hover {
-  color: var(--color-text-primary);
+@media (hover: hover) {
+  /* Hover: unselected tab text brightens */
+  .tab:not(.disabled):not(.selected):hover {
+    color: var(--color-text-primary);
+  }
 }
 
 /* Focus ring */
@@ -94,7 +99,7 @@
   right: 0;
   height: var(--space-2);
   background: transparent;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
 .tab.selected .indicator {
@@ -102,6 +107,8 @@
 }
 
 /* Hover (non-selected): preview the green indicator line, same as selected */
-.tab:not(.disabled):not(.selected):hover .indicator {
-  background: var(--color-brand);
+@media (hover: hover) {
+  .tab:not(.disabled):not(.selected):hover .indicator {
+    background: var(--color-brand);
+  }
 }

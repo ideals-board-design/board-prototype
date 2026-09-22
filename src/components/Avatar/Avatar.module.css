@@ -32,7 +32,7 @@
 .user.neutral  { background: var(--stone-300); }
 .user.contrast { background: var(--stone-400); }
 .org           { background: var(--accent-500); }
-.group         { background: var(--tag-kepeel); }
+.group         { background: var(--stone-300); }
 
 /* ── Initials ────────────────────────────────────────────────────────────── */
 
@@ -44,9 +44,9 @@
   letter-spacing: 0;
 }
 
-.user .initials          { color: var(--color-text-primary); }
-.org .initials,
-.group .initials         { color: var(--color-text-inverse); }
+.user .initials,
+.group .initials         { color: var(--color-text-primary); }
+.org .initials           { color: var(--color-text-inverse); }
 
 /* Font size / weight by avatar size */
 .s   .initials { font-size: var(--text-sm);   font-weight: 400; } /* 14px Small Default, 1 letter */

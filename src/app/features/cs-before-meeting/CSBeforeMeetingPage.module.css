@@ -177,11 +177,13 @@
   font-size: var(--text-base);
   color: var(--color-brand);
   text-decoration: underline;
-  transition: color var(--transition-fast);
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
-.linkBrand:hover {
-  color: var(--color-brand-hover);
+@media (hover: hover) {
+  .linkBrand:hover {
+    color: var(--color-brand-hover);
+  }
 }
 
 /* ── Meeting preparation ──────────────────────────────────── */
@@ -223,11 +225,13 @@
   background: none;
   cursor: pointer;
   text-align: left;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
-.prepRow:hover {
-  background: var(--color-bg-hover-fill);
+@media (hover: hover) {
+  .prepRow:hover {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 .prepIcon {

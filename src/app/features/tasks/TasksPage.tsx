@@ -1,10 +1,9 @@
 /* TasksPage — Table-based feature page
    Figma: 35354-11450 (default) · 35354-11460 (drawer open) */
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { PageHeader }     from '../../../components/PageHeader/PageHeader'
 import { Drawer }         from '../../../components/Drawer/Drawer'
-import { DrawerHeader }   from '../../../components/DrawerHeader/DrawerHeader'
 import { StickyFooter }   from '../../../components/StickyFooter/StickyFooter'
 import { Button }   from '../../../components/Button/Button'
 import { Tooltip }  from '../../../components/Tooltip/Tooltip'
@@ -65,7 +64,13 @@ function sortRows(rows: Row[], col: SortCol | null, dir: SortDir): Row[] {
 }
 
 /* ── Component ─────────────────────────────────────────── */
-export default function TasksPage() {
+export interface TasksPageProps {
+  /** Mobile/tablet tier (390–1023px) — shows the nav drawer's hamburger trigger. */
+  onMenuClick?: () => void
+  menuTier?:    'tablet' | 'mobile'
+}
+
+export default function TasksPage({ onMenuClick, menuTier }: TasksPageProps = {}) {
   const [search,      setSearch]      = useState('')
   const [sortCol,     setSortCol]     = useState<SortCol | null>(null)
   const [sortDir,     setSortDir]     = useState<SortDir>(null)
@@ -88,6 +93,12 @@ export default function TasksPage() {
   const sorted = sortRows(filtered, sortCol, sortDir)
   const selectedRow = ROWS.find(r => r.id === selectedId) ?? null
 
+  /* The drawer stays mounted for its exit slide, so it needs the row it was
+     showing even after the selection has been cleared. */
+  const lastRow = useRef<Row | null>(null)
+  if (selectedRow) lastRow.current = selectedRow
+  const drawerRow = selectedRow ?? lastRow.current
+
   const ROW_ACTIONS = [
     { icon: editSvg,    label: 'Edit',   onClick: () => console.log('edit') },
     { icon: ellipsisSvg, label: 'More',  onClick: () => console.log('more') },
@@ -100,7 +111,7 @@ export default function TasksPage() {
       <div className={styles.content}>
 
         {/* Header */}
-        <PageHeader title="Tasks" />
+        <PageHeader title="Tasks" onMenuClick={onMenuClick} menuTier={menuTier} />
 
         {/* Toolbar */}
         <div className={styles.toolbar}>
@@ -191,16 +202,12 @@ export default function TasksPage() {
         </div>
       </div>
 
-      {/* ── Drawer column — shared <Drawer> shell (inline mode) ───────── */}
+      {/* ── Drawer column ─────────────────────────────── */}
       <Drawer
-        open={selectedRow != null}
+        variant="inline"
+        open={selectedRow !== null}
         onClose={() => setSelectedId(null)}
-        header={
-          <DrawerHeader
-            title="Drawer header"
-            onClose={() => setSelectedId(null)}
-          />
-        }
+        title="Drawer header"
         footer={
           <StickyFooter
             variant="drawer"
@@ -234,7 +241,7 @@ export default function TasksPage() {
           />
         }
       >
-        <p className={styles.drawerPlaceholder}>{selectedRow?.name}</p>
+        <p className={styles.drawerPlaceholder}>{drawerRow?.name}</p>
       </Drawer>
 
     </div>

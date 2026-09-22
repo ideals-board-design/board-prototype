@@ -60,11 +60,13 @@
   padding: var(--space-12) var(--space-4);
   border-radius: var(--radius-md);
   cursor: default;
-  transition: background var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
-.iconCell:hover {
-  background: var(--color-bg-hover);
+@media (hover: hover) {
+  .iconCell:hover {
+    background: var(--color-bg-hover);
+  }
 }
 
 .iconWrap {

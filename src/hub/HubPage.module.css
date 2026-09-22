@@ -44,11 +44,13 @@
   font-weight: var(--font-weight-regular);
   color: var(--color-text-secondary);
   text-decoration: none;
-  transition: color var(--transition-fast);
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
-.navLink:hover {
-  color: var(--color-text-primary);
+@media (hover: hover) {
+  .navLink:hover {
+    color: var(--color-text-primary);
+  }
 }
 
 /* ── Main content ─────────────────────────────────────────── */
@@ -91,7 +93,10 @@
   border-bottom: 1px solid var(--color-border);
   box-sizing: border-box;
   background: var(--color-bg-surface);
-  transition: background var(--transition-fast);
+  /* A row in a repeating vertical list → highlight tracks the cursor, instant
+     in both directions (motion spec §1 "Rows and menu items are instant").
+     Do not add a transition back, and no :active — rows have no pressed state. */
+  transition: none;
   /* reset for <a>/<button> */
   appearance: none;
   border-left: none;
@@ -109,8 +114,10 @@
   border-bottom: none;
 }
 
-.row:hover {
-  background: var(--color-bg-hover-fill);
+@media (hover: hover) {
+  .row:hover {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 
@@ -145,8 +152,10 @@
   visibility: hidden;
 }
 
-.row:hover .rowChevron {
-  visibility: visible;
+@media (hover: hover) {
+  .row:hover .rowChevron {
+    visibility: visible;
+  }
 }
 
 .rowChevron svg {

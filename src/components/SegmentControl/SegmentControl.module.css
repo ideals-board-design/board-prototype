@@ -31,14 +31,20 @@
   /* Background */
   background: var(--stone-0);
 
+  /* §1 hover surface — colour only. Borders are inset box-shadows here, so
+     box-shadow has to be named for the border colour change to animate. */
   transition:
-    background var(--transition-fast),
-    border-color var(--transition-fast);
+    background-color var(--dur-snap) var(--ease-out),
+    border-color var(--dur-snap) var(--ease-out),
+    box-shadow var(--dur-snap) var(--ease-out),
+    color var(--dur-snap) var(--ease-out);
 }
 
-/* Hover: unselected */
-.item:not(.selected):hover {
-  --b: var(--accent-500);
+@media (hover: hover) {
+  /* Hover: unselected */
+  .item:not(.selected):hover {
+    --b: var(--accent-500);
+  }
 }
 
 /* Selected */

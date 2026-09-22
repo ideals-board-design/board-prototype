@@ -37,8 +37,8 @@
   cursor: pointer;
   outline: none;
   transition:
-    box-shadow var(--transition-fast),
-    background var(--transition-fast);
+    box-shadow var(--dur-snap) var(--ease-out),
+    background-color var(--dur-snap) var(--ease-out);
   /* height via padding */
 }
 
@@ -64,10 +64,11 @@
 }
 /* Outline only: pull the group toward the edge by the button's centring inset so the
    trailing glyph lands on the trigger padding (symmetric with the left icon). */
-
 /* Hover — green border (not disabled, not error) */
-.wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
-  box-shadow: inset 0 0 0 1px var(--accent-500);
+@media (hover: hover) {
+  .wrapper:not(.isDisabled):not(.hasError) .trigger:hover {
+    box-shadow: inset 0 0 0 1px var(--accent-500);
+  }
 }
 
 /* Open — green border (same as focus) */
@@ -140,6 +141,14 @@
   color: var(--color-icon-secondary);
 }
 
+/* Single icon, rotated — not swapped between up/down assets (motion spec hard
+   rule: no icon swapping as animation; matches .treeChevron's pattern). */
+.chevron {
+  transition: transform var(--dur-snap) var(--ease-out);
+}
+
+.chevronOpen { transform: rotate(180deg); }
+
 .sizeS .iconLeft,
 .sizeS .chevron { width: 16px; height: 16px; }
 
@@ -204,10 +213,12 @@
   cursor: pointer;
   color: var(--color-icon-secondary);
   border-radius: var(--radius-xs);
-  transition: color var(--transition-fast);
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
-.clearBtn:hover { color: var(--color-text-primary); }
+@media (hover: hover) {
+  .clearBtn:hover { color: var(--color-text-primary); }
+}
 
 /* Hidden state — space is reserved but button is invisible + non-interactive */
 .clearBtnHidden {
@@ -258,7 +269,9 @@
   gap: var(--space-8);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: background var(--transition-fast);
+  /* Menu items are cursor-position indicators, not objects that change state —
+     the highlight must track the cursor, never trail it (motion spec §1). */
+  transition: none;
   box-sizing: border-box;
 }
 
@@ -267,9 +280,18 @@
 .sizeM .item { padding: var(--space-10) var(--space-12); }
 .sizeL .item { padding: var(--space-14) var(--space-12); }
 
-/* States — apply to all items including selected */
-.item:hover  { background: var(--color-bg-hover-fill); }         /* blue-800 · 10% */
-.item:active { background: var(--color-bg-hover-fill-strong); }  /* blue-800 · 20% */
+@media (hover: hover) {
+  /* States — apply to all items including selected */
+  .item:hover { background: var(--color-bg-hover-fill); }   /* blue-800 · 10% */
+}
+
+/* Press animates in on --dur-fast/--ease-in, same feel as Button's press-in.
+   Release has no transition — it falls back to the instant hover swap above,
+   consistent with items being cursor-position indicators (motion spec §1). */
+.item:active {
+  background: var(--color-bg-hover-fill-strong);   /* blue-800 · 20% */
+  transition: background-color var(--dur-fast) var(--ease-in);
+}
 
 /* Selected resting state only — hover/press reuse the same tokens above */
 .itemSelected { background: var(--color-bg-selected); }  /* #EBF8EF */
@@ -415,36 +437,38 @@
 
 /* ── Expand / collapse chevron ────────────────────── */
 
-.treeChevron {
+/* 20×20 click-area slot (keeps the tree indentation math intact); the DS
+   Button instance inside it is sized S/M/L (28/32/36) and overflow-centres,
+   same technique as .chevronBox on the trigger. */
+.treeChevronWrap {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-  padding: 0;
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-icon-secondary);
-  border-radius: var(--radius-xs);
-  transition:
-    transform var(--transition-fast),
-    color var(--transition-fast);
 }
 
-.treeChevron:hover { color: var(--color-text-primary); }
+/* The Button (32×32 at size M) is deliberately bigger than this 20px slot and
+   overflow-centres, matching Figma's Wrapper+Button offset (27974-2289). Flex's
+   default flex-shrink:1 would otherwise squash it to 20px wide while its height
+   stays 32px, making it non-square — flex-shrink:0 keeps it a true square. */
+.treeChevronWrap > button {
+  flex-shrink: 0;
+}
 
-.treeChevron span {
+/* Icon rotates — the Button itself never swaps or resizes (motion spec §1) */
+.treeChevronIcon {
   display: flex;
   width: 100%;
   height: 100%;
+  transition: transform var(--dur-snap) var(--ease-out);
 }
 
-.treeChevron svg { width: 100%; height: 100%; }
+.treeChevronIcon svg { width: 100%; height: 100%; }
 
 /* Rotated 90° when node is expanded */
-.treeChevronOpen { transform: rotate(90deg); }
+.treeChevronIconOpen { transform: rotate(90deg); }
 
 /* Spacer for leaf nodes — same 20px width as the chevron button,
    keeps cbWrap at the same horizontal position as expandable siblings */
@@ -484,21 +508,28 @@
   width: fit-content;
 }
 
+/* Real per-size padding IS the hit-area/hover-fill footprint — no negative-inset
+   bleed (same "footprint == hit area == fill" rule as Button tertiary/link, see
+   button-tertiary-link-no-negative-margins). Horizontal padding is 8px at every
+   size; vertical padding is (row height − 20px line)/2 = 4/6/8, giving the
+   correct S=28/M=32/L=36 footprint — verified against Figma 27057-4660
+   (nodes 27062-8431 / 27062-7857 / 27057-4661). */
 .noBorder .trigger {
   background: transparent;
   box-shadow: none;
-  padding: 0;
+  padding: var(--space-4) var(--space-8);
   gap: var(--space-8);  /* 8px between value and the decorative chevron icon (no buttons here) */
-  cursor: pointer; /* hand across the whole 32px hover zone */
+  border-radius: var(--radius-sm);
+  cursor: pointer;
 }
 
-/* Override size-based padding */
-.noBorder.sizeS .trigger,
-.noBorder.sizeM .trigger,
-.noBorder.sizeL .trigger { padding: 0; }
+.noBorder.sizeM .trigger { padding: var(--space-6) var(--space-8); }
+.noBorder.sizeL .trigger { padding: var(--space-8) var(--space-8); }
 
-/* Override hover/open/error box-shadow from outline rules */
-.noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
+@media (hover: hover) {
+  /* Override hover/open/error box-shadow from outline rules */
+  .noBorder:not(.isDisabled):not(.hasError) .trigger:hover { box-shadow: none; }
+}
 .noBorder.isOpen:not(.isDisabled):not(.hasError) .trigger { box-shadow: none; }
 .noBorder.hasError .trigger { box-shadow: none; }
 
@@ -512,32 +543,29 @@
 .noBorder .trigger .chevron,
 .noBorder .trigger .iconLeft { color: var(--color-icon-secondary); }
 
-/* Hover: text and icons go primary */
-.noBorder .trigger:hover .triggerText { color: var(--color-text-primary); }
-.noBorder .trigger:hover .chevron,
-.noBorder .trigger:hover .iconLeft { color: var(--color-icon-primary); }
+@media (hover: hover) {
+  /* Hover: text and icons go primary */
+  .noBorder .trigger:hover .triggerText { color: var(--color-text-primary); }
+}
+@media (hover: hover) {
+  .noBorder .trigger:hover .chevron,
+  .noBorder .trigger:hover .iconLeft { color: var(--color-icon-primary); }
+}
 
 /* Disabled: keep transparent bg */
 .noBorder.isDisabled .trigger { background: transparent; }
 
-/* No-border hover-fill (experimental): soft background extending 6px per side.
-   z-index:-1 sits behind text/chevron; z-index:0 = own stacking context. */
-.noBorder .trigger { position: relative; z-index: 0; }
-.noBorder .trigger::before {
-  content: '';
-  position: absolute;
-  inset: -6px;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  transition: background var(--transition-fast);
-  pointer-events: auto;  /* the full 32px fill zone triggers hover */
-  z-index: -1;
-}
-/* Fill kept on hover, while editing (focus) and while open. */
-.noBorder:not(.isDisabled) .trigger:hover::before,
-.noBorder:not(.isDisabled) .trigger:focus-within::before,
-.noBorder.isOpen:not(.isDisabled) .trigger::before {
+/* No-border hover-fill paints the trigger's own real padding box directly —
+   no oversized pseudo-element, no expansion beyond the layout footprint.
+   Fill kept on hover, while editing (focus) and while open. */
+.noBorder:not(.isDisabled) .trigger:focus-within,
+.noBorder.isOpen:not(.isDisabled) .trigger {
   background: var(--color-bg-hover-fill);
+}
+@media (hover: hover) {
+  .noBorder:not(.isDisabled) .trigger:hover {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 /* Droplist for no-border: content-width with a sensible minimum */
@@ -602,3 +630,22 @@
 .sizeS .noOptions { font-size: var(--text-sm);   padding: var(--space-6)  var(--space-8);  }
 .sizeM .noOptions { font-size: var(--text-base);  padding: var(--space-10) var(--space-12); }
 .sizeL .noOptions { font-size: var(--text-md);    padding: var(--space-14) var(--space-12); }
+
+/* ── Motion: panel fade (motion spec §3) ──────────────────────────────────────
+   Opacity is the ONLY animated property on enter — no translate, no scale, no
+   origin-based growth. Position is fully resolved before the fade starts, so the
+   panel never repositions mid-animation. Closing is instant — no exit
+   transition (per design direction; enter stays animated). */
+
+.droplist {
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+.droplist[data-state='open'] { opacity: 1; }
+
+.droplist[data-state='closed'] {
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}

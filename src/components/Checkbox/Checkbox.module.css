@@ -53,8 +53,8 @@
   align-items: center;
   justify-content: center;
   transition:
-    background var(--transition-fast),
-    box-shadow var(--transition-fast);
+    background-color var(--dur-snap) var(--ease-out),
+    box-shadow var(--dur-snap) var(--ease-out);
 }
 
 /* Focus ring */
@@ -77,8 +77,8 @@
   box-shadow: none;
 }
 
-/* Dash via ::after */
-.input:indeterminate + .hitArea .box::after {
+/* Dash via ::after — always rendered so it can fade (§5); opacity only. */
+.box::after {
   content: '';
   position: absolute;
   width: 10px;
@@ -86,16 +86,26 @@
   /* On the brand-green fill — inverse icon stays light in both modes */
   background: var(--color-icon-inverse);
   border-radius: 1px;
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+.input:indeterminate + .hitArea .box::after {
+  opacity: 1;
 }
 
 /* ── Checkmark icon ──────────────────────────────────────────────────────── */
 
+/* Always rendered, always laid out — the mark fades on opacity only. It must
+   never be display-toggled (display cannot transition) and never scale. */
 .checkIcon {
-  display: none;
+  display: flex;
   width: 16px;
   height: 16px;
   /* On the brand-green fill — inverse icon stays light in both modes */
   color: var(--color-icon-inverse);
+  opacity: 0;
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
 
 .checkIcon svg {
@@ -104,29 +114,37 @@
 }
 
 .input:checked + .hitArea .box .checkIcon {
-  display: flex;
+  opacity: 1;
 }
 
-/* Hide checkmark when indeterminate (takes over) */
+/* Indeterminate takes over: the glyph swap itself is instant, then the dash
+   fades in by the rule above. */
 .input:indeterminate + .hitArea .box .checkIcon {
-  display: none;
+  opacity: 0;
+  transition: none;
 }
 
-/* ── Hover states ────────────────────────────────────────────────────────── */
+@media (hover: hover) {
+  /* ── Hover states ────────────────────────────────────────────────────────── */
 
-/* Unchecked hover */
-.wrapper:not(.disabled):hover .input:not(:checked):not(:indeterminate) + .hitArea .box {
-  box-shadow: inset 0 0 0 1px var(--accent-600);
+  /* Unchecked hover */
+  .wrapper:not(.disabled):hover .input:not(:checked):not(:indeterminate) + .hitArea .box {
+    box-shadow: inset 0 0 0 1px var(--accent-600);
+  }
 }
 
-/* Checked hover */
-.wrapper:not(.disabled):hover .input:checked + .hitArea .box {
-  background: var(--accent-600);
+@media (hover: hover) {
+  /* Checked hover */
+  .wrapper:not(.disabled):hover .input:checked + .hitArea .box {
+    background: var(--accent-600);
+  }
 }
 
-/* Indeterminate hover */
-.wrapper:not(.disabled):hover .input:indeterminate + .hitArea .box {
-  background: var(--accent-600);
+@media (hover: hover) {
+  /* Indeterminate hover */
+  .wrapper:not(.disabled):hover .input:indeterminate + .hitArea .box {
+    background: var(--accent-600);
+  }
 }
 
 /* ── Label text ──────────────────────────────────────────────────────────── */

@@ -12,6 +12,19 @@
   font-family: var(--font-family);
 }
 
+/* Motion (opt-in — only applies when the `open` prop is passed, see
+   StickyFooter.tsx). Transform only, no opacity: it's page furniture
+   sliding into place, not a floating panel fading in. */
+.footer[data-state] {
+  transform: translateY(0);
+  transition: transform var(--dur-base) var(--ease-out);
+}
+
+.footer[data-state='closed'] {
+  transform: translateY(100%);
+  transition: transform var(--dur-snap) var(--ease-in);
+}
+
 /* Full-page variant: sticks to bottom of the viewport */
 .page {
   position: sticky;

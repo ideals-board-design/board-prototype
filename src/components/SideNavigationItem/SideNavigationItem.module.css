@@ -11,6 +11,14 @@
   outline: none;
 }
 
+/* Drawer tiers only (Tablet/Mobile) — Figma's "Side navigation" drawer spec.
+   Full sidebar (desktop) and the laptop rail keep the original padding. */
+.item.drawer {
+  align-self: stretch;
+  gap: var(--space-12);
+  padding: 0 var(--space-2);
+}
+
 .inner {
   flex: 1;
   min-width: 0;
@@ -20,11 +28,17 @@
   padding: var(--space-12);
   padding-left: var(--space-8);
   border-radius: var(--radius-sm);
-  transition: background 150ms ease;
+  /* Instant, like table rows — the nav list is a repeating vertical list of
+     destinations, so the highlight should track the cursor/keyboard focus
+     without a trailing fade (design feedback overrides motion spec §1's
+     literal "nav item" listing for this component). */
+  transition: none;
 }
 
-.item:hover .inner {
-  background: var(--color-bg-hover-fill);
+@media (hover: hover) {
+  .item:hover .inner {
+    background: var(--color-bg-hover-fill);
+  }
 }
 
 .item.selected .inner {
@@ -57,18 +71,22 @@
 .iconDefault { display: flex; }
 .iconActive  { display: none; }
 
-/* On hover or selected: swap to active icon */
-.item:hover .iconDefault,
+/* Selected: swap to the active icon. Not hover-gated — the selected state must
+   render on touch devices too. Icon swap is instant (no cross-fade, spec rule 2). */
 .item.selected .iconDefault { display: none; }
-
-.item:hover .iconActive,
 .item.selected .iconActive  { display: flex; }
 
 /* Active icon outline follows primary (matches the label + the Navigation icon
    spec: default = secondary, active = primary + green). currentColor drives the
    icon's stroke; the green accent is baked in. Flips light/dark via the token. */
-.item:hover .icon,
 .item.selected .icon { color: var(--color-text-primary); }
+
+@media (hover: hover) {
+  /* Same swap on hover */
+  .item:hover .iconDefault { display: none; }
+  .item:hover .iconActive  { display: flex; }
+  .item:hover .icon        { color: var(--color-text-primary); }
+}
 
 /* ── Label ─────────────────────────────────────────────────── */
 
@@ -86,24 +104,18 @@
   color: var(--color-text-primary);
 }
 
-/* Collapsed rail (<1440px by default): hide the label, centre the icon. */
-@media (max-width: 1439px) {
-  .label { display: none; }
-  .inner { justify-content: center; gap: 0; padding-left: var(--space-12); }
+/* ── Rail (laptop tier, icon-only) ────────────────────────────
+   Centers the icon in the same 4px outer / 12+8px inner padding footprint
+   the labeled row uses, so the rail and full sidebar share identical row
+   heights — only the label disappears. */
+
+.item.rail .inner {
+  justify-content: center;
+  padding: var(--space-12) var(--space-8);
+  gap: 0;
 }
 
-/* The parent SideNavigation can force a state regardless of viewport (e.g. the
-   mobile nav drawer forces expanded; a rail can be forced collapsed). These win
-   over the viewport rule above via the ancestor-attribute specificity. */
-:global([data-nav-collapse="off"]) .label { display: block; }
-:global([data-nav-collapse="off"]) .inner {
-  justify-content: flex-start;
-  gap: var(--space-12);
-  padding-left: var(--space-8);
-}
-:global([data-nav-collapse="on"]) .label { display: none; }
-:global([data-nav-collapse="on"]) .inner {
-  justify-content: center;
-  gap: 0;
-  padding-left: var(--space-12);
+.railTooltipWrapper {
+  display: block;
+  width: 100%;
 }

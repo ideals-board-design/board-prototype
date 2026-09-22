@@ -6,6 +6,10 @@
   padding: var(--space-14) var(--space-0) var(--space-14) var(--space-16);
   vertical-align: middle;
   white-space: nowrap;
+  /* Row hover/selected paints this cell's background — row highlights are
+     instant in both directions (motion spec §1). The DS Checkbox inside keeps
+     its own --dur-snap state transition. */
+  transition: none;
 }
 
 .inner {

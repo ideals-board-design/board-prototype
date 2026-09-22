@@ -9,6 +9,8 @@
   vertical-align: middle;
   width: 0;
   z-index: 2;
+  /* Row highlights are instant in both directions (motion spec §1). */
+  transition: none;
 }
 
 /* Overlay — solid hover background to cover row content behind.
@@ -27,6 +29,10 @@
   background: var(--color-bg-hover);
   opacity: 0;
   pointer-events: none;
+  /* Opacity is revealed BY the row's hover → instant, so the actions appear in
+     sync with the row highlight (motion spec §1). The DS Buttons inside keep
+     their own --dur-snap hover and pressed state. */
+  transition: none;
 }
 
 /* Visible state — driven by parent <tr> onMouseEnter/onMouseLeave */

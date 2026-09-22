@@ -1,16 +1,4 @@
-/* ToastContainer — viewport positioning + enter/exit animations */
-
-/* ── Keyframes ───────────────────────────────────────────── */
-
-@keyframes toastSlideIn {
-  from { opacity: 0; transform: translateY(calc(-100% - var(--space-16))); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes toastSlideOut {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(calc(-100% - var(--space-16))); }
-}
+/* ToastContainer — viewport positioning + enter/exit motion (motion spec §9) */
 
 /* ── Container ───────────────────────────────────────────── */
 
@@ -29,12 +17,24 @@
   pointer-events: auto;
 }
 
-/* ── Animation states ────────────────────────────────────── */
+/* ── Exit ────────────────────────────────────────────────────
+   Slide only — no opacity. `translateY(-100%)` moves it by exactly its own
+   height regardless of content (1 vs 2 lines), so it travels far enough to
+   pass behind whichever toast sits above it — and for a lone toast, the same
+   motion simply carries it out the top of the stack. Painting order does the
+   rest: earlier toasts are earlier DOM siblings, so an older toast sliding up
+   is painted underneath (behind) a newer one without any z-index needed.
 
-.entering {
-  animation: toastSlideIn 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+   Entrance is NOT here — it's driven by the same JS FLIP effect that reflows
+   the rest of the stack (see ToastContainer.tsx), so a new toast's slide-in
+   and the existing toasts' "make room" shift are perfectly synchronized and
+   the 8px gap holds throughout, not just at rest. */
+
+.toast {
+  transform: translateY(0);
 }
 
-.exiting {
-  animation: toastSlideOut 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+.toast[data-state='closed'] {
+  transform: translateY(-100%);
+  transition: transform var(--dur-snap) var(--ease-in);
 }

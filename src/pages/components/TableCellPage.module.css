@@ -44,6 +44,15 @@
   border-collapse: collapse;
 }
 
+/* Table rows: highlight is a cursor-position indicator — instant in both
+   directions (motion spec §1 "Rows and menu items are instant"). No
+   transition, no :active. */
+.row,
+.row td,
+.row th {
+  transition: none;
+}
+
 .row {
   border-bottom: 1px solid var(--color-border);
 }
@@ -52,9 +61,11 @@
   border-bottom: none;
 }
 
-.row:hover td,
-.row:hover th {
-  background: var(--color-bg-hover);
+@media (hover: hover) {
+  .row:hover td,
+  .row:hover th {
+    background: var(--color-bg-hover);
+  }
 }
 
 /* Variant label column (showcase only) */
@@ -86,10 +97,20 @@
   background: var(--stone-200);
 }
 
+/* Rows are instant in both directions (motion spec §1). */
+.demoRowOdd,
+.demoRowEven,
+.demoRowOdd td,
+.demoRowEven td {
+  transition: none;
+}
+
 .demoRowOdd  { background: var(--stone-0); }
 .demoRowEven { background: var(--stone-100); }
 
-.demoRowOdd:hover,
-.demoRowEven:hover {
-  background: var(--color-bg-hover);
+@media (hover: hover) {
+  .demoRowOdd:hover,
+  .demoRowEven:hover {
+    background: var(--color-bg-hover);
+  }
 }

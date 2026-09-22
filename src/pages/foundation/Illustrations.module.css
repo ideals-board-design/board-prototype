@@ -39,13 +39,15 @@
   border-radius: var(--radius-md);
   background: var(--color-bg-surface);
   cursor: default;
-  transition: background var(--transition-fast), border-color var(--transition-fast);
+  transition: background-color var(--dur-snap) var(--ease-out), border-color var(--dur-snap) var(--ease-out);
   width: 208px;
 }
 
-.cell:hover {
-  background: var(--color-bg-hover);
-  border-color: var(--color-border-hover, var(--color-border));
+@media (hover: hover) {
+  .cell:hover {
+    background: var(--color-bg-hover);
+    border-color: var(--color-border-hover, var(--color-border));
+  }
 }
 
 .preview {

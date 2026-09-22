@@ -28,6 +28,7 @@ export default defineConfig({
         documents:        'documents.html',
         meeting:          'meeting.html',
         'board-member':   'board-member.html',
+        chats:            'chats.html',
       },
     },
   },

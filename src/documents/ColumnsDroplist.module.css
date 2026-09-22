@@ -32,6 +32,14 @@
   cursor: pointer;
 }
 
+/* Droplist options are menu items in a repeating vertical list: hover, leave
+   and selected are instant in both directions (motion spec §1 "Rows and menu
+   items are instant"). No transition, and no :active — no pressed state. */
+.row,
+.settingRow {
+  transition: none;
+}
+
 .rowSelected { background: var(--color-bg-selected); }
 
 .rowLocked { opacity: 0.4; cursor: default; }
@@ -120,7 +128,7 @@
 }
 
 .chipReturning {
-  transition: left 0.15s ease, top 0.15s ease;
+  transition: transform var(--dur-snap) var(--ease-in-out);
 }
 
 /* Grabbing cursor applied to <body> during an active drag */

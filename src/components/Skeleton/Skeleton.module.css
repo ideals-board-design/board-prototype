@@ -1,0 +1,43 @@
+/* Skeleton — motion spec §8.
+   Pulses on opacity only. No shimmer, no gradient. */
+
+.skeleton {
+  display: block;
+  flex-shrink: 0;
+  background: var(--color-bg-disabled);
+  animation: skeleton-pulse var(--dur-skeleton-pulse) var(--ease-in-out) infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%,
+  100% { opacity: 1; }
+
+  50%  { opacity: 0.5; }
+}
+
+/* ── Variants ─────────────────────────────────────────────── */
+
+.rect   { border-radius: var(--radius-sm); }
+.text   { border-radius: var(--radius-sm); }
+.circle { border-radius: var(--radius-full); }
+
+/* ── Radius overrides ─────────────────────────────────────── */
+
+.radiusXs   { border-radius: var(--radius-xs); }
+.radiusSm   { border-radius: var(--radius-sm); }
+.radiusMd   { border-radius: var(--radius-md); }
+.radiusLg   { border-radius: var(--radius-lg); }
+.radiusFull { border-radius: var(--radius-full); }
+
+/* ── Content fade-in ──────────────────────────────────────────
+   The skeleton is removed first; the content then fades in place.
+   No cross-fade, no translate, no scale. */
+
+.content {
+  opacity: 0;
+  animation: content-fade-in var(--dur-base) var(--ease-out) forwards;
+}
+
+@keyframes content-fade-in {
+  to { opacity: 1; }
+}

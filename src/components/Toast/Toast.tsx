@@ -55,8 +55,10 @@ export function Toast({
     className,
   ].filter(Boolean).join(' ')
 
+  // role="alert" interrupts the screen reader — reserve it for errors. Everything
+  // else is announced politely as a status (motion spec §9).
   return (
-    <div className={cls} role="alert">
+    <div className={cls} role={state === 'error' ? 'alert' : 'status'}>
       <div className={styles.left}>
         <span
           className={styles.icon}

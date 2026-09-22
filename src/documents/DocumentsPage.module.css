@@ -115,12 +115,14 @@
 .rowSelected td:first-child,
 .rowSelected td:nth-child(2) { background: var(--color-bg-selected); }
 
-.rowOdd:hover  td:first-child,
-.rowOdd:hover  td:nth-child(2),
-.rowEven:hover td:first-child,
-.rowEven:hover td:nth-child(2),
-.rowSelected:hover td:first-child,
-.rowSelected:hover td:nth-child(2) { background: var(--color-bg-hover); }
+@media (hover: hover) {
+  .rowOdd:hover  td:first-child,
+  .rowOdd:hover  td:nth-child(2),
+  .rowEven:hover td:first-child,
+  .rowEven:hover td:nth-child(2),
+  .rowSelected:hover td:first-child,
+  .rowSelected:hover td:nth-child(2) { background: var(--color-bg-hover); }
+}
 
 /* ── Name column ──────────────────────────────────────────── */
 
@@ -157,7 +159,9 @@
   height: 20px;
   color: var(--color-icon-secondary);
   opacity: 0;
-  transition: opacity 0.1s ease, color 0.1s ease;
+  /* Opacity is driven by row hover → instant (motion spec §1).
+     The button's own colour hover is a child control → standard hover speed. */
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
 .starBtn svg { width: 20px; height: 20px; }
@@ -215,6 +219,9 @@
   background: var(--color-bg-hover);
   opacity: 0;
   pointer-events: none;
+  /* Opacity is revealed BY the row's hover → instant, in sync with the row
+     highlight (motion spec §1). The buttons inside keep their own hover. */
+  transition: none;
 }
 
 .actionsVisible {
@@ -224,10 +231,25 @@
 
 /* ── Body rows ───────────────────────────────────────────── */
 
+/* Row highlight is a cursor-position indicator: it must track the cursor, not
+   trail behind it. Hover, leave and selected are all instant, in both
+   directions (motion spec §1 "Rows and menu items are instant"). Do not add a
+   transition back here — and no :active, rows have no pressed state. */
+.rowOdd,
+.rowEven,
+.rowSelected,
+.rowOdd td,
+.rowEven td,
+.rowSelected td {
+  transition: none;
+}
+
 .rowOdd  { background: var(--stone-0);   }
 .rowEven { background: var(--stone-100); }
 .rowSelected { background: var(--color-bg-selected); }
 
-.rowOdd:hover,
-.rowEven:hover,
-.rowSelected:hover { background: var(--color-bg-hover); }
+@media (hover: hover) {
+  .rowOdd:hover,
+  .rowEven:hover,
+  .rowSelected:hover { background: var(--color-bg-hover); }
+}

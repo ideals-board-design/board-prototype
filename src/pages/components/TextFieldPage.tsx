@@ -89,10 +89,6 @@ export default function TextFieldPage() {
           <span className={styles.rowLabel}>L — 48px</span>
           <TextField size="l" variant="outline" defaultValue="Filled text" placeholder="Prompt text" />
         </div>
-        <div className={styles.sizeItem}>
-          <span className={styles.rowLabel}>XL — 56px</span>
-          <TextField size="xl" variant="outline" defaultValue="Filled text" placeholder="Prompt text" />
-        </div>
       </div>
 
       {/* ── Options ──────────────────────────────────── */}

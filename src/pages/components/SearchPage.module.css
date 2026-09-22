@@ -89,6 +89,14 @@
 .thName { width: auto; }
 .thDate { width: 100px; }
 
+/* Result rows: highlight tracks the cursor — instant in both directions
+   (motion spec §1 "Rows and menu items are instant"). No transition, no
+   :active. */
+.tr,
+.tr td {
+  transition: none;
+}
+
 .tr {
   border-bottom: 1px solid var(--color-border);
 }
@@ -97,8 +105,10 @@
   border-bottom: none;
 }
 
-.tr:hover {
-  background: var(--stone-100);
+@media (hover: hover) {
+  .tr:hover {
+    background: var(--stone-100);
+  }
 }
 
 /* Content — Medium Default: text-base + font-weight-regular */
@@ -142,11 +152,13 @@
   text-align: left;
   width: 100%;
   -webkit-font-smoothing: antialiased;
-  transition: color var(--transition-fast);
+  transition: color var(--dur-snap) var(--ease-out);
 }
 
-.loadMoreBtn:hover {
-  color: var(--green-600);
+@media (hover: hover) {
+  .loadMoreBtn:hover {
+    color: var(--green-600);
+  }
 }
 
 /* ── Highlight marks ─────────────────────────────────── */
