@@ -170,9 +170,9 @@
 .sizeL .input { font-size: var(--text-md); }
 /* XL — 20px Medium / 24px line (Figma "X Large Default") */
 .sizeXL .input {
-  font-size: 20px;
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-medium);
-  line-height: 24px;
+  line-height: var(--line-height-lg);
 }
 
 .input::placeholder {

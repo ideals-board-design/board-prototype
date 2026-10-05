@@ -1,0 +1,837 @@
+/* BoardBookViewer — Board book PDF reading experience (Figma 12970-219379) */
+
+.viewer {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: var(--color-bg-page);
+  position: relative;
+}
+
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: var(--color-bg-page);
+}
+
+.notPublished {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+/* ── Table of content panel (web) ─────────────────────────────────────────── */
+.toc {
+  flex-shrink: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+}
+
+.tocScroll {
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-20) var(--space-16) var(--space-40);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+}
+
+.tocItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.tocItemHead {
+  display: flex;
+  /* Avatar aligns with the FIRST line of a wrapping title, not the block centre. */
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.tocItemTitleBtn {
+  flex: 1;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.tocItemTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-md);
+}
+
+.tocMeta {
+  display: flex;
+  gap: var(--space-16);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+.tocBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.tocLabel {
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.tocLabelRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.tocText {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+  margin: 0;
+}
+
+.showMore {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-text-brand);
+  font-size: var(--text-sm);
+}
+
+.progressTrack {
+  height: var(--space-6);
+  border-radius: var(--radius-full);
+  background: var(--color-bg-hover-fill);
+  overflow: hidden;
+  margin-top: var(--space-4);
+}
+
+.progressFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: var(--color-success);
+}
+
+.tocDocs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin-top: var(--space-4);
+}
+
+/* ── Document rows (shared TOC + compact) ─────────────────────────────────── */
+/* Document item — size S (32px), a clickable main region + trailing "…" menu. */
+.docRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--size-s);
+  box-sizing: border-box;
+  padding-left: var(--space-12);
+  padding-right: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+}
+
+.docRow:hover {
+  background: var(--color-bg-hover);
+}
+
+.docRowActive {
+  border-color: var(--color-brand);
+  background: var(--color-brand-subtle);
+}
+
+.docRowMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.docActions {
+  flex-shrink: 0;
+  display: inline-flex;
+}
+
+.docIcon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.docIcon svg { width: 100%; height: 100%; }
+
+.docName {
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Resizer ──────────────────────────────────────────────────────────────── */
+.resizer {
+  width: 1px;
+  flex-shrink: 0;
+  background: var(--color-border);
+  cursor: col-resize;
+  position: relative;
+}
+.resizer::after {
+  content: '';
+  position: absolute;
+  inset: 0 -4px;
+}
+.resizer:hover {
+  background: var(--color-brand);
+}
+
+/* ── Main column ──────────────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--color-border);
+}
+
+.toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-8) var(--space-16);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.toolbarGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* ── Canvas ───────────────────────────────────────────────────────────────── */
+.canvasArea {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.canvasScroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-32) var(--space-24) var(--space-72);
+}
+
+.page {
+  flex-shrink: 0;
+  height: fit-content;
+}
+
+.pageFit {
+  width: 100%;
+  max-width: 960px;
+}
+
+.pageCommenting { cursor: crosshair; }
+.pageAnnotating { cursor: cell; }
+
+.pdfSheet {
+  position: relative;
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
+  border-radius: var(--radius-xs);
+  min-height: 920px;
+  padding: var(--space-40) var(--space-40) var(--space-56);
+}
+
+.pdfWatermark {
+  position: absolute;
+  top: var(--space-12);
+  right: var(--space-16);
+  font-size: var(--text-xs);
+  color: var(--color-text-disabled);
+}
+
+.commentPin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-full) var(--radius-full) var(--radius-full) 0;
+  background: var(--color-brand);
+  color: var(--color-text-on-inverse);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--elevation-100);
+}
+
+/* ── PDF page content ─────────────────────────────────────────────────────── */
+.pdfContent {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  color: var(--color-text-primary);
+}
+
+.pdfDefs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+}
+.pdfDefs > div {
+  display: flex;
+  gap: var(--space-8);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-base);
+}
+.pdfDefs dt {
+  font-weight: var(--font-weight-semibold);
+  flex-shrink: 0;
+  min-width: 112px;
+}
+.pdfDefs dd { margin: 0; color: var(--color-text-secondary); }
+
+.pdfHeading {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-semibold);
+  margin: var(--space-8) 0 0;
+}
+
+.pdfSubtle {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.pdfPara {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-lg);
+  margin: 0;
+}
+
+.pdfList {
+  margin: 0;
+  padding-left: var(--space-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+}
+
+.pdfFigures {
+  display: flex;
+  gap: var(--space-24);
+  flex-wrap: wrap;
+}
+
+.pdfFigure {
+  margin: 0;
+  flex: 1 1 240px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.pdfFigure figcaption {
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
+
+.pdfChart {
+  height: 160px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      var(--color-bg-page) 0,
+      var(--color-bg-page) var(--space-16),
+      var(--color-bg-hover) var(--space-16),
+      var(--color-bg-hover) var(--space-32)
+    );
+}
+
+/* ── Bottom pill ──────────────────────────────────────────────────────────── */
+.pill {
+  position: absolute;
+  bottom: var(--space-20);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-12);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-inverse);
+  box-shadow: var(--elevation-100);
+  z-index: var(--z-dropdown);
+  max-width: calc(100% - var(--space-48));
+}
+
+/* Local board-book nav buttons (Figma 13299-51405) — on the dark pill they are
+   bordered by default, take a lighter fill on hover/press, and read muted when
+   disabled (first / last page). */
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--size-s);
+  height: var(--size-s);
+  padding: 0;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--stone-800);
+  background: transparent;
+  color: var(--color-icon-on-inverse);
+  cursor: pointer;
+}
+.navBtn:hover:not(:disabled) {
+  background: var(--stone-900);
+  border-color: var(--stone-900);
+}
+.navBtn:active:not(:disabled) {
+  background: var(--stone-800);
+  border-color: var(--stone-800);
+}
+.navBtn:disabled {
+  background: var(--stone-500);
+  border-color: transparent;
+  color: var(--stone-700);
+  cursor: default;
+}
+.navBtnIcon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+}
+.navBtnIcon svg { width: 100%; height: 100%; }
+
+.pillDocWrap { position: relative; display: flex; min-width: 0; }
+
+.pillDoc {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-width: 0;
+  padding: var(--space-6) var(--space-8);
+  border: none;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--color-text-on-inverse);
+  cursor: pointer;
+}
+.pillDoc:hover { background: var(--stone-900); }
+
+.pillDocIcon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.pillDocIcon svg { width: 100%; height: 100%; }
+
+/* Show the name in full when the pill has room; ellipsize only when the pill
+   hits its max-width and the flex row has to shrink (Figma feedback). */
+.pillDocName {
+  min-width: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pillChevron {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: var(--color-icon-on-inverse);
+}
+.pillChevron svg { width: 100%; height: 100%; }
+
+/* Divider between the navigator and the continuous page counter. */
+.pillDivider {
+  flex-shrink: 0;
+  width: 1px;
+  align-self: stretch;
+  margin: var(--space-2) var(--space-4);
+  background: var(--stone-800);
+}
+
+.pillCount {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  color: var(--color-text-on-inverse);
+}
+
+.pillPageInput {
+  width: 40px;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  text-align: center;
+  font-size: var(--text-sm);
+  font-family: var(--font-family);
+}
+
+.pillTotal {
+  font-size: var(--text-sm);
+  color: var(--color-text-on-inverse);
+}
+
+/* ── Nav popover (compact / bottom pill) ──────────────────────────────────── */
+.popoverScrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dropdown);
+}
+
+.navPopover {
+  position: absolute;
+  bottom: calc(100% + var(--space-8));
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
+  z-index: var(--z-dropdown);
+}
+
+.compactNav {
+  display: flex;
+  flex-direction: column;
+}
+
+.compactGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.compactDivider {
+  border: none;
+  background: none;
+  text-align: left;
+  padding: var(--space-10) var(--space-12) var(--space-6);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.compactDoc {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-12);
+  border: none;
+  border-radius: var(--radius-md);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+}
+.compactDoc:hover { background: var(--color-bg-hover); }
+.compactDocActive { background: var(--color-brand-subtle); }
+
+/* ── Side panel (Search / AI) ─────────────────────────────────────────────── */
+.sidePanel {
+  flex-shrink: 0;
+  width: 400px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+  border-left: 1px solid var(--color-border);
+}
+
+.sidePanelHead {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-16) var(--space-16) var(--space-16) var(--space-20);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.sidePanelTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.sidePanelBody {
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-16) var(--space-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.searchHint {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.searchResults {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.searchResult {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-12);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  cursor: pointer;
+  text-align: left;
+}
+.searchResult:hover { background: var(--color-bg-hover); }
+
+.searchResultMeta {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+.searchResultSnippet {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+}
+
+/* ── Ask AI ───────────────────────────────────────────────────────────────── */
+.aiDisclaimer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-12) var(--space-20);
+  background: var(--color-info-bg);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+}
+.aiDisclaimerIcon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-info);
+}
+.aiDisclaimerIcon svg { width: 100%; height: 100%; }
+.aiLearnMore {
+  margin-left: auto;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-text-brand);
+  font-size: var(--text-sm);
+}
+
+.aiThread {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-16) var(--space-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.aiUser {
+  align-self: stretch;
+  padding: var(--space-12) var(--space-16);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-base);
+}
+
+.aiAnswerRow {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.aiMark {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-text-brand);
+}
+.aiMark svg { width: 100%; height: 100%; }
+
+.aiAnswer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-base);
+}
+.aiAnswer p { margin: 0; }
+
+.aiSources {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  margin-top: var(--space-4);
+}
+.aiSource {
+  border: none;
+  background: none;
+  padding: 0 var(--space-2);
+  cursor: pointer;
+  color: var(--color-text-brand);
+  font-weight: var(--font-weight-semibold);
+}
+
+.aiFooter {
+  position: relative;
+  flex-shrink: 0;
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-16) var(--space-20);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  align-items: flex-start;
+}
+.aiInput {
+  width: 100%;
+}
+
+/* Inline send affordance inside the "Ask anything" field (Figma 12594-313871). */
+.aiSend {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+}
+.aiSend:hover { color: var(--color-text-brand); }
+.aiSend svg { width: 100%; height: 100%; }
+
+/* Suggestions region — header + chips shown above the input (Figma 12594-313871). */
+.suggestPanel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+
+.suggestHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.suggestTitle {
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+
+.suggestChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+}
+
+/* Chips are DS secondary buttons (size + hover come from the design system);
+   only relax wrapping so a long question can break onto two lines. */
+.suggestChip {
+  white-space: normal;
+  text-align: left;
+}
+
+/* ── Far-right rail ───────────────────────────────────────────────────────── */
+.rail {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-8) var(--space-6);
+  border-left: 1px solid var(--color-border);
+  background: var(--color-bg-surface);
+}
+
+/* ── Responsive: tablet / phone ───────────────────────────────────────────── */
+@media (max-width: 1023px) {
+  .sidePanel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(400px, 100%);
+    z-index: var(--z-dropdown);
+    box-shadow: var(--elevation-200);
+  }
+  .rail {
+    position: absolute;
+    inset: 0 0 auto auto;
+    flex-direction: row;
+    border-left: none;
+    background: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidePanel { width: 100%; }
+}

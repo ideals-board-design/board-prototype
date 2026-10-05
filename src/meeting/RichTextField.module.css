@@ -1,0 +1,129 @@
+/* RichTextField — agenda item rich-text description (Figma 11710-104418 /
+   "Input: Text area with editor" 34047:5622). Inline (formatted content /
+   placeholder) when idle; a bordered box with a formatting toolbar when focused. */
+
+/* Column wrapper so the error hint sits directly below the editor box. */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* Inline (meeting-details) focus: pull the box up 10px so its toolbar lines up
+   with the leading field icon (which never moves), tightening the gap above from
+   24px to 14px, and drop the box's top padding so the toolbar row centres on the
+   icon (Figma 31209-198683). */
+.tightenActive {
+  margin-top: calc(-1 * var(--space-10));
+}
+.tightenActive .wrap.focused {
+  padding-top: 0;
+}
+
+.wrap {
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);   /* 4px */
+  transition: border-color var(--dur-snap) var(--ease-out), background var(--dur-snap) var(--ease-out),
+    box-shadow var(--dur-snap) var(--ease-out);
+}
+
+/* Idle hover — a soft row fill (Figma 29649-120011). The box-shadow spreads the
+   same colour 4px around so the fill reads as a padded row without shifting layout. */
+.wrap:not(.focused):hover {
+  background: var(--color-bg-hover-fill);
+  box-shadow: 0 0 0 var(--space-4) var(--color-bg-hover-fill);
+}
+
+/* Focused editor box — white surface, green (accent) border, 4px vertical padding. */
+.wrap.focused {
+  border-color: var(--color-border-focus);
+  background: var(--color-bg-surface);
+  padding: var(--space-4) 0;
+}
+
+/* Error — over the character limit. Red border wins over the focus green, and the
+   box treatment stays so the message and content remain legible. */
+.wrap.hasError {
+  border-color: var(--color-border-error);
+  background: var(--color-bg-surface);
+  padding: var(--space-4) 0;
+}
+.hasError .editable {
+  padding: var(--space-10) var(--space-16);
+}
+
+/* ── Toolbar ─────────────────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);                                       /* between the two groups */
+  padding: var(--space-6) var(--space-10) var(--space-2);     /* 6 / 10 / 2 */
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);                                        /* within a group */
+}
+
+/* Toggle icon button — 6px padding around a 20px icon = 32px. */
+.toolBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-6);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  color: var(--color-icon-secondary);
+  transition: background var(--dur-snap) var(--ease-out), color var(--dur-snap) var(--ease-out);
+}
+.toolBtn svg { width: 20px; height: 20px; }
+
+.toolBtn:hover {
+  background: var(--color-bg-hover-fill);
+  color: var(--color-text-primary);
+}
+
+/* Active — the current selection has this format applied. */
+.toolBtnActive,
+.toolBtnActive:hover {
+  background: var(--color-bg-selected);
+  color: var(--color-text-brand);
+}
+
+/* ── Editable area ───────────────────────────────────────────────────────── */
+.editable {
+  outline: none;
+  font-family: var(--font-family);
+  font-size: var(--text-base);            /* 15px */
+  line-height: var(--line-height-base);   /* 20px */
+  color: var(--color-text-primary);
+  /* Idle: the first line shares a 24px line-box (20px line + 2px above/below) so
+     it centres on a leading field icon's baseline. Overridden when focused. */
+  min-height: var(--space-24);
+  padding: var(--space-2) 0;
+}
+
+/* Focused → padded text area inside the box (10 / 16). */
+.focused .editable {
+  padding: var(--space-10) var(--space-16);
+}
+
+/* Placeholder for empty content. */
+.isEmpty::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-secondary);
+  pointer-events: none;
+}
+
+/* ── Rich content ────────────────────────────────────────────────────────── */
+.editable ul,
+.editable ol {
+  margin: 0;
+  padding-left: var(--space-24);
+}
+.editable strong,
+.editable b { font-weight: var(--font-weight-medium); }

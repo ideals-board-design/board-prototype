@@ -130,7 +130,7 @@
 .nameCell {
   font-size: var(--text-base);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-base);
 }
 
 /* File-format icon is 24×24 (Figma) */

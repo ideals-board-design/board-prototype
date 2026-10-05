@@ -32,7 +32,7 @@
 .hitArea {
   width: 24px;
   height: 24px;
-  margin: -4px;
+  margin: calc(-1 * var(--space-4));
   display: flex;
   align-items: center;
   justify-content: center;

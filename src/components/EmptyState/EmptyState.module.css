@@ -55,7 +55,7 @@
   font-family: var(--font-family);
   font-size: var(--text-md);
   font-weight: var(--font-weight-medium);
-  line-height: 20px;
+  line-height: var(--line-height-md);
   color: var(--color-text-primary);
   margin: 0;
 }
@@ -64,7 +64,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-secondary);
   margin: 0;
 }

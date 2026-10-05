@@ -38,9 +38,9 @@
   flex: 1;
   min-width: 0;
   padding: var(--space-6) var(--space-8);
-  font-size: 20px;
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-medium);
-  line-height: 24px;
+  line-height: var(--line-height-lg);
   color: var(--color-text-primary);
   -webkit-font-smoothing: antialiased;
   word-break: break-word;

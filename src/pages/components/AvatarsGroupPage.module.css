@@ -1,27 +1,27 @@
 .page {
-  padding: 40px 48px;
+  padding: var(--space-40) var(--space-48);
   max-width: 960px;
 }
 
 .title {
   font-size: var(--text-xl);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
-  margin: 0 0 4px;
+  margin: 0 0 var(--space-4);
 }
 
 .subtitle {
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
-  margin: 0 0 40px;
+  margin: 0 0 var(--space-40);
 }
 
 .sectionTitle {
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
-  margin: 0 0 16px;
-  padding-top: 32px;
+  margin: 0 0 var(--space-16);
+  padding-top: var(--space-32);
   border-top: 1px solid var(--color-border);
 }
 
@@ -35,15 +35,15 @@
 .sizeRow {
   display: flex;
   align-items: flex-end;
-  gap: 40px;
-  margin-bottom: 8px;
+  gap: var(--space-40);
+  margin-bottom: var(--space-8);
 }
 
 .sizeItem {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--space-8);
 }
 
 .label {
@@ -56,14 +56,14 @@
 .variantRows {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-bottom: 8px;
+  gap: var(--space-16);
+  margin-bottom: var(--space-8);
 }
 
 .variantRow {
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: var(--space-24);
 }
 
 .rowLabel {
@@ -81,7 +81,7 @@
 }
 
 .specTable td {
-  padding: 6px 16px 6px 0;
+  padding: var(--space-6) var(--space-16) var(--space-6) 0;
   vertical-align: top;
 }
 

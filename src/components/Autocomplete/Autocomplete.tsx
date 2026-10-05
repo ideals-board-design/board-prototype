@@ -68,8 +68,19 @@ export interface AutocompleteProps {
   disabled?:    boolean
   clearable?:   boolean
   /** Allow committing a typed value that isn't in the options (free combobox).
-      The dropdown still offers suggestions; Enter / blur keeps the typed text. */
+      The dropdown still offers suggestions; whenever there's typed text, a
+      trailing row for that exact text is appended — always last, even if it
+      matches an existing option's label, since it commits as its own custom
+      value rather than selecting that option. Reachable by click, Enter, or blur. */
   allowCustomValue?: boolean
+  /** Render the trailing custom-value row as an "add" action rather than a
+      selectable option: no checkbox, no generated avatar, and this label instead
+      of the raw typed text — e.g. `v => <>Add "{v}" as presenter</>`. Signals the
+      user is creating a new entry, not picking an existing one. Requires
+      `allowCustomValue`. Committing still adds the raw typed value. */
+  customValueLabel?: (typedValue: string) => ReactNode
+  /** Accessible name for the input when no visible `label` is rendered */
+  'aria-label'?: string
   className?:   string
 }
 
@@ -97,6 +108,13 @@ function ItemAvatar({ avatar }: { avatar: AutocompleteOptionAvatar; size: Autoco
   )
 }
 
+/** First + last-word initials for the custom row's generated avatar, e.g.
+    "An" → "A" (single word) — mirrors how a real person's name would render. */
+function initialsFromText(text: string): string {
+  const parts = text.trim().split(/\s+/).filter(Boolean)
+  return ((parts[0]?.[0] ?? '') + (parts.length > 1 ? parts[parts.length - 1]?.[0] ?? '' : '')).toUpperCase() || '?'
+}
+
 /* ── Component ────────────────────────────────────────────────────────────── */
 
 export function Autocomplete({
@@ -114,6 +132,8 @@ export function Autocomplete({
   disabled  = false,
   clearable = false,
   allowCustomValue = false,
+  customValueLabel,
+  'aria-label': ariaLabel,
   className,
 }: AutocompleteProps) {
   const uid = useId()
@@ -156,6 +176,17 @@ export function Autocomplete({
   const filteredOpts: AutocompleteOption[] = query === ''
     ? options
     : options.filter(o => o.label.toLowerCase().includes(query.toLowerCase()))
+
+  /* Trailing row for the exact typed text — always last, even when it happens
+     to match a real option's label, since it commits as its own custom value
+     rather than selecting that option (the two are never the same choice). */
+  const trimmedQuery = query.trim()
+  const showCustomOption = allowCustomValue && trimmedQuery !== ''
+  const customIdx = filteredOpts.length
+  const optionsHaveAvatars = options.some(o => o.avatar)
+  const customChecked = multiple && selectedValues.includes(trimmedQuery)
+  /** Custom row shown as an "add" action (no checkbox / avatar / selected state) */
+  const customAsAction = Boolean(customValueLabel)
 
   /* ── Position helper ──────────────────────────────────────────────────── */
 
@@ -209,12 +240,27 @@ export function Autocomplete({
 
   /** Commit a free-typed value (allowCustomValue mode) */
   const commitCustom = useCallback((text: string) => {
+    if (multiple) {
+      // Same toggle-and-keep-open contract as selectOption's multiple branch —
+      // clicking an already-added custom value removes it, like unchecking it.
+      if (text !== '') {
+        const next = selectedValues.includes(text)
+          ? selectedValues.filter(v => v !== text)
+          : [...selectedValues, text]
+        onChange?.(next)
+      }
+      setQuery('')
+      setInputText('')
+      setActiveIdx(-1)
+      inputRef.current?.focus()
+      return
+    }
     onChange?.(text)
     setInputText(text)
     setQuery('')
     setOpen(false)
     setActiveIdx(-1)
-  }, [onChange])
+  }, [onChange, multiple, selectedValues])
 
   const clearValue = (e: React.MouseEvent) => {
     e.preventDefault()   // keep focus on input
@@ -248,20 +294,19 @@ export function Autocomplete({
       openDroplist()
       return
     }
+    const rowCount = filteredOpts.length + (showCustomOption ? 1 : 0)
     if (e.key === 'ArrowDown') {
       e.preventDefault()
-      setActiveIdx(i =>
-        filteredOpts.length === 0 ? -1 : (i + 1) % filteredOpts.length
-      )
+      setActiveIdx(i => rowCount === 0 ? -1 : (i + 1) % rowCount)
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
-      setActiveIdx(i =>
-        filteredOpts.length === 0 ? -1 : (i - 1 + filteredOpts.length) % filteredOpts.length
-      )
+      setActiveIdx(i => rowCount === 0 ? -1 : (i - 1 + rowCount) % rowCount)
     } else if (e.key === 'Enter') {
       e.preventDefault()
       if (activeIdx >= 0 && filteredOpts[activeIdx]) {
         selectOption(filteredOpts[activeIdx].value)
+      } else if (showCustomOption && (activeIdx === customIdx || activeIdx === -1)) {
+        commitCustom(trimmedQuery)
       } else if (!allowCustomValue && filteredOpts.length === 1) {
         selectOption(filteredOpts[0].value)
       } else if (allowCustomValue) {
@@ -378,6 +423,7 @@ export function Autocomplete({
             open && activeIdx >= 0 ? `${uid}-opt-${activeIdx}` : undefined
           }
           aria-invalid={hasError || undefined}
+          aria-label={ariaLabel}
           autoComplete="off"
           spellCheck={false}
           onChange={handleChange}
@@ -437,45 +483,75 @@ export function Autocomplete({
           style={{ top: pos.top, left: pos.left, width: pos.width }}
           role="listbox"
         >
-          {filteredOpts.length === 0 ? (
+          {filteredOpts.length === 0 && !showCustomOption ? (
             <div className={`${styles.item} ${styles.noOptions}`}>
               <span className={styles.itemLabel}>No options</span>
             </div>
           ) : (
-            filteredOpts.map((opt, i) => {
-              const sel = multiple ? selectedValues.includes(opt.value) : opt.value === singleValue
-              return (
+            <>
+              {filteredOpts.map((opt, i) => {
+                const sel = multiple ? selectedValues.includes(opt.value) : opt.value === singleValue
+                return (
+                  <div
+                    id={`${uid}-opt-${i}`}
+                    key={opt.value}
+                    className={[
+                      styles.item,
+                      sel              ? styles.itemSelected : '',
+                      activeIdx === i  ? styles.itemActive    : '',
+                      (opt.avatar || opt.icon) ? styles.itemHasAvatar : '',
+                    ].filter(Boolean).join(' ')}
+                    role="option"
+                    aria-selected={sel}
+                    onMouseDown={e => e.preventDefault()}
+                    onClick={() => selectOption(opt.value)}
+                  >
+                    {multiple && (
+                      <span className={styles.itemCheck} aria-hidden="true">
+                        <Checkbox checked={sel} readOnly tabIndex={-1} />
+                      </span>
+                    )}
+                    {opt.icon
+                      ? <span className={styles.itemIcon} aria-hidden="true">{opt.icon}</span>
+                      : opt.avatar && <ItemAvatar avatar={opt.avatar} size={size} />}
+                    <span className={styles.itemLabel}>
+                      {opt.label}
+                      {opt.sublistLabel && (
+                        <span className={styles.itemLabelInlineSecondary}>{opt.sublistLabel}</span>
+                      )}
+                    </span>
+                  </div>
+                )
+              })}
+              {showCustomOption && (
                 <div
-                  id={`${uid}-opt-${i}`}
-                  key={opt.value}
+                  id={`${uid}-opt-${customIdx}`}
                   className={[
                     styles.item,
-                    sel              ? styles.itemSelected : '',
-                    activeIdx === i  ? styles.itemActive    : '',
-                    (opt.avatar || opt.icon) ? styles.itemHasAvatar : '',
+                    customAsAction ? styles.itemAction : '',
+                    !customAsAction && customChecked ? styles.itemSelected : '',
+                    activeIdx === customIdx ? styles.itemActive : '',
+                    !customAsAction && optionsHaveAvatars ? styles.itemHasAvatar : '',
                   ].filter(Boolean).join(' ')}
                   role="option"
-                  aria-selected={sel}
+                  aria-selected={customAsAction ? undefined : customChecked}
                   onMouseDown={e => e.preventDefault()}
-                  onClick={() => selectOption(opt.value)}
+                  onClick={() => commitCustom(trimmedQuery)}
                 >
-                  {multiple && (
+                  {multiple && !customAsAction && (
                     <span className={styles.itemCheck} aria-hidden="true">
-                      <Checkbox checked={sel} readOnly tabIndex={-1} />
+                      <Checkbox checked={customChecked} readOnly tabIndex={-1} />
                     </span>
                   )}
-                  {opt.icon
-                    ? <span className={styles.itemIcon} aria-hidden="true">{opt.icon}</span>
-                    : opt.avatar && <ItemAvatar avatar={opt.avatar} size={size} />}
+                  {!customAsAction && optionsHaveAvatars && (
+                    <ItemAvatar avatar={{ initials: initialsFromText(trimmedQuery) }} size={size} />
+                  )}
                   <span className={styles.itemLabel}>
-                    {opt.label}
-                    {opt.sublistLabel && (
-                      <span className={styles.itemLabelInlineSecondary}>{opt.sublistLabel}</span>
-                    )}
+                    {customAsAction ? customValueLabel!(trimmedQuery) : trimmedQuery}
                   </span>
                 </div>
-              )
-            })
+              )}
+            </>
           )}
         </div>,
         document.body,

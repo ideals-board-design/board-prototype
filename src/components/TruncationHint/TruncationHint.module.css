@@ -24,7 +24,7 @@
   font-family: var(--font-family);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-medium);
-  line-height: 20px;
+  line-height: var(--line-height-sm);
 
   /* Text wraps to the next line when it fills the full width */
   white-space: normal;

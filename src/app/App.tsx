@@ -10,6 +10,7 @@ import DashboardPage     from './features/dashboard/DashboardPage'
 import CSBeforeMeetingPage from './features/cs-before-meeting/CSBeforeMeetingPage'
 import GenericPage       from './features/generic/GenericPage'
 import styles from './App.module.css'
+import { Agentation } from 'agentation'
 
 const multiplySvg = actions.find(i => i.name === 'multiply')!.svg
 
@@ -129,9 +130,12 @@ export default function App({
   }
 
   return (
+    <>
     <div className={styles.shell}>
       <SideNavigation variant={tier === 'laptop' ? 'rail' : 'sidebar'} {...navProps} />
       <main className={styles.main}>{pageContent}</main>
     </div>
+    {process.env.NODE_ENV === 'development' && <Agentation />}
+    </>
   )
 }

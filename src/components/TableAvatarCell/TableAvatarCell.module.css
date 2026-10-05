@@ -20,7 +20,7 @@
 .innerHorizontal {
   gap: var(--space-8);
   padding: 0 var(--space-16);
-  height: 48px;
+  height: var(--size-l);
 }
 
 /* ── Type: info — 64px (Figma h-[64px]) */
@@ -74,7 +74,7 @@
 .avatarInitials {
   font-family: var(--font-family);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
   text-align: center;
 }
@@ -96,7 +96,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 
@@ -105,7 +105,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 
@@ -115,7 +115,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-medium);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 
@@ -125,7 +125,7 @@
   font-family: var(--font-family);
   font-size: var(--text-sm);
   font-weight: var(--font-weight-regular);
-  line-height: 20px;
+  line-height: var(--line-height-sm);
   color: var(--color-text-secondary);
 }
 
@@ -134,7 +134,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   font-weight: var(--font-weight-medium);
-  line-height: 20px;
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
   text-align: center;
   white-space: nowrap;

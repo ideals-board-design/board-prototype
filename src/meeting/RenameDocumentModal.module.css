@@ -1,0 +1,10 @@
+/* RenameDocumentModal — single full-width name field inside the modal body. */
+
+.field {
+  display: flex;
+}
+
+.field > * {
+  flex: 1;
+  min-width: 0;
+}

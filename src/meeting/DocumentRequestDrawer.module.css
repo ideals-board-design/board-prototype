@@ -1,0 +1,182 @@
+/* DocumentRequestDrawer — content for the shared <Drawer> shell (overlay mode).
+   The panel chrome (width, border-left, header/body/footer layout) comes from
+   the shared Drawer; this file styles only the form. */
+
+/* Context: 8px top/bottom, no horizontal (children own their insets). */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-8) 0;
+}
+
+/* Form fields block — Figma "Form" padding 0 18 0 16. */
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: 0 var(--space-18) 0 var(--space-16);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Attachments block — Figma "Attachments" padding 0 24. */
+.attachments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: 0 var(--space-24);
+}
+
+.attachmentsLabel {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* Label + read-only values align with the no-border fields' 8px inset. */
+.label {
+  padding: 0 var(--space-8);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* Read-only "Linked to" rows render as no-border fields (Figma container
+   padding 4 0 4 8), so they share the editable fields' vertical rhythm rather
+   than sitting tight against the label. */
+.linkedValues {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  padding: var(--space-4) 0 var(--space-4) var(--space-8);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.hint {
+  padding: 0 var(--space-8);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+/* No-border Assignee (Autocomplete): its no-border inputWrapper has 0 left inset,
+   so force 8px to align the value/placeholder text with the labels at 24px. */
+.acField > div:first-child {
+  padding-left: var(--space-8);
+}
+
+/* No-border look for the multiline "Additional information" field (TextArea has
+   no no-border variant): strip the box border and set an 8px text inset so it
+   aligns with the other fields at 24px. `.fields .descTA` beats the DS
+   `.sizeM .textarea` padding. */
+.descTA > div {
+  box-shadow: none;
+  background: transparent;
+}
+.descTA > div:hover,
+.descTA > div:focus-within {
+  box-shadow: none;
+  background: var(--color-bg-hover);
+}
+.fields .descTA textarea {
+  min-height: 44px;
+  padding: var(--space-6) var(--space-8);
+}
+
+/* Submitted files (pending validation) ----------------------------------- */
+
+.submittedList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin-top: var(--space-4);
+}
+
+.submittedRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: 40px;
+  padding: 0 var(--space-4) 0 var(--space-12);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.fileIcon {
+  display: flex;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+.fileIcon svg { width: 100%; height: 100%; }
+
+.fileName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: var(--space-6);
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+.iconBtn:hover { background: var(--color-bg-hover); color: var(--color-text-primary); }
+.iconBtn svg { width: 100%; height: 100%; }
+
+/* Attachments upload area ------------------------------------------------- */
+
+.uploadArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  margin-top: var(--space-4);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.uploadText {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.uploadIcon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+}
+.uploadIcon svg { width: 100%; height: 100%; }
+
+.hiddenInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
