@@ -1,6 +1,6 @@
 /* Skeleton — loading placeholder. Motion spec §8.
  *
- * - Pulses on `opacity` only (1 → 0.5 → 1) over `--dur-skeleton-pulse`. No
+ * - Pulses on `opacity` only (1 → 0.5 → 1) over `--dur-slowest`. No
  *   shimmer gradient — gradients are banned in this system.
  * - Never appears for loads under 200ms: the `delay` gate renders nothing until
  *   it elapses, so a fast response never flashes a placeholder.

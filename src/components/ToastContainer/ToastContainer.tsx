@@ -36,6 +36,10 @@ import type { PresenceState } from '../shared/usePresence'
 import styles from './ToastContainer.module.css'
 
 const AUTO_DISMISS_MS = 4000
+/** Toasts beyond this count are pushed under the stack's clipping mask by
+ *  the normal "make room" reflow, then evicted from state once that
+ *  reflow finishes — see the mask sizing pass in the FLIP effect below. */
+const MAX_VISIBLE = 3
 
 export interface ToastItem {
   id:        string
@@ -65,6 +69,7 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
   function ToastContainer(_, ref) {
     const [items, setItems] = useState<InternalItem[]>([])
     const timerMap          = useRef(new Map<string, TimerEntry>())
+    const maskRef           = useRef<HTMLDivElement>(null)
     const containerRef      = useRef<HTMLDivElement>(null)
     const snapshotRef       = useRef(new Map<string, number>())   // id → previous top
 
@@ -135,6 +140,27 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
 
       // 4. Save positions for next render
       snapshotRef.current = newPositions
+
+      // 5. Size the clipping mask to show only the newest MAX_VISIBLE
+      //    toasts. Its top is pinned to the mask's own top (both fixed at
+      //    the same point), so this is just the natural bottom edge of the
+      //    oldest toast still inside the visible cap. Anything below that
+      //    — toasts pushed down by the "make room" reflow above — falls
+      //    outside the mask and disappears behind its edge.
+      const mask = maskRef.current
+      if (mask) {
+        if (items.length <= MAX_VISIBLE) {
+          mask.style.maxHeight = 'none'
+        } else {
+          const cutoffId = items[items.length - MAX_VISIBLE].id
+          const cutoffEl = els.find(el => el.dataset.toastId === cutoffId)
+          if (cutoffEl) {
+            const maskTop = mask.getBoundingClientRect().top
+            const cutoffBottom = naturalTop(cutoffEl) + cutoffEl.getBoundingClientRect().height
+            mask.style.maxHeight = `${cutoffBottom - maskTop}px`
+          }
+        }
+      }
     }, [items])
 
     // ── Timer helpers ──────────────────────────────────────────────
@@ -205,6 +231,18 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
         // effect above, not from a data-state transition.
         setItems(prev => [...prev, { ...toast, id, presence: 'open' }])
         scheduleTimer(id, AUTO_DISMISS_MS)
+
+        // Once the "make room" reflow has carried any overflow toasts
+        // under the mask (see the FLIP effect), they're already invisible
+        // — evict them from state so the stack doesn't grow unbounded.
+        setTimeout(() => {
+          setItems(prev => {
+            if (prev.length <= MAX_VISIBLE) return prev
+            const evicted = prev.slice(0, prev.length - MAX_VISIBLE)
+            evicted.forEach(item => clearItemTimer(item.id))
+            return prev.slice(prev.length - MAX_VISIBLE)
+          })
+        }, tokenMs('--dur-base', 400))
       },
       clear() {
         timerMap.current.forEach((_, id) => clearItemTimer(id))
@@ -217,27 +255,29 @@ export const ToastContainer = forwardRef<ToastContainerHandle>(
     if (items.length === 0) return null
 
     return (
-      <div className={styles.container} ref={containerRef}>
-        {items.map(item => (
-          <div
-            key={item.id}
-            data-toast-id={item.id}
-            onMouseEnter={() => pauseTimer(item.id)}
-            onMouseLeave={() => resumeTimer(item.id)}
-            onFocus={() => pauseTimer(item.id)}
-            onBlur={() => resumeTimer(item.id)}
-          >
-            <div className={styles.toast} data-state={item.presence}>
-              <Toast
-                state={item.state}
-                message={item.message}
-                optional={item.optional}
-                action={item.action}
-                onDismiss={() => dismiss(item.id, { instant: true })}
-              />
+      <div className={styles.mask} ref={maskRef}>
+        <div className={styles.container} ref={containerRef}>
+          {items.map(item => (
+            <div
+              key={item.id}
+              data-toast-id={item.id}
+              onMouseEnter={() => pauseTimer(item.id)}
+              onMouseLeave={() => resumeTimer(item.id)}
+              onFocus={() => pauseTimer(item.id)}
+              onBlur={() => resumeTimer(item.id)}
+            >
+              <div className={styles.toast} data-state={item.presence}>
+                <Toast
+                  state={item.state}
+                  message={item.message}
+                  optional={item.optional}
+                  action={item.action}
+                  onDismiss={() => dismiss(item.id, { instant: true })}
+                />
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     )
   },

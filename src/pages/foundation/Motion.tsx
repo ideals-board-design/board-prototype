@@ -30,7 +30,7 @@ const durationTokens: DurationToken[] = [
     name: '--dur-slow', value: '600ms',
     usage: "Drawer enter (backdrop, slide, and the inline variant's width grow) · loading-spinner rotation speed (Button, TextField)",
   },
-  { name: '--dur-skeleton-pulse', value: '1600ms', usage: "Skeleton's opacity pulse loop" },
+  { name: '--dur-slowest', value: '1600ms', usage: "Skeleton's opacity pulse loop" },
 ]
 
 interface EasingToken {
@@ -121,7 +121,7 @@ const patterns: Pattern[] = [
   },
   {
     title: 'Skeleton',
-    badges: ['--dur-skeleton-pulse', '--dur-base fade-in'],
+    badges: ['--dur-slowest', '--dur-base fade-in'],
     body: <p>Pulses opacity 1 → 0.5 → 1 on loop, no shimmer gradient. Gated behind a 200ms delay so a fast load never flashes a skeleton. Content replacing it fades in — no translate, no scale — and never cross-fades with the skeleton; one is fully removed before the other appears.</p>,
   },
   {

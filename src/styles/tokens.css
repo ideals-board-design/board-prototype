@@ -210,8 +210,7 @@
   --dur-snap:    300ms;   /* hover, focus, dropdown, checkbox, radio */
   --dur-base:    400ms;   /* toggle, toast, skeleton, modal enter */
   --dur-slow:    600ms;   /* drawer enter */
-
-  --dur-skeleton-pulse: 1600ms;   /* skeleton opacity pulse cycle */
+  --dur-slowest: 1600ms;  /* skeleton opacity pulse cycle */
 
   /* ---------------------------------------------------------------------------
      Motion — easing

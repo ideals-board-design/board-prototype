@@ -1,16 +1,39 @@
 /* ToastContainer — viewport positioning + enter/exit motion (motion spec §9) */
 
+/* ── Mask ────────────────────────────────────────────────────
+   Clips the stack to at most MAX_VISIBLE toasts. Its bottom edge is set
+   from JS (ToastContainer.tsx) to the natural bottom edge of the oldest
+   still-visible toast, so anything the "make room" reflow pushes past it
+   (older toasts overflowing the visible cap) disappears behind it instead
+   of growing the page indefinitely.
+
+   Only that bottom edge should ever clip. A brand-new toast's entrance
+   starts from a synthetic position one slot ABOVE its resting spot (see
+   the FLIP effect), so the mask's own top edge is pulled up by that same
+   headroom — and the container pushed back down by it — leaving the
+   visual anchor point (top/right: 16px) unchanged while giving the
+   entering toast room to slide in from off the top uncropped, in the
+   open air above the mask, instead of popping in already clipped. */
+
+.mask {
+  /* Covers the tallest toast (multi-line, 102px) + the 8px stack gap —
+     the largest possible entrance overshoot — with a little to spare. */
+  --toast-enter-headroom: calc(var(--space-64) + var(--space-48));
+  position: fixed;
+  top: calc(var(--space-16) - var(--toast-enter-headroom));
+  right: var(--space-16);
+  overflow: hidden;
+  z-index: 9000;
+  pointer-events: none;
+}
+
 /* ── Container ───────────────────────────────────────────── */
 
 .container {
-  position: fixed;
-  top: var(--space-16);
-  right: var(--space-16);
   display: flex;
   flex-direction: column-reverse;
   gap: var(--space-8);
-  z-index: 9000;
-  pointer-events: none;
+  margin-top: var(--toast-enter-headroom);
 }
 
 .container > * {

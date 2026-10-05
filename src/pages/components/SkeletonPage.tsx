@@ -48,7 +48,7 @@ export default function SkeletonPage() {
       <h1 className={styles.title}>Skeleton</h1>
       <p className={styles.subtitle}>
         Pulses on <code>opacity</code> (1 → 0.5 → 1) over
-        <code> --dur-skeleton-pulse</code>. No shimmer — gradients are banned. Never
+        <code> --dur-slowest</code>. No shimmer — gradients are banned. Never
         appears for loads under 200ms, and never cross-fades with its content: the
         skeleton is removed first, then the content fades in at <code>--dur-base</code>.
       </p>
