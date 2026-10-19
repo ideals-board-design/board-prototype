@@ -112,6 +112,12 @@ const MEETING_FLOWS: { title: string; flows: { id: string; name: string; href: s
       { id: 'meeting-secretary',    name: 'Secretary',    href: '/meeting.html' },
     ],
   },
+  {
+    title: 'Test versions',
+    flows: [
+      { id: 'test-bb-page-nav', name: 'Board book page navigation', href: '/board-book-page-nav.html' },
+    ],
+  },
 ]
 
 const SUB_PAGES: Record<SubView, { title: string; groups: typeof DASHBOARD_FLOWS }> = {

@@ -13,12 +13,13 @@
    - The banner is position:sticky, so it pins to the top of the pane once the
      outline above it scrolls away. Close (✕) dismisses it. */
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { SegmentControl } from '../components/SegmentControl/SegmentControl'
 import { Button } from '../components/Button/Button'
 import { Tooltip } from '../components/Tooltip/Tooltip'
 import { Avatar } from '../components/Avatar/Avatar'
 import { EmptyState } from '../components/EmptyState/EmptyState'
+import { Modal } from '../components/Modal/Modal'
 import { ToastContainer } from '../components/ToastContainer/ToastContainer'
 import type { ToastContainerHandle } from '../components/ToastContainer/ToastContainer'
 import { arrows } from '../icons/arrows'
@@ -92,25 +93,18 @@ function smoothScrollTo(el: HTMLElement, top: number) {
   anim.timer = window.setTimeout(finish, duration + 80)
 }
 
+/* Resizable left pane (Figma 13202-77526): drag the divider between 460 and 640px. */
+const PANE_MIN = 460
+const PANE_MAX = 640
+const PANE_STEP = 16
+const clampPane = (w: number) => Math.min(PANE_MAX, Math.max(PANE_MIN, w))
+
 /* ------------------------------------------------------------------ content */
 
 const SEGMENTS = [
   { id: 'agenda',     label: 'Agenda' },
   { id: 'transcript', label: 'Transcript' },
   { id: 'ai-minutes', label: 'AI minutes' },
-]
-
-const OUTLINE = [
-  'Call to Order',
-  'Opening',
-  'Approval of Agenda',
-  'Conflict of Interest',
-  'Consent Agenda',
-  'Appointment of Timekeeper',
-  'Public Comment',
-  'Approval of Previous Minutes',
-  'CEO Report',
-  'Closing',
 ]
 
 interface ActionItem {
@@ -142,63 +136,82 @@ const PRIYA  = { name: 'Priya Nair',     src: 'https://i.pravatar.cc/64?img=32' 
 
 const BLOCKS: MinuteBlock[] = [
   {
-    num: 1, title: 'Call to Order', timecode: '00:05:00',
-    paragraphs: [{ text: 'Mr. Greg McMorrow called the meeting to order at 1:00 p.m.' }],
+    num: 1, title: 'Call to Order', timecode: '00:01:30',
+    paragraphs: [{ text: 'Cheryl Jameson, Chairman, called the meeting to order at 11:00 a.m. Michael Donaldson, Chief Legal Officer, confirmed that notice had been given and that a quorum of seven directors was present.' }],
   },
   {
-    num: 2, title: 'Opening', timecode: '00:05:00',
-    paragraphs: [{ text: 'The Chair opened the meeting at 08:30, welcomed all attendees, and acknowledged the Traditional Owners of the land on which the meeting was held.' }],
-  },
-  {
-    num: 3, title: 'Approval of Agenda', timecode: '00:12:56',
-    paragraphs: [{ text: 'Chair McMorrow requested an adjustment to the agenda to add a second closed session after the first closed session under agenda item 4. The second closed session would be to discuss privileged communication with the attorney.' }],
+    num: 2, title: 'Approval of Agenda', timecode: '00:04:10',
+    paragraphs: [{ text: 'The Chairman asked whether any director wished to amend the agenda. Emily Jones asked that the cybersecurity update be moved ahead of the committee reports so that it could be discussed while the Chief Technology Officer was available. The Chairman agreed.' }],
     action: {
       id: 'a1',
-      text: 'Add second closed session. Add a second closed session after the 1:20 p.m. item to discuss privileged communication with the attorney.',
+      text: 'Update the agenda. Move the cybersecurity update ahead of the committee reports and re-issue the revised agenda to all directors.',
       assignee: OLIVIA,
     },
     trailing: [
-      { text: 'Motion: Add a second closed session after the 1:20 p.m. item to go into closed session to discuss privileged communication with the attorney.' },
-      { text: 'Result: adopted' },
+      { text: 'Motion: Approve the agenda for the March 27, 2024 Board of Directors meeting as amended.' },
+      { text: 'Result: adopted unanimously' },
     ],
   },
   {
-    num: 4, title: 'Conflict of Interest', timecode: '00:22:08',
-    paragraphs: [{ text: 'No conflicts of interest were declared.' }],
+    num: 3, title: 'Conflict of Interest', timecode: '00:07:45',
+    paragraphs: [{ text: 'Directors were reminded of their duty to disclose any conflict of interest. Colin Darrans disclosed his advisory role at Northwind Capital, which is a bidder on item 6, and agreed to leave the room during that discussion. No other conflicts were declared.' }],
     action: {
-      id: 'a4',
-      text: 'Update conflict register. Circulate the refreshed conflict-of-interest register to all directors and collect signed confirmations before the next meeting.',
+      id: 'a2',
+      text: 'Record the disclosure. Add Colin Darrans’ Northwind Capital disclosure to the conflict-of-interest register and note his recusal from item 6.',
       assignee: PRIYA,
     },
   },
   {
-    num: 5, title: 'Consent Agenda', timecode: '00:28:40',
-    paragraphs: [{ text: 'The Chair presented the consent agenda and asked whether any director wished to remove an item for separate discussion. No items were removed.' }],
+    num: 4, title: 'Approval of Previous Minutes', timecode: '00:11:20',
+    paragraphs: [{ text: 'The minutes of the meeting held on January 20, 2024 were distributed to members on January 27, 2024. No amendments had been submitted to the Company Secretary before the meeting, and none were raised by directors.' }],
+    trailing: [
+      { text: 'Motion: Approve the minutes of the January 20, 2024 Board of Directors meeting as presented.' },
+      { text: 'Result: adopted' },
+    ],
+  },
+  {
+    num: 5, title: 'CEO Report', timecode: '00:19:05',
+    paragraphs: [{ text: 'Brian Rubinstein, CEO, reported that Q1 revenue was $48.2 million, 9% ahead of plan, driven by enterprise renewals. Customer churn fell to 3.1%. He highlighted delays in the EMEA expansion caused by data-residency approvals and expects the launch to move from May to July.' }],
     action: {
-      id: 'a2',
-      text: 'Circulate consent agenda. Distribute the finalized consent agenda package to all directors at least five business days before the next quarterly meeting.',
+      id: 'a3',
+      text: 'Revise the EMEA launch plan. Present an updated timeline and budget impact for the July launch at the next Board meeting.',
       assignee: MARCUS,
     },
   },
   {
-    num: 6, title: 'Appointment of Timekeeper', timecode: '00:33:10',
-    paragraphs: [{ text: 'The board appointed a timekeeper to keep the meeting to schedule and flag when discussions ran beyond their allotted time.' }],
+    num: 6, title: 'Financial Report', timecode: '00:34:50',
+    paragraphs: [{ text: 'Thomas Sonnenshein, Chief Financial Officer, presented the Q1 financial statements. Operating expenses were 4% under budget, and cash and equivalents stood at $112 million. Directors asked for a sensitivity analysis on the revised EMEA timeline.' }],
     action: {
-      id: 'a3',
-      text: 'Confirm timekeeper. Confirm the appointed timekeeper and share the responsibilities checklist with the board ahead of the next session.',
+      id: 'a4',
+      text: 'Prepare a sensitivity analysis. Model the impact of a two-month EMEA delay on full-year revenue and cash runway, and circulate it ahead of the April call.',
+      assignee: PRIYA,
+    },
+  },
+  {
+    num: 7, title: 'Audit Committee Report', timecode: '00:52:15',
+    paragraphs: [{ text: 'Emily Jones, Audit Committee Chair, reported that the external auditor had completed interim testing with no material findings. The committee recommended renewing the auditor’s engagement for the next fiscal year.' }],
+    trailing: [
+      { text: 'Motion: Renew the engagement of the external auditor for the next fiscal year, as recommended by the Audit Committee.' },
+      { text: 'Result: adopted, Colin Darrans abstained' },
+    ],
+  },
+  {
+    num: 8, title: 'Cybersecurity Update', timecode: '01:08:30',
+    paragraphs: [{ text: 'The Chief Technology Officer reported on the results of the annual penetration test. Two medium-severity findings were identified and are scheduled for remediation by the end of April. Directors requested quarterly reporting on remediation progress.' }],
+    action: {
+      id: 'a5',
+      text: 'Add quarterly cyber reporting. Include a remediation progress update in the Board pack for each quarterly meeting starting in June.',
       assignee: OLIVIA,
     },
   },
   {
-    num: 7, title: 'Public Comment', timecode: '00:41:22',
-    paragraphs: [{ text: 'No members of the public registered to speak. The Chair moved to the next item.' }],
-    action: {
-      id: 'a5',
-      text: 'Open public comment window. Publish the public-comment registration window for the next meeting on the board portal at least ten days in advance.',
-      assignee: MARCUS,
-    },
+    num: 9, title: 'Closing', timecode: '01:21:00',
+    paragraphs: [{ text: 'There being no further business, the Chairman thanked directors and management and adjourned the meeting at 12:25 p.m. The next regular meeting is scheduled for June 26, 2024.' }],
   },
 ]
+
+/** Outline entries mirror the minute blocks, so the two can never drift apart. */
+const OUTLINE = BLOCKS.map(b => b.title)
 
 const PRESENT = [
   ['Brian Rubinstein',   'CEO'],
@@ -209,6 +222,109 @@ const PRESENT = [
   ['Sam Wood',           'Executive Chair'],
   ['Thomas Sonnenshein', 'Chief Financial Officer'],
 ]
+
+/* ------------------------------------------------------- hover controls */
+
+/** Plain-text copy of a block: title, every paragraph and the extracted action. */
+function blockText(block: MinuteBlock) {
+  return [
+    `${block.num}. ${block.title}`,
+    ...block.paragraphs.map(p => p.text),
+    ...(block.action ? [block.action.text] : []),
+    ...(block.trailing ?? []).map(p => p.text),
+  ].join('\n\n')
+}
+
+async function writeClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    /* clipboard API unavailable (insecure context / denied) — legacy fallback */
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.setAttribute('readonly', '')
+    ta.style.position = 'fixed'
+    ta.style.opacity = '0'
+    document.body.appendChild(ta)
+    ta.select()
+    const ok = document.execCommand('copy')
+    document.body.removeChild(ta)
+    return ok
+  }
+}
+
+/** Copy icon button. The "Copy" tooltip only shows over this button; after a
+    successful copy the same tooltip reads "Copied ✓" for a moment. */
+function CopyButton({ text, label }: { text: string; label: string }) {
+  const [copied, setCopied] = useState(false)
+  const timer = useRef<number>(0)
+  useEffect(() => () => window.clearTimeout(timer.current), [])
+
+  const copy = async () => {
+    if (!(await writeClipboard(text))) return
+    setCopied(true)
+    window.clearTimeout(timer.current)
+    timer.current = window.setTimeout(() => setCopied(false), 1500)
+  }
+
+  return (
+    <>
+      <Tooltip label={copied ? 'Copied ✓' : 'Copy'} position="top">
+        <Button
+          variant="tertiary" intent="neutral" size="m"
+          iconOnly={<Icon svg={copySvg} />}
+          aria-label={label}
+          onClick={copy}
+        />
+      </Tooltip>
+      {/* keyboard / screen-reader confirmation (the tooltip is hover-only) */}
+      <span className={styles.srOnly} role="status">{copied ? 'Copied' : ''}</span>
+    </>
+  )
+}
+
+/** Timestamp that jumps to the transcript. */
+function TimeButton({ timecode, onClick }: { timecode: string; onClick: () => void }) {
+  return (
+    <Tooltip label="View in transcript" position="top">
+      <Button
+        variant="tertiary" intent="neutral" size="m"
+        aria-label={`View in transcript at ${timecode}`}
+        onClick={onClick}
+        className={styles.timeBtn}
+      >
+        {timecode}
+      </Button>
+    </Tooltip>
+  )
+}
+
+/** Controls pinned inside the highlighted element's corner. Absolutely positioned
+    so showing them never changes layout; the fade lets long text slide under the
+    solid action area instead of colliding with it. */
+function HoverBar({ children, label, wide }: { children: ReactNode; label: string; wide?: boolean }) {
+  return (
+    <div className={[styles.hoverBar, wide ? styles.hoverBarWide : ''].join(' ')}>
+      <span className={styles.hoverFade} aria-hidden="true" />
+      <div className={styles.hoverActions} role="group" aria-label={label}>{children}</div>
+    </div>
+  )
+}
+
+/** A paragraph that highlights on hover / keyboard focus and shows its own
+    timestamp + copy controls. */
+function ParaBox({ para, timecode, onTime }: { para: Paragraph; timecode: string; onTime: () => void }) {
+  return (
+    <div className={styles.paraBox}>
+      <p className={[styles.paraText, para.muted ? styles.paraMuted : ''].join(' ')}>{para.text}</p>
+      <HoverBar label="Paragraph actions">
+        <TimeButton timecode={timecode} onClick={onTime} />
+        <CopyButton text={para.text} label="Copy paragraph" />
+      </HoverBar>
+    </div>
+  )
+}
 
 /* --------------------------------------------------------------- component */
 
@@ -237,6 +353,51 @@ export function MinutesTab() {
     toastRef.current?.add({ state: 'success', message: 'Draft action item created' })
   const dismissAction = () =>
     toastRef.current?.add({ state: 'info', message: 'Identified action item dismissed' })
+
+  const showTranscript = () => setSegment('transcript')
+
+  /* Delete AI minutes (Figma "Delete AI Minutes" modal) — confirm, then clear
+     the summary so the AI-minutes segment falls back to its empty state. */
+  const [deleteOpen, setDeleteOpen] = useState(false)
+  const [deleted, setDeleted] = useState(false)
+  const confirmDelete = () => {
+    setDeleted(true)
+    setDeleteOpen(false)
+    toastRef.current?.add({ state: 'success', message: 'AI minutes deleted' })
+  }
+
+  const hasMinutes = !deleted && BLOCKS.length > 0
+
+  /* Left-pane width. Pointer capture keeps the drag alive outside the 8px grab
+     area; width is clamped on every move so it can never leave 460–640. */
+  const [paneWidth, setPaneWidth] = useState(PANE_MIN)
+  const [resizing, setResizing] = useState(false)
+  const drag = useRef<{ x: number; w: number } | null>(null)
+
+  const onResizeDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    drag.current = { x: e.clientX, w: paneWidth }
+    setResizing(true)
+  }
+  const onResizeMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current) return
+    setPaneWidth(clampPane(drag.current.w + e.clientX - drag.current.x))
+  }
+  const onResizeEnd = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!drag.current) return
+    drag.current = null
+    setResizing(false)
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId)
+  }
+  const onResizeKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const delta = e.key === 'ArrowLeft' ? -PANE_STEP : e.key === 'ArrowRight' ? PANE_STEP : 0
+    if (e.key === 'Home') setPaneWidth(PANE_MIN)
+    else if (e.key === 'End') setPaneWidth(PANE_MAX)
+    else if (delta) setPaneWidth(w => clampPane(w + delta))
+    else return
+    e.preventDefault()
+  }
 
   const scrollToItem = (idx: number) => {
     const id = actionItems[idx]?.id
@@ -272,11 +433,11 @@ export function MinutesTab() {
   const outlineItems = outlineExpanded ? OUTLINE : OUTLINE.slice(0, 7)
 
   return (
-    <div className={styles.minutesTab}>
+    <div className={[styles.minutesTab, resizing ? styles.minutesTabResizing : ''].join(' ')}>
       {/* -------------------------------------------------- left: AI minutes */}
-      <section className={styles.leftPane}>
+      <section className={styles.leftPane} style={{ '--pane-width': `${paneWidth}px` } as React.CSSProperties}>
         <div className={styles.segmentHeader}>
-          <SegmentControl items={SEGMENTS} value={segment} onChange={setSegment} size="m" />
+          <SegmentControl items={SEGMENTS} value={segment} onChange={setSegment} size="m" className={styles.segment} />
         </div>
 
         {segment === 'ai-minutes' ? (
@@ -351,10 +512,12 @@ export function MinutesTab() {
                         <span className={styles.blockTime}>{block.timecode}</span>
                       </header>
 
+                      <HoverBar label={`Section ${block.num} actions`} wide>
+                        <CopyButton text={blockText(block)} label={`Copy section ${block.num}. ${block.title}`} />
+                      </HoverBar>
+
                       {block.paragraphs.map((p, i) => (
-                        <p key={i} className={[styles.para, p.muted ? styles.paraMuted : ''].join(' ')}>
-                          {p.text}
-                        </p>
+                        <ParaBox key={i} para={p} timecode={block.timecode} onTime={showTranscript} />
                       ))}
 
                       {block.action && (
@@ -363,7 +526,7 @@ export function MinutesTab() {
                           className={[styles.actionCard, current === idx ? styles.actionCardActive : ''].join(' ')}
                           aria-current={current === idx ? 'true' : undefined}
                         >
-                          <span className={styles.actionCardHead}>Action item identified</span>
+                          <span className={styles.actionCardHead}>Action item found</span>
                           <div className={styles.actionCardBody}>
                             <p className={styles.actionCardText}>{block.action.text}</p>
                             <Avatar
@@ -373,28 +536,34 @@ export function MinutesTab() {
                             />
                           </div>
 
-                          {/* revealed on hover — confirm / dismiss the AI-identified
-                              action, plus the transcript timecode it came from */}
-                          <div className={styles.actionToolbar}>
-                            <button type="button" className={styles.actionToolbarBtn} onClick={createDraft}>
-                              <span className={[styles.actionToolbarIcon, styles.iconSuccess].join(' ')}>
-                                <Icon svg={checkCircleSvg} />
-                              </span>
-                              Create draft action
-                            </button>
-                            <button type="button" className={styles.actionToolbarBtn} onClick={dismissAction}>
-                              <span className={[styles.actionToolbarIcon, styles.iconDanger].join(' ')}>
-                                <Icon svg={closeCircleSvg} />
-                              </span>
-                              Dismiss
-                            </button>
-                            <span className={styles.actionToolbarTime}>{block.timecode}</span>
-                          </div>
+                          {/* confirm / dismiss the AI-identified action, plus the
+                              transcript timecode it came from */}
+                          <HoverBar label="Action item actions">
+                            <Button
+                              variant="tertiary" intent="neutral" size="m"
+                              iconLeft={<span className={styles.iconSuccess}><Icon svg={checkCircleSvg} /></span>}
+                              onClick={createDraft}
+                              aria-label="Create draft action"
+                              title="Create draft action"
+                            >
+                              <span className={styles.btnLabel}>Create draft action</span>
+                            </Button>
+                            <Button
+                              variant="tertiary" intent="neutral" size="m"
+                              iconLeft={<span className={styles.iconDanger}><Icon svg={closeCircleSvg} /></span>}
+                              onClick={dismissAction}
+                              aria-label="Dismiss"
+                              title="Dismiss"
+                            >
+                              <span className={styles.btnLabel}>Dismiss</span>
+                            </Button>
+                            <TimeButton timecode={block.timecode} onClick={showTranscript} />
+                          </HoverBar>
                         </div>
                       )}
 
                       {block.trailing?.map((p, i) => (
-                        <p key={i} className={styles.para}>{p.text}</p>
+                        <ParaBox key={i} para={p} timecode={block.timecode} onTime={showTranscript} />
                       ))}
                     </article>
                   )
@@ -424,6 +593,22 @@ export function MinutesTab() {
             />
           </div>
         )}
+
+        <div
+          className={styles.resizer}
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize minutes panel"
+          aria-valuemin={PANE_MIN}
+          aria-valuemax={PANE_MAX}
+          aria-valuenow={paneWidth}
+          tabIndex={0}
+          onPointerDown={onResizeDown}
+          onPointerMove={onResizeMove}
+          onPointerUp={onResizeEnd}
+          onPointerCancel={onResizeEnd}
+          onKeyDown={onResizeKey}
+        />
       </section>
 
       {/* ------------------------------------------------- right: document */}

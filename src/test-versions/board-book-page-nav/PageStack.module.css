@@ -1,0 +1,32 @@
+/* PageStack — pages one under another; the stack is centred by the viewer's
+   scroll box (auto margins, so a sheet wider than the canvas never clips). */
+
+.stack {
+  flex-shrink: 0;
+  height: fit-content;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.sheet {
+  position: relative;
+}
+
+.commentPin {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--space-6);
+  border-radius: var(--radius-full) var(--radius-full) var(--radius-full) 0;
+  background: var(--color-brand);
+  color: var(--color-text-on-inverse);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--elevation-100);
+}

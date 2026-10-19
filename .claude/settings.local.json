@@ -128,7 +128,8 @@
       "Bash(grep -n \"aria-invalid={hasError\" /Users/elena.skurtama/Documents/board-prototype/src/components/Autocomplete/Autocomplete.tsx 2>/dev/null; grep -n \"aria-invalid={hasError\" /Users/elena.skurtova/Documents/board-prototype/src/components/Autocomplete/Autocomplete.tsx)",
       "Bash(curl -s \"http://localhost:5173/src/meeting/MeetingPage.tsx\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"http://localhost:5173/src/meeting/MeetingPage.tsx\")",
-      "Bash(echo \"--- exit code: $? ---\")"
+      "Bash(echo \"--- exit code: $? ---\")",
+      "mcp__Sect-Magic__list_figma_files"
     ]
   }
 }

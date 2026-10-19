@@ -222,8 +222,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-8) var(--space-16);
+  padding: var(--space-6) var(--space-18);
   border-bottom: 1px solid var(--color-border);
+}
+
+/* TOC toggle sits apart from the zoom group (Figma 12378-180849). */
+.toolbarLeft {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
 }
 
 .toolbarGroup {
@@ -388,22 +395,66 @@
     );
 }
 
-/* ── Bottom pill ──────────────────────────────────────────────────────────── */
-.pill {
+/* ── Floating nav toolbars (document / page) ──────────────────────────────────
+   Two independent dark pills that float over the canvas. Pre-placement (before the
+   layout effect measures them) they sit bottom-centred via this base rule; once a
+   JS position is applied they switch to top/left and `.floatBarPlaced` cancels the
+   centering. */
+.floatBar {
   position: absolute;
   bottom: var(--space-20);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: var(--space-8);
-  padding: var(--space-8) var(--space-12);
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-10);
   border-radius: var(--radius-lg);
   background: var(--color-bg-inverse);
   box-shadow: var(--elevation-100);
   z-index: var(--z-dropdown);
-  max-width: calc(100% - var(--space-48));
+  max-width: calc(100% - var(--space-32));
 }
+.floatBarPlaced {
+  bottom: auto;
+  transform: none;
+}
+.floatBarDragging {
+  cursor: grabbing;
+  user-select: none;
+}
+
+/* Grip the bar is dragged by (DS functional/drag). Muted on the dark surface,
+   brightening on hover; grab / grabbing cursors signal the affordance. */
+.dragHandle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: var(--size-s);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-md);
+  background: none;
+  color: var(--stone-500);
+  cursor: grab;
+  touch-action: none;
+}
+.dragHandle:hover {
+  background: var(--stone-900);
+  color: var(--color-icon-on-inverse);
+}
+.dragHandleActive { cursor: grabbing; }
+.dragHandleIcon {
+  display: inline-flex;
+  width: 18px;
+  height: 18px;
+}
+.dragHandleIcon svg { width: 100%; height: 100%; }
+
+/* While a bar is being dragged, don't let the canvas select text under the cursor. */
+.canvasAreaDragging { user-select: none; }
 
 /* Local board-book nav buttons (Figma 13299-51405) — on the dark pill they are
    bordered by default, take a lighter fill on hover/press, and read muted when
@@ -486,15 +537,6 @@
   color: var(--color-icon-on-inverse);
 }
 .pillChevron svg { width: 100%; height: 100%; }
-
-/* Divider between the navigator and the continuous page counter. */
-.pillDivider {
-  flex-shrink: 0;
-  width: 1px;
-  align-self: stretch;
-  margin: var(--space-2) var(--space-4);
-  background: var(--stone-800);
-}
 
 .pillCount {
   display: flex;
@@ -699,45 +741,86 @@
   line-height: var(--line-height-base);
 }
 
+.aiAnswerItem {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .aiAnswerRow {
   display: flex;
   gap: var(--space-8);
 }
 
+/* 32px round AI avatar with the sparkle mark. */
 .aiMark {
   display: inline-flex;
-  width: 20px;
-  height: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
-  color: var(--color-text-brand);
+  border-radius: 50%;
+  background: var(--stone-200);
+  color: var(--color-icon-primary);
 }
-.aiMark svg { width: 100%; height: 100%; }
+.aiMark svg { width: 20px; height: 20px; }
 
 .aiAnswer {
+  position: relative;
+  flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--space-8);
-  font-size: var(--text-sm);
+  padding: var(--space-16);
+  border-radius: var(--radius-md);
+  background: var(--stone-200);
+  font-size: var(--text-base);
   color: var(--color-text-primary);
   line-height: var(--line-height-base);
 }
 .aiAnswer p { margin: 0; }
 
+/* Floating action toolbar — straddles the bubble's bottom-right edge. */
+.aiAnswerActions {
+  position: absolute;
+  right: var(--space-12);
+  bottom: 0;
+  transform: translateY(50%);
+  z-index: 1;
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-200);
+}
+
+/* Hover state */
+.aiAnswerItem:hover .aiAnswer,
+.aiAnswerItem:focus-within .aiAnswer { background: var(--color-bg-hover); }
+.aiAnswerItem:hover .aiMark,
+.aiAnswerItem:focus-within .aiMark { background: var(--stone-100); }
+.aiAnswerItem:hover .aiAnswerActions,
+.aiAnswerItem:focus-within .aiAnswerActions { display: flex; }
+
 .aiSources {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
-  font-size: var(--text-sm);
+  gap: var(--space-14);
+  padding-left: var(--space-40);
+  font-size: var(--text-base);
   color: var(--color-text-secondary);
-  margin-top: var(--space-4);
 }
 .aiSource {
   border: none;
   background: none;
-  padding: 0 var(--space-2);
+  padding: 0;
   cursor: pointer;
+  font-size: var(--text-base);
   color: var(--color-text-brand);
-  font-weight: var(--font-weight-semibold);
 }
 
 .aiFooter {
@@ -803,17 +886,6 @@
   text-align: left;
 }
 
-/* ── Far-right rail ───────────────────────────────────────────────────────── */
-.rail {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-8) var(--space-6);
-  border-left: 1px solid var(--color-border);
-  background: var(--color-bg-surface);
-}
-
 /* ── Responsive: tablet / phone ───────────────────────────────────────────── */
 @media (max-width: 1023px) {
   .sidePanel {
@@ -822,13 +894,6 @@
     width: min(400px, 100%);
     z-index: var(--z-dropdown);
     box-shadow: var(--elevation-200);
-  }
-  .rail {
-    position: absolute;
-    inset: 0 0 auto auto;
-    flex-direction: row;
-    border-left: none;
-    background: none;
   }
 }
 
