@@ -11,8 +11,6 @@
      • Version 3 — Reading mode: full-area document, floating control bar,
        table of content panel, reading progress, focus mode
        (BoardBookReadingViewer)
-     • Only document toggle — the winner's (Version 3) reading-mode navigation
-       with the agenda panel open and its "Show documents only" toggle
      • Reports — all reports on one page with side navigation (ReportsPage):
        design review (DESIGN_REVIEW.md), usability study (usability-study.json,
        the PPTX is generated from the same file) and UX audit (ux-audit.json)
@@ -52,14 +50,13 @@ const USER = {
 
 const initialReportTabs = ['report', 'study', 'audit']
 
-type VersionTab = 'v1' | 'v2' | 'v3' | 'reports' | 'doc-toggle'
+type VersionTab = 'v1' | 'v2' | 'v3' | 'reports'
 
 const TABS: TabItem[] = [
   { id: 'v1', label: 'Version 1' },
   { id: 'v2', label: 'Version 2' },
   { id: 'v3', label: 'Version 3' },
   { id: 'reports', label: 'Reports' },
-  { id: 'doc-toggle', label: 'Only document toggle' },
 ]
 
 
@@ -139,7 +136,6 @@ export default function BoardBookPageNavPage() {
           {activeTab === 'v2' && <BoardBookFilmstripViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'v3' && <BoardBookReadingViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'reports' && <ReportsPage initial={initialReport} onOpenVersion={setActiveTab} />}
-          {activeTab === 'doc-toggle' && <BoardBookReadingViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} documentsToggle defaultTocOpen />}
         </div>
       </main>
 

@@ -31,8 +31,6 @@ import {
   type FlatDoc,
 } from '../../meeting/BoardBook/boardBookData'
 import { AiPanel, CompactNav, PdfPage, SearchPanel, TocPanel } from './BoardBookPageNavViewer'
-import { TocPanel as DocsToggleTocPanel } from './BoardBookDocToggleViewer'
-import { Toggle } from '../../components/Toggle/Toggle'
 import { PageStack, pageAtScroll, scrollToPage, type CommentPin } from './PageStack'
 import styles from './BoardBookReadingViewer.module.css'
 
@@ -99,13 +97,9 @@ export interface BoardBookReadingViewerProps {
   book?: BoardBook
   /** Rendered image of a global page (real PDF); falls back to the mock sheet. */
   pageImage?: (page: number) => string | undefined
-  /** Agenda panel gets the "Show documents only" toggle (Only document toggle tab). */
-  documentsToggle?: boolean
-  /** Open the agenda panel on start (closed by default in reading mode). */
-  defaultTocOpen?: boolean
 }
 
-export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, documentsToggle = false, defaultTocOpen = false }: BoardBookReadingViewerProps) {
+export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage }: BoardBookReadingViewerProps) {
   const isCompact = useMediaQuery('(max-width: 1023px)')
   const isNarrow = useMediaQuery('(max-width: 767px)')
 
@@ -115,8 +109,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   const [tool, setTool] = useState<Tool>('none')
   const [comments, setComments] = useState<CommentPin[]>([])
   const [rightPanel, setRightPanel] = useState<RightPanel>(null)
-  const [tocOpen, setTocOpen] = useState(defaultTocOpen)
-  const [docsOnly, setDocsOnly] = useState(false)
+  const [tocOpen, setTocOpen] = useState(false)
   const [tocWidth, setTocWidth] = useState(TOC_MIN)
   const [navPopoverOpen, setNavPopoverOpen] = useState(false)
   const [focus, setFocus] = useState(false)
@@ -267,21 +260,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
       {tocOpen && !focus && (
         <>
           <nav className={styles.toc} style={{ width: tocWidth }} aria-label="Board book contents">
-            {documentsToggle ? (
-              <>
-                <div className={styles.tocHeader}>
-                  <span className={styles.tocHeaderTitle}>Agenda</span>
-                  <Toggle
-                    checked={docsOnly}
-                    onChange={e => setDocsOnly(e.target.checked)}
-                    label={<span className={styles.tocHeaderToggleLabel}>Show documents only</span>}
-                  />
-                </div>
-                <DocsToggleTocPanel book={book} documentsOnly={docsOnly} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
-              </>
-            ) : (
-              <TocPanel book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
-            )}
+            <TocPanel book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
           </nav>
           <div className={styles.resizer} role="separator" aria-orientation="vertical"
             aria-label="Resize contents panel" onPointerDown={startResize} />
