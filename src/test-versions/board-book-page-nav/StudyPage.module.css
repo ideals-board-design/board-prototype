@@ -1,0 +1,308 @@
+/* StudyPage — shared layout for the research tabs (Usability study, UX audit). */
+
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--color-bg-page);
+}
+
+.article {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--space-32) var(--space-24) var(--space-72);
+  color: var(--color-text-primary);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-base);
+}
+
+/* ── Typography ───────────────────────────────────────────────────────────── */
+.eyebrow {
+  margin: 0 0 var(--space-8);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-brand);
+}
+
+.h1 {
+  margin: 0 0 var(--space-8);
+  font-size: var(--text-xl);
+  line-height: 1.2;
+  font-weight: var(--font-weight-semibold);
+}
+
+.h2 {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-12);
+  margin: var(--space-40) 0 var(--space-16);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+.h3 {
+  margin: var(--space-24) 0 var(--space-8);
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+.num {
+  font-size: var(--text-sm);
+  color: var(--color-brand);
+  font-variant-numeric: tabular-nums;
+}
+
+.meta,
+.muted { color: var(--color-text-secondary); }
+.meta { margin: 0 0 var(--space-16); }
+
+.p { margin: 0 0 var(--space-12); }
+
+.quote {
+  margin: 0 0 var(--space-16);
+  padding: var(--space-12) var(--space-16);
+  border-left: 3px solid var(--color-brand);
+  background: var(--color-bg-surface);
+}
+
+.list {
+  margin: 0 0 var(--space-16);
+  padding-left: var(--space-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.twoCol {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-24);
+}
+
+/* ── KPI tiles ────────────────────────────────────────────────────────────── */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-12);
+  margin-bottom: var(--space-16);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-16);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.tileBest { box-shadow: inset 0 0 0 2px var(--color-brand); }
+
+.tileLabel { font-size: var(--text-xs); color: var(--color-text-secondary); }
+.tileValue { font-size: var(--text-xl); line-height: 1.2; font-weight: var(--font-weight-semibold); font-variant-numeric: tabular-nums; }
+.tileUnit { font-size: var(--text-sm); font-weight: var(--font-weight-regular); color: var(--color-text-secondary); }
+.tileSub { font-size: var(--text-xs); color: var(--color-text-secondary); }
+
+.findings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.findings li { display: flex; align-items: baseline; gap: var(--space-8); }
+
+/* ── Persona cards ────────────────────────────────────────────────────────── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-12);
+}
+
+.card {
+  padding: var(--space-16);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+  margin-bottom: var(--space-12);
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-brand-subtle);
+  color: var(--color-brand);
+  font-weight: var(--font-weight-semibold);
+}
+
+.dl { margin: 0; display: grid; gap: var(--space-4); }
+.dl dt { font-size: var(--text-xs); color: var(--color-text-secondary); }
+.dl dd { margin: 0 0 var(--space-4); }
+
+/* ── Tables ───────────────────────────────────────────────────────────────── */
+.tableWrap { overflow-x: auto; margin: 0 0 var(--space-16); }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-bg-surface);
+}
+.table th,
+.table td {
+  padding: var(--space-8) var(--space-12);
+  border: 1px solid var(--color-border);
+  text-align: left;
+  vertical-align: top;
+}
+.table th { font-weight: var(--font-weight-semibold); background: var(--color-bg-page); }
+.totalRow td { background: var(--color-bg-page); }
+
+.nowrap { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+.outcomes {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+/* ── Recommendations ──────────────────────────────────────────────────────── */
+.recs { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-12); }
+.rec {
+  padding: var(--space-16);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+}
+.recHead { margin-bottom: var(--space-8); font-size: var(--text-md); }
+.recMeta { margin: 0; font-size: var(--text-xs); color: var(--color-text-secondary); }
+
+/* ── Chart: grouped bars (avg SEQ per story × variant) ────────────────────── */
+.chart { margin: 0 0 var(--space-16); }
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+  margin-bottom: var(--space-12);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+.legendItem { display: inline-flex; align-items: center; gap: var(--space-6); }
+.legendSwatch { width: 12px; height: 12px; border-radius: var(--radius-xs); }
+
+.plot { display: flex; gap: var(--space-8); height: 220px; }
+
+.yAxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: var(--space-24);
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.groups {
+  position: relative;
+  flex: 1;
+  display: flex;
+  gap: var(--space-8);
+  padding-bottom: var(--space-24);
+}
+
+.gridLine {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  margin-bottom: var(--space-24);
+  background: var(--color-border);
+}
+
+.group { position: relative; flex: 1; display: flex; flex-direction: column; }
+
+.bars {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.bar {
+  position: relative;
+  width: 14px;
+  min-height: 2px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  outline: none;
+}
+
+.series1 { background: var(--blue-600); }
+.series2 { background: var(--orange-500); }
+.series3 { background: var(--green-500); }
+
+.groupLabel {
+  position: absolute;
+  bottom: calc(-1 * var(--space-24));
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--color-text-secondary);
+}
+
+/* Per-bar tooltip on hover / keyboard focus. */
+.tip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + var(--space-6));
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--space-6) var(--space-8);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
+  color: var(--color-text-primary);
+  font-size: var(--text-xs);
+  white-space: nowrap;
+  z-index: var(--z-dropdown);
+  pointer-events: none;
+}
+.bar:hover .tip,
+.bar:focus-visible .tip { display: block; }
+
+.caption { margin-top: var(--space-8); font-size: var(--text-xs); color: var(--color-text-secondary); }
+
+/* ── Scores (UX audit) ────────────────────────────────────────────────────── */
+.scoreBar {
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-border);
+  overflow: hidden;
+}
+.scoreFill { height: 100%; border-radius: var(--radius-full); background: var(--color-brand); }
+
+@media (max-width: 1023px) {
+  .tiles,
+  .cards { grid-template-columns: repeat(2, 1fr); }
+  .twoCol,
+  .recs { grid-template-columns: 1fr; }
+}

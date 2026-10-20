@@ -1,0 +1,163 @@
+{
+  "title": "Board Book Navigation — Usability Evaluation Report",
+  "feature": "Board book document navigation (Version 1 Full width · Version 2 Floating controls · Version 3 Reading mode)",
+  "date": "2026-10-19",
+  "method": "Synthetic Persona Usability Study | NN/G Methodology | 4 Personas | 10 User Stories | 3 Variants",
+  "disclaimer": "All results come from simulated think-aloud sessions with synthetic personas. Numbers are simulated, not measured user data, and must be validated with real users.",
+  "context": "Prototype at localhost:5173/board-book-page-nav.html with the real Q4 board pack (5 agenda items, 6 documents, 7 pages). Platform constraint: continuous scroll works only within one document; nothing can be added inside the document, so moving to the next document is possible only through the viewer's navigation panels ('next page' on the last page, the document dropdown, keyboard ← →). State evaluated: after the 4 Must-fix items from the design review.",
+  "variants": [
+    { "id": "v1", "name": "V1 Full width", "summary": "Top toolbar: TOC toggle · document dropdown · page input N / 7 with ⌄ next / ⌃ previous · tools. Vertical zoom card on the left. Agenda closed by default. Below 768px tools collapse into ⋯." },
+    { "id": "v2", "name": "V2 Floating controls", "summary": "Agenda open beside the document. Top bar: document dropdown · download / search / Ask AI. Floating palette (draw, highlight, comment) left, zoom cards right, round ‹ › arrows beside the sheet, page counter N / 7 bottom-centre." },
+    { "id": "v3", "name": "V3 Reading mode", "summary": "Top bar: TOC toggle · document dropdown · search / download / Ask AI / focus. Reading-progress bar. Always-visible bottom bar: ‹ N / 7 › · zoom − % + · fit width / fit page · highlight / comment (fit + annotation tools in ⋯ below 768px). Agenda closed by default." }
+  ],
+  "goals": [
+    { "id": "G1", "text": "Assess orientation: can each persona tell which document and page they are on (H1 visibility of system status)." },
+    { "id": "G2", "text": "Identify breakdown moments at document boundaries under the one-document-at-a-time constraint." },
+    { "id": "G3", "text": "Evaluate control placement: travel distance from the point of reading to the 'continue' action, per variant." },
+    { "id": "G4", "text": "Measure cognitive load of each layout (number of control zones, icon-only actions, hidden affordances)." },
+    { "id": "G5", "text": "Quantify simulated task success and SEQ per user story, persona and variant." }
+  ],
+  "stories": [
+    { "id": "US01", "text": "As a reader, I want to see which document and page I am on, so I don't lose my place.", "goals": ["G1"] },
+    { "id": "US02", "text": "As a reader, I want to read a document page by page without hunting for controls.", "goals": ["G3", "G4"] },
+    { "id": "US03", "text": "As a reader, I want to continue to the next document when I reach the end of the current one.", "goals": ["G2", "G3"] },
+    { "id": "US04", "text": "As a reader, I want to jump straight to the documents of a specific agenda item.", "goals": ["G4"] },
+    { "id": "US05", "text": "As a reader, I want to go to a page number someone mentions in the meeting.", "goals": ["G1", "G5"] },
+    { "id": "US06", "text": "As a reader, I want to zoom or fit a dense table so I can read the figures.", "goals": ["G4"] },
+    { "id": "US07", "text": "As a reader, I want to highlight or comment on a passage to discuss it later.", "goals": ["G4"] },
+    { "id": "US08", "text": "As a reader, I want to search the board book for a term.", "goals": ["G4"] },
+    { "id": "US09", "text": "As a reader, I want to read comfortably on a tablet or phone.", "goals": ["G3", "G4"] },
+    { "id": "US10", "text": "As a reader, I want to go back to the previous document.", "goals": ["G2"] }
+  ],
+  "personas": [
+    {
+      "id": "MC", "name": "Margaret Chen", "role": "Corporate Secretary", "proficiency": "High",
+      "goal": "Check the final board pack end to end before it goes to directors.",
+      "mentalModel": "Keyboard shortcuts, dense toolbars, Notion/Acrobat-like patterns.",
+      "risk": "Impatient with extra steps; skims past labels.",
+      "emotion": "Methodical; low tolerance for ambiguity."
+    },
+    {
+      "id": "DO", "name": "David Okafor", "role": "Corporate Secretary", "proficiency": "Medium",
+      "goal": "Review the pack and annotate items that need the Chair's attention.",
+      "mentalModel": "Explicit toolbar buttons and labelled Next / Previous.",
+      "risk": "Hesitates when something changes without explanation.",
+      "emotion": "Cautious; fears missing a document in a legal pack."
+    },
+    {
+      "id": "PR", "name": "Patricia Reyes", "role": "Corporate Secretary", "proficiency": "Low",
+      "goal": "Open the pack and read the documents for one agenda item.",
+      "mentalModel": "A visible, labelled button for every action; step by step.",
+      "risk": "Ignores icon-only controls; never opens ⋯ menus.",
+      "emotion": "Anxious; needs plain language."
+    },
+    {
+      "id": "DIR", "name": "Robert Hale", "role": "Director / Board Member", "proficiency": "Occasional",
+      "goal": "Read the pack on iPad the evening before the meeting and mark questions.",
+      "mentalModel": "Reading app: swipe or tap to turn pages, everything within thumb reach.",
+      "risk": "No keyboard; low patience for admin-style UI.",
+      "emotion": "Time-poor; wants the right document fast."
+    }
+  ],
+  "simulations": {
+    "MC": [
+      { "story": "US01", "scenario": "Opens the pack to spot-check the cover.", "behaviour": "Reads the dropdown and N / 7 instantly in all variants.", "friction": "V2: document name (top) and page (bottom) sit far apart.", "seq": { "v1": 6, "v2": 5, "v3": 6 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US03", "scenario": "Finishes 'Opening, quorum, and minutes' and wants the CEO report.", "behaviour": "Presses → on the keyboard; the next document loads.", "friction": "None for her — the keyboard hint tells her ← → works.", "seq": { "v1": 6, "v2": 6, "v3": 6 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US04", "scenario": "Jumps to item 4 to verify the audit motion wording.", "behaviour": "V2: clicks the document in the open agenda. V1/V3: opens the document dropdown instead of the panel.", "friction": "V1/V3: agenda closed by default; one extra step.", "seq": { "v1": 5, "v2": 7, "v3": 5 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US05", "scenario": "'Look at page 6' — types the number.", "behaviour": "Types 6 in the page field.", "friction": "V2: field is at the bottom, she looks at the top first.", "seq": { "v1": 7, "v2": 6, "v3": 7 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US06", "scenario": "Checks the cash-flow table on page 5.", "behaviour": "Uses zoom-in; then Fit width.", "friction": "V2: zoom shows '100%' while the sheet is already scaled to fit the split view.", "seq": { "v1": 6, "v2": 5, "v3": 6 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US07", "scenario": "Highlights the auditor recommendation.", "behaviour": "Picks Highlight; V3 she also looks for Draw.", "friction": "V3: no Draw tool.", "seq": { "v1": 6, "v2": 6, "v3": 5 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } }
+    ],
+    "DO": [
+      { "story": "US01", "scenario": "Opens the pack on the cover.", "behaviour": "Reads 'Cover and agenda.pdf' and '1 / 7' and assumes the cover has 7 pages.", "friction": "Global counter next to a single-document view (all variants); V3's progress bar partly helps.", "seq": { "v1": 5, "v2": 4, "v3": 5 }, "outcome": { "v1": "S", "v2": "P", "v3": "S" } },
+      { "story": "US03", "scenario": "Reaches the bottom of 'Opening, quorum, and minutes'.", "behaviour": "Scrolls, nothing more appears; thinks the pack failed to load. V1: finds ⌄ at the top, unsure it means 'next document'. V2: clicks › beside the sheet. V3: › is right under where he stopped.", "friction": "Silent document end; 'Next page' tooltip never says a new document opens.", "seq": { "v1": 3, "v2": 4, "v3": 5 }, "outcome": { "v1": "P", "v2": "P", "v3": "S" } },
+      { "story": "US05", "scenario": "Chair says 'page 6'.", "behaviour": "Types 6.", "friction": "None.", "seq": { "v1": 6, "v2": 5, "v3": 6 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US06", "scenario": "Zooms the KPI table.", "behaviour": "Clicks + twice.", "friction": "V2: two separate cards (zoom / view) — unsure which 'fit' icon to use.", "seq": { "v1": 5, "v2": 4, "v3": 5 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US07", "scenario": "Comments on the retention bonus pool.", "behaviour": "Selects Comment and clicks the sheet.", "friction": "No confirmation that the comment pin was saved (all variants).", "seq": { "v1": 5, "v2": 6, "v3": 5 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US10", "scenario": "Wants to re-check the previous document.", "behaviour": "V1: ⌃ at the top; V2/V3: ‹.", "friction": "V1: ⌃ reads as 'collapse', not 'previous document'.", "seq": { "v1": 4, "v2": 5, "v3": 5 }, "outcome": { "v1": "P", "v2": "S", "v3": "S" } }
+    ],
+    "PR": [
+      { "story": "US01", "scenario": "Opens the pack for the first time.", "behaviour": "Scans for words; finds the document name but not what the number means.", "friction": "V2: controls in four places (left palette, right cards, side arrows, bottom counter).", "seq": { "v1": 4, "v2": 3, "v3": 5 }, "outcome": { "v1": "P", "v2": "P", "v3": "S" } },
+      { "story": "US02", "scenario": "Reads the CEO report page by page.", "behaviour": "Looks for a 'next' button. V1: thinks ⌄ opens a list. V2: big round › is obvious. V3: › in the bottom bar.", "friction": "V1: vertical chevrons look like dropdown toggles.", "seq": { "v1": 3, "v2": 6, "v3": 5 }, "outcome": { "v1": "P", "v2": "S", "v3": "S" } },
+      { "story": "US03", "scenario": "Gets to the end of the minutes document.", "behaviour": "V1: believes the pack has ended and stops. V2/V3: notices the › arrow after a pause and tries it.", "friction": "Nothing signals that more documents follow; V1's continue control is far away at the top.", "seq": { "v1": 2, "v2": 4, "v3": 4 }, "outcome": { "v1": "F", "v2": "P", "v3": "P" } },
+      { "story": "US04", "scenario": "Needs the Audit committee report for item 4.", "behaviour": "V2: clicks it in the agenda list. V1/V3: doesn't recognise the sidebar icon; eventually tries the document field.", "friction": "Agenda hidden behind an unlabeled icon.", "seq": { "v1": 3, "v2": 6, "v3": 3 }, "outcome": { "v1": "P", "v2": "S", "v3": "P" } },
+      { "story": "US06", "scenario": "The financial table is too small.", "behaviour": "Looks for a magnifier with '+'.", "friction": "V1: icon-only card; V3: '− 100% +' reads clearly.", "seq": { "v1": 4, "v2": 4, "v3": 5 }, "outcome": { "v1": "P", "v2": "P", "v3": "S" } },
+      { "story": "US09", "scenario": "Opens the pack on her phone.", "behaviour": "Can't find Highlight (V1/V3: inside ⋯); V2 cards cover the text.", "friction": "Hidden ⋯ menu; floating cards over the sheet on small screens.", "seq": { "v1": 3, "v2": 3, "v3": 4 }, "outcome": { "v1": "P", "v2": "P", "v3": "P" } }
+    ],
+    "DIR": [
+      { "story": "US01", "scenario": "Opens the pack on iPad the night before.", "behaviour": "Wants to know how much is left.", "friction": "Only V3 shows progress; V2 counter is small at the bottom.", "seq": { "v1": 5, "v2": 4, "v3": 6 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US03", "scenario": "Finishes the CEO report, wants the financials.", "behaviour": "No keyboard. V1: has to reach the top toolbar. V2: taps › beside the sheet. V3: taps › in the bottom bar (thumb zone).", "friction": "V1: continue control outside thumb reach and unlabeled.", "seq": { "v1": 3, "v2": 5, "v3": 5 }, "outcome": { "v1": "P", "v2": "S", "v3": "S" } },
+      { "story": "US04", "scenario": "Goes straight to the audit committee report.", "behaviour": "V2: agenda already open. V1/V3: uses the document dropdown.", "friction": "V1/V3: dropdown list is long for a quick jump.", "seq": { "v1": 4, "v2": 6, "v3": 4 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US07", "scenario": "Marks a question on the auditor fee.", "behaviour": "Highlight, then comment.", "friction": "Icon-only tools; tooltips don't show on touch.", "seq": { "v1": 5, "v2": 5, "v3": 5 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US08", "scenario": "Searches for 'Halden'.", "behaviour": "Taps the search icon.", "friction": "None significant.", "seq": { "v1": 5, "v2": 5, "v3": 5 }, "outcome": { "v1": "S", "v2": "S", "v3": "S" } },
+      { "story": "US09", "scenario": "Reads on iPad in portrait.", "behaviour": "Scrolls with one hand.", "friction": "V2: floating cards cover the sheet margins at tablet width.", "seq": { "v1": 4, "v2": 3, "v3": 5 }, "outcome": { "v1": "P", "v2": "P", "v3": "S" } }
+    ]
+  },
+  "time": {
+    "MC":  { "v1": [5, 1, 0], "v2": [4, 2, 0], "v3": [5, 1, 0] },
+    "DO":  { "v1": [3, 2, 1], "v2": [2, 3, 1], "v3": [4, 2, 0] },
+    "PR":  { "v1": [0, 2, 4], "v2": [2, 2, 2], "v3": [2, 3, 1] },
+    "DIR": { "v1": [3, 1, 2], "v2": [3, 2, 1], "v3": [5, 1, 0] }
+  },
+  "shared": [
+    "The end of a document is silent in every variant: nothing below the last page and the 'next' control is labelled 'Next page', so no persona is told that another document follows.",
+    "The global counter 'N / 7' sits next to a single-document view, so David and Patricia misread how long the current document is.",
+    "All navigation and tool controls are icon-only; tooltips need hover, so they don't help Patricia or Robert on iPad."
+  ],
+  "divergent": [
+    { "feature": "Continue to next document", "MC": "Keyboard → — no friction", "DO": "Hesitates; V3 easiest", "PR": "V1: gives up; V2/V3: finds › after a pause", "DIR": "Needs thumb reach — V2/V3" },
+    { "feature": "Agenda (contents)", "MC": "Prefers dropdown anyway", "DO": "Opens it when needed", "PR": "Only usable when already open (V2)", "DIR": "Values it open (V2)" },
+    { "feature": "Zoom / fit", "MC": "Any variant", "DO": "Confused by V2's two cards", "PR": "Reads V3's '− 100% +'", "DIR": "Pinch-zoom expected" },
+    { "feature": "Mobile ⋯ menu", "MC": "Opens it", "DO": "Opens it after a pause", "PR": "Never opens it", "DIR": "Rarely needs it on iPad" }
+  ],
+  "heuristics": [
+    { "id": "H1", "name": "Visibility of system status", "status": "VIOLATED", "evidence": "Document end is silent; global N / 7 misread as document length (US01, US03)." },
+    { "id": "H2", "name": "Match with the real world", "status": "PARTIAL", "evidence": "V1 ⌄ / ⌃ read as dropdown/collapse, not page turns (US02, US10)." },
+    { "id": "H3", "name": "User control and freedom", "status": "PASS", "evidence": "Previous page on the first page returns to the previous document; Esc leaves focus mode." },
+    { "id": "H4", "name": "Consistency and standards", "status": "PARTIAL", "evidence": "Next/previous differs across variants (⌄⌃ vs ‹ ›); zoom % means different things (US06)." },
+    { "id": "H6", "name": "Recognition rather than recall", "status": "VIOLATED", "evidence": "Icon-only controls, agenda behind an unlabeled icon, tools in ⋯ on mobile (US04, US09)." },
+    { "id": "H7", "name": "Flexibility and efficiency", "status": "PASS", "evidence": "Keyboard ← → crosses documents; page field accepts direct input (US03, US05)." },
+    { "id": "H8", "name": "Aesthetic and minimalist design", "status": "PARTIAL", "evidence": "V2 spreads controls across four zones; V3 consolidates them in one bar." },
+    { "id": "H9", "name": "Help users recover from errors", "status": "PARTIAL", "evidence": "When Patricia believes the pack ended, nothing helps her recover (US03, V1)." }
+  ],
+  "issues": [
+    { "id": "I-01", "tier": "Critical", "issue": "Document end is silent and the only way on is a control labelled 'Next page'", "frequency": "3/4", "impact": "Patricia stops reading in V1; David hesitates", "persistence": "Stays stuck (PR, V1)", "personas": "DO, PR, DIR", "heuristics": "H1, H9" },
+    { "id": "I-02", "tier": "High", "issue": "V1 places next/previous in the top toolbar with vertical ⌄ / ⌃ icons", "frequency": "3/4", "impact": "Far from the reading end point; icons misread", "persistence": "Retries", "personas": "DO, PR, DIR", "heuristics": "H2, H4" },
+    { "id": "I-03", "tier": "High", "issue": "Global counter 'N / 7' beside a single-document view", "frequency": "2/4", "impact": "Wrong sense of document length and position", "persistence": "Self-recovers slowly", "personas": "DO, PR", "heuristics": "H1, H2" },
+    { "id": "I-04", "tier": "High", "issue": "Icon-only navigation and tools; tooltips need hover", "frequency": "2/4", "impact": "Excludes low-proficiency and touch users", "persistence": "Retries", "personas": "PR, DIR", "heuristics": "H6" },
+    { "id": "I-05", "tier": "High", "issue": "Agenda closed by default behind an unlabeled sidebar icon (V1, V3)", "frequency": "2/4", "impact": "Patricia can't jump to an agenda item's documents", "persistence": "Retries", "personas": "PR, DIR", "heuristics": "H6" },
+    { "id": "I-06", "tier": "Medium", "issue": "V2 spreads controls over four zones and over the sheet on tablet", "frequency": "3/4", "impact": "Scanning cost; covered margins", "persistence": "Self-recovers", "personas": "DO, PR, DIR", "heuristics": "H8" },
+    { "id": "I-07", "tier": "Medium", "issue": "Zoom % meaning differs (V2 '100%' while fitted; V3 '54%' default on phone)", "frequency": "2/4", "impact": "Unsure what 'actual size' is", "persistence": "Self-recovers", "personas": "DO, PR", "heuristics": "H4" },
+    { "id": "I-08", "tier": "Medium", "issue": "Mobile: tools collapse into an unlabeled ⋯ (V1, V3)", "frequency": "1/4", "impact": "Patricia never finds Highlight on the phone", "persistence": "Stays stuck", "personas": "PR", "heuristics": "H6" },
+    { "id": "I-09", "tier": "Low", "issue": "V3 focus-mode icon (⌃⌄ 'expand') is ambiguous", "frequency": "1/4", "impact": "Rarely used", "persistence": "Self-recovers", "personas": "DO", "heuristics": "H2" },
+    { "id": "I-10", "tier": "Low", "issue": "V3 has no Draw tool", "frequency": "1/4", "impact": "Feature-parity gap for power users", "persistence": "Self-recovers", "personas": "MC", "heuristics": "H7" }
+  ],
+  "recommendations": [
+    { "id": "R1", "title": "Make the document boundary visible inside the navigation panel", "effort": "Low", "impact": "DO, PR, DIR", "fix": "On the last page of a document the next control becomes a labelled DS Button 'Next document: <name> ›' (and 'Previous document' on the first page); tooltip says the same.", "target": "US03 success 71% → 90%+; PR US03 SEQ 3.3 → 5.0+" },
+    { "id": "R2", "title": "Use V3's bottom bar as the primary navigation location", "effort": "Med", "impact": "All", "fix": "Keep ‹ N / 7 › at the bottom where reading ends; in V1 replace ⌄ / ⌃ with ‹ ›.", "target": "US02 avg SEQ 4.7 → 5.5+" },
+    { "id": "R3", "title": "Show local and global position", "effort": "Low", "impact": "DO, PR", "fix": "'Page 1 of 2 · 4 / 7' in the counter; document name next to it.", "target": "US01 avg SEQ 4.8 → 6.0" },
+    { "id": "R4", "title": "Label the primary actions", "effort": "Med", "impact": "PR, DIR", "fix": "Text labels on Previous / Next at ≥1024px; persistent labels instead of hover-only tooltips on touch.", "target": "PR task success 61% → 75%+" },
+    { "id": "R5", "title": "Open the agenda by default on wide screens", "effort": "Med", "impact": "PR, DIR", "fix": "In V3 open the agenda panel by default at ≥1280px (as V2), with a labelled toggle 'Agenda'.", "target": "US04 PR SEQ 3 → 6" },
+    { "id": "R6", "title": "Align zoom semantics and label the mobile menu", "effort": "Low", "impact": "DO, PR", "fix": "Show 'Fit' when fitted; 100% = sheet's natural width; label ⋯ as 'More tools'.", "target": "US06 avg SEQ 4.9 → 5.5" }
+  ],
+  "iteration": {
+    "phases": [
+      { "name": "Phase 1 — Validation", "text": "After sprint 1, re-test I-01…I-05 fixes on V3 with the same persona types." },
+      { "name": "Phase 2 — Breadth", "text": "Add iPad and phone tasks; recruit 2 real users per persona type (incl. 2 directors)." },
+      { "name": "Phase 3 — Longitudinal", "text": "Learnability over 3 meeting cycles; diary study with directors reading packs at home." }
+    ],
+    "questions": [
+      "Do directors read packs linearly or jump by agenda item?",
+      "Is a labelled 'Next document' enough, or do readers expect the next document to load automatically?",
+      "How often do readers need the previous document mid-meeting?",
+      "Does the progress bar reduce the 'is that all?' moment at document ends?",
+      "Which share of readers uses the keyboard at all?"
+    ]
+  },
+  "takeaways": [
+    "Version 3 performs best for every persona except where the open agenda of Version 2 helps.",
+    "The document boundary is the critical moment — the fix belongs in the navigation panel, not the document.",
+    "Labels and position (local + global) matter more than more controls.",
+    "Validate with real directors on iPad before committing."
+  ]
+}

@@ -11,9 +11,52 @@
 
 /* ------------------------------------------------------------- left pane */
 
+/* Drag handle on the pane's right edge (Figma 13202-77526). The 1px divider is
+   the pane border; the handle is a wider invisible grab area centred on it, and
+   its centre line turns brand-green on hover / drag / keyboard focus. */
+.resizer {
+  position: absolute;
+  top: 0;
+  right: calc(-1 * var(--space-4));
+  bottom: 0;
+  z-index: 4;
+  width: var(--space-8);
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--space-2);
+  transform: translateX(-50%);
+  background: transparent;
+  transition: background-color var(--dur-snap) var(--ease-out);
+}
+
+.resizer:hover::after,
+.resizer:focus-visible::after,
+.minutesTabResizing .resizer::after {
+  background: var(--color-brand);
+}
+
+/* While dragging: keep the resize cursor everywhere and don't select text. */
+.minutesTabResizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+
 .leftPane {
-  flex: 1 1 0;
-  min-width: 0;
+  position: relative;
+  flex: 0 0 var(--pane-width, 460px);
+  width: var(--pane-width, 460px);
+  min-width: 460px;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -24,6 +67,15 @@
   flex-shrink: 0;
   padding: var(--space-16) var(--space-24);
   border-bottom: 1px solid var(--color-border);
+}
+
+/* Segment control spans the full header width, its options sharing the row
+   equally (Figma). */
+.segment {
+  width: 100%;
+}
+.segment button {
+  flex: 1 1 0;
 }
 
 .leftScroll {
@@ -61,7 +113,7 @@
   color: var(--color-text-secondary);
 }
 
-.outlineRow:nth-child(3) {
+.outlineRow:nth-child(2) {
   font-weight: 600;
   color: var(--color-text-primary);
 }
@@ -88,7 +140,7 @@
   display: inline-flex;
   width: 16px;
   height: 16px;
-  transition: transform 0.15s ease;
+  transition: transform var(--dur-snap) var(--ease-out);
 }
 
 .showMoreIconUp {
@@ -126,16 +178,23 @@
 
 /* AI summary blocks ------------------------------------------------------ */
 
+/* Layout follows the hover designs: every highlightable element (block,
+   paragraph, action card) carries its own 12px inset, and the negative side
+   margins pull its box out to the pane edge so the text keeps its x position.
+   Boxes sit flush against each other, so the highlight never needs extra room. */
 .summary {
   display: flex;
   flex-direction: column;
-  gap: var(--space-24);
 }
 
 .block {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
+  margin: 0 calc(-1 * var(--space-12));
+  padding: var(--space-16) var(--space-12);
+  border-radius: var(--radius-md);
+  transition: background-color var(--dur-snap) var(--ease-out);
 }
 
 .blockHead {
@@ -158,6 +217,7 @@
   font-weight: 500;
   color: var(--color-text-secondary);
   font-variant-numeric: tabular-nums;
+  transition: opacity var(--dur-snap) var(--ease-out);
 }
 
 .para {
@@ -171,51 +231,169 @@
   color: var(--color-text-secondary);
 }
 
+.paraBox {
+  position: relative;
+  margin: 0 calc(-1 * var(--space-12));
+  padding: var(--space-12);
+  border-radius: var(--radius-md);
+  transition: background-color var(--dur-snap) var(--ease-out);
+}
+
+.paraText {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* hover / keyboard-focus highlight ---------------------------------------- */
+
+/* One target at a time: the block only lights up when neither a paragraph nor
+   the action card inside it is the current target, so a block's controls and
+   its children's never show together. :focus-within mirrors :hover so keyboard
+   users get the same highlight + controls. */
+.paraBox:is(:hover, :focus-within),
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) {
+  background: var(--color-bg-hover);
+}
+
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) .blockTime {
+  opacity: 0;
+}
+
+/* Block hover with an extracted action item (Figma 31811-491642): the whole
+   block is one tinted surface, so the green card drops its fill and reads as
+   part of it. It regains its own hover tint when it is the target itself. */
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) .actionCard {
+  background: transparent;
+}
+
+/* Controls live inside the highlighted box (no floating panel, no shadow) and
+   are absolutely positioned, so revealing them never moves any text. */
+.hoverBar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: stretch;
+  border-radius: var(--radius-md);
+  opacity: 0;
+  /* the bar spans the whole element so the fade can; only the actions take
+     pointer events, so text stays selectable underneath */
+  pointer-events: none;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+/* block controls sit in the top-right corner instead; its fade stays clear
+   longer (Figma "Minutes block" variant: 0.6 at 84% of the span) */
+.block > .hoverBar {
+  top: 0;
+  bottom: auto;
+  --fade-mid: 84%;
+}
+
+.paraBox:is(:hover, :focus-within) > .hoverBar,
+.actionCard:is(:hover, :focus-within) > .hoverBar,
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) > .hoverBar {
+  opacity: 1;
+}
+
+.paraBox:is(:hover, :focus-within) > .hoverBar .hoverActions,
+.actionCard:is(:hover, :focus-within) > .hoverBar .hoverActions,
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) > .hoverBar .hoverActions {
+  pointer-events: auto;
+}
+
+/* Gradient backdrop (Figma "Hover actions", 23674-109243): fills the free space
+   to the left of the actions, clear until 38%, 60% hover-tint at 62%, solid at
+   the actions — so text of any length fades out under the controls. */
+.hoverFade {
+  flex: 1 1 auto;
+  min-width: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to right,
+    transparent 38%,
+    color-mix(in srgb, var(--color-bg-hover) 60%, transparent) var(--fade-mid, 62%),
+    var(--color-bg-hover) 100%
+  );
+}
+
+.hoverActions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  background: var(--color-bg-hover);
+  border-radius: var(--radius-md);
+}
+
+.timeBtn {
+  font-variant-numeric: tabular-nums;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* action item card ------------------------------------------------------- */
 
 .actionCard {
+  container-type: inline-size;
   position: relative;
   display: flex;
+  margin: var(--space-8) calc(-1 * var(--space-12));
   flex-direction: column;
   gap: var(--space-8);
-  padding: var(--space-12);
+  /* 12px inset per the design; the 1px (highlight-pulse) border is taken out of
+     the padding so the card stays 112px tall + text at the same x. */
+  padding: calc(var(--space-12) - 1px);
   background: var(--color-success-bg);
   border: 1px solid transparent;
   border-radius: var(--radius-md);
   scroll-margin-top: var(--space-56);
   scroll-margin-bottom: var(--space-24);
-  transition: border-color 0.15s ease, background-color 0.15s ease;
+  transition: border-color var(--dur-snap) var(--ease-out), background-color var(--dur-snap) var(--ease-out);
 }
 
-/* Hover: the card shifts to the neutral hover tint and reveals a floating
-   toolbar to act on the AI-identified item (create draft / dismiss). */
-.actionCard:hover {
+/* Hover: the card shifts to the neutral hover tint and reveals its actions
+   (create draft / dismiss / timestamp) inside the card. */
+.actionCard:is(:hover, :focus-within) {
   background: var(--color-bg-hover);
 }
 
-/* Prev/Next on the banner jumps to an item: the card gives a quick "pop"
-   (gentle overshoot) and flashes a green border that eases back out — a
-   momentary "you jumped here" cue, not a persistent state. Uses the DS
-   enter/appear curve. The class rides onto a fresh element on every Prev/Next,
-   so the keyframes replay each jump. */
+/* Prev/Next on the banner jumps to an item: the card's green border pulses
+   once — fades in, holds, fades back out — a momentary "you jumped here" cue,
+   not a persistent state. This is a state-to-state highlight, so it uses the DS
+   --ease-in-out curve over the DS --dur-skeleton-pulse (1600ms) window, the same
+   motion primitives the DS uses for its own pulse. The class rides onto a fresh
+   element on every Prev/Next, so the keyframes replay each jump. */
 .actionCardActive {
-  animation: actionHighlight 1600ms cubic-bezier(0, 0, 0.2, 1) forwards;
-  /* Keep the composited transform crisp while it scales. */
-  will-change: transform;
+  animation: actionHighlight var(--dur-skeleton-pulse) var(--ease-in-out) forwards;
 }
 
 @keyframes actionHighlight {
-  0%   { transform: scale(0.985); border-color: var(--color-success); }
-  18%  { transform: scale(1.01); }
-  35%  { transform: scale(1); border-color: var(--color-success); }
-  100% { transform: scale(1); border-color: transparent; }
+  0%   { border-color: transparent; }
+  30%  { border-color: var(--color-success); }
+  70%  { border-color: var(--color-success); }
+  100% { border-color: transparent; }
 }
 
-/* Respect reduced-motion: no pop/flash, just a brief static highlight. */
+/* Respect reduced-motion: no pulse, just a brief static highlight. */
 @media (prefers-reduced-motion: reduce) {
   .actionCardActive {
     animation: none;
-    transform: none;
     border-color: var(--color-success);
   }
 }
@@ -241,61 +419,7 @@
   color: var(--color-text-primary);
 }
 
-/* hover action toolbar --------------------------------------------------- */
-
-/* Floating bar anchored to the card's lower-right (16px from the right edge),
-   overlapping its bottom edge. Hidden until the card is hovered. */
-.actionToolbar {
-  position: absolute;
-  right: var(--space-16);
-  bottom: calc(-1 * var(--space-16));
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  background: var(--color-bg-surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--elevation-100);
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.12s ease, visibility 0.12s ease;
-}
-
-.actionCard:hover .actionToolbar {
-  opacity: 1;
-  visibility: visible;
-}
-
-.actionToolbarBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-6);
-  padding: var(--space-6) var(--space-8);
-  border: none;
-  background: none;
-  border-radius: var(--radius-sm);
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-  cursor: pointer;
-  transition: background-color 0.12s ease;
-}
-
-.actionToolbarBtn:hover {
-  background: var(--color-bg-hover);
-}
-
-.actionToolbarIcon {
-  display: inline-flex;
-  flex-shrink: 0;
-}
-
-.actionToolbarIcon svg {
-  width: 20px;
-  height: 20px;
-}
+/* hover action icons (the bar itself is the shared .hoverBar) ------------- */
 
 .iconSuccess {
   color: var(--color-success);
@@ -305,13 +429,13 @@
   color: var(--color-error);
 }
 
-.actionToolbarTime {
-  padding: 0 var(--space-8);
-  font-size: var(--text-base);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+/* Narrow panels: the three controls no longer fit beside each other, so the
+   two text actions collapse to their icons (labels stay in aria-label/title)
+   instead of the bar growing taller or running out of the card. */
+@container (max-width: 400px) {
+  .btnLabel {
+    display: none;
+  }
 }
 
 /* left footer ------------------------------------------------------------ */
@@ -477,7 +601,14 @@
   .leftPane,
   .rightPane {
     flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    max-width: none;
     border-right: none;
+  }
+
+  .resizer {
+    display: none;
   }
 
   .leftPane {

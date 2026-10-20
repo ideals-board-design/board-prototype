@@ -7,15 +7,15 @@
      • a resizable Table-of-content panel (open by default on web, a bottom-pill
        popover on tablet/phone)
      • a toolbar: TOC toggle · zoom · fit-width · full-screen | draw · highlight ·
-       comment · download
+       comment · download · search · Ask AI (Figma 12378-180849)
      • a floating bottom pill: prev / next, a document switcher, and one
        continuous page counter across all documents ("9 / 310")
-     • Search and Ask-AI side panels reached from the right rail
+     • Search and Ask-AI side panels opened from the toolbar
    Navigation, continuous pagination and keyboard forward/back are real; the
    annotation tools, Search and Ask-AI are visual chrome with light interactivity
    (per the agreed prototype scope). */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '../../components/Button/Button'
 import { Tooltip } from '../../components/Tooltip/Tooltip'
 import { BadgeStatus } from '../../components/BadgeStatus/BadgeStatus'
@@ -29,6 +29,7 @@ import { communication } from '../../icons/communication'
 import { files } from '../../icons/files'
 import { condition } from '../../icons/condition'
 import { fileFormat } from '../../icons/fileFormat'
+import { functional } from '../../icons/functional'
 import { custom } from '../../icons/custom'
 import {
   MOCK_BOARD_BOOK,
@@ -69,6 +70,8 @@ const sendSvg       = icon(custom, 'send')
 const linkSvg       = icon(actions, 'link')
 const editSvg       = icon(actions, 'edit-alt')
 const copySvg       = icon(actions, 'copy')
+const rotateSvg     = icon(arrows, 'rotate')
+const dragSvg       = icon(functional, 'drag')
 
 const FORMAT_ICON: Record<BoardBookDoc['sourceFormat'], string> = {
   pdf:  icon(fileFormat, 'format-pdf'),
@@ -112,6 +115,54 @@ const Ico = ({ svg }: { svg: string }) => (
   <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} />
 )
 
+/* ── Floating-toolbar drag geometry ─────────────────────────────────────────────
+   Both nav toolbars float inside the viewer, are dragged by their handle, and are
+   kept (a) inside the viewer bounds and (b) from overlapping each other. All maths
+   is in viewer-relative px. ──────────────────────────────────────────────────── */
+type Pos = { x: number; y: number }
+type Rect = { x: number; y: number; w: number; h: number }
+const BAR_GAP = 12   // min gap kept between the two toolbars
+const BAR_EDGE = 16  // keep-inside margin from the viewer edges
+const BAR_BOTTOM = 20 // default distance of the pair from the bottom edge
+
+const samePos = (a: Pos | null, b: Pos | null) =>
+  !!a && !!b && a.x === b.x && a.y === b.y
+const dist = (a: Pos, b: Pos) => Math.abs(a.x - b.x) + Math.abs(a.y - b.y)
+const intersects = (a: Rect, b: Rect) =>
+  a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
+
+/* Pin a position so the bar of size w×h stays fully inside a bw×bh viewer. */
+function clampToBounds(p: Pos, w: number, h: number, bw: number, bh: number): Pos {
+  return {
+    x: Math.min(Math.max(p.x, BAR_EDGE), Math.max(BAR_EDGE, bw - w - BAR_EDGE)),
+    y: Math.min(Math.max(p.y, BAR_EDGE), Math.max(BAR_EDGE, bh - h - BAR_EDGE)),
+  }
+}
+
+/* Clamp to bounds, then — if the result still overlaps the other bar — nudge it to
+   the nearest clear edge of that bar (trying left/right/above/below, closest to the
+   intended drop first). */
+function avoidOverlap(cand: Pos, w: number, h: number, ob: Rect | null, bw: number, bh: number): Pos {
+  const base = clampToBounds(cand, w, h, bw, bh)
+  if (!ob || !intersects({ x: base.x, y: base.y, w, h }, ob)) return base
+  const options: Pos[] = [
+    { x: ob.x - w - BAR_GAP, y: base.y },     // left of the obstacle
+    { x: ob.x + ob.w + BAR_GAP, y: base.y },  // right of the obstacle
+    { x: base.x, y: ob.y - h - BAR_GAP },     // above the obstacle
+    { x: base.x, y: ob.y + ob.h + BAR_GAP },  // below the obstacle
+  ].sort((a, b) => dist(a, base) - dist(b, base))
+  for (const opt of options) {
+    const c = clampToBounds(opt, w, h, bw, bh)
+    if (!intersects({ x: c.x, y: c.y, w, h }, ob)) return c
+  }
+  return base
+}
+
+const rectOf = (el: HTMLElement, areaRect: DOMRect): Rect => {
+  const r = el.getBoundingClientRect()
+  return { x: r.left - areaRect.left, y: r.top - areaRect.top, w: el.offsetWidth, h: el.offsetHeight }
+}
+
 type AnnotationTool = 'none' | 'draw' | 'highlight' | 'comment'
 type RightPanel = null | 'search' | 'ai'
 type CommentPin = { id: number; x: number; y: number; page: number }
@@ -145,6 +196,16 @@ export default function BoardBookViewer({
   const canvasRef = useRef<HTMLDivElement>(null)
   const commentSeq = useRef(0)
 
+  /* ── Two independent floating toolbars (document / page) ──────────────────── */
+  const areaRef = useRef<HTMLDivElement>(null)
+  const barDocRef = useRef<HTMLDivElement>(null)
+  const barPageRef = useRef<HTMLDivElement>(null)
+  const [posDoc, setPosDoc] = useState<Pos | null>(null)
+  const [posPage, setPosPage] = useState<Pos | null>(null)
+  const [dragging, setDragging] = useState<'doc' | 'page' | null>(null)
+  const posDocRef = useRef(posDoc); posDocRef.current = posDoc
+  const posPageRef = useRef(posPage); posPageRef.current = posPage
+
   const clampPage = useCallback(
     (p: number) => Math.min(book.totalPages, Math.max(1, p)),
     [book.totalPages],
@@ -153,6 +214,83 @@ export default function BoardBookViewer({
 
   const current = useMemo(() => docAtPage(book, page), [book, page])
   const localPage = current ? page - current.startPage + 1 : 0
+
+  /* Document-level navigation steps across the flattened document list; the page
+     toolbar keeps the continuous counter. */
+  const flatIdx = useMemo(
+    () => book.flatDocs.findIndex(f => f.doc.id === current?.doc.id),
+    [book.flatDocs, current],
+  )
+  const goToDoc = useCallback((delta: number) => {
+    const next = book.flatDocs[flatIdx + delta]
+    if (next) goToPage(next.startPage)
+  }, [book.flatDocs, flatIdx, goToPage])
+
+  /* Lay the pair out (default: centred along the bottom) and keep both inside the
+     viewer and non-overlapping whenever the viewer or a toolbar resizes — e.g. on
+     Split ↔ Expanded view, window resize, or a longer document name. Positions are
+     component state, so they survive document switches. */
+  useLayoutEffect(() => {
+    const area = areaRef.current
+    const docEl = barDocRef.current
+    const pageEl = barPageRef.current
+    if (!area || !docEl || !pageEl) return
+
+    const relayout = () => {
+      const bw = area.clientWidth
+      const bh = area.clientHeight
+      if (!bw || !bh) return
+      const dW = docEl.offsetWidth, dH = docEl.offsetHeight
+      const pW = pageEl.offsetWidth, pH = pageEl.offsetHeight
+      let pd = posDocRef.current
+      let pp = posPageRef.current
+      if (!pd || !pp) {
+        const total = dW + BAR_GAP + pW
+        const startX = Math.max(BAR_EDGE, (bw - total) / 2)
+        const y = Math.max(BAR_EDGE, bh - Math.max(dH, pH) - BAR_BOTTOM)
+        pd = { x: startX, y }
+        pp = { x: startX + dW + BAR_GAP, y }
+      } else {
+        pd = clampToBounds(pd, dW, dH, bw, bh)
+        pp = avoidOverlap(clampToBounds(pp, pW, pH, bw, bh), pW, pH, { x: pd.x, y: pd.y, w: dW, h: dH }, bw, bh)
+      }
+      setPosDoc(prev => (samePos(prev, pd) ? prev : pd))
+      setPosPage(prev => (samePos(prev, pp) ? prev : pp))
+    }
+
+    relayout()
+    const ro = new ResizeObserver(relayout)
+    ro.observe(area); ro.observe(docEl); ro.observe(pageEl)
+    return () => ro.disconnect()
+  }, [published])
+
+  const startDrag = useCallback((which: 'doc' | 'page') => (e: React.PointerEvent) => {
+    const area = areaRef.current
+    const el = which === 'doc' ? barDocRef.current : barPageRef.current
+    const otherEl = which === 'doc' ? barPageRef.current : barDocRef.current
+    if (!area || !el) return
+    e.preventDefault()
+    const areaRect = area.getBoundingClientRect()
+    const elRect = el.getBoundingClientRect()
+    const offX = e.clientX - elRect.left
+    const offY = e.clientY - elRect.top
+    const w = el.offsetWidth, h = el.offsetHeight
+    const bw = area.clientWidth, bh = area.clientHeight
+    const ob = otherEl ? rectOf(otherEl, areaRect) : null
+    const setPos = which === 'doc' ? setPosDoc : setPosPage
+    setDragging(which)
+    const onMove = (ev: PointerEvent) => {
+      const cand = { x: ev.clientX - areaRect.left - offX, y: ev.clientY - areaRect.top - offY }
+      setPos(avoidOverlap(cand, w, h, ob, bw, bh))
+    }
+    const onUp = () => {
+      window.removeEventListener('pointermove', onMove)
+      window.removeEventListener('pointerup', onUp)
+      setDragging(null)
+    }
+    window.addEventListener('pointermove', onMove)
+    window.addEventListener('pointerup', onUp)
+  }, [])
 
   /* ── The TOC panel follows the viewport: open on web, closed (popover) on
      tablet/phone. Only reset when the breakpoint actually flips. ────────────── */
@@ -250,7 +388,7 @@ export default function BoardBookViewer({
       {/* ── Main column: toolbar + canvas ─────────────────────────────────── */}
       <div className={styles.main}>
         <div className={styles.toolbar}>
-          <div className={styles.toolbarGroup}>
+          <div className={styles.toolbarLeft}>
             <Tooltip label="Table of content" position="bottom">
               <Button
                 variant="tertiary" intent="neutral" size="m"
@@ -261,6 +399,7 @@ export default function BoardBookViewer({
                 aria-label="Toggle table of content"
               />
             </Tooltip>
+            <div className={styles.toolbarGroup}>
             <Tooltip label="Zoom in" position="bottom">
               <Button variant="tertiary" intent="neutral" size="m" iconOnly={<Ico svg={zoomInSvg} />}
                 onClick={() => { setFitWidth(false); setZoom(z => Math.min(ZOOM_MAX, z + ZOOM_STEP)) }}
@@ -285,6 +424,7 @@ export default function BoardBookViewer({
                 iconOnly={<Ico svg={fullscreenSvg} />}
                 onClick={() => setFullscreen(f => !f)} aria-label="Toggle full screen" />
             </Tooltip>
+            </div>
           </div>
 
           <div className={styles.toolbarGroup}>
@@ -313,11 +453,28 @@ export default function BoardBookViewer({
               <Button variant="tertiary" intent="neutral" size="m" iconOnly={<Ico svg={downloadSvg} />}
                 onClick={() => console.log('download board book')} aria-label="Download" />
             </Tooltip>
+            <Tooltip label="Search" position="bottom">
+              <Button variant="tertiary" intent="neutral" size="m"
+                aria-pressed={rightPanel === 'search'}
+                data-state={rightPanel === 'search' ? 'active' : undefined}
+                iconOnly={<Ico svg={searchSvg} />}
+                onClick={() => toggleRightPanel('search')} aria-label="Search the board book" />
+            </Tooltip>
+            <Tooltip label="Ask AI" position="bottom">
+              <Button variant="tertiary" intent="neutral" size="m"
+                aria-pressed={rightPanel === 'ai'}
+                data-state={rightPanel === 'ai' ? 'active' : undefined}
+                iconOnly={<Ico svg={aiSvg} />}
+                onClick={() => toggleRightPanel('ai')} aria-label="Ask AI" />
+            </Tooltip>
           </div>
         </div>
 
         {/* ── PDF canvas ──────────────────────────────────────────────────── */}
-        <div className={styles.canvasArea}>
+        <div
+          ref={areaRef}
+          className={[styles.canvasArea, dragging ? styles.canvasAreaDragging : ''].filter(Boolean).join(' ')}
+        >
           <div className={styles.canvasScroll}>
             <div
               ref={canvasRef}
@@ -339,12 +496,29 @@ export default function BoardBookViewer({
             </div>
           </div>
 
-          {/* ── Floating bottom pill: prev / doc switcher / next | counter ──── */}
-          <div className={styles.pill}>
-            <button type="button" className={styles.navBtn}
-              disabled={page <= 1} onClick={() => goToPage(page - 1)} aria-label="Previous page">
-              <span className={styles.navBtnIcon} aria-hidden="true"><Ico svg={prevSvg} /></span>
+          {/* ── Toolbar A — Document navigation (independent, draggable) ────── */}
+          <div
+            ref={barDocRef}
+            className={[styles.floatBar, posDoc ? styles.floatBarPlaced : '', dragging === 'doc' ? styles.floatBarDragging : ''].filter(Boolean).join(' ')}
+            style={posDoc ? { left: posDoc.x, top: posDoc.y } : undefined}
+            role="group"
+            aria-label="Document navigation"
+          >
+            <button
+              type="button"
+              className={[styles.dragHandle, dragging === 'doc' ? styles.dragHandleActive : ''].filter(Boolean).join(' ')}
+              onPointerDown={startDrag('doc')}
+              aria-label="Drag document navigation"
+            >
+              <span className={styles.dragHandleIcon} aria-hidden="true"><Ico svg={dragSvg} /></span>
             </button>
+
+            <Tooltip label="Previous document" position="top">
+              <button type="button" className={styles.navBtn}
+                disabled={flatIdx <= 0} onClick={() => goToDoc(-1)} aria-label="Previous document">
+                <span className={styles.navBtnIcon} aria-hidden="true"><Ico svg={prevSvg} /></span>
+              </button>
+            </Tooltip>
 
             <div className={styles.pillDocWrap}>
               <button
@@ -369,12 +543,38 @@ export default function BoardBookViewer({
               )}
             </div>
 
-            <button type="button" className={styles.navBtn}
-              disabled={page >= book.totalPages} onClick={() => goToPage(page + 1)} aria-label="Next page">
-              <span className={styles.navBtnIcon} aria-hidden="true"><Ico svg={nextSvg} /></span>
+            <Tooltip label="Next document" position="top">
+              <button type="button" className={styles.navBtn}
+                disabled={flatIdx < 0 || flatIdx >= book.flatDocs.length - 1}
+                onClick={() => goToDoc(1)} aria-label="Next document">
+                <span className={styles.navBtnIcon} aria-hidden="true"><Ico svg={nextSvg} /></span>
+              </button>
+            </Tooltip>
+          </div>
+
+          {/* ── Toolbar B — Page navigation (independent, draggable) ────────── */}
+          <div
+            ref={barPageRef}
+            className={[styles.floatBar, posPage ? styles.floatBarPlaced : '', dragging === 'page' ? styles.floatBarDragging : ''].filter(Boolean).join(' ')}
+            style={posPage ? { left: posPage.x, top: posPage.y } : undefined}
+            role="group"
+            aria-label="Page navigation"
+          >
+            <button
+              type="button"
+              className={[styles.dragHandle, dragging === 'page' ? styles.dragHandleActive : ''].filter(Boolean).join(' ')}
+              onPointerDown={startDrag('page')}
+              aria-label="Drag page navigation"
+            >
+              <span className={styles.dragHandleIcon} aria-hidden="true"><Ico svg={dragSvg} /></span>
             </button>
 
-            <span className={styles.pillDivider} aria-hidden="true" />
+            <Tooltip label="Previous page" position="top">
+              <button type="button" className={styles.navBtn}
+                disabled={page <= 1} onClick={() => goToPage(page - 1)} aria-label="Previous page">
+                <span className={styles.navBtnIcon} aria-hidden="true"><Ico svg={prevSvg} /></span>
+              </button>
+            </Tooltip>
 
             <div className={styles.pillCount}>
               <input
@@ -390,6 +590,13 @@ export default function BoardBookViewer({
               />
               <span className={styles.pillTotal}>/ {book.totalPages}</span>
             </div>
+
+            <Tooltip label="Next page" position="top">
+              <button type="button" className={styles.navBtn}
+                disabled={page >= book.totalPages} onClick={() => goToPage(page + 1)} aria-label="Next page">
+                <span className={styles.navBtnIcon} aria-hidden="true"><Ico svg={nextSvg} /></span>
+              </button>
+            </Tooltip>
           </div>
         </div>
       </div>
@@ -399,24 +606,6 @@ export default function BoardBookViewer({
         <SearchPanel book={book} onClose={() => setRightPanel(null)} onGoToPage={goToPage} />
       )}
       {rightPanel === 'ai' && <AiPanel onClose={() => setRightPanel(null)} />}
-
-      {/* ── Far-right rail ────────────────────────────────────────────────── */}
-      <div className={styles.rail}>
-        <Tooltip label="Search" position="left">
-          <Button variant="tertiary" intent="neutral" size="m"
-            aria-pressed={rightPanel === 'search'}
-            data-state={rightPanel === 'search' ? 'active' : undefined}
-            iconOnly={<Ico svg={searchSvg} />}
-            onClick={() => toggleRightPanel('search')} aria-label="Search the board book" />
-        </Tooltip>
-        <Tooltip label="Ask AI" position="left">
-          <Button variant="tertiary" intent="neutral" size="m"
-            aria-pressed={rightPanel === 'ai'}
-            data-state={rightPanel === 'ai' ? 'active' : undefined}
-            iconOnly={<Ico svg={aiSvg} />}
-            onClick={() => toggleRightPanel('ai')} aria-label="Ask AI" />
-        </Tooltip>
-      </div>
     </div>
   )
 }
@@ -713,17 +902,27 @@ function AiPanel({ onClose }: { onClose: () => void }) {
           m.role === 'user' ? (
             <div key={i} className={styles.aiUser}>{m.text}</div>
           ) : (
-            <div key={i} className={styles.aiAnswerRow}>
-              <span className={styles.aiMark} aria-hidden="true"><Ico svg={aiSvg} /></span>
-              <div className={styles.aiAnswer}>
-                {m.text.split('\n').filter(Boolean).map((line, j) => <p key={j}>{line}</p>)}
-                {m.sources && (
-                  <div className={styles.aiSources}>
-                    <span>Sources:</span>
-                    {m.sources.map(s => <button key={s} type="button" className={styles.aiSource}>{s}</button>)}
+            /* Ask AI answer (Figma 12645-151850): default = stone bubble; hover
+               = hover-bg bubble + floating Regenerate / Copy toolbar. */
+            <div key={i} className={styles.aiAnswerItem}>
+              <div className={styles.aiAnswerRow}>
+                <span className={styles.aiMark} aria-hidden="true"><Ico svg={aiSvg} /></span>
+                <div className={styles.aiAnswer}>
+                  {m.text.split('\n').filter(Boolean).map((line, j) => <p key={j}>{line}</p>)}
+                  <div className={styles.aiAnswerActions}>
+                    <Button variant="tertiary" intent="neutral" size="m" iconOnly={<Ico svg={rotateSvg} />}
+                      aria-label="Regenerate answer" />
+                    <Button variant="tertiary" intent="neutral" size="m" iconOnly={<Ico svg={copySvg} />}
+                      onClick={() => navigator.clipboard?.writeText(m.text)} aria-label="Copy answer" />
                   </div>
-                )}
+                </div>
               </div>
+              {m.sources && (
+                <div className={styles.aiSources}>
+                  <span>Sources:</span>
+                  {m.sources.map(s => <button key={s} type="button" className={styles.aiSource}>{s}</button>)}
+                </div>
+              )}
             </div>
           )
         ))}

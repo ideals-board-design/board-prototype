@@ -24,6 +24,9 @@ export interface ActionMenuProps {
   items: ActionMenuItem[]
   /** Which edge of the trigger the menu's matching edge anchors under. */
   align?: 'left' | 'right'
+  /** Opens below the trigger (default) or above it — for triggers near the
+      bottom of the viewport, e.g. a floating bottom toolbar. */
+  placement?: 'bottom' | 'top'
   /** 'kebab' = icon-only "…" trigger; 'button' = labelled secondary button. */
   trigger?: 'kebab' | 'button'
   triggerLabel?: string
@@ -39,6 +42,7 @@ export interface ActionMenuProps {
 export function ActionMenu({
   items,
   align = 'right',
+  placement = 'bottom',
   trigger = 'kebab',
   triggerLabel,
   triggerIcon,
@@ -48,7 +52,7 @@ export function ActionMenu({
   className,
 }: ActionMenuProps) {
   const [open, setOpen] = useState(false)
-  const [pos,  setPos]  = useState({ top: 0, left: 0, right: 0 })
+  const [pos,  setPos]  = useState({ top: 0, bottom: 0, left: 0, right: 0 })
 
   const triggerRef = useRef<HTMLDivElement>(null)
   const menuRef    = useRef<HTMLDivElement>(null)
@@ -56,7 +60,7 @@ export function ActionMenu({
   const calcPos = useCallback(() => {
     if (!triggerRef.current) return
     const r = triggerRef.current.getBoundingClientRect()
-    setPos({ top: r.bottom + 4, left: r.left, right: window.innerWidth - r.right })
+    setPos({ top: r.bottom + 4, bottom: window.innerHeight - r.top + 4, left: r.left, right: window.innerWidth - r.right })
   }, [])
 
   const openMenu  = useCallback(() => { calcPos(); setOpen(true) }, [calcPos])
@@ -92,7 +96,8 @@ export function ActionMenu({
 
   const run = (fn: () => void) => { closeMenu(); fn() }
 
-  const anchor = align === 'right' ? { top: pos.top, right: pos.right } : { top: pos.top, left: pos.left }
+  const vertical = placement === 'top' ? { bottom: pos.bottom } : { top: pos.top }
+  const anchor = align === 'right' ? { ...vertical, right: pos.right } : { ...vertical, left: pos.left }
 
   return (
     <div ref={triggerRef} className={[styles.wrap, className].filter(Boolean).join(' ')}>

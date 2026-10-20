@@ -127,6 +127,17 @@
   flex-shrink: 0;
 }
 
+/* No motion on this dropdown: the trigger reacts instantly (chevron flips
+   without rotating) and the portaled droplist appears without its fade.
+   [data-state] lifts specificity above the DS .droplist transition. */
+.starterDropdown * {
+  transition: none;
+}
+
+.starterDroplist[data-state] {
+  transition: none;
+}
+
 .orText {
   font-size: var(--text-base);
   color: var(--color-text-secondary);

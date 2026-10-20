@@ -29,6 +29,7 @@ export default defineConfig({
         meeting:          'meeting.html',
         'board-member':   'board-member.html',
         chats:            'chats.html',
+        'board-book-page-nav': 'board-book-page-nav.html',
       },
     },
   },
