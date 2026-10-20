@@ -19,7 +19,6 @@ import { Button } from '../components/Button/Button'
 import { Tooltip } from '../components/Tooltip/Tooltip'
 import { Avatar } from '../components/Avatar/Avatar'
 import { EmptyState } from '../components/EmptyState/EmptyState'
-import { Modal } from '../components/Modal/Modal'
 import { ToastContainer } from '../components/ToastContainer/ToastContainer'
 import type { ToastContainerHandle } from '../components/ToastContainer/ToastContainer'
 import { arrows } from '../icons/arrows'
@@ -355,18 +354,6 @@ export function MinutesTab() {
     toastRef.current?.add({ state: 'info', message: 'Identified action item dismissed' })
 
   const showTranscript = () => setSegment('transcript')
-
-  /* Delete AI minutes (Figma "Delete AI Minutes" modal) — confirm, then clear
-     the summary so the AI-minutes segment falls back to its empty state. */
-  const [deleteOpen, setDeleteOpen] = useState(false)
-  const [deleted, setDeleted] = useState(false)
-  const confirmDelete = () => {
-    setDeleted(true)
-    setDeleteOpen(false)
-    toastRef.current?.add({ state: 'success', message: 'AI minutes deleted' })
-  }
-
-  const hasMinutes = !deleted && BLOCKS.length > 0
 
   /* Left-pane width. Pointer capture keeps the drag alive outside the 8px grab
      area; width is clamped on every move so it can never leave 460–640. */

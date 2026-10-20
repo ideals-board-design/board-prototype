@@ -376,11 +376,11 @@
 /* Prev/Next on the banner jumps to an item: the card's green border pulses
    once — fades in, holds, fades back out — a momentary "you jumped here" cue,
    not a persistent state. This is a state-to-state highlight, so it uses the DS
-   --ease-in-out curve over the DS --dur-skeleton-pulse (1600ms) window, the same
+   --ease-in-out curve over the DS --dur-slowest (1600ms, skeleton pulse) window, the same
    motion primitives the DS uses for its own pulse. The class rides onto a fresh
    element on every Prev/Next, so the keyframes replay each jump. */
 .actionCardActive {
-  animation: actionHighlight var(--dur-skeleton-pulse) var(--ease-in-out) forwards;
+  animation: actionHighlight var(--dur-slowest) var(--ease-in-out) forwards;
 }
 
 @keyframes actionHighlight {
