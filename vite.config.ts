@@ -30,6 +30,7 @@ export default defineConfig({
         'board-member':   'board-member.html',
         chats:            'chats.html',
         'board-book-page-nav': 'board-book-page-nav.html',
+        'minutes-ai':       'minutes-ai.html',
       },
     },
   },

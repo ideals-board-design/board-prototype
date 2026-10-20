@@ -26,6 +26,7 @@ import { actions } from '../icons/actions'
 import { condition } from '../icons/condition'
 import { editor } from '../icons/editor'
 import { functional } from '../icons/functional'
+import { MinutesAgenda } from './MinutesAgenda'
 import styles from './MinutesTab.module.css'
 
 const angleUpSvg   = arrows.find(i => i.name === 'angle-up-fill')!.svg
@@ -571,11 +572,15 @@ export function MinutesTab() {
               </Tooltip>
             </footer>
           </>
+        ) : segment === 'agenda' ? (
+          <div className={styles.leftScroll}>
+            <MinutesAgenda onNotify={message => toastRef.current?.add({ state: 'info', message })} />
+          </div>
         ) : (
           <div className={styles.leftScroll}>
             <EmptyState
               illustration="clipboard"
-              title={segment === 'agenda' ? 'Agenda' : 'Transcript'}
+              title="Transcript"
               description="Out of scope for this prototype — the AI minutes tab holds the action-item navigation."
             />
           </div>
