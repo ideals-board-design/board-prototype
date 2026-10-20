@@ -118,6 +118,8 @@ export interface DropdownProps {
   /** 'outline' (default) — bordered trigger | 'no-border' — inline minimal trigger, content-width */
   variant?:       'outline' | 'no-border'
   className?:     string
+  /** Extra class on the portaled droplist panel (it renders outside `className`'s wrapper) */
+  droplistClassName?: string
 }
 
 /* ── Internal helpers ─────────────────────────────────────────────────────── */
@@ -299,6 +301,7 @@ export function Dropdown({
   error       = false,
   variant     = 'outline',
   className,
+  droplistClassName,
 }: DropdownProps) {
 
   const isNoBorder = variant === 'no-border'
@@ -787,7 +790,7 @@ export function Dropdown({
       {mounted && createPortal(
         <div
           ref={droplistRef}
-          className={[styles.droplist, sizeCls[size], isNoBorder ? styles.droplistNoBorder : ''].filter(Boolean).join(' ')}
+          className={[styles.droplist, sizeCls[size], isNoBorder ? styles.droplistNoBorder : '', droplistClassName ?? ''].filter(Boolean).join(' ')}
           data-state={state}
           aria-hidden={state === 'closed'}
           style={{ top: pos.top, left: pos.left, ...(isNoBorder ? {} : { width: pos.width }) }}

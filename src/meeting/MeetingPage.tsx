@@ -1553,6 +1553,7 @@ function AgendaTab({ onOpenInBoardBook, onViewBoardBook }: { onOpenInBoardBook: 
           placeholder="Select past meeting"
           size="m"
           className={styles.starterDropdown}
+          droplistClassName={styles.starterDroplist}
         />
         <Button
           variant="primary"
