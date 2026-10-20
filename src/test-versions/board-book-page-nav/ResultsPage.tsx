@@ -26,7 +26,7 @@ import study from '../../../.design/board-book-page-nav/usability-study.json'
 import audit from '../../../.design/board-book-page-nav/ux-audit.json'
 import shotV1 from '../../../.design/board-book-page-nav/screenshots/review-v1-desktop-1280.png'
 import shotV2 from '../../../.design/board-book-page-nav/screenshots/fixed-v2-desktop-1280.png'
-import shotV3 from '../../../.design/board-book-page-nav/screenshots/review-v3-desktop-1280.png'
+import shotV3 from '../../../.design/board-book-page-nav/screenshots/updated-v3-desktop-1280.png'
 import styles from './ResultsPage.module.css'
 
 type VariantId = 'v1' | 'v2' | 'v3'
@@ -95,7 +95,7 @@ const ROWS: Criterion[] = [
 ]
 
 const WHY = [
-  { icon: ICON.boundaries, title: 'Next / previous sits exactly where a document ends', text: 'Readers continue to the next document without moving their eyes.' },
+  { icon: ICON.boundaries, title: 'Next / previous sits exactly where a document ends', text: 'Page and document buttons (‹‹ ‹ › ››) live in one bar under the page — no change of focus.' },
   { icon: ICON.progress,   title: 'Reading progress shows how much is left',           text: 'Keeps readers oriented across the whole board book.' },
   { icon: ICON.success,    title: `Best on all ${CRITERIA.length} criteria`,            text: `Highest overall score (${overall[winner]}) with ${Math.round(success[winner] * 100)}% task success.` },
 ]
@@ -208,7 +208,7 @@ export default function ResultsPage({ onOpenVersion }: ResultsPageProps) {
           ))}
         </div>
         <p className={styles.note}>
-          <BadgeStatus type="neutral" label="Next" /> Label “Next document” on a document’s last page, then validate with directors. Usability numbers are simulated.
+          <BadgeStatus type="neutral" label="Next" /> Previous / next document buttons are now in the bar; validate with directors. Scores were rated before the 2026-10-20 bar update and are simulated.
         </p>
       </section>
     </div>

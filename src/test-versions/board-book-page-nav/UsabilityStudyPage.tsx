@@ -274,6 +274,7 @@ export default function UsabilityStudyPage() {
             <div className={styles.recHead}><strong>{r.id}</strong> {r.title}</div>
             <p className={styles.p}>{r.fix}</p>
             <p className={styles.recMeta}>Effort: {r.effort} · Impact: {r.impact} · <strong>Target:</strong> {r.target}</p>
+            {'status' in r && r.status && <p className={styles.recMeta}><strong>Status:</strong> {r.status}</p>}
           </div>
         ))}
       </div>

@@ -24,6 +24,8 @@
 | `screenshots/fixed-v2-desktop-1280.png` | Desktop (1280×800) | After the fix: V2 — controls visible without hover, "1 / 7" counter at the bottom |
 | `screenshots/fixed-v2-tablet-768.png` | Tablet (768×1024) | After the fix: V2 — same on tablet |
 | `screenshots/fixed-v3-mobile-375.png` | Mobile (375×812) | After the fix: V3 — ‹ 1 / 7 › · zoom · "⋯" in one bar |
+| `screenshots/updated-v3-desktop-1280.png` | Desktop (1280×800) | Update 2026-10-20: V3 — ‹‹ ‹ 1 / 7 › ›› · zoom · Fit width · Focus · annotations in the bottom bar; top bar has only Search / Download / Ask AI |
+| `screenshots/updated-v3-tablet-768.png` | Tablet (768×1024) | Update 2026-10-20: V3 — same bar on tablet |
 
 > Screenshots are in `.design/board-book-page-nav/screenshots/`. Desktop and tablet — headless Chrome; mobile — the in-app browser (headless Chrome distorts the 375 width). Dark mode was not checked: the test page has no theme toggle.
 
@@ -32,6 +34,8 @@
 All three versions are built from DS components, and continuous scrolling with the real document works in all of them. **Version 3** is the strongest base: every key action (page, zoom, annotations) lives in one always-visible place, there is reading progress, and on mobile the sheet fits. **Version 2** is the weakest for board members: the position in the document isn't shown anywhere, and the controls hide until hover. **Version 1** is the most familiar PDF pattern, but its toolbar breaks on mobile.
 
 > **Update 2026-10-19:** all 4 Must-fix items have been fixed (status in each item below). Scores in the table reflect the state before the fixes.
+
+> **Update 2026-10-20 — V3 bottom bar:** (1) **Previous / Next document** buttons (‹‹ ››, DS `angle-double-left/right-fill`) were added around the page controls; their tooltip names the target document ("Next document: CEO report.pdf") and they are disabled on the first / last document. (2) "Fit width" and "Fit page" were merged back into one **Fit width** button. (3) **Focus mode** moved from the top bar to the bottom bar, with the `arrow-resize-diagonal` icon. The top bar now holds only Search, Download and Ask AI. Below 768px zoom, Fit width, Focus mode and annotations live in the "⋯" menu. See `screenshots/updated-v3-desktop-1280.png`. Scores were not re-rated; the change closes Should fix 5 and most of the document-boundary point 4.
 
 > **Update 2026-10-19 — platform constraint:** continuous scrolling works only **within one document**. Nothing can be added inside the document (for example, a "Next document" button under the last page). Moving to the next document is possible **only through the viewer's navigation panels**: "next page" on the last page, the document dropdown, the keyboard. The prototype now follows this behaviour in every version: `PageStack` renders only the current document's pages. This makes **the placement of the navigation panels the key criterion**. Details in "Document boundaries" below.
 
@@ -60,7 +64,8 @@ A document ends "silently": there is nothing under the last page, and the only w
 | Where "next page / document" is when you reach the bottom | at the top, in the toolbar (⌄) — eyes and pointer must travel across the whole screen | beside the sheet, at mid-height (›) — close, but not where you finished | at the bottom, in the bar (›) — exactly where you finished reading |
 | Control visibility | always | always (after the fix) | always |
 | How you can tell the document ended | page counter / name in the document field only | page counter / document name | page counter + progress + document name |
-| Previous document | ⌃ on the first page (top) | ‹ on the first page (side) | ‹ on the first page (bottom) |
+| Previous document | ⌃ on the first page (top) | ‹ on the first page (side) | ‹ on the first page, or ‹‹ from any page (bottom) |
+| Next document | ⌄ on the last page (top) | › on the last page (side) | › on the last page, or ›› from any page, tooltip names the document (bottom) |
 | Score | 2 | 4 | 5 |
 
 Conclusions:
@@ -68,7 +73,7 @@ Conclusions:
 1. **The recommendation gets stronger — V3.** The bottom bar sits where the reader finishes the document, so moving on is the shortest path with no change of focus. Progress also signals that the document has ended.
 2. **V1 loses the most.** Moving on is only possible from the toolbar at the top, and the vertical ⌄ / ⌃ don't read as "next document". For V1, consider duplicating "next" at the bottom (e.g. a floating › in the bottom-right corner — that is also a navigation panel, not document content).
 3. **V2 is the middle option.** The › arrows beside the sheet are always in view, but at mid-height rather than near the end of the page.
-4. **New (Should fix):** on a document's last page the "next" control should signal that it leads to another document — e.g. a tooltip "Next document: Opening, quorum, and minutes.pdf" instead of "Next page", or an accent state on the button. This is a change in the panel itself, so it respects the constraint.
+4. **New (Should fix):** on a document's last page the "next" control should signal that it leads to another document — e.g. a tooltip "Next document: Opening, quorum, and minutes.pdf" instead of "Next page", or an accent state on the button. This is a change in the panel itself, so it respects the constraint. **Status (V3): mostly fixed** — dedicated ‹‹ / ›› buttons with "Next document: <name>" tooltips sit in the bottom bar; the › button on the last page still says "Next page".
 5. **New (Should fix):** the "N / 7" counter counts pages across the whole board book, while only one document is on screen. Show the local position too, e.g. "4 / 7 · page 1 of 2".
 6. **New (Should fix): Figma mockups.** In the "Navigation" section, page 2 of another document appeared right under the cover. The mockups have been updated to show only the current document.
 
@@ -85,7 +90,7 @@ Conclusions:
 2. **Inconsistent "next page" semantics.** V1 uses ⌄ / ⌃ (vertical), V2/V3 use ‹ ›, and the hint at the bottom shows ← → everywhere. _Fix: pick one pattern for all versions; for vertical scrolling ⌃ / ⌄ are logical, but then the hint should be ↑ ↓._
 3. **V1, mobile: the sheet doesn't fit.** The sheet width is a fixed 635px (`calc(635px * zoom)`), so 375px needs horizontal scrolling. V2/V3 already use `min(635px, 100%)`. See `screenshots/review-v1-mobile-375.png`. _Fix: apply the same `min()` in V1._
 4. **The zoom percentage means different things.** V3 on mobile shows "54%" by default (relative to 635px), while V2 shows "100%" even though the sheet is shrunk to fit. _Fix: compute the percentage relative to the fitted sheet, or show "Fit" when the sheet is fitted._
-5. **V3: the "Focus mode" icon is ambiguous.** The DS `expand` icon (⌃⌄) reads as "expand / collapse". _Fix: use `arrow-resize-diagonal` as in V1/V2, or an icon such as `eye-opened`._
+5. **V3: the "Focus mode" icon is ambiguous.** The DS `expand` icon (⌃⌄) reads as "expand / collapse". _Fix: use `arrow-resize-diagonal` as in V1/V2, or an icon such as `eye-opened`._ **Status: fixed.** Focus mode now uses `arrow-resize-diagonal` and sits in the bottom bar.
 6. **Different tool sets.** V3 has no "Draw", V2 had no page field. This makes the comparison of versions not quite fair. _Fix: align the set of actions before the usability test._
 7. **Hardcoded px in inline styles.** `635px`, `960px`, `56px` and the 72px gutters are set in TSX (`style={{ width: … }}`), so stylelint can't see them. This breaks the CLAUDE.md "tokens only" rule. _Fix: move base sizes into module CSS variables or tokens._
 8. **Code duplication.** `useMediaQuery`, `FORMAT_ICON` and the `.docSelect*` styles are copied into 4 viewers (about 5.3k lines). _Fix: once a direction is chosen, keep one viewer and move shared parts into `PageStack`/shared._

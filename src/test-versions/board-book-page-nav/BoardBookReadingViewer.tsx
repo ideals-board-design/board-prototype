@@ -3,14 +3,16 @@
    The document takes the whole content area; everything else gets out of the
    way:
      • top bar — table of content toggle · document dropdown (as in V2) |
-       search · download · Ask AI · focus mode
+       search · download · Ask AI
      • reading progress — a thin bar along the top of the canvas
-     • floating control bar (bottom) — prev · page / total · next | zoom out ·
-       % · zoom in | fit width · fit page | highlight · comment. Always visible
+     • floating control bar (bottom) — prev doc · prev · page / total · next ·
+       next doc | zoom out ·
+       % · zoom in | fit width · focus mode | highlight · comment. Always visible.
+       Previous / next document (‹‹ ››) flank the page arrows
      • agenda (table of contents) panel on the left — the same resizable
        panel as V1 / V2, closed by default so the document has the room
      • keyboard — ← / → turn pages, Esc leaves focus mode (document only,
-       full screen; turned on from the top bar)
+       full screen; turned on from the bottom bar)
    Pages are laid out continuously (PageStack), as in V1 and V2. */
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
@@ -41,16 +43,17 @@ const tocOpenSvg    = icon(actions, 'sidebar-opened')
 const tocClosedSvg  = icon(actions, 'sidebar-closed')
 const prevSvg       = icon(arrows, 'angle-left-b')
 const nextSvg       = icon(arrows, 'angle-right-b')
+const prevDocSvg    = icon(arrows, 'angle-double-left-fill')
+const nextDocSvg    = icon(arrows, 'angle-double-right-fill')
 const zoomInSvg     = icon(actions, 'zoom-in')
 const zoomOutSvg    = icon(actions, 'zoom-out')
 const fitWidthSvg   = icon(actions, 'with-width')
-const fitPageSvg    = icon(actions, 'fit-page')
 const highlightSvg  = icon(actions, 'hightlight')
 const commentSvg    = icon(communication, 'comment')
 const searchSvg     = icon(actions, 'search')
 const downloadSvg   = icon(actions, 'download-alt')
 const aiSvg         = icon(actions, 'sparkles')
-const focusSvg      = icon(arrows, 'expand')
+const focusSvg      = icon(arrows, 'arrow-resize-diagonal')
 const chevronUpSvg  = icon(arrows, 'angle-up-fill')
 const chevronDownSvg = icon(arrows, 'angle-down-fill')
 
@@ -85,11 +88,10 @@ const ZOOM_MAX = 200
 const ZOOM_STEP = 10
 /** Sheet width at 100% and the page aspect ratio (US Letter, as the pack). */
 const PAGE_WIDTH = 635
-const PAGE_RATIO = 612 / 792
 const TOC_MIN = 460
 const TOC_MAX = 640
 
-type Fit = 'none' | 'width' | 'page'
+type Fit = 'none' | 'width'
 type Tool = 'none' | 'highlight' | 'comment'
 type RightPanel = null | 'search' | 'ai'
 
@@ -141,11 +143,14 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   }, [page])
 
   const current = useMemo(() => docAtPage(book, page), [book, page])
+  /* Document-level navigation — the only way across a document boundary
+     besides "next page" on the last page (the document itself can't carry it). */
+  const prevDoc = current ? book.flatDocs[current.index - 1] : undefined
+  const nextDoc = current ? book.flatDocs[current.index + 1] : undefined
 
   /* ── Sheet width: fixed zoom, fit width or fit page (from the box size). ── */
   const sheetWidth =
     fit === 'width' ? box.w
-      : fit === 'page' ? Math.min(box.w, box.h * PAGE_RATIO)
       : Math.min(box.w, PAGE_WIDTH) * (zoom / 100)
   const zoomPct = Math.round((sheetWidth / PAGE_WIDTH) * 100) || zoom
 
@@ -323,10 +328,6 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                   iconOnly={<Ico svg={aiSvg} />}
                   onClick={() => toggleRightPanel('ai')} aria-label="Ask AI" />
               </Tooltip>
-              <Tooltip label="Focus mode" position="bottom">
-                <Button variant="tertiary" intent="neutral" size="m" iconOnly={<Ico svg={focusSvg} />}
-                  onClick={() => setFocus(true)} aria-label="Focus mode" />
-              </Tooltip>
             </div>
           </div>
         )}
@@ -371,6 +372,8 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
             aria-label="Reading controls"
           >
             <div className={styles.barGroup}>
+              {barBtn(prevDoc ? `Previous document: ${prevDoc.doc.name}` : 'Previous document', prevDocSvg,
+                () => prevDoc && goToPage(prevDoc.startPage), { disabled: !prevDoc })}
               {barBtn('Previous page', prevSvg, () => goToPage(page - 1), { disabled: page <= 1 })}
               <div className={styles.pageCount}>
                 <input
@@ -387,28 +390,36 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 <span className={styles.pageTotal}>/ {book.totalPages}</span>
               </div>
               {barBtn('Next page', nextSvg, () => goToPage(page + 1), { disabled: page >= book.totalPages })}
+              {barBtn(nextDoc ? `Next document: ${nextDoc.doc.name}` : 'Next document', nextDocSvg,
+                () => nextDoc && goToPage(nextDoc.startPage), { disabled: !nextDoc })}
             </div>
+
+            {!isNarrow && (
+              <>
+                <span className={styles.barDivider} aria-hidden="true" />
+                <div className={styles.barGroup}>
+                  {barBtn('Zoom out', zoomOutSvg, () => zoomBy(-ZOOM_STEP), { disabled: zoomPct <= ZOOM_MIN })}
+                  <span className={styles.zoomValue} aria-live="polite">{zoomPct}%</span>
+                  {barBtn('Zoom in', zoomInSvg, () => zoomBy(ZOOM_STEP), { disabled: zoomPct >= ZOOM_MAX })}
+                </div>
+              </>
+            )}
 
             <span className={styles.barDivider} aria-hidden="true" />
 
-            <div className={styles.barGroup}>
-              {barBtn('Zoom out', zoomOutSvg, () => zoomBy(-ZOOM_STEP), { disabled: zoomPct <= ZOOM_MIN })}
-              <span className={styles.zoomValue} aria-live="polite">{zoomPct}%</span>
-              {barBtn('Zoom in', zoomInSvg, () => zoomBy(ZOOM_STEP), { disabled: zoomPct >= ZOOM_MAX })}
-            </div>
-
-            <span className={styles.barDivider} aria-hidden="true" />
-
-            {/* Narrow (<768): fit and annotation tools collapse into a "⋯" menu
-                that opens upward, so the bar fits a 375px screen. */}
+            {/* Narrow (<768): zoom, fit and annotation tools collapse into a "⋯"
+                menu that opens upward, so the bar (with page and document
+                navigation) fits a 375px screen. */}
             {isNarrow ? (
               <ActionMenu
                 size="m"
                 placement="top"
                 ariaLabel="More reading controls"
                 items={[
-                  { key: 'fit-width', label: 'Fit width', icon: fitWidthSvg,  onSelect: () => toggleFit('width') },
-                  { key: 'fit-page',  label: 'Fit page',  icon: fitPageSvg,   onSelect: () => toggleFit('page') },
+                  { key: 'zoom-in',   label: `Zoom in (${zoomPct}%)`, icon: zoomInSvg,  onSelect: () => zoomBy(ZOOM_STEP) },
+                  { key: 'zoom-out',  label: 'Zoom out',   icon: zoomOutSvg,  onSelect: () => zoomBy(-ZOOM_STEP) },
+                  { key: 'fit-width', label: 'Fit width',  icon: fitWidthSvg, onSelect: () => toggleFit('width') },
+                  { key: 'focus',     label: 'Focus mode', icon: focusSvg,    onSelect: () => setFocus(f => !f) },
                   { key: 'highlight', label: 'Highlight', icon: highlightSvg, onSelect: () => toggleTool('highlight') },
                   { key: 'comment',   label: 'Comment',   icon: commentSvg,   onSelect: () => toggleTool('comment') },
                 ]}
@@ -417,7 +428,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
               <>
                 <div className={styles.barGroup}>
                   {barBtn('Fit width', fitWidthSvg, () => toggleFit('width'), { active: fit === 'width' })}
-                  {barBtn('Fit page', fitPageSvg, () => toggleFit('page'), { active: fit === 'page' })}
+                  {barBtn('Focus mode', focusSvg, () => setFocus(f => !f), { active: focus })}
                 </div>
 
                 <span className={styles.barDivider} aria-hidden="true" />

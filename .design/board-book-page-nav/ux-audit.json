@@ -60,10 +60,10 @@
   "verdicts": {
     "v1": { "label": "Not recommended", "type": "danger", "text": "Familiar for power users, but the top-only navigation fails low-proficiency and touch readers at document boundaries." },
     "v2": { "label": "Keep one idea", "type": "warning", "text": "Adopt the open agenda as an option; drop the scattered floating controls." },
-    "v3": { "label": "Recommended — validate", "type": "positive", "text": "Best base. Ship to real-user validation after R1 (labelled 'Next document' in the bar) and R3 (local + global page position)." }
+    "v3": { "label": "Recommended — validate", "type": "positive", "text": "Best base. Ship to real-user validation after R1 (labelled 'Next document' in the bar — ‹‹ / ›› document buttons with named tooltips added 2026-10-20) and R3 (local + global page position)." }
   },
   "risks": [
-    "Document end stays silent — the bar must say 'Next document: <name>' on a document's last page (study R1).",
+    "Document end stays silent — the bar must say 'Next document: <name>' on a document's last page (study R1). V3 now has ›› 'Next document: <name>' (tooltip only, icon button).",
     "Global 'N / 7' without a local page count misleads about document length (study R3).",
     "Icon-only controls exclude low-proficiency and touch users (study R4).",
     "Agenda hidden by default in V3 — consider opening it on wide screens (study R5)."
