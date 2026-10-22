@@ -66,7 +66,6 @@
 .segmentHeader {
   flex-shrink: 0;
   padding: var(--space-16) var(--space-24);
-  border-bottom: 1px solid var(--color-border);
 }
 
 /* Segment control spans the full header width, its options sharing the row
@@ -89,13 +88,14 @@
 /* outline ---------------------------------------------------------------- */
 
 .outline {
-  padding: var(--space-24) 0 var(--space-16);
+  padding: var(--space-16) 0 var(--space-24);
 }
 
 .outlineHeading {
-  margin: 0 0 var(--space-12);
+  margin: 0 0 var(--space-16);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 
@@ -108,22 +108,38 @@
   gap: var(--space-8);
 }
 
+/* Outline rows are links into the content; the bold row is the section at the
+   top of the pane. */
 .outlineRow {
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family);
   font-size: var(--text-base);
+  line-height: var(--line-height-base);
   color: var(--color-text-secondary);
+  transition: color var(--dur-snap) var(--ease-out);
+}
+.outlineRow:hover { color: var(--color-text-primary); }
+.outlineRow:focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
-.outlineRow:nth-child(2) {
-  font-weight: 600;
+.outlineRowActive {
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
 }
 
 .outlineNum {
-  color: var(--color-text-secondary);
+  color: inherit;
 }
 
 .showMore {
-  margin-top: var(--space-12);
+  margin-top: var(--space-16);
   display: inline-flex;
   align-items: center;
   gap: var(--space-4);
@@ -132,7 +148,8 @@
   background: none;
   cursor: pointer;
   font-size: var(--text-base);
-  font-weight: 600;
+  line-height: var(--line-height-base);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-success);
 }
 
@@ -149,16 +166,50 @@
 
 /* sticky banner ---------------------------------------------------------- */
 
-.banner {
+/* "AI minutes" title + Brief version toggle — pinned to the top of the pane
+   while it scrolls; the banner pins right under it. Bleeds over the pane's
+   side padding so scrolled content never peeks out beside it. */
+.aiTitleRow {
   position: sticky;
-  top: var(--space-8);
+  top: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  margin: 0 calc(-1 * var(--space-24));
+  padding: var(--space-8) var(--space-24);
+  background: var(--color-bg-surface);
+}
+
+.aiTitle {
+  flex: 1;
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+/* DS Toggle with its label on the left (Figma: "Brief version" ◯). */
+.briefToggle { flex-direction: row-reverse; }
+
+/* Sticky white strip behind the banner, bleeding over the pane's side padding,
+   so hover tints of the content scrolling underneath never show around it. */
+.bannerSticky {
+  position: sticky;
+  top: calc(var(--line-height-base) + 2 * var(--space-8));
   z-index: 3;
+  margin: 0 calc(-1 * var(--space-24)) var(--space-8);
+  padding: 0 var(--space-24) var(--space-8);
+  background: var(--color-bg-surface);
+}
+
+.banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-32);
   padding: var(--space-4) var(--space-10) var(--space-4) var(--space-16);
-  margin-bottom: var(--space-16);
   background: var(--color-success-bg);
   border: 1px solid var(--color-success);
   border-radius: var(--radius-md);
@@ -268,67 +319,51 @@
   background: transparent;
 }
 
-/* Controls live inside the highlighted box (no floating panel, no shadow) and
-   are absolutely positioned, so revealing them never moves any text. */
+/* Hover controls (Figma 12970-220370 / 31789-469425). Absolutely positioned,
+   so revealing them never moves any text; hidden until their element is the
+   hover / keyboard-focus target. */
 .hoverBar {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
+  z-index: 2;
   display: flex;
-  align-items: stretch;
-  border-radius: var(--radius-md);
+  align-items: center;
+  gap: var(--space-2);
   opacity: 0;
-  /* the bar spans the whole element so the fade can; only the actions take
-     pointer events, so text stays selectable underneath */
   pointer-events: none;
   transition: opacity var(--dur-snap) var(--ease-out);
 }
 
-/* block controls sit in the top-right corner instead; its fade stays clear
-   longer (Figma "Minutes block" variant: 0.6 at 84% of the span) */
-.block > .hoverBar {
-  top: 0;
-  bottom: auto;
-  --fade-mid: 84%;
+/* Paragraph / action card / transcript entry: a small floating card that
+   straddles the element's bottom edge at the right, over the gap below it. */
+.hoverBarChip {
+  right: var(--space-12);
+  bottom: 0;
+  transform: translateY(50%);
+  padding: var(--space-2);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-100);
+}
+
+/* Block: plain controls in the top-right corner, where the timestamp was. */
+.hoverBarCorner {
+  top: var(--space-8);
+  right: var(--space-8);
 }
 
 .paraBox:is(:hover, :focus-within) > .hoverBar,
 .actionCard:is(:hover, :focus-within) > .hoverBar,
-.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) > .hoverBar {
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) > .hoverBar,
+:global([data-entry]):is(:hover, :focus-within) > .hoverBar {
   opacity: 1;
-}
-
-.paraBox:is(:hover, :focus-within) > .hoverBar .hoverActions,
-.actionCard:is(:hover, :focus-within) > .hoverBar .hoverActions,
-.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) > .hoverBar .hoverActions {
   pointer-events: auto;
 }
 
-/* Gradient backdrop (Figma "Hover actions", 23674-109243): fills the free space
-   to the left of the actions, clear until 38%, 60% hover-tint at 62%, solid at
-   the actions — so text of any length fades out under the controls. */
-.hoverFade {
-  flex: 1 1 auto;
-  min-width: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    to right,
-    transparent 38%,
-    color-mix(in srgb, var(--color-bg-hover) 60%, transparent) var(--fade-mid, 62%),
-    var(--color-bg-hover) 100%
-  );
-}
-
-.hoverActions {
-  flex: none;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  background: var(--color-bg-hover);
-  border-radius: var(--radius-md);
+/* The chip of the hovered element must sit above the next element's tint. */
+.paraBox:is(:hover, :focus-within),
+.actionCard:is(:hover, :focus-within),
+:global([data-entry]):is(:hover, :focus-within) {
+  z-index: 1;
 }
 
 .timeBtn {
@@ -448,6 +483,26 @@
   gap: var(--space-12);
   padding: var(--space-16) var(--space-24);
   border-top: 1px solid var(--color-border);
+}
+
+/* Copy minutes · Give feedback on the left, delete on the right. */
+.footerGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+/* Empty states fill the pane and sit in its middle. */
+.emptyWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-16);
 }
 
 /* ------------------------------------------------------------- right pane */

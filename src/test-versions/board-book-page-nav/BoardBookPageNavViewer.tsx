@@ -51,6 +51,7 @@ import {
   type MotionStatus,
 } from '../../meeting/BoardBook/boardBookData'
 import { PageStack, pageAtScroll, scrollToPage, type CommentPin } from './PageStack'
+import { useTocAutoCollapse } from './useTocAutoCollapse'
 import styles from './BoardBookPageNavViewer.module.css'
 
 /* ── Icons (DS sets only) ──────────────────────────────────────────────────── */
@@ -70,8 +71,6 @@ const downloadSvg   = icon(actions, 'download-alt')
 const searchSvg     = icon(actions, 'search')
 const aiSvg         = icon(actions, 'sparkles')
 const chevronUpSvg  = icon(arrows, 'angle-up-fill')
-const arrowLeftSvg  = icon(arrows, 'arrow-left')
-const arrowRightSvg = icon(arrows, 'arrow-right')
 const chevronDownSvg = icon(arrows, 'angle-down-fill')
 const closeSvg      = icon(actions, 'close')
 const infoSvg       = icon(condition, 'info-circle')
@@ -160,6 +159,8 @@ export default function BoardBookPageNavViewer({
   const [fitWidth, setFitWidth] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const [comments, setComments] = useState<CommentPin[]>([])
+  /* Small desktop: a side panel collapses the agenda so the page stays readable. */
+  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const commentSeq = useRef(0)
@@ -300,7 +301,7 @@ export default function BoardBookPageNavViewer({
               aria-pressed={tocOpen}
               data-state={tocOpen ? 'active' : undefined}
               iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
-              onClick={() => setTocOpen(o => !o)}
+              onClick={() => { markTocManual(); setTocOpen(o => !o) }}
               aria-label="Toggle table of content"
             />
           </Tooltip>
@@ -442,14 +443,6 @@ export default function BoardBookPageNavViewer({
             />
           </div>
 
-          {/* ── Keyboard hint (web only) ──────────────────────────────────── */}
-          {!isCompact && (
-            <div className={styles.keyHint} aria-hidden="true">
-              <kbd className={styles.kbd}><Ico svg={arrowLeftSvg} /></kbd>
-              <kbd className={styles.kbd}><Ico svg={arrowRightSvg} /></kbd>
-              <span>pages</span>
-            </div>
-          )}
 
           {/* ── View controls — floating vertical card over the canvas ──────── */}
           <div className={styles.zoomCard} role="group" aria-label="View controls">

@@ -181,6 +181,8 @@ export default function BoardBookViewer({
   initialDocName = null,
 }: BoardBookViewerProps) {
   const isCompact = useMediaQuery('(max-width: 1023px)')
+  /* Small desktop: the inline TOC + a side panel would squeeze the page. */
+  const isNarrowDesktop = useMediaQuery('(max-width: 1439px)')
 
   const [page, setPage] = useState(1)
   const [tocOpen, setTocOpen] = useState(!isCompact)
@@ -296,6 +298,22 @@ export default function BoardBookViewer({
      tablet/phone. Only reset when the breakpoint actually flips. ────────────── */
   useEffect(() => { setTocOpen(!isCompact) }, [isCompact])
 
+  /* ── On small desktops, opening Search / Ask AI collapses the TOC so the page
+     stays readable; closing the panel restores it — but only if we were the
+     ones who collapsed it. ─────────────────────────────────────────────────── */
+  const tocAutoClosed = useRef(false)
+  useEffect(() => {
+    if (rightPanel && isNarrowDesktop && !isCompact) {
+      setTocOpen(open => {
+        if (open) tocAutoClosed.current = true
+        return false
+      })
+    } else if (!rightPanel && tocAutoClosed.current) {
+      tocAutoClosed.current = false
+      setTocOpen(true)
+    }
+  }, [rightPanel, isNarrowDesktop, isCompact])
+
   /* ── Quick preview: jump to the opened attachment's first page. ───────────── */
   useEffect(() => {
     if (!initialDocName) return
@@ -395,7 +413,11 @@ export default function BoardBookViewer({
                 aria-pressed={tocOpen}
                 data-state={tocOpen ? 'active' : undefined}
                 iconOnly={<Ico svg={tocSvg} />}
-                onClick={() => (isCompact ? setNavPopoverOpen(o => !o) : setTocOpen(o => !o))}
+                onClick={() => {
+                  if (isCompact) { setNavPopoverOpen(o => !o); return }
+                  tocAutoClosed.current = false
+                  setTocOpen(o => !o)
+                }}
                 aria-label="Toggle table of content"
               />
             </Tooltip>

@@ -32,6 +32,7 @@ import {
 } from '../../meeting/BoardBook/boardBookData'
 import { AiPanel, CompactNav, PdfPage, SearchPanel, TocPanel } from './BoardBookPageNavViewer'
 import { PageStack, pageAtScroll, scrollToPage, type CommentPin } from './PageStack'
+import { useTocAutoCollapse } from './useTocAutoCollapse'
 import styles from './BoardBookFilmstripViewer.module.css'
 
 const icon = (set: { name: string; svg: string }[], name: string) =>
@@ -52,8 +53,6 @@ const aiSvg         = icon(actions, 'sparkles')
 const prevSvg       = icon(arrows, 'angle-left-b')
 const nextSvg       = icon(arrows, 'angle-right-b')
 const chevronUpSvg  = icon(arrows, 'angle-up-fill')
-const arrowLeftSvg  = icon(arrows, 'arrow-left')
-const arrowRightSvg = icon(arrows, 'arrow-right')
 const chevronDownSvg = icon(arrows, 'angle-down-fill')
 
 const FORMAT_ICON: Record<BoardBookDoc['sourceFormat'], string> = {
@@ -111,6 +110,8 @@ export default function BoardBookFilmstripViewer({ book = MOCK_BOARD_BOOK, pageI
   const [fitWidth, setFitWidth] = useState(false)
   const [fullscreen, setFullscreen] = useState(false)
   const [comments, setComments] = useState<CommentPin[]>([])
+  /* Small desktop: a side panel collapses the agenda so the page stays readable. */
+  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const commentSeq = useRef(0)
@@ -240,7 +241,7 @@ export default function BoardBookFilmstripViewer({ book = MOCK_BOARD_BOOK, pageI
               variant="tertiary" intent="neutral" size="m"
               aria-pressed={tocOpen}
               iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
-              onClick={() => setTocOpen(o => !o)}
+              onClick={() => { markTocManual(); setTocOpen(o => !o) }}
               aria-label="Toggle agenda panel"
             />
           </Tooltip>
@@ -319,14 +320,6 @@ export default function BoardBookFilmstripViewer({ book = MOCK_BOARD_BOOK, pageI
             {paletteBtn('Comment', commentSvg, tool === 'comment', () => toggleTool('comment'))}
           </div>
 
-          {/* Keyboard hint (web only) */}
-          {!isCompact && (
-            <div className={styles.keyHint} aria-hidden="true">
-              <kbd className={styles.kbd}><Ico svg={arrowLeftSvg} /></kbd>
-              <kbd className={styles.kbd}><Ico svg={arrowRightSvg} /></kbd>
-              <span>pages</span>
-            </div>
-          )}
 
           {/* View controls (right) */}
           <div className={styles.viewControls}>

@@ -11,10 +11,13 @@
      • Version 3 — Reading mode: full-area document, floating control bar,
        table of content panel, reading progress, focus mode
        (BoardBookReadingViewer)
+     • Version 4 — Version 2 with view controls (left) and tools (right)
+       swapped, and previous / next document around the page pill
+       (BoardBookDocNavViewer)
      • Reports — all reports on one page with side navigation (ReportsPage):
        design review (DESIGN_REVIEW.md), usability study (usability-study.json,
        the PPTX is generated from the same file) and UX audit (ux-audit.json)
-   Tabs are labelled by number only (Version 1–3), plus Report and "Only
+   Tabs are labelled by number only (Version 1–4), plus Report and "Only
    document toggle". */
 
 import { useEffect, useState } from 'react'
@@ -32,6 +35,7 @@ import { actions } from '../../icons/actions'
 import BoardBookPageNavViewer from './BoardBookPageNavViewer'
 import BoardBookFilmstripViewer from './BoardBookFilmstripViewer'
 import BoardBookReadingViewer from './BoardBookReadingViewer'
+import BoardBookDocNavViewer from './BoardBookDocNavViewer'
 import ReportsPage from './ReportsPage'
 import { Q4_BOARD_BOOK, q4PageImage } from './q4BoardPack'
 import styles from './BoardBookPageNavPage.module.css'
@@ -50,12 +54,13 @@ const USER = {
 
 const initialReportTabs = ['report', 'study', 'audit']
 
-type VersionTab = 'v1' | 'v2' | 'v3' | 'reports'
+type VersionTab = 'v1' | 'v2' | 'v3' | 'v4' | 'reports'
 
 const TABS: TabItem[] = [
   { id: 'v1', label: 'Version 1' },
   { id: 'v2', label: 'Version 2' },
   { id: 'v3', label: 'Version 3' },
+  { id: 'v4', label: 'Version 4' },
   { id: 'reports', label: 'Reports' },
 ]
 
@@ -135,6 +140,7 @@ export default function BoardBookPageNavPage() {
           {activeTab === 'v1' && <BoardBookPageNavViewer layout="full" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'v2' && <BoardBookFilmstripViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'v3' && <BoardBookReadingViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v4' && <BoardBookDocNavViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'reports' && <ReportsPage initial={initialReport} onOpenVersion={setActiveTab} />}
         </div>
       </main>

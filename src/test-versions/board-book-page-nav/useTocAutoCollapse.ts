@@ -1,0 +1,42 @@
+/* useTocAutoCollapse — shared by the board-book test versions.
+
+   Below 1440px the inline agenda panel plus a Search /
+   Ask AI side panel leave too little room to read the page, so opening a side
+   panel collapses the agenda; closing the panel restores it — but only if the
+   hook collapsed it. Toggling the agenda by hand (call the returned
+   `markManual`) hands control back to the reader. Same rule as the Meeting
+   page's BoardBookViewer. */
+
+import { useEffect, useRef, useState } from 'react'
+
+const NARROW = '(max-width: 1439px)'
+
+export function useTocAutoCollapse(
+  sidePanelOpen: boolean,
+  setTocOpen: (update: (open: boolean) => boolean) => void,
+): () => void {
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(NARROW).matches,
+  )
+  useEffect(() => {
+    const mql = window.matchMedia(NARROW)
+    const onChange = () => setNarrow(mql.matches)
+    mql.addEventListener('change', onChange)
+    return () => mql.removeEventListener('change', onChange)
+  }, [])
+
+  const autoClosed = useRef(false)
+  useEffect(() => {
+    if (sidePanelOpen && narrow) {
+      setTocOpen(open => {
+        if (open) autoClosed.current = true
+        return false
+      })
+    } else if (!sidePanelOpen && autoClosed.current) {
+      autoClosed.current = false
+      setTocOpen(() => true)
+    }
+  }, [sidePanelOpen, narrow, setTocOpen])
+
+  return () => { autoClosed.current = false }
+}

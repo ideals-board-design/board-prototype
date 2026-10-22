@@ -34,6 +34,7 @@ import {
 } from '../../meeting/BoardBook/boardBookData'
 import { AiPanel, CompactNav, PdfPage, SearchPanel, TocPanel } from './BoardBookPageNavViewer'
 import { PageStack, pageAtScroll, scrollToPage, type CommentPin } from './PageStack'
+import { useTocAutoCollapse } from './useTocAutoCollapse'
 import styles from './BoardBookReadingViewer.module.css'
 
 const icon = (set: { name: string; svg: string }[], name: string) =>
@@ -102,7 +103,6 @@ export interface BoardBookReadingViewerProps {
 }
 
 export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage }: BoardBookReadingViewerProps) {
-  const isCompact = useMediaQuery('(max-width: 1023px)')
   const isNarrow = useMediaQuery('(max-width: 767px)')
 
   const [page, setPage] = useState(1)
@@ -116,6 +116,8 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   const [navPopoverOpen, setNavPopoverOpen] = useState(false)
   const [focus, setFocus] = useState(false)
   const [progress, setProgress] = useState(0)
+  /* Small desktop: a side panel collapses the agenda so the page stays readable. */
+  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen)
   /* Scroll box content size — drives fit width / fit page. */
   const [box, setBox] = useState({ w: 0, h: 0 })
 
@@ -282,7 +284,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 aria-pressed={tocOpen}
                 data-state={tocOpen ? 'active' : undefined}
                 iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
-                onClick={() => setTocOpen(o => !o)}
+                onClick={() => { markTocManual(); setTocOpen(o => !o) }}
                 aria-label="Toggle table of content"
               />
             </Tooltip>
@@ -441,14 +443,6 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
             )}
           </div>
 
-          {/* Keyboard hint (web only). */}
-          {!isCompact && (
-            <div className={styles.keyHint} aria-hidden="true">
-              <kbd className={styles.kbd}><Ico svg={icon(arrows, 'arrow-left')} /></kbd>
-              <kbd className={styles.kbd}><Ico svg={icon(arrows, 'arrow-right')} /></kbd>
-              <span>pages</span>
-            </div>
-          )}
         </div>
       </div>
 

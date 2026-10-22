@@ -11,27 +11,47 @@
      Next snaps back to the current item and advances. Previous is disabled on the
      first item, Next on the last.
    - The banner is position:sticky, so it pins to the top of the pane once the
-     outline above it scrolls away. Close (✕) dismisses it. */
+     outline above it scrolls away. Close (✕) dismisses it.
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+   AI minutes / action items hover (Figma 12970-220370, 31789-469425): a
+   paragraph or action card tints and shows a floating chip on its bottom edge
+   (timestamp → "View in transcript", copy; or Create draft action / Dismiss /
+   timestamp); hovering a block's title tints the whole block with a copy icon
+   in its corner. Footer: Copy minutes · Give feedback (link) · Delete AI minutes.
+
+   Brief version (Figma 32251-171315): an "AI minutes" title with a "Brief
+   version" toggle sits above the action-items banner and stays pinned while
+   the pane scrolls; each block's corner also has its own brief / detailed
+   switch (Figma 32229-124889), which overrides that block until the title
+   toggle changes again. Brief swaps the block's paragraphs for a one-line
+   summary and drops the motion / result lines; action items stay.
+   Transcript segment: see TranscriptPane (Figma 12970-220260). */
+
+import { useMemo, useRef, useState } from 'react'
 import { SegmentControl } from '../components/SegmentControl/SegmentControl'
 import { Button } from '../components/Button/Button'
 import { Tooltip } from '../components/Tooltip/Tooltip'
 import { Avatar } from '../components/Avatar/Avatar'
 import { EmptyState } from '../components/EmptyState/EmptyState'
+import { Modal } from '../components/Modal/Modal'
+import { Toggle } from '../components/Toggle/Toggle'
 import { ToastContainer } from '../components/ToastContainer/ToastContainer'
 import type { ToastContainerHandle } from '../components/ToastContainer/ToastContainer'
 import { arrows } from '../icons/arrows'
 import { actions } from '../icons/actions'
 import { condition } from '../icons/condition'
+import { custom } from '../icons/custom'
 import { editor } from '../icons/editor'
 import { functional } from '../icons/functional'
+import { MinutesAgenda } from './MinutesAgenda'
+import { CopyButton, HoverBar, Icon, scrollIntoCentre, smoothScrollTo, writeClipboard } from './minutesControls'
+import { TranscriptPane, type TranscriptStatus } from './TranscriptPane'
+import { TRANSCRIPTS, transcriptText } from './transcriptData'
 import styles from './MinutesTab.module.css'
 
 const angleUpSvg   = arrows.find(i => i.name === 'angle-up-fill')!.svg
 const angleDownSvg = arrows.find(i => i.name === 'angle-down-fill')!.svg
 const closeSvg     = actions.find(i => i.name === 'multiply')!.svg
-const copySvg      = actions.find(i => i.name === 'copy')!.svg
 const trashSvg     = actions.find(i => i.name === 'trash-alt')!.svg
 const chevronSvg   = arrows.find(i => i.name === 'angle-down-big')!.svg
 
@@ -47,50 +67,8 @@ const underlineSvg = editor.find(i => i.name === 'underline')!.svg
 const indentSvg    = editor.find(i => i.name === 'left-indent')!.svg
 const sidebarSvg   = actions.find(i => i.name === 'sidebar-opened')!.svg
 const moreSvg      = functional.find(i => i.name === 'ellipsis-h')!.svg
-
-const Icon = ({ svg }: { svg: string }) => (
-  <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} />
-)
-
-/** Tracks the in-flight tween per scroll container so a new navigation cancels
-    the previous one instead of fighting it. */
-const scrollAnims = new WeakMap<HTMLElement, { raf: number; timer: number; done: boolean }>()
-
-/** Animate a scroll container to `top` with an ease-out tween (~360ms). A guarded
-    timeout snaps to the final position, so the target is always reached even where
-    requestAnimationFrame is throttled or timestamps stall. */
-function smoothScrollTo(el: HTMLElement, top: number) {
-  const prev = scrollAnims.get(el)
-  if (prev) { cancelAnimationFrame(prev.raf); clearTimeout(prev.timer); prev.done = true }
-
-  const start = el.scrollTop
-  const delta = top - start
-  if (Math.abs(delta) < 1) { el.scrollTop = top; return }
-
-  const duration = 360
-  const anim = { raf: 0, timer: 0, done: false }
-  scrollAnims.set(el, anim)
-
-  const finish = () => {
-    if (anim.done) return
-    anim.done = true
-    cancelAnimationFrame(anim.raf)
-    el.scrollTop = top
-  }
-
-  let startTime: number | null = null
-  const step = (now: number) => {
-    if (anim.done) return
-    if (startTime === null) startTime = now
-    const t = Math.min(1, (now - startTime) / duration)
-    const eased = 1 - Math.pow(1 - t, 3)
-    el.scrollTop = start + delta * eased
-    if (t < 1) anim.raf = requestAnimationFrame(step)
-    else finish()
-  }
-  anim.raf = requestAnimationFrame(step)
-  anim.timer = window.setTimeout(finish, duration + 80)
-}
+const detailedSvg  = custom.find(i => i.name === 'arrow-resize-bigger')!.svg
+const briefSvg     = custom.find(i => i.name === 'arrow-resize-smaller')!.svg
 
 /* Resizable left pane (Figma 13202-77526): drag the divider between 460 and 640px. */
 const PANE_MIN = 460
@@ -118,11 +96,15 @@ interface Paragraph {
   muted?: boolean
 }
 
+type MinutesFormat = 'detailed' | 'brief'
+
 interface MinuteBlock {
   num: number
   title: string
   timecode: string
   paragraphs: Paragraph[]
+  /** one-paragraph summary shown in the brief version */
+  brief: string
   /** an AI-extracted action item rendered after the first paragraph */
   action?: ActionItem
   /** trailing paragraphs rendered after the action item (motion / result) */
@@ -136,10 +118,12 @@ const PRIYA  = { name: 'Priya Nair',     src: 'https://i.pravatar.cc/64?img=32' 
 const BLOCKS: MinuteBlock[] = [
   {
     num: 1, title: 'Call to Order', timecode: '00:01:30',
+    brief: 'The Chairman called the meeting to order at 11:00 a.m.; a quorum was present.',
     paragraphs: [{ text: 'Cheryl Jameson, Chairman, called the meeting to order at 11:00 a.m. Michael Donaldson, Chief Legal Officer, confirmed that notice had been given and that a quorum of seven directors was present.' }],
   },
   {
     num: 2, title: 'Approval of Agenda', timecode: '00:04:10',
+    brief: 'The agenda was approved with the cybersecurity update moved ahead of the committee reports.',
     paragraphs: [{ text: 'The Chairman asked whether any director wished to amend the agenda. Emily Jones asked that the cybersecurity update be moved ahead of the committee reports so that it could be discussed while the Chief Technology Officer was available. The Chairman agreed.' }],
     action: {
       id: 'a1',
@@ -153,6 +137,7 @@ const BLOCKS: MinuteBlock[] = [
   },
   {
     num: 3, title: 'Conflict of Interest', timecode: '00:07:45',
+    brief: 'Colin Darrans declared a conflict on item 6 and will recuse himself.',
     paragraphs: [{ text: 'Directors were reminded of their duty to disclose any conflict of interest. Colin Darrans disclosed his advisory role at Northwind Capital, which is a bidder on item 6, and agreed to leave the room during that discussion. No other conflicts were declared.' }],
     action: {
       id: 'a2',
@@ -162,6 +147,7 @@ const BLOCKS: MinuteBlock[] = [
   },
   {
     num: 4, title: 'Approval of Previous Minutes', timecode: '00:11:20',
+    brief: 'The January 20, 2024 minutes were approved without amendments.',
     paragraphs: [{ text: 'The minutes of the meeting held on January 20, 2024 were distributed to members on January 27, 2024. No amendments had been submitted to the Company Secretary before the meeting, and none were raised by directors.' }],
     trailing: [
       { text: 'Motion: Approve the minutes of the January 20, 2024 Board of Directors meeting as presented.' },
@@ -170,6 +156,7 @@ const BLOCKS: MinuteBlock[] = [
   },
   {
     num: 5, title: 'CEO Report', timecode: '00:19:05',
+    brief: 'Q1 revenue was $48.2M, 9% ahead of plan; the EMEA launch moves from May to July.',
     paragraphs: [{ text: 'Brian Rubinstein, CEO, reported that Q1 revenue was $48.2 million, 9% ahead of plan, driven by enterprise renewals. Customer churn fell to 3.1%. He highlighted delays in the EMEA expansion caused by data-residency approvals and expects the launch to move from May to July.' }],
     action: {
       id: 'a3',
@@ -179,6 +166,7 @@ const BLOCKS: MinuteBlock[] = [
   },
   {
     num: 6, title: 'Financial Report', timecode: '00:34:50',
+    brief: 'Q1 opex was 4% under budget with $112M in cash; directors asked for an EMEA sensitivity analysis.',
     paragraphs: [{ text: 'Thomas Sonnenshein, Chief Financial Officer, presented the Q1 financial statements. Operating expenses were 4% under budget, and cash and equivalents stood at $112 million. Directors asked for a sensitivity analysis on the revised EMEA timeline.' }],
     action: {
       id: 'a4',
@@ -188,6 +176,7 @@ const BLOCKS: MinuteBlock[] = [
   },
   {
     num: 7, title: 'Audit Committee Report', timecode: '00:52:15',
+    brief: "No material audit findings; the external auditor's engagement was renewed.",
     paragraphs: [{ text: 'Emily Jones, Audit Committee Chair, reported that the external auditor had completed interim testing with no material findings. The committee recommended renewing the auditor’s engagement for the next fiscal year.' }],
     trailing: [
       { text: 'Motion: Renew the engagement of the external auditor for the next fiscal year, as recommended by the Audit Committee.' },
@@ -196,6 +185,7 @@ const BLOCKS: MinuteBlock[] = [
   },
   {
     num: 8, title: 'Cybersecurity Update', timecode: '01:08:30',
+    brief: 'Two medium-severity penetration-test findings will be fixed by end of April.',
     paragraphs: [{ text: 'The Chief Technology Officer reported on the results of the annual penetration test. Two medium-severity findings were identified and are scheduled for remediation by the end of April. Directors requested quarterly reporting on remediation progress.' }],
     action: {
       id: 'a5',
@@ -205,6 +195,7 @@ const BLOCKS: MinuteBlock[] = [
   },
   {
     num: 9, title: 'Closing', timecode: '01:21:00',
+    brief: 'The meeting adjourned at 12:25 p.m.; next meeting June 26, 2024.',
     paragraphs: [{ text: 'There being no further business, the Chairman thanked directors and management and adjourned the meeting at 12:25 p.m. The next regular meeting is scheduled for June 26, 2024.' }],
   },
 ]
@@ -224,63 +215,17 @@ const PRESENT = [
 
 /* ------------------------------------------------------- hover controls */
 
-/** Plain-text copy of a block: title, every paragraph and the extracted action. */
-function blockText(block: MinuteBlock) {
+/** Plain-text copy of a block in the format it is shown in: title, the
+    paragraphs (or brief summary), the extracted action and, when detailed,
+    the motion / result lines. */
+function blockText(block: MinuteBlock, format: MinutesFormat = 'detailed') {
+  const brief = format === 'brief'
   return [
     `${block.num}. ${block.title}`,
-    ...block.paragraphs.map(p => p.text),
+    ...(brief ? [block.brief] : block.paragraphs.map(p => p.text)),
     ...(block.action ? [block.action.text] : []),
-    ...(block.trailing ?? []).map(p => p.text),
+    ...(brief ? [] : (block.trailing ?? []).map(p => p.text)),
   ].join('\n\n')
-}
-
-async function writeClipboard(text: string) {
-  try {
-    await navigator.clipboard.writeText(text)
-    return true
-  } catch {
-    /* clipboard API unavailable (insecure context / denied) — legacy fallback */
-    const ta = document.createElement('textarea')
-    ta.value = text
-    ta.setAttribute('readonly', '')
-    ta.style.position = 'fixed'
-    ta.style.opacity = '0'
-    document.body.appendChild(ta)
-    ta.select()
-    const ok = document.execCommand('copy')
-    document.body.removeChild(ta)
-    return ok
-  }
-}
-
-/** Copy icon button. The "Copy" tooltip only shows over this button; after a
-    successful copy the same tooltip reads "Copied ✓" for a moment. */
-function CopyButton({ text, label }: { text: string; label: string }) {
-  const [copied, setCopied] = useState(false)
-  const timer = useRef<number>(0)
-  useEffect(() => () => window.clearTimeout(timer.current), [])
-
-  const copy = async () => {
-    if (!(await writeClipboard(text))) return
-    setCopied(true)
-    window.clearTimeout(timer.current)
-    timer.current = window.setTimeout(() => setCopied(false), 1500)
-  }
-
-  return (
-    <>
-      <Tooltip label={copied ? 'Copied ✓' : 'Copy'} position="top">
-        <Button
-          variant="tertiary" intent="neutral" size="m"
-          iconOnly={<Icon svg={copySvg} />}
-          aria-label={label}
-          onClick={copy}
-        />
-      </Tooltip>
-      {/* keyboard / screen-reader confirmation (the tooltip is hover-only) */}
-      <span className={styles.srOnly} role="status">{copied ? 'Copied' : ''}</span>
-    </>
-  )
 }
 
 /** Timestamp that jumps to the transcript. */
@@ -299,26 +244,14 @@ function TimeButton({ timecode, onClick }: { timecode: string; onClick: () => vo
   )
 }
 
-/** Controls pinned inside the highlighted element's corner. Absolutely positioned
-    so showing them never changes layout; the fade lets long text slide under the
-    solid action area instead of colliding with it. */
-function HoverBar({ children, label, wide }: { children: ReactNode; label: string; wide?: boolean }) {
-  return (
-    <div className={[styles.hoverBar, wide ? styles.hoverBarWide : ''].join(' ')}>
-      <span className={styles.hoverFade} aria-hidden="true" />
-      <div className={styles.hoverActions} role="group" aria-label={label}>{children}</div>
-    </div>
-  )
-}
-
 /** A paragraph that highlights on hover / keyboard focus and shows its own
     timestamp + copy controls. */
-function ParaBox({ para, timecode, onTime }: { para: Paragraph; timecode: string; onTime: () => void }) {
+function ParaBox({ para, timecode, onTime }: { para: Paragraph; timecode: string; onTime: (timecode: string) => void }) {
   return (
     <div className={styles.paraBox}>
       <p className={[styles.paraText, para.muted ? styles.paraMuted : ''].join(' ')}>{para.text}</p>
       <HoverBar label="Paragraph actions">
-        <TimeButton timecode={timecode} onClick={onTime} />
+        <TimeButton timecode={timecode} onClick={() => onTime(timecode)} />
         <CopyButton text={para.text} label="Copy paragraph" />
       </HoverBar>
     </div>
@@ -332,6 +265,16 @@ export function MinutesTab() {
   const [bannerOpen, setBannerOpen] = useState(true)
   const [outlineExpanded, setOutlineExpanded] = useState(false)
 
+  /* Brief / detailed: the title's "Brief version" toggle sets every block; a
+     block's corner switch overrides just that block. Flipping the title toggle
+     clears the overrides so all blocks follow it again. */
+  const [format, setFormat] = useState<MinutesFormat>('detailed')
+  const [blockFormat, setBlockFormat] = useState<Record<number, MinutesFormat>>({})
+  const formatOf = (num: number) => blockFormat[num] ?? format
+  const changeFormat = (f: MinutesFormat) => { setFormat(f); setBlockFormat({}) }
+  const toggleBlockFormat = (num: number) =>
+    setBlockFormat(prev => ({ ...prev, [num]: formatOf(num) === 'brief' ? 'detailed' : 'brief' }))
+
   /* Ordered list of action items across all blocks — the set the banner steps
      through. */
   const actionItems = useMemo(
@@ -343,6 +286,45 @@ export function MinutesTab() {
   const [current, setCurrent] = useState(-1)
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const stickyRef = useRef<HTMLDivElement>(null)
+  const blockRefs = useRef<Record<number, HTMLElement | null>>({})
+
+  /* Outline = links into the content. Clicking scrolls the section's title to
+     just under the pinned "AI minutes" title + banner; the bold row follows
+     whichever section is at the top of the pane (scroll-spy). */
+  const [activeBlock, setActiveBlock] = useState(BLOCKS[0].num)
+  const stickyBottom = () => {
+    const scroller = scrollRef.current, sticky = stickyRef.current
+    if (!scroller || !sticky) return 0
+    const banner = sticky.nextElementSibling as HTMLElement | null
+    const last = banner && banner.dataset.sticky ? banner : sticky
+    return last.offsetTop + last.offsetHeight - scroller.scrollTop
+  }
+  const scrollToBlock = (num: number) => {
+    const scroller = scrollRef.current, el = blockRefs.current[num]
+    if (!scroller || !el) return
+    /* Pinned height once stuck: title row + banner strip (both stick at the top). */
+    const sticky = stickyRef.current
+    const banner = sticky?.nextElementSibling as HTMLElement | null
+    const pinned = (sticky?.offsetHeight ?? 0) + (banner?.dataset.sticky ? banner.offsetHeight : 0)
+    const top = scroller.scrollTop + el.getBoundingClientRect().top - scroller.getBoundingClientRect().top - pinned
+    const max = scroller.scrollHeight - scroller.clientHeight
+    setActiveBlock(num)
+    smoothScrollTo(scroller, Math.max(0, Math.min(top, max)))
+  }
+  const onMinutesScroll = () => {
+    const scroller = scrollRef.current
+    if (!scroller) return
+    const line = scroller.getBoundingClientRect().top + Math.max(0, stickyBottom()) + 1
+    let current = BLOCKS[0].num
+    for (const b of BLOCKS) {
+      const el = blockRefs.current[b.num]
+      if (el && el.getBoundingClientRect().top <= line) current = b.num
+    }
+    /* At the very bottom the last sections can't reach the top — pick the last. */
+    if (scroller.scrollTop >= scroller.scrollHeight - scroller.clientHeight - 1) current = BLOCKS[BLOCKS.length - 1].num
+    setActiveBlock(current)
+  }
   const itemRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const toastRef = useRef<ToastContainerHandle>(null)
 
@@ -353,7 +335,40 @@ export function MinutesTab() {
   const dismissAction = () =>
     toastRef.current?.add({ state: 'info', message: 'Identified action item dismissed' })
 
-  const showTranscript = () => setSegment('transcript')
+  /* "View in transcript": switch segment and tell the transcript which
+     timecode to centre on (nonce re-triggers the same timecode). */
+  const [transcriptFocus, setTranscriptFocus] = useState<{ time: string; nonce: number } | null>(null)
+  const showTranscript = (time: string) => {
+    setSegment('transcript')
+    setTranscriptFocus(f => ({ time, nonce: (f?.nonce ?? 0) + 1 }))
+  }
+
+  /* Delete flows (Figma "Delete AI minutes" / "Delete transcript"): confirm in
+     a modal, then the segment falls back to its empty state. Uploading a
+     transcript shows the skeleton for a moment before the list returns. */
+  const [aiDeleted, setAiDeleted] = useState(false)
+  const [transcriptStatus, setTranscriptStatus] = useState<TranscriptStatus>('ready')
+  const [confirm, setConfirm] = useState<'ai' | 'transcript' | null>(null)
+
+  const deleteAi = () => {
+    setConfirm(null)
+    setAiDeleted(true)
+    toastRef.current?.add({ state: 'success', message: 'AI minutes deleted' })
+  }
+  const deleteTranscript = () => {
+    setConfirm(null)
+    setTranscriptStatus('empty')
+    toastRef.current?.add({ state: 'success', message: 'Transcript deleted' })
+  }
+  const uploadTranscript = () => {
+    setTranscriptStatus('loading')
+    window.setTimeout(() => setTranscriptStatus('ready'), 1600)
+  }
+
+  const copyAll = async (text: string, message: string) => {
+    if (await writeClipboard(text)) toastRef.current?.add({ state: 'success', message })
+  }
+  const minutesText = () => BLOCKS.map(b => blockText(b, formatOf(b.num))).join('\n\n')
 
   /* Left-pane width. Pointer capture keeps the drag alive outside the 8px grab
      area; width is clamped on every move so it can never leave 460–640. */
@@ -391,13 +406,9 @@ export function MinutesTab() {
     const el = id ? itemRefs.current[id] : null
     const scroller = scrollRef.current
     if (!el || !scroller) return
-    /* Centre the card in the scroll pane, clamped to the scrollable range. rAF
-       tween instead of native `behavior:'smooth'` so it animates consistently
-       across browsers (some embedded engines silently drop programmatic smooth
-       scrolls). */
-    const target = el.offsetTop - scroller.clientHeight / 2 + el.offsetHeight / 2
-    const max = scroller.scrollHeight - scroller.clientHeight
-    smoothScrollTo(scroller, Math.max(0, Math.min(target, max)))
+    /* Centre the card in the scroll pane (rect-based: the card's offsetTop is
+       relative to its block, not the pane), clamped to the scrollable range. */
+    scrollIntoCentre(scroller, el)
   }
 
   const goPrev = () => {
@@ -424,20 +435,38 @@ export function MinutesTab() {
       {/* -------------------------------------------------- left: AI minutes */}
       <section className={styles.leftPane} style={{ '--pane-width': `${paneWidth}px` } as React.CSSProperties}>
         <div className={styles.segmentHeader}>
-          <SegmentControl items={SEGMENTS} value={segment} onChange={setSegment} size="m" className={styles.segment} />
+          <SegmentControl items={SEGMENTS} value={segment} onChange={setSegment} size="s" className={styles.segment} />
         </div>
 
-        {segment === 'ai-minutes' ? (
+        {segment === 'ai-minutes' && aiDeleted ? (
+          <div className={[styles.leftScroll, styles.emptyWrap].join(' ')}>
+            <EmptyState
+              illustration="document-ai"
+              title="AI minutes not available yet"
+              description="AI minutes for this meeting will be generated once the transcript becomes available"
+            />
+          </div>
+        ) : segment === 'ai-minutes' ? (
           <>
-            <div className={styles.leftScroll} ref={scrollRef}>
+            <div className={styles.leftScroll} ref={scrollRef} onScroll={onMinutesScroll}>
               <div className={styles.outline}>
                 <h2 className={styles.outlineHeading}>Outline</h2>
                 <ol className={styles.outlineList}>
-                  {outlineItems.map((label, i) => (
-                    <li key={i} className={styles.outlineRow}>
-                      <span className={styles.outlineNum}>{i + 1}.</span> {label}
-                    </li>
-                  ))}
+                  {outlineItems.map((label, i) => {
+                    const num = BLOCKS[i].num
+                    return (
+                      <li key={num}>
+                        <button
+                          type="button"
+                          className={[styles.outlineRow, activeBlock === num ? styles.outlineRowActive : ''].join(' ')}
+                          aria-current={activeBlock === num ? 'location' : undefined}
+                          onClick={() => scrollToBlock(num)}
+                        >
+                          <span className={styles.outlineNum}>{num}.</span> {label}
+                        </button>
+                      </li>
+                    )
+                  })}
                 </ol>
                 <button
                   type="button"
@@ -451,38 +480,51 @@ export function MinutesTab() {
                 </button>
               </div>
 
+              {/* Pinned section title with the brief-version switch (Figma 32251-170776). */}
+              <div className={styles.aiTitleRow} ref={stickyRef}>
+                <h2 className={styles.aiTitle}>AI minutes</h2>
+                <Toggle
+                  className={styles.briefToggle}
+                  label="Brief version"
+                  checked={format === 'brief'}
+                  onChange={e => changeFormat(e.target.checked ? 'brief' : 'detailed')}
+                />
+              </div>
+
               {bannerOpen && actionItems.length > 0 && (
-                <div className={styles.banner} role="region" aria-label="Action items navigation">
-                  <span className={styles.bannerLabel}>
-                    {actionItems.length} action {actionItems.length === 1 ? 'item' : 'items'} found
-                  </span>
-                  <div className={styles.bannerActions}>
-                    <Tooltip label="Previous" position="top">
-                      <Button
-                        variant="tertiary" intent="success" size="s"
-                        iconOnly={<Icon svg={angleUpSvg} />}
-                        disabled={prevDisabled}
-                        onClick={goPrev}
-                        aria-label="Previous action item"
-                      />
-                    </Tooltip>
-                    <Tooltip label="Next" position="top">
-                      <Button
-                        variant="tertiary" intent="success" size="s"
-                        iconOnly={<Icon svg={angleDownSvg} />}
-                        disabled={nextDisabled}
-                        onClick={goNext}
-                        aria-label="Next action item"
-                      />
-                    </Tooltip>
-                    <Tooltip label="Dismiss" position="top">
-                      <Button
-                        variant="tertiary" intent="success" size="s"
-                        iconOnly={<Icon svg={closeSvg} />}
-                        onClick={() => setBannerOpen(false)}
-                        aria-label="Dismiss action items banner"
-                      />
-                    </Tooltip>
+                <div className={styles.bannerSticky} data-sticky="true">
+                  <div className={styles.banner} role="region" aria-label="Action items navigation">
+                    <span className={styles.bannerLabel}>
+                      {actionItems.length} action {actionItems.length === 1 ? 'item' : 'items'} found
+                    </span>
+                    <div className={styles.bannerActions}>
+                      <Tooltip label="Previous" position="top">
+                        <Button
+                          variant="tertiary" intent="success" size="s"
+                          iconOnly={<Icon svg={angleUpSvg} />}
+                          disabled={prevDisabled}
+                          onClick={goPrev}
+                          aria-label="Previous action item"
+                        />
+                      </Tooltip>
+                      <Tooltip label="Next" position="top">
+                        <Button
+                          variant="tertiary" intent="success" size="s"
+                          iconOnly={<Icon svg={angleDownSvg} />}
+                          disabled={nextDisabled}
+                          onClick={goNext}
+                          aria-label="Next action item"
+                        />
+                      </Tooltip>
+                      <Tooltip label="Dismiss" position="top">
+                        <Button
+                          variant="tertiary" intent="success" size="s"
+                          iconOnly={<Icon svg={closeSvg} />}
+                          onClick={() => setBannerOpen(false)}
+                          aria-label="Dismiss action items banner"
+                        />
+                      </Tooltip>
+                    </div>
                   </div>
                 </div>
               )}
@@ -492,18 +534,30 @@ export function MinutesTab() {
                   const idx = block.action
                     ? actionItems.findIndex(a => a.id === block.action!.id)
                     : -1
+                  const brief = formatOf(block.num) === 'brief'
+                  const switchLabel = brief ? 'Show detailed version' : 'Show brief version'
                   return (
-                    <article key={block.num} className={styles.block}>
+                    <article key={block.num} ref={el => { blockRefs.current[block.num] = el }} className={styles.block}>
                       <header className={styles.blockHead}>
                         <h3 className={styles.blockTitle}>{block.num}. {block.title}</h3>
                         <span className={styles.blockTime}>{block.timecode}</span>
                       </header>
 
-                      <HoverBar label={`Section ${block.num} actions`} wide>
-                        <CopyButton text={blockText(block)} label={`Copy section ${block.num}. ${block.title}`} />
+                      <HoverBar label={`Section ${block.num} actions`} placement="corner">
+                        <Tooltip label={switchLabel} position="top">
+                          <Button
+                            variant="tertiary" intent="neutral" size="m"
+                            iconOnly={<Icon svg={brief ? detailedSvg : briefSvg} />}
+                            onClick={() => toggleBlockFormat(block.num)}
+                            aria-label={`${switchLabel} of ${block.num}. ${block.title}`}
+                          />
+                        </Tooltip>
+                        <CopyButton text={blockText(block, formatOf(block.num))} label={`Copy section ${block.num}. ${block.title}`} />
                       </HoverBar>
 
-                      {block.paragraphs.map((p, i) => (
+                      {brief ? (
+                        <ParaBox para={{ text: block.brief }} timecode={block.timecode} onTime={showTranscript} />
+                      ) : block.paragraphs.map((p, i) => (
                         <ParaBox key={i} para={p} timecode={block.timecode} onTime={showTranscript} />
                       ))}
 
@@ -544,12 +598,12 @@ export function MinutesTab() {
                             >
                               <span className={styles.btnLabel}>Dismiss</span>
                             </Button>
-                            <TimeButton timecode={block.timecode} onClick={showTranscript} />
+                            <TimeButton timecode={block.timecode} onClick={() => showTranscript(block.timecode)} />
                           </HoverBar>
                         </div>
                       )}
 
-                      {block.trailing?.map((p, i) => (
+                      {!brief && block.trailing?.map((p, i) => (
                         <ParaBox key={i} para={p} timecode={block.timecode} onTime={showTranscript} />
                       ))}
                     </article>
@@ -559,26 +613,43 @@ export function MinutesTab() {
             </div>
 
             <footer className={styles.leftFooter}>
-              <Button variant="secondary" intent="neutral" size="m" iconLeft={<Icon svg={copySvg} />}>
-                Copy full AI minutes
-              </Button>
+              <div className={styles.footerGroup}>
+                <Button
+                  variant="secondary" intent="neutral" size="m"
+                  onClick={() => copyAll(minutesText(), 'AI minutes copied')}
+                >
+                  Copy minutes
+                </Button>
+                <Button
+                  variant="link" external size="m"
+                  onClick={() => toastRef.current?.add({ state: 'info', message: 'Thanks! The feedback form opens here' })}
+                >
+                  Give feedback
+                </Button>
+              </div>
               <Tooltip label="Delete AI minutes" position="top">
                 <Button
-                  variant="tertiary" intent="danger" size="m"
+                  variant="secondary" intent="danger" size="m"
                   iconOnly={<Icon svg={trashSvg} />}
                   aria-label="Delete AI minutes"
+                  onClick={() => setConfirm('ai')}
                 />
               </Tooltip>
             </footer>
           </>
-        ) : (
+        ) : segment === 'agenda' ? (
           <div className={styles.leftScroll}>
-            <EmptyState
-              illustration="clipboard"
-              title={segment === 'agenda' ? 'Agenda' : 'Transcript'}
-              description="Out of scope for this prototype — the AI minutes tab holds the action-item navigation."
-            />
+            <MinutesAgenda onNotify={message => toastRef.current?.add({ state: 'info', message })} />
           </div>
+        ) : (
+          <TranscriptPane
+            transcripts={TRANSCRIPTS}
+            status={transcriptStatus}
+            focus={transcriptFocus}
+            onCopyAll={() => copyAll(transcriptText(TRANSCRIPTS), 'Transcript copied')}
+            onDelete={() => setConfirm('transcript')}
+            onUpload={uploadTranscript}
+          />
         )}
 
         <div
@@ -644,6 +715,34 @@ export function MinutesTab() {
           </div>
         </div>
       </section>
+
+      <Modal
+        open={confirm === 'ai'}
+        onClose={() => setConfirm(null)}
+        title="Delete AI Minutes"
+        footer={
+          <div className={styles.modalFooter}>
+            <Button variant="secondary" intent="neutral" size="m" onClick={() => setConfirm(null)}>Cancel</Button>
+            <Button variant="primary" intent="danger" size="m" onClick={deleteAi}>Delete</Button>
+          </div>
+        }
+      >
+        The AI minutes will be deleted permanently and can’t be recovered. Delete AI minutes?
+      </Modal>
+
+      <Modal
+        open={confirm === 'transcript'}
+        onClose={() => setConfirm(null)}
+        title="Delete transcript"
+        footer={
+          <div className={styles.modalFooter}>
+            <Button variant="secondary" intent="neutral" size="m" onClick={() => setConfirm(null)}>Cancel</Button>
+            <Button variant="primary" intent="danger" size="m" onClick={deleteTranscript}>Delete</Button>
+          </div>
+        }
+      >
+        This transcript will be permanently deleted from Ideals Board, but will still be available in Zoom. Delete transcript?
+      </Modal>
 
       <ToastContainer ref={toastRef} />
     </div>

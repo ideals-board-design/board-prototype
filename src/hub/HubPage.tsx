@@ -116,6 +116,7 @@ const MEETING_FLOWS: { title: string; flows: { id: string; name: string; href: s
     title: 'Test versions',
     flows: [
       { id: 'test-bb-page-nav', name: 'Board book page navigation', href: '/board-book-page-nav.html' },
+      { id: 'test-minutes-ai', name: 'Minutes AI', href: '/minutes-ai.html' },
     ],
   },
 ]
