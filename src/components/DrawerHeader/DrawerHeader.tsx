@@ -18,8 +18,6 @@ export interface DrawerHeaderProps {
   onTitleChange?: (value: string) => void
   /** View-only title — renders plain text (not an editable field). */
   readOnly?:      boolean
-  /** Placeholder for the editable title while it is empty. */
-  placeholder?:   string
   type?:          string       // shows the "+ type" icon+text meta when provided
   badge?:         ReactNode    // status badge slot (right of type)
   className?:     string
@@ -30,7 +28,6 @@ export function DrawerHeader({
   onClose,
   onTitleChange,
   readOnly = false,
-  placeholder,
   type,
   badge,
   className,
@@ -57,7 +54,6 @@ export function DrawerHeader({
             className={styles.titleField}
             aria-label="Drawer title"
             spellCheck={false}
-            placeholder={placeholder}
             {...titleProps}
           />
         )}

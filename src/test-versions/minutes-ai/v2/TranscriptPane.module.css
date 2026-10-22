@@ -1,0 +1,143 @@
+/* TranscriptPane — Minutes → Transcript (Figma 12970-220260). The scroll area
+   and footer reuse MinutesTab.module.css; this file holds what is specific to
+   the transcript list. */
+
+.searchRow {
+  flex-shrink: 0;
+  padding: var(--space-24) var(--space-24) var(--space-8);
+}
+
+.scroll {
+  padding-top: var(--space-4);
+}
+
+.emptyWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* groups ------------------------------------------------------------------ */
+
+.group {
+  display: flex;
+  flex-direction: column;
+}
+
+.group + .group {
+  margin-top: var(--space-12);
+}
+
+.groupTitle {
+  margin: var(--space-12) 0 var(--space-4);
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+/* entry ------------------------------------------------------------------- */
+
+/* Same box model as the AI-minutes paragraphs: a 12px inset with negative side
+   margins, so the hover tint reaches the pane edge while the text stays put. */
+.entry {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: 0 calc(-1 * var(--space-12));
+  padding: var(--space-12);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: background-color var(--dur-snap) var(--ease-out);
+}
+
+.entry:is(:hover, :focus-within) {
+  background: var(--color-bg-hover);
+}
+
+/* "View in transcript" landed here: tint in, hold, fade back out — the same DS
+   pulse window as the action-item highlight. */
+.entryPulse {
+  animation: entryPulse var(--dur-slowest) var(--ease-in-out);
+}
+
+@keyframes entryPulse {
+  0%   { background-color: transparent; }
+  25%  { background-color: var(--color-bg-hover); }
+  75%  { background-color: var(--color-bg-hover); }
+  100% { background-color: transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .entryPulse {
+    animation: none;
+    background: var(--color-bg-hover);
+  }
+}
+
+.entryHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-16);
+}
+
+.speaker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.speakerName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.time {
+  flex-shrink: 0;
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.text {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* search hits: every match light yellow, the current one full yellow */
+.hit {
+  padding: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-highlight-bg);
+  color: inherit;
+}
+
+.hitCurrent {
+  background: var(--color-highlight);
+}
+
+/* loading ----------------------------------------------------------------- */
+
+.skeletonEntry {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-12) 0;
+}
+
+.skeletonHead {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.skeletonGrow {
+  flex: 1;
+}

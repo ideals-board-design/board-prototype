@@ -6,7 +6,8 @@
      • New (Figma 31749-410813) — no status yet: editable title, Proposed by /
        Seconded by pickers and the members' RSVP. Footer: only "Save as draft".
      • Draft (Figma 18636-58889) — saved; status "Draft". Footer: "All for" ·
-       "Start vote" (enabled once both people are chosen) · delete.
+       "Start vote" (available right away; proposer / seconder are optional) ·
+       delete.
      • In progress — vote progress bar (for / against / abstain + "N/10"), a
        per-member Vote dropdown the secretary records votes with. Footer:
        "End vote" (asks first while votes are still pending) · delete.
@@ -232,7 +233,7 @@ export function MotionDrawer({ motion, isNew, onChange, onSave, onDelete, onCopy
   const m = motion
   const set = (patch: Partial<Motion>) => onChange({ ...m, ...patch })
   const voting = m.status !== 'draft'
-  const ready = !!m.proposerId && !!m.seconderId && m.title.trim() !== ''
+  const ready = m.title.trim() !== ''
   const pending = tally(m).pending
 
   const startVote = () => set({ status: 'in-progress', votes: allVotes('pending') })
@@ -294,7 +295,6 @@ export function MotionDrawer({ motion, isNew, onChange, onSave, onDelete, onCopy
         header={
           <DrawerHeader
             title={m.title}
-            placeholder="Add motion title"
             onTitleChange={title => set({ title })}
             readOnly={voting}
             onClose={onClose}

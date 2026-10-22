@@ -1,0 +1,262 @@
+/* BoardBookDocNavViewer — Version 4 concept: Version 2 with tools / view controls swapped and document stepping in the page pill. Floating surfaces use --elevation-100 (shadow; + ring in dark). */
+
+.viewer {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  background: var(--color-bg-page);
+  position: relative;
+}
+
+.fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+}
+
+/* ── Agenda (TOC) panel ───────────────────────────────────────────────────── */
+.toc {
+  flex-shrink: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+}
+
+.resizer {
+  width: 1px;
+  flex-shrink: 0;
+  background: var(--color-border);
+  cursor: col-resize;
+  position: relative;
+}
+.resizer::after {
+  content: '';
+  position: absolute;
+  inset: 0 calc(-1 * var(--space-4));
+}
+.resizer:hover { background: var(--color-brand); }
+
+/* ── Main column ──────────────────────────────────────────────────────────── */
+.main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Minimal top bar: agenda toggle + document dropdown in the left corner,
+   document actions pushed to the right. */
+.topBar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+  padding: var(--space-8) var(--space-16);
+  background: var(--color-bg-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.topBarActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.docSelectWrap {
+  position: relative;
+  display: flex;
+  flex: 0 1 272px;
+  min-width: 0;
+}
+
+/* Styled as a DS Dropdown S trigger (outline field). */
+.docSelect {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-6) var(--space-8) var(--space-6) var(--space-12);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  cursor: pointer;
+}
+.docSelect:hover { background: var(--color-bg-hover); }
+
+.docSelectIcon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+.docSelectIcon svg { width: 100%; height: 100%; }
+
+.docSelectName {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-size: var(--text-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.docSelectChevron {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+.docSelectChevron svg { width: 100%; height: 100%; }
+
+.popoverScrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-dropdown);
+}
+
+/* Contents menu opens under the dropdown, left-aligned to it. */
+.navPopover {
+  position: absolute;
+  top: calc(100% + var(--space-4));
+  left: 0;
+  width: 320px;
+  max-height: 380px;
+  overflow-y: auto;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
+  z-index: var(--z-dropdown);
+}
+
+/* ── Canvas ───────────────────────────────────────────────────────────────── */
+.canvasArea {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Side gutters clear the floating cards. */
+.canvasScroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  padding: var(--space-24) var(--space-72) var(--space-72);
+}
+
+.pageCommenting { cursor: crosshair; }
+.pageAnnotating { cursor: cell; }
+
+/* ── Floating controls ────────────────────────────────────────────────────────
+   Always visible — hiding them until hover made the tools undiscoverable. */
+.floating {
+  position: absolute;
+  z-index: var(--z-dropdown);
+}
+
+/* Shared card look for palette + zoom cards. */
+.palette,
+.zoomCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
+}
+
+.palette {
+  top: var(--space-16);
+  right: var(--space-16);
+}
+
+.viewControls {
+  position: absolute;
+  top: var(--space-16);
+  left: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  z-index: var(--z-dropdown);
+}
+
+/* Cards inside .viewControls are positioned by it, not absolutely. */
+.viewControls .floating { position: static; }
+
+.zoomValue {
+  padding: var(--space-4) 0;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Page pill — bottom-centre: ⏮ | ‹ [N] / total › | ⏭ */
+.pageCounter {
+  left: 50%;
+  bottom: var(--space-16);
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
+}
+
+.pageStep {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.pillDivider {
+  align-self: stretch;
+  width: 1px;
+  margin-block: var(--space-4);
+  background: var(--color-border);
+}
+
+.pageInput {
+  width: 33px;
+  box-sizing: border-box;
+  padding: var(--space-6) var(--space-4);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+  color: var(--color-text-primary);
+  text-align: center;
+  font-size: var(--text-sm);
+  font-family: var(--font-family);
+  outline: none;
+}
+.pageInput:focus { box-shadow: inset 0 0 0 1px var(--color-brand); }
+
+.pageTotal {
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+/* ── Narrow: gutters tighten. ─────────────────────────────────── */
+@media (max-width: 1023px) {
+  .canvasScroll { padding-inline: var(--space-16); }
+}
