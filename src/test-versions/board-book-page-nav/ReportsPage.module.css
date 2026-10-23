@@ -107,7 +107,7 @@
 }
 
 /* Narrow: navigation becomes a row of report chips above the content. */
-@media (max-width: 1023px) {
+@media screen and (max-width: 1023px) {
   .page { flex-direction: column; }
   .nav {
     width: auto;
@@ -122,4 +122,14 @@
   .navTitle,
   .sections { display: none; }
   .group { flex-shrink: 0; }
+}
+
+/* Print / "Save as PDF": drop the side navigation and the inner scroll box so
+   all four reports flow across pages; each report starts on a new page. */
+@media print {
+  .page { display: block; background: var(--color-bg-surface); }
+  .nav { display: none; }
+  .content { overflow: visible; }
+  .report:first-child { min-height: 0; }
+  .report + .report { border-top: none; break-before: page; }
 }

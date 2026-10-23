@@ -1,71 +1,108 @@
 {
   "title": "Board Book Navigation — UX Audit",
-  "date": "2026-10-19",
+  "date": "2026-10-23",
   "method": "Board UX audit (manual) · 5 lenses · Board personas (Margaret, David, Patricia, Robert) · grounded in Sauro's Big 4, Laws of UX, Shneiderman's 8 Golden Rules, Nielsen's 5 quality components",
-  "note": "There is no board-specific ux-audit skill in this session; the FVDR ux-audit (Chris, Jim… and VDR data) does not apply to Board. This audit follows the same 5-lens structure with Board personas. Scores are expert judgement on the prototype plus the simulated task success from the usability study — not measured analytics. No Clarity or NPS data was available.",
+  "note": "There is no board-specific ux-audit skill in this session; the FVDR ux-audit (Chris, Jim… and VDR data) does not apply to Board. This audit follows the same 5-lens structure with Board personas. Scores are expert judgement on the prototype plus the simulated task success from the usability study — not measured analytics. No Clarity or NPS data was available. Re-run 2026-10-22: Version 2 was replaced by the former Version 4 and re-scored; V1 / V3 scores are unchanged. Re-run 2026-10-23: Version 3 lost its reading-progress bar and was re-scored as built; both V2 and V3 now reflect their current state. Product decision 2026-10-23: agenda open by default and one phone tools sheet in every version — neither counts as a V2-only strength.",
   "intent": "Readers must (1) know which document and page they are on, (2) read a document continuously, (3) move to the next document — possible only through the viewer's navigation panels because continuous scroll stops at each document's end — and (4) jump to an agenda item's documents, annotate and search.",
   "scale": "1 = poor · 3 = acceptable with friction · 5 = excellent",
   "lenses": [
     {
-      "id": "intent", "name": "Intent alignment",
+      "id": "intent",
+      "name": "Intent alignment",
       "question": "Does the layout serve the reader's real job under the one-document-at-a-time constraint?",
-      "scores": { "v1": 3, "v2": 3, "v3": 4 },
+      "scores": {
+        "v1": 3,
+        "v2": 4,
+        "v3": 4
+      },
       "evidence": {
         "v1": "Optimised for a PDF-editor mental model (top toolbar); the 'continue' action sits far from where reading ends.",
-        "v2": "Serves agenda-driven reading well (agenda open), but splits navigation across four zones.",
-        "v3": "Built around reading: document first, one bar for every reading action, progress for 'how much is left'."
+        "v2": "Same reading flow as V3 (one bottom pill for page / document), with zoom and annotation tools split into two more floating cards.",
+        "v3": "Built around reading: document first, one bar for every reading action (page, document, zoom, annotations)."
       }
     },
     {
-      "id": "findability", "name": "Findability",
+      "id": "findability",
+      "name": "Findability",
       "question": "Can each persona find the next-document action, the agenda and the page jump without help?",
-      "scores": { "v1": 3, "v2": 4, "v3": 4 },
+      "scores": {
+        "v1": 3,
+        "v2": 4,
+        "v3": 4
+      },
       "evidence": {
         "v1": "Agenda behind an unlabeled icon; ⌄ / ⌃ read as dropdown/collapse (Jakob's law — page turns are ‹ ›).",
-        "v2": "Agenda already open; big round ‹ › beside the sheet are obvious; page counter only at the bottom.",
-        "v3": "‹ › and the page field in one predictable place; agenda still hidden by default."
+        "v2": "Agenda open by default; ‹ › and |< >| in one predictable pill — but controls spread over three zones and all are icon-only.",
+        "v3": "‹ › |< >| and the page field in one predictable bar; agenda open by default (product decision). Icon-only controls."
       }
     },
     {
-      "id": "load", "name": "Cognitive load",
+      "id": "load",
+      "name": "Cognitive load",
       "question": "How many places must the reader scan, and how much must they remember?",
-      "scores": { "v1": 3, "v2": 2, "v3": 4 },
+      "scores": {
+        "v1": 3,
+        "v2": 3,
+        "v3": 4
+      },
       "evidence": {
         "v1": "Two control zones (top toolbar + left card); icon-only tools.",
-        "v2": "Four control zones (palette, zoom cards, side arrows, bottom counter) — Hick's law: more options to scan per decision.",
+        "v2": "Three control zones on desktop (view card, palette, bottom pill) instead of four; one button on phones. Still more to scan than V3's single bar.",
         "v3": "One bottom bar + quiet top bar; Shneiderman 'reduce short-term memory load' is met best."
       }
     },
     {
-      "id": "interaction", "name": "Interaction quality",
+      "id": "interaction",
+      "name": "Interaction quality",
       "question": "Are controls reachable, consistent and giving feedback (desktop, iPad, phone)?",
-      "scores": { "v1": 3, "v2": 3, "v3": 4 },
+      "scores": {
+        "v1": 3,
+        "v2": 4,
+        "v3": 4
+      },
       "evidence": {
         "v1": "Fitts's law: the next control is at the top while the pointer/eye is at the bottom; mobile tools in ⋯.",
-        "v2": "Arrows within reach, but cards cover the sheet on tablet; zoom '100%' while fitted.",
+        "v2": "Pill in the thumb zone; 'Fit' shown when fitted; pressed controls keep the hover fill. Tablet portrait still shows the two cards; pill buttons are 28px.",
         "v3": "Bottom bar in the thumb zone on iPad; consistent ‹ ›; no feedback that 'next' changes document."
       }
     },
     {
-      "id": "outcome", "name": "Outcome quality",
+      "id": "outcome",
+      "name": "Outcome quality",
       "question": "Do readers complete the tasks? (Sauro's Big 4: completion, time, errors, satisfaction — from the simulated study)",
-      "scores": { "v1": 4, "v2": 4, "v3": 5 },
+      "scores": {
+        "v1": 4,
+        "v2": 5,
+        "v3": 5
+      },
       "evidence": {
         "v1": "Simulated success 77%, SEQ 4.5 / 7; Patricia fails US03 (thinks the pack ended).",
-        "v2": "Simulated success 85%, SEQ 4.9 / 7.",
-        "v3": "Simulated success 94%, SEQ 5.1 / 7; no failures."
+        "v2": "Simulated success 92%, SEQ 5.1 / 7; no failures.",
+        "v3": "Simulated success 92%, SEQ 4.9 / 7; no failures."
       }
     }
   ],
   "verdicts": {
-    "v1": { "label": "Not recommended", "type": "danger", "text": "Familiar for power users, but the top-only navigation fails low-proficiency and touch readers at document boundaries." },
-    "v2": { "label": "Keep one idea", "type": "warning", "text": "Adopt the open agenda as an option; drop the scattered floating controls." },
-    "v3": { "label": "Recommended — validate", "type": "positive", "text": "Best base. Ship to real-user validation after R1 (labelled 'Next document' in the bar — ‹‹ / ›› document buttons with named tooltips added 2026-10-20) and R3 (local + global page position)." }
+    "v1": {
+      "label": "Not recommended",
+      "type": "danger",
+      "text": "Familiar for power users, but the top-only navigation fails low-proficiency and touch readers at document boundaries."
+    },
+    "v2": {
+      "label": "Close second",
+      "type": "warning",
+      "text": "Same bottom-bar navigation as V3; with the agenda and the phone sheet now shared by every version, what remains is three control zones on desktop versus V3's one."
+    },
+    "v3": {
+      "label": "Recommended — validate",
+      "type": "positive",
+      "text": "One control zone and a quiet top bar — the lowest cognitive load, with the agenda open by default and the shared phone sheet. Validate with R1 (labelled 'Next document') and R3 (local + global position)."
+    }
   },
   "risks": [
-    "Document end stays silent — the bar must say 'Next document: <name>' on a document's last page (study R1). V3 now has ›› 'Next document: <name>' (tooltip only, icon button).",
-    "Global 'N / 7' without a local page count misleads about document length (study R3).",
-    "Icon-only controls exclude low-proficiency and touch users (study R4).",
-    "Agenda hidden by default in V3 — consider opening it on wide screens (study R5)."
+    "Document end stays silent — the bar must say 'Next document: <name>' on a document's last page (study R1). V2 and V3 have >| 'Next document: <name>' (tooltip only, icon button).",
+    "No variant shows how much is left since the progress bar was removed; global 'N / 7' without a local page count misleads about document length (study R3).",
+    "Icon-only controls exclude low-proficiency and touch users (study R4) — incl. V2's 6-dot phone trigger and V3's ⋯.",
+    "Agenda open by default and the shared phone sheet are product decisions (2026-10-23) not yet built into the V1 / V3 prototypes — implement before testing with real directors."
   ]
 }

@@ -53,3 +53,24 @@
   display: flex !important;
   flex-direction: column !important;
 }
+
+/* Print (Reports → PDF): only the active tab's content prints — no side
+   navigation, meeting header, version tabs or the Agentation overlay. */
+/* A4 landscape keeps the print width above 1024px, so reports print in their
+   desktop layout (side-by-side podium, full tables). */
+@page { size: A4 landscape; margin: 10mm; }
+
+@media print {
+  .shell {
+    display: block;
+    height: auto;
+    overflow: visible;
+    print-color-adjust: exact;
+  }
+  .shell > :not(.main) { display: none; }
+  .main { overflow: visible; }
+  .pageHeader,
+  .tabsRoot { display: none; }
+  .content { display: block; }
+  :global([data-agentation-root]) { display: none !important; }
+}

@@ -138,18 +138,6 @@
   z-index: var(--z-dropdown);
 }
 
-/* ── Reading progress ─────────────────────────────────────────────────────── */
-.progress {
-  flex-shrink: 0;
-  height: 3px;
-  background: var(--color-border);
-}
-
-.progressFill {
-  height: 100%;
-  background: var(--color-brand);
-}
-
 /* ── Canvas ───────────────────────────────────────────────────────────────── */
 .canvasArea {
   flex: 1;

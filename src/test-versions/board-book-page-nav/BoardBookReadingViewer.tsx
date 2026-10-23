@@ -4,10 +4,13 @@
    way:
      • top bar — table of content toggle · document dropdown (as in V2) |
        search · download · Ask AI
-     • reading progress — a thin bar along the top of the canvas
      • floating control bar (bottom) — prev doc · prev · page / total · next ·
        next doc | zoom out ·
        % · zoom in | fit width · focus mode | highlight · comment. Always visible.
+       Phone (<768px): zoom, fit, focus and annotations fold into a dots
+       "Document tools" button at the end of the bar, which opens the same
+       bottom sheet as Version 2 (DocumentToolsSheet) — Zoom − % +, Fit to
+       width, Fit to page, Actual size, Fullscreen | Highlight, Add comment.
        Previous / next document (‹‹ ››) flank the page arrows
      • agenda (table of contents) panel on the left — the same resizable
        panel as V1 / V2, closed by default so the document has the room
@@ -18,11 +21,12 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '../../components/Button/Button'
 import { Tooltip } from '../../components/Tooltip/Tooltip'
-import { ActionMenu } from '../../meeting/ActionMenu'
 import { actions } from '../../icons/actions'
 import { arrows } from '../../icons/arrows'
 import { communication } from '../../icons/communication'
 import { fileFormat } from '../../icons/fileFormat'
+import { custom } from '../../icons/custom'
+import { functional } from '../../icons/functional'
 import {
   MOCK_BOARD_BOOK,
   docAtPage,
@@ -35,6 +39,8 @@ import {
 import { AiPanel, CompactNav, PdfPage, SearchPanel, TocPanel } from './BoardBookPageNavViewer'
 import { PageStack, pageAtScroll, scrollToPage, type CommentPin } from './PageStack'
 import { useTocAutoCollapse } from './useTocAutoCollapse'
+import { DocumentToolsSheet } from './DocumentToolsSheet'
+import { Q4_PAGE_RATIO } from './q4BoardPack'
 import styles from './BoardBookReadingViewer.module.css'
 
 const icon = (set: { name: string; svg: string }[], name: string) =>
@@ -44,8 +50,9 @@ const tocOpenSvg    = icon(actions, 'sidebar-opened')
 const tocClosedSvg  = icon(actions, 'sidebar-closed')
 const prevSvg       = icon(arrows, 'angle-left-b')
 const nextSvg       = icon(arrows, 'angle-right-b')
-const prevDocSvg    = icon(arrows, 'angle-double-left-fill')
-const nextDocSvg    = icon(arrows, 'angle-double-right-fill')
+/* Document stepping = skip icons (|< and >|), distinct from the page chevrons. */
+const prevDocSvg    = icon(custom, 'skip-previous')
+const nextDocSvg    = icon(custom, 'skip-next')
 const zoomInSvg     = icon(actions, 'zoom-in')
 const zoomOutSvg    = icon(actions, 'zoom-out')
 const fitWidthSvg   = icon(actions, 'with-width')
@@ -55,6 +62,9 @@ const searchSvg     = icon(actions, 'search')
 const downloadSvg   = icon(actions, 'download-alt')
 const aiSvg         = icon(actions, 'sparkles')
 const focusSvg      = icon(arrows, 'arrow-resize-diagonal')
+const fitPageSvg    = icon(actions, 'fit-page')
+const actualSizeSvg = icon(arrows, 'arrow-resize-back-diagonal')
+const toolsSvg      = icon(functional, 'drag')
 const chevronUpSvg  = icon(arrows, 'angle-up-fill')
 const chevronDownSvg = icon(arrows, 'angle-down-fill')
 
@@ -92,7 +102,7 @@ const PAGE_WIDTH = 635
 const TOC_MIN = 460
 const TOC_MAX = 640
 
-type Fit = 'none' | 'width'
+type Fit = 'none' | 'width' | 'page'
 type Tool = 'none' | 'highlight' | 'comment'
 type RightPanel = null | 'search' | 'ai'
 
@@ -115,7 +125,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   const [tocWidth, setTocWidth] = useState(TOC_MIN)
   const [navPopoverOpen, setNavPopoverOpen] = useState(false)
   const [focus, setFocus] = useState(false)
-  const [progress, setProgress] = useState(0)
+  const [toolsOpen, setToolsOpen] = useState(false)
   /* Small desktop: a side panel collapses the agenda so the page stays readable. */
   const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen)
   /* Scroll box content size — drives fit width / fit page. */
@@ -151,10 +161,16 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   const nextDoc = current ? book.flatDocs[current.index + 1] : undefined
 
   /* ── Sheet width: fixed zoom, fit width or fit page (from the box size). ── */
+  const [ratioW, ratioH] = Q4_PAGE_RATIO.split('/').map(Number)
   const sheetWidth =
     fit === 'width' ? box.w
+      : fit === 'page' ? Math.min(box.w, box.h * (ratioW / ratioH))
       : Math.min(box.w, PAGE_WIDTH) * (zoom / 100)
-  const zoomPct = Math.round((sheetWidth / PAGE_WIDTH) * 100) || zoom
+  /* % is relative to the page's 100% width — 635px, or the screen width when
+     that is narrower (phones) — so 100% never reads as "54%" on a phone and
+     zoom steps always move in the expected direction. */
+  const baseWidth = Math.min(box.w, PAGE_WIDTH) || PAGE_WIDTH
+  const zoomPct = Math.round((sheetWidth / baseWidth) * 100) || zoom
 
   useLayoutEffect(() => {
     const el = scrollRef.current
@@ -190,32 +206,10 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
     window.addEventListener('pointerup', onUp)
   }
 
-  /* Reading progress across the whole board book: documents before the current
-     one + how far the reader has scrolled through it (only one document is on
-     screen at a time). */
-  const updateProgress = useCallback((el: HTMLElement, p = pageRef.current) => {
-    const fd = docAtPage(book, p)
-    if (!fd) return
-    const max = el.scrollHeight - el.clientHeight
-    const within = max > 0 ? el.scrollTop / max : 1
-    setProgress((fd.startPage - 1 + within * fd.doc.pages) / book.totalPages)
-  }, [book])
-  /* Recompute when the content height changes (pages loading, zoom, document
-     switch) — not only on scroll — so it never sticks at a stale value. */
-  useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
-    updateProgress(el)
-    const ro = new ResizeObserver(() => updateProgress(el))
-    if (el.firstElementChild) ro.observe(el.firstElementChild)
-    return () => ro.disconnect()
-  }, [sheetWidth, focus, page, updateProgress])
-
   const onCanvasScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const el = e.currentTarget
     const p = pageAtScroll(el)
     if (p && p !== pageRef.current) setPage(p)
-    updateProgress(el, p ?? pageRef.current)
   }
 
   /* ── Keyboard: ← / → pages, Esc leaves focus mode. ─────────────────────── */
@@ -334,18 +328,6 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
           </div>
         )}
 
-        {/* ── Reading progress ──────────────────────────────────────────── */}
-        <div
-          className={styles.progress}
-          role="progressbar"
-          aria-label="Reading progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={Math.round(progress * 100)}
-        >
-          <div className={styles.progressFill} style={{ width: `${progress * 100}%` }} />
-        </div>
-
         {/* ── Canvas ────────────────────────────────────────────────────── */}
         <div className={styles.canvasArea}>
           <div ref={scrollRef} className={styles.canvasScroll} onScroll={onCanvasScroll}>
@@ -413,19 +395,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 menu that opens upward, so the bar (with page and document
                 navigation) fits a 375px screen. */}
             {isNarrow ? (
-              <ActionMenu
-                size="m"
-                placement="top"
-                ariaLabel="More reading controls"
-                items={[
-                  { key: 'zoom-in',   label: `Zoom in (${zoomPct}%)`, icon: zoomInSvg,  onSelect: () => zoomBy(ZOOM_STEP) },
-                  { key: 'zoom-out',  label: 'Zoom out',   icon: zoomOutSvg,  onSelect: () => zoomBy(-ZOOM_STEP) },
-                  { key: 'fit-width', label: 'Fit width',  icon: fitWidthSvg, onSelect: () => toggleFit('width') },
-                  { key: 'focus',     label: 'Focus mode', icon: focusSvg,    onSelect: () => setFocus(f => !f) },
-                  { key: 'highlight', label: 'Highlight', icon: highlightSvg, onSelect: () => toggleTool('highlight') },
-                  { key: 'comment',   label: 'Comment',   icon: commentSvg,   onSelect: () => toggleTool('comment') },
-                ]}
-              />
+              barBtn('Document tools', toolsSvg, () => setToolsOpen(true), { active: tool !== 'none' })
             ) : (
               <>
                 <div className={styles.barGroup}>
@@ -445,6 +415,30 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
 
         </div>
       </div>
+
+      {/* Phone "Document tools" sheet (shared with Version 2). */}
+      {isNarrow && (
+        <DocumentToolsSheet
+          open={toolsOpen}
+          onClose={() => setToolsOpen(false)}
+          zoomLabel={`${zoomPct}%`}
+          canZoomOut={zoomPct > ZOOM_MIN}
+          canZoomIn={zoomPct < ZOOM_MAX}
+          onZoomOut={() => zoomBy(-ZOOM_STEP)}
+          onZoomIn={() => zoomBy(ZOOM_STEP)}
+          viewRows={[
+            { key: 'fit-width', label: 'Fit to width', icon: fitWidthSvg, selected: fit === 'width', onPick: () => setFit('width') },
+            { key: 'fit-page', label: 'Fit to page', icon: fitPageSvg, selected: fit === 'page', onPick: () => setFit('page') },
+            { key: 'actual', label: 'Actual size (100%)', icon: actualSizeSvg, selected: fit === 'none' && zoom === 100,
+              onPick: () => { setFit('none'); setZoom(100) } },
+            { key: 'fullscreen', label: 'Fullscreen', icon: focusSvg, selected: focus, onPick: () => setFocus(f => !f) },
+          ]}
+          toolRows={[
+            { key: 'highlight', label: 'Highlight', icon: highlightSvg, selected: tool === 'highlight', onPick: () => toggleTool('highlight') },
+            { key: 'comment', label: 'Add comment', icon: commentSvg, selected: tool === 'comment', onPick: () => toggleTool('comment') },
+          ]}
+        />
+      )}
 
       {rightPanel === 'search' && (
         <SearchPanel book={book} onClose={() => setRightPanel(null)} onGoToPage={goToPage} />

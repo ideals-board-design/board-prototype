@@ -121,6 +121,6 @@
   background: var(--color-bg-page);
 }
 
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
   .gallery { grid-template-columns: 1fr; }
 }

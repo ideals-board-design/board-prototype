@@ -169,8 +169,7 @@
 }
 
 /* Shared card look for palette + zoom cards. */
-.palette,
-.zoomCard {
+.palette {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -186,18 +185,28 @@
   right: var(--space-16);
 }
 
-.viewControls {
-  position: absolute;
+/* View card (left): + % − | Fit width · Fullscreen in one card, DS tertiary
+   icon buttons (2px apart) with hover tooltips. */
+.viewCard {
   top: var(--space-16);
   left: var(--space-16);
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
-  z-index: var(--z-dropdown);
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
 }
 
-/* Cards inside .viewControls are positioned by it, not absolutely. */
-.viewControls .floating { position: static; }
+.viewDivider {
+  align-self: stretch;
+  height: 1px;
+  margin: var(--space-6) 0;
+  background: var(--color-border);
+}
+
 
 .zoomValue {
   padding: var(--space-4) 0;
@@ -254,6 +263,18 @@
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
   white-space: nowrap;
+}
+
+/* ── Phone: Document tools button ────────────────────────────────────────────
+   One floating card (top-left) replaces the zoom and tools cards; it opens the
+   shared DocumentToolsSheet. */
+.toolsTrigger {
+  top: var(--space-16);
+  left: var(--space-16);
+  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
 }
 
 /* ── Narrow: gutters tighten. ─────────────────────────────────── */

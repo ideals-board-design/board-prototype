@@ -16,7 +16,6 @@
 import { BadgeStatus } from '../../components/BadgeStatus/BadgeStatus'
 import { actions } from '../../icons/actions'
 import { condition } from '../../icons/condition'
-import { dateTime } from '../../icons/dateTime'
 import { files } from '../../icons/files'
 import { functional } from '../../icons/functional'
 import { media } from '../../icons/media'
@@ -25,7 +24,7 @@ import reviewMd from '../../../.design/board-book-page-nav/DESIGN_REVIEW.md?raw'
 import study from '../../../.design/board-book-page-nav/usability-study.json'
 import audit from '../../../.design/board-book-page-nav/ux-audit.json'
 import shotV1 from '../../../.design/board-book-page-nav/screenshots/review-v1-desktop-1280.png'
-import shotV2 from '../../../.design/board-book-page-nav/screenshots/fixed-v2-desktop-1280.png'
+import shotV2 from '../../../.design/board-book-page-nav/screenshots/review-v2-desktop-1280.png'
 import shotV3 from '../../../.design/board-book-page-nav/screenshots/updated-v3-desktop-1280.png'
 import styles from './ResultsPage.module.css'
 
@@ -45,7 +44,6 @@ const ICON = {
   success:     svg(condition, 'check-circle'),
   uxs:         svg(functional, 'star'),
   overall:     svg(navigation, 'reports-default'),
-  progress:    svg(dateTime, 'clock-five'),
 }
 const Ico = ({ icon, className }: { icon: string; className?: string }) => (
   <span className={className} aria-hidden="true" dangerouslySetInnerHTML={{ __html: icon }} />
@@ -86,18 +84,45 @@ const overall = Object.fromEntries(VARIANTS.map((v, i) => [v,
   Math.round(avg(CRITERIA.map(c => c.norm(v, i)))),
 ])) as Record<VariantId, number>
 const ranked = [...VARIANTS].sort((a, b) => overall[b] - overall[a])
-const rank = Object.fromEntries(ranked.map((v, i) => [v, i + 1])) as Record<VariantId, number>
+/* Dense rank: equal overall scores share a place (a tie shows two "1"s). */
+const rank = Object.fromEntries(VARIANTS.map(v => [v, 1 + VARIANTS.filter(o => overall[o] > overall[v]).length])) as Record<VariantId, number>
 const winner = ranked[0]
+const tie = overall[ranked[0]] === overall[ranked[1]]
+/* Tied leaders in version order, e.g. "Version 2 and Version 3". */
+const leaders = tie ? VARIANTS.filter(v => overall[v] === overall[winner]) : [winner]
+const leaderNames = leaders.map(v => NAME[v]).join(' and ')
 const PODIUM: VariantId[] = [ranked[1], ranked[0], ranked[2]]
 const ROWS: Criterion[] = [
   ...CRITERIA,
   { name: 'Overall', scale: 'mean, 0–100', icon: ICON.overall, raw: v => `${overall[v]}`, norm: v => overall[v] },
 ]
 
-const WHY = [
-  { icon: ICON.boundaries, title: 'Next / previous sits exactly where a document ends', text: 'Page and document buttons (‹‹ ‹ › ››) live in one bar under the page — no change of focus.' },
-  { icon: ICON.progress,   title: 'Reading progress shows how much is left',           text: 'Keeps readers oriented across the whole board book.' },
-  { icon: ICON.success,    title: `Best on all ${CRITERIA.length} criteria`,            text: `Highest overall score (${overall[winner]}) with ${Math.round(success[winner] * 100)}% task success.` },
+/* Criteria the winner leads (ties count as leading) — the copy below states
+   the real number instead of assuming a clean sweep. */
+const winnerIdx = VARIANTS.indexOf(winner)
+const leads = CRITERIA.filter(c =>
+  VARIANTS.every((v, j) => c.norm(winner, winnerIdx) >= c.norm(v, j) - 1e-9),
+).length
+/* A clean sweep means strictly best everywhere; ties make it "best or tied". */
+const strictLeads = CRITERIA.filter(c =>
+  VARIANTS.every((v, j) => v === winner || c.norm(winner, winnerIdx) > c.norm(v, j) + 1e-9),
+).length
+const sweep = strictLeads === CRITERIA.length
+
+/* Criterion each variant leads outright (for the tie explanation). */
+const bestAt = (v: VariantId) => CRITERIA.filter(c =>
+  VARIANTS.every((o, j) => o === v || c.norm(v, VARIANTS.indexOf(v)) > c.norm(o, j) + 1e-9),
+).map(c => c.name)
+
+const WHY = tie && leaders.join() === 'v2,v3' ? [
+  { icon: ICON.boundaries, title: 'Both put next / previous where a document ends', text: 'Page and document buttons (|< ‹ › >|) sit in one bar under the page in both versions.' },
+  { icon: ICON.ease,       title: 'Version 2 — agenda first', text: `Agenda open beside the document and a labelled phone sheet. Leads on ${bestAt('v2').join(', ') || 'no single criterion'}.` },
+  { icon: ICON.uxs,        title: 'Version 3 — reading first', text: `One control zone and a quiet top bar, the lowest cognitive load. Leads on ${bestAt('v3').join(', ') || 'no single criterion'}.` },
+] : [
+  { icon: ICON.boundaries, title: 'Next / previous sits exactly where a document ends', text: 'Page and document buttons (|< ‹ › >|) live in one bar under the page — no change of focus.' },
+  { icon: ICON.uxs,        title: 'One control zone',                                   text: 'Every reading action in one always-visible bar keeps cognitive load low.' },
+  { icon: ICON.success,    title: sweep ? `Best on all ${CRITERIA.length} criteria` : `Best or tied on ${leads === CRITERIA.length ? 'all' : leads} of ${CRITERIA.length} criteria`,
+    text: `Highest overall score (${overall[winner]}) with ${Math.round(success[winner] * 100)}% task success.` },
 ]
 
 export interface ResultsPageProps {
@@ -112,12 +137,16 @@ export default function ResultsPage({ onOpenVersion }: ResultsPageProps) {
       <header className={styles.head}>
         <div>
           <p className={styles.eyebrow}>Board book navigation · comparison results</p>
-          <h1 className={styles.title}>{NAME[winner]} wins the comparison</h1>
-          <p className={styles.subtitle}>{KIND[winner]} is the recommended direction for board book navigation.</p>
+          <h1 className={styles.title}>{tie ? `${leaderNames} are tied` : `${NAME[winner]} wins the comparison`}</h1>
+          <p className={styles.subtitle}>{tie
+            ? `Both score ${overall[winner]} / 100 — the choice is a priority call (${leaders.map(v => KIND[v]).join(' vs ')}), not a clear winner.`
+            : `${KIND[winner]} is the recommended direction for board book navigation.`}</p>
         </div>
         <div className={styles.callout}>
-          <span className={styles.calloutTag}><Ico icon={ICON.recommended} className={styles.calloutIcon} />Recommended</span>
-          <span className={styles.calloutText}>{NAME[winner]} gives the best overall experience and leads on every key criterion.</span>
+          <span className={styles.calloutTag}><Ico icon={ICON.recommended} className={styles.calloutIcon} />{tie ? 'Tie' : 'Recommended'}</span>
+          <span className={styles.calloutText}>{tie
+            ? 'Combine their strengths and validate both with real directors — the gap is within the error of a simulated study.'
+            : `${NAME[winner]} gives the best overall experience${sweep ? ' and leads on every key criterion' : ` and leads or ties on ${leads === CRITERIA.length ? 'all' : leads} of ${CRITERIA.length} criteria`}.`}</span>
         </div>
       </header>
 
@@ -194,8 +223,8 @@ export default function ResultsPage({ onOpenVersion }: ResultsPageProps) {
       </section>
 
       {/* ── Why the winner wins ────────────────────────────────────── */}
-      <section className={styles.why} aria-label={`Why ${NAME[winner]} wins`}>
-        <h2 className={styles.cardTitle} data-nav={`02 · Why ${NAME[winner]} wins`}>Why {NAME[winner]} wins</h2>
+      <section className={styles.why} aria-label={tie ? `Why it's a tie` : `Why ${NAME[winner]} wins`}>
+        <h2 className={styles.cardTitle} data-nav={tie ? `02 · Why it's a tie` : `02 · Why ${NAME[winner]} wins`}>{tie ? `Why ${leaderNames} tie` : `Why ${NAME[winner]} wins`}</h2>
         <div className={styles.whyGrid}>
           {WHY.map(w => (
             <div key={w.title} className={styles.whyItem}>
@@ -208,7 +237,7 @@ export default function ResultsPage({ onOpenVersion }: ResultsPageProps) {
           ))}
         </div>
         <p className={styles.note}>
-          <BadgeStatus type="neutral" label="Next" /> Previous / next document buttons are now in the bar; validate with directors. Scores were rated before the 2026-10-20 bar update and are simulated.
+          <BadgeStatus type="neutral" label="Next" /> Version 2 (former Version 4) was re-scored on 2026-10-22 and Version 3, without its progress bar, on 2026-10-23 — both as built; Version 1 reflects its state before the 2026-10-19 fixes. Agenda open by default and the phone "Document tools" sheet count for every version (product decision 2026-10-23). All scores are simulated — validate with directors.
         </p>
       </section>
     </div>

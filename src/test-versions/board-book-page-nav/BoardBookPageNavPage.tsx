@@ -5,19 +5,18 @@
    but each tab is a separate UI version of the Board book viewer so layouts can
    be compared side by side:
      • Version 1 — Full width: document only, agenda panel hidden
-     • Version 2 — Floating controls: tool palette, zoom cards and page arrows
-       over the document, with or without the agenda panel
-       (BoardBookFilmstripViewer)
+     • Version 2 — Floating controls: agenda open beside the document, zoom /
+       view card left, annotation palette right, one bottom pill with
+       previous / next document around the page controls; on phones the cards
+       fold into a "Document tools" sheet (BoardBookDocNavViewer). Replaced
+       the earlier floating-controls concept (side arrows) on 2026-10-22.
      • Version 3 — Reading mode: full-area document, floating control bar,
        table of content panel, reading progress, focus mode
        (BoardBookReadingViewer)
-     • Version 4 — Version 2 with view controls (left) and tools (right)
-       swapped, and previous / next document around the page pill
-       (BoardBookDocNavViewer)
      • Reports — all reports on one page with side navigation (ReportsPage):
        design review (DESIGN_REVIEW.md), usability study (usability-study.json,
        the PPTX is generated from the same file) and UX audit (ux-audit.json)
-   Tabs are labelled by number only (Version 1–4), plus Report and "Only
+   Tabs are labelled by number only (Version 1–3), plus Report and "Only
    document toggle". */
 
 import { useEffect, useState } from 'react'
@@ -33,7 +32,6 @@ import { useBreakpoint } from '../../hooks/useBreakpoint'
 import { functional } from '../../icons/functional'
 import { actions } from '../../icons/actions'
 import BoardBookPageNavViewer from './BoardBookPageNavViewer'
-import BoardBookFilmstripViewer from './BoardBookFilmstripViewer'
 import BoardBookReadingViewer from './BoardBookReadingViewer'
 import BoardBookDocNavViewer from './BoardBookDocNavViewer'
 import ReportsPage from './ReportsPage'
@@ -54,13 +52,12 @@ const USER = {
 
 const initialReportTabs = ['report', 'study', 'audit']
 
-type VersionTab = 'v1' | 'v2' | 'v3' | 'v4' | 'reports'
+type VersionTab = 'v1' | 'v2' | 'v3' | 'reports'
 
 const TABS: TabItem[] = [
   { id: 'v1', label: 'Version 1' },
   { id: 'v2', label: 'Version 2' },
   { id: 'v3', label: 'Version 3' },
-  { id: 'v4', label: 'Version 4' },
   { id: 'reports', label: 'Reports' },
 ]
 
@@ -77,6 +74,7 @@ export default function BoardBookPageNavPage() {
   const [activeTab, setActiveTab] = useState<VersionTab>(() => {
     const t = new URLSearchParams(window.location.search).get('tab')
     if (initialReportTabs.includes(t ?? '')) return 'reports'
+    if (t === 'v4') return 'v2' // Version 4 became Version 2 (2026-10-22)
     return TABS.some(x => x.id === t) ? (t as VersionTab) : 'v1'
   })
 
@@ -138,9 +136,8 @@ export default function BoardBookPageNavPage() {
 
         <div className={styles.content}>
           {activeTab === 'v1' && <BoardBookPageNavViewer layout="full" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v2' && <BoardBookFilmstripViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v2' && <BoardBookDocNavViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'v3' && <BoardBookReadingViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v4' && <BoardBookDocNavViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'reports' && <ReportsPage initial={initialReport} onOpenVersion={setActiveTab} />}
         </div>
       </main>

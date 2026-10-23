@@ -384,8 +384,9 @@
   color: var(--color-text-secondary);
 }
 
-/* Narrow: stack header, single-column podium (winner first), list items. */
-@media (max-width: 1023px) {
+/* Narrow screens: stack header, single-column podium (winner first), list
+   items. Screen-only, so print / PDF keeps the desktop layout. */
+@media screen and (max-width: 1023px) {
   .page { padding: var(--space-20) var(--space-16) var(--space-32); }
   .head { flex-direction: column; align-items: flex-start; }
   .podium { grid-template-columns: 1fr; gap: var(--space-16); }
@@ -394,4 +395,11 @@
   .whyGrid { grid-template-columns: 1fr; gap: var(--space-16); }
   .whyItem { padding: 0; }
   .whyItem + .whyItem { border-left: none; }
+}
+
+/* Print: keep the podium, score table and "why" cards whole on a page. */
+@media print {
+  .podium,
+  .card,
+  .why { break-inside: avoid; }
 }
