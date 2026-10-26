@@ -64,6 +64,9 @@ import { DocumentToolsSheet } from './DocumentToolsSheet'
 import { Q4_PAGE_RATIO } from './q4BoardPack'
 import styles from './BoardBookReadingViewer.module.css'
 
+/** Version 6: narrowest viewer width that fits the whole top bar. */
+const SINGLE_BAR_MIN = 760
+
 const icon = (set: { name: string; svg: string }[], name: string) =>
   set.find(i => i.name === name)!.svg
 
@@ -146,6 +149,19 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   const cards = toolsIn === 'cards' && !isNarrow
   /* Version 6 on tablet / desktop: one top bar, no bottom bar. */
   const single = toolsIn === 'single' && !isNarrow
+  /* Version 6 when the viewer is too narrow for the whole bar: zoom, fit /
+     focus and annotations fold into the dots "Document tools" button, as on
+     phones in the other versions. */
+  const mainRef = useRef<HTMLDivElement>(null)
+  const [mainWidth, setMainWidth] = useState(0)
+  useLayoutEffect(() => {
+    const el = mainRef.current
+    if (!el) return
+    const ro = new ResizeObserver(() => setMainWidth(el.clientWidth))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const singleCompact = single && mainWidth > 0 && mainWidth < SINGLE_BAR_MIN
   const [zoomMenuOpen, setZoomMenuOpen] = useState(false)
   const zoomMenuRef = useRef<HTMLDivElement>(null)
   const [zoomDraft, setZoomDraft] = useState('')
@@ -314,7 +330,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
         </>
       )}
 
-      <div className={styles.main}>
+      <div ref={mainRef} className={styles.main}>
         {/* ── Top bar (hidden in focus mode) ────────────────────────────── */}
         {(!focus || single) && (
           <div className={[styles.topBar, single ? styles.topBarSingle : ''].filter(Boolean).join(' ')}>
@@ -377,23 +393,32 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                   {barBtn(nextDoc ? `Next document: ${nextDoc.doc.name}` : 'Next document', nextDocSvg,
                     () => nextDoc && goToPage(nextDoc.startPage), { disabled: !nextDoc, tip: 'bottom' })}
                 </div>
-                <span className={styles.barDivider} aria-hidden="true" />
-                <div className={[styles.barGroup, styles.singleZoom].join(' ')}>
-                  {barBtn('Zoom out', zoomOutSvg, () => zoomBy(-ZOOM_STEP), { disabled: zoomPct <= ZOOM_MIN, tip: 'bottom' })}
-                  <span className={styles.zoomValue} aria-live="polite">{zoomPct}%</span>
-                  {barBtn('Zoom in', zoomInSvg, () => zoomBy(ZOOM_STEP), { disabled: zoomPct >= ZOOM_MAX, tip: 'bottom' })}
-                </div>
-                <span className={[styles.barDivider, styles.singleZoom].join(' ')} aria-hidden="true" />
-                <div className={styles.barGroup}>
-                  {barBtn('Fit width', fitWidthSvg, () => toggleFit('width'), { active: fit === 'width', tip: 'bottom' })}
-                  {barBtn(focus ? 'Exit focus mode' : 'Focus mode', focusSvg, () => setFocus(f => !f), { active: focus, tip: 'bottom' })}
-                </div>
-                <span className={styles.barDivider} aria-hidden="true" />
-                <div className={styles.barGroup}>
-                  {barBtn('Comment', commentSvg, () => toggleTool('comment'), { active: tool === 'comment', tip: 'bottom' })}
-                  {barBtn('Draw', drawingSvg, () => toggleTool('draw'), { active: tool === 'draw', tip: 'bottom' })}
-                  {barBtn('Highlight', highlightSvg, () => toggleTool('highlight'), { active: tool === 'highlight', tip: 'bottom' })}
-                </div>
+                {singleCompact ? (
+                  <>
+                    <span className={styles.barDivider} aria-hidden="true" />
+                    {barBtn('Document tools', toolsSvg, () => setToolsOpen(true), { active: tool !== 'none' || fit !== 'none' || focus, tip: 'bottom' })}
+                  </>
+                ) : (
+                  <>
+                    <span className={styles.barDivider} aria-hidden="true" />
+                    <div className={styles.barGroup}>
+                      {barBtn('Zoom out', zoomOutSvg, () => zoomBy(-ZOOM_STEP), { disabled: zoomPct <= ZOOM_MIN, tip: 'bottom' })}
+                      <span className={styles.zoomValue} aria-live="polite">{zoomPct}%</span>
+                      {barBtn('Zoom in', zoomInSvg, () => zoomBy(ZOOM_STEP), { disabled: zoomPct >= ZOOM_MAX, tip: 'bottom' })}
+                    </div>
+                    <span className={styles.barDivider} aria-hidden="true" />
+                    <div className={styles.barGroup}>
+                      {barBtn('Fit width', fitWidthSvg, () => toggleFit('width'), { active: fit === 'width', tip: 'bottom' })}
+                      {barBtn(focus ? 'Exit focus mode' : 'Focus mode', focusSvg, () => setFocus(f => !f), { active: focus, tip: 'bottom' })}
+                    </div>
+                    <span className={styles.barDivider} aria-hidden="true" />
+                    <div className={styles.barGroup}>
+                      {barBtn('Comment', commentSvg, () => toggleTool('comment'), { active: tool === 'comment', tip: 'bottom' })}
+                      {barBtn('Draw', drawingSvg, () => toggleTool('draw'), { active: tool === 'draw', tip: 'bottom' })}
+                      {barBtn('Highlight', highlightSvg, () => toggleTool('highlight'), { active: tool === 'highlight', tip: 'bottom' })}
+                    </div>
+                  </>
+                )}
                 <span className={styles.barDivider} aria-hidden="true" />
                 <div className={styles.barGroup}>
                   {barBtn('Search', searchSvg, () => toggleRightPanel('search'), { active: rightPanel === 'search', tip: 'bottom' })}
@@ -614,7 +639,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
       </div>
 
       {/* Phone "Document tools" sheet (shared with Version 2). */}
-      {isNarrow && (
+      {(isNarrow || singleCompact) && (
         <DocumentToolsSheet
           open={toolsOpen}
           onClose={() => setToolsOpen(false)}
@@ -630,10 +655,17 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
               onPick: () => { setFit('none'); setZoom(100) } },
             { key: 'fullscreen', label: 'Fullscreen', icon: focusSvg, selected: focus, onPick: () => setFocus(f => !f) },
           ]}
-          toolRows={[
-            { key: 'highlight', label: 'Highlight', icon: highlightSvg, selected: tool === 'highlight', onPick: () => toggleTool('highlight') },
-            { key: 'comment', label: 'Add comment', icon: commentSvg, selected: tool === 'comment', onPick: () => toggleTool('comment') },
-          ]}
+          toolRows={toolsIn === 'single'
+            /* Version 6: same order as its top bar — comment · draw · highlight. */
+            ? [
+              { key: 'comment', label: 'Add comment', icon: commentSvg, selected: tool === 'comment', onPick: () => toggleTool('comment') },
+              { key: 'draw', label: 'Draw', icon: drawingSvg, selected: tool === 'draw', onPick: () => toggleTool('draw') },
+              { key: 'highlight', label: 'Highlight', icon: highlightSvg, selected: tool === 'highlight', onPick: () => toggleTool('highlight') },
+            ]
+            : [
+              { key: 'highlight', label: 'Highlight', icon: highlightSvg, selected: tool === 'highlight', onPick: () => toggleTool('highlight') },
+              { key: 'comment', label: 'Add comment', icon: commentSvg, selected: tool === 'comment', onPick: () => toggleTool('comment') },
+            ]}
         />
       )}
 

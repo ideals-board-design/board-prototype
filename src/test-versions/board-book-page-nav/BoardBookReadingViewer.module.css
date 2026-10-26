@@ -67,16 +67,14 @@
 }
 
 .topBarSingle { gap: var(--space-8); }
-/* Version 6: one bar holds every tool — it takes the room the dropdown leaves
-   and drops the zoom stepper when the viewer gets too narrow for it. */
+/* Version 6: one bar holds every tool — it takes the room the dropdown leaves;
+   narrower still, the tools fold into the dots button (see SINGLE_BAR_MIN). */
 .main { container-type: inline-size; }
 .singleActions { margin-left: auto; }
 @container (max-width: 860px) {
   .topBarSingle .docSelectWrap { display: none; }
 }
-@container (max-width: 720px) {
-  .singleZoom { display: none; }
-}
+
 
 .docSelectWrap {
   position: relative;
