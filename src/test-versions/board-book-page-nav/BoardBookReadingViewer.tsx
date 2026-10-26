@@ -374,6 +374,9 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
         {/* ── Top bar (hidden in focus mode) ────────────────────────────── */}
         {(!focus || single) && (
           <div className={[styles.topBar, single ? styles.topBarSingle : ''].filter(Boolean).join(' ')}>
+            {/* Version 6: agenda toggle + document dropdown form the left column
+                of its three-column bar; elsewhere the wrapper is display: contents. */}
+            <div className={single ? styles.singleLeft : styles.contents}>
             {!focus && (
             <Tooltip label="Table of content" position="bottom">
               <Button
@@ -410,13 +413,15 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
               )}
             </div>
             )}
+            </div>
 
             {single ? (
-              /* Version 6 — two clusters split by space (not dividers):
-                 pages · view options | annotations · search · download · Ask AI.
-                 Narrower, view and annotation tools fold into dropdowns
-                 (Figma 32353-31685), then into the dots sheet. */
-              <div className={styles.singleActions} ref={toolMenuRef}>
+              /* Version 6 — page navigation centred; the other tool groups
+                 aligned right, split by space (not dividers): view options ·
+                 annotations · search · download · Ask AI. Narrower, view and
+                 annotation tools fold into dropdowns (Figma 32353-31685),
+                 then into the dots sheet. */
+              <>
                 <div className={styles.barGroup}>
                   {barBtn(prevDoc ? `Previous document: ${prevDoc.doc.name}` : 'Previous document', prevDocSvg,
                     () => prevDoc && goToPage(prevDoc.startPage), { disabled: !prevDoc, tip: 'bottom', small: true })}
@@ -436,7 +441,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                   {barBtn(nextDoc ? `Next document: ${nextDoc.doc.name}` : 'Next document', nextDocSvg,
                     () => nextDoc && goToPage(nextDoc.startPage), { disabled: !nextDoc, tip: 'bottom', small: true })}
                 </div>
-
+              <div className={styles.singleActions} ref={toolMenuRef}>
                 <div className={styles.barGroup}>
                   {singleGrouped ? (
                     <div className={styles.toolMenuWrap}>
@@ -498,6 +503,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                   </div>
                 </div>
               </div>
+              </>
             ) : cards ? (
               /* Version 5: ‹ document N of M › | Download */
               <div className={styles.topBarActions}>

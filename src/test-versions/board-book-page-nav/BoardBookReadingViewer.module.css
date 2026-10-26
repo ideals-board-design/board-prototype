@@ -66,15 +66,26 @@
   flex-shrink: 0;
 }
 
-.topBarSingle { gap: var(--space-8); }
-/* Version 6: one bar, two clusters split by space rather than dividers —
-   pages · view options on the left, annotations · search · download · Ask AI
-   pushed right. Narrower, the tools fold into dropdowns, then into the dots
-   button (see SINGLE_BAR_FULL / SINGLE_BAR_MIN). */
-/* Grows into free space but never below its content — the document
-   dropdown is what shrinks when room runs out. */
+/* Version 6: three-column bar — agenda toggle + document dropdown on the
+   left, page navigation centred, the other tool groups on the right split by
+   space rather than dividers. When room runs out the right column keeps its
+   content width (the pages shift off-centre) and the dropdown shrinks.
+   Narrower, the tools fold into dropdowns, then into the dots button (see
+   SINGLE_BAR_FULL / SINGLE_BAR_MIN). */
+.topBarSingle {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
+  column-gap: var(--space-24);
+}
+.singleLeft {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+.contents { display: contents; }
 .singleActions {
-  flex: 1 0 auto;
+  justify-self: end;
   display: flex;
   align-items: center;
   gap: var(--space-24);
@@ -83,7 +94,6 @@
   display: flex;
   align-items: center;
   gap: var(--space-24);
-  margin-left: auto;
 }
 /* Space between zoom and fit / focus inside the view-options cluster. */
 .groupGap { width: var(--space-8); }
