@@ -97,15 +97,10 @@
 }
 /* Space between zoom and fit / focus inside the view-options cluster. */
 .groupGap { width: var(--space-8); }
-/* Page / document arrows at 16px inside the 32px button. */
-.iconSmall {
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-}
-.iconSmall svg { width: 100%; height: 100%; }
 
 .toolMenuWrap { position: relative; }
+/* Annotation split toggle: tool button + chevron, no gap (Figma 32365-348304). */
+.splitBtn { display: flex; align-items: center; }
 .toolMenu {
   position: absolute;
   top: calc(100% + var(--space-4));
@@ -119,6 +114,7 @@
   display: flex;
   flex-direction: column;
 }
+.toolMenuEnd { left: auto; right: 0; }
 .toolMenuZoom {
   display: flex;
   align-items: center;
@@ -431,4 +427,41 @@
 .viewer button[aria-pressed='true'][data-state='active']:hover:not(:disabled) {
   background: var(--color-bg-hover-fill-strong);
   color: var(--color-text-primary);
+}
+
+/* ── Version 6 below 1024px: Agenda | Board book segments (Figma 31900-61657) ─
+   The viewer stacks: segment bar, then either the agenda (full width) or the
+   document with its toolbar. The DS segment items are flex-shrink: 0, so grow
+   them here to split the bar evenly (same as MeetingPage's .agendaSeg). */
+.segmented { flex-direction: column; }
+.segBar {
+  flex-shrink: 0;
+  padding: var(--space-12) var(--space-24);
+  background: var(--color-bg-surface);
+}
+.segBar > * {
+  display: flex;
+  width: 100%;
+}
+.segBar > * > button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.segToc {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-surface);
+}
+/* Kept mounted (scroll position, measured size) while the agenda shows. */
+.segHidden { display: none; }
+.topBarSegmented {
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+@media (max-width: 639px) {
+  .segBar { padding: var(--space-8) var(--space-16); }
+  .topBarSegmented { padding-inline: var(--space-12); }
 }
