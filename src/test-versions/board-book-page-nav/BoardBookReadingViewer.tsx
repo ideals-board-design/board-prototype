@@ -67,8 +67,8 @@ import styles from './BoardBookReadingViewer.module.css'
 /** Version 6 viewer widths: from SINGLE_BAR_FULL the whole bar fits; between
     SINGLE_BAR_MIN and it, view and annotation tools fold into two dropdowns
     (Figma 32353-31685); below SINGLE_BAR_MIN they fold into the dots sheet. */
-const SINGLE_BAR_FULL = 920
-const SINGLE_BAR_MIN = 660
+const SINGLE_BAR_FULL = 960
+const SINGLE_BAR_MIN = 700
 
 const icon = (set: { name: string; svg: string }[], name: string) =>
   set.find(i => i.name === name)!.svg
@@ -320,14 +320,14 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   const setZoomTo = (pct: number) => { setFit('none'); setZoom(Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, pct))); setZoomMenuOpen(false) }
   const applyZoomDraft = () => { const n = parseInt(zoomDraft.match(/\d+/)?.[0] ?? '', 10); if (n) setZoomTo(n) }
 
-  const barBtn = (label: string, svg: string, onClick: () => void, opts: { active?: boolean; disabled?: boolean; tip?: 'top' | 'bottom' | 'left' | 'right' } = {}) => (
+  const barBtn = (label: string, svg: string, onClick: () => void, opts: { active?: boolean; disabled?: boolean; tip?: 'top' | 'bottom' | 'left' | 'right'; small?: boolean } = {}) => (
     <Tooltip label={label} position={opts.tip ?? 'top'}>
       <Button
         variant="tertiary" intent="neutral" size="m"
         aria-pressed={opts.active}
         data-state={opts.active ? 'active' : undefined}
         disabled={opts.disabled}
-        iconOnly={<Ico svg={svg} />}
+        iconOnly={opts.small ? <span className={styles.iconSmall}><Ico svg={svg} /></span> : <Ico svg={svg} />}
         onClick={onClick}
         aria-label={label}
       />
@@ -412,12 +412,15 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
             )}
 
             {single ? (
-              /* Version 6: pages | zoom | view | annotations | search · download · Ask AI */
-              <div className={[styles.topBarActions, styles.singleActions].join(' ')}>
+              /* Version 6 — two clusters split by space (not dividers):
+                 pages · view options | annotations · search · download · Ask AI.
+                 Narrower, view and annotation tools fold into dropdowns
+                 (Figma 32353-31685), then into the dots sheet. */
+              <div className={styles.singleActions} ref={toolMenuRef}>
                 <div className={styles.barGroup}>
                   {barBtn(prevDoc ? `Previous document: ${prevDoc.doc.name}` : 'Previous document', prevDocSvg,
-                    () => prevDoc && goToPage(prevDoc.startPage), { disabled: !prevDoc, tip: 'bottom' })}
-                  {barBtn('Previous page', prevSvg, () => goToPage(page - 1), { disabled: page <= 1, tip: 'bottom' })}
+                    () => prevDoc && goToPage(prevDoc.startPage), { disabled: !prevDoc, tip: 'bottom', small: true })}
+                  {barBtn('Previous page', prevSvg, () => goToPage(page - 1), { disabled: page <= 1, tip: 'bottom', small: true })}
                   <div className={styles.pageCount}>
                     <input
                       className={styles.pageInput}
@@ -429,15 +432,13 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                     />
                     <span className={styles.pageTotal}>/ {book.totalPages}</span>
                   </div>
-                  {barBtn('Next page', nextSvg, () => goToPage(page + 1), { disabled: page >= book.totalPages, tip: 'bottom' })}
+                  {barBtn('Next page', nextSvg, () => goToPage(page + 1), { disabled: page >= book.totalPages, tip: 'bottom', small: true })}
                   {barBtn(nextDoc ? `Next document: ${nextDoc.doc.name}` : 'Next document', nextDocSvg,
-                    () => nextDoc && goToPage(nextDoc.startPage), { disabled: !nextDoc, tip: 'bottom' })}
+                    () => nextDoc && goToPage(nextDoc.startPage), { disabled: !nextDoc, tip: 'bottom', small: true })}
                 </div>
-                {singleGrouped ? (
-                  /* Not enough room: view and annotation tools fold into two
-                     dropdowns; the buttons show the current choice. */
-                  <div className={styles.toolMenus} ref={toolMenuRef}>
-                    <span className={styles.barDivider} aria-hidden="true" />
+
+                <div className={styles.barGroup}>
+                  {singleGrouped ? (
                     <div className={styles.toolMenuWrap}>
                       {menuBtn('view', 'View options', fit === 'page' ? fitPageSvg : fitWidthSvg, fit !== 'none' || zoomPct !== 100 || focus)}
                       {toolMenu === 'view' && (
@@ -457,7 +458,22 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                         </div>
                       )}
                     </div>
-                    <span className={styles.barDivider} aria-hidden="true" />
+                  ) : singleCompact ? (
+                    barBtn('Document tools', toolsSvg, () => setToolsOpen(true), { active: tool !== 'none' || fit !== 'none' || focus, tip: 'bottom' })
+                  ) : (
+                    <>
+                      {barBtn('Zoom out', zoomOutSvg, () => zoomBy(-ZOOM_STEP), { disabled: zoomPct <= ZOOM_MIN, tip: 'bottom' })}
+                      <span className={styles.zoomValue} aria-live="polite">{zoomPct}%</span>
+                      {barBtn('Zoom in', zoomInSvg, () => zoomBy(ZOOM_STEP), { disabled: zoomPct >= ZOOM_MAX, tip: 'bottom' })}
+                      <span className={styles.groupGap} aria-hidden="true" />
+                      {barBtn('Fit width', fitWidthSvg, () => toggleFit('width'), { active: fit === 'width', tip: 'bottom' })}
+                      {barBtn(focus ? 'Exit focus mode' : 'Focus mode', focusSvg, () => setFocus(f => !f), { active: focus, tip: 'bottom' })}
+                    </>
+                  )}
+                </div>
+
+                <div className={styles.singleRight}>
+                  {singleGrouped ? (
                     <div className={styles.toolMenuWrap}>
                       {menuBtn('annotate', 'Annotations', tool === 'draw' ? drawingSvg : tool === 'highlight' ? highlightSvg : commentSvg, tool !== 'none')}
                       {toolMenu === 'annotate' && (
@@ -468,38 +484,18 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                         </div>
                       )}
                     </div>
-                  </div>
-                ) : singleCompact ? (
-                  <>
-                    <span className={styles.barDivider} aria-hidden="true" />
-                    {barBtn('Document tools', toolsSvg, () => setToolsOpen(true), { active: tool !== 'none' || fit !== 'none' || focus, tip: 'bottom' })}
-                  </>
-                ) : (
-                  <>
-                    <span className={styles.barDivider} aria-hidden="true" />
-                    <div className={styles.barGroup}>
-                      {barBtn('Zoom out', zoomOutSvg, () => zoomBy(-ZOOM_STEP), { disabled: zoomPct <= ZOOM_MIN, tip: 'bottom' })}
-                      <span className={styles.zoomValue} aria-live="polite">{zoomPct}%</span>
-                      {barBtn('Zoom in', zoomInSvg, () => zoomBy(ZOOM_STEP), { disabled: zoomPct >= ZOOM_MAX, tip: 'bottom' })}
-                    </div>
-                    <span className={styles.barDivider} aria-hidden="true" />
-                    <div className={styles.barGroup}>
-                      {barBtn('Fit width', fitWidthSvg, () => toggleFit('width'), { active: fit === 'width', tip: 'bottom' })}
-                      {barBtn(focus ? 'Exit focus mode' : 'Focus mode', focusSvg, () => setFocus(f => !f), { active: focus, tip: 'bottom' })}
-                    </div>
-                    <span className={styles.barDivider} aria-hidden="true" />
+                  ) : !singleCompact && (
                     <div className={styles.barGroup}>
                       {barBtn('Comment', commentSvg, () => toggleTool('comment'), { active: tool === 'comment', tip: 'bottom' })}
                       {barBtn('Draw', drawingSvg, () => toggleTool('draw'), { active: tool === 'draw', tip: 'bottom' })}
                       {barBtn('Highlight', highlightSvg, () => toggleTool('highlight'), { active: tool === 'highlight', tip: 'bottom' })}
                     </div>
-                  </>
-                )}
-                <span className={styles.barDivider} aria-hidden="true" />
-                <div className={styles.barGroup}>
-                  {barBtn('Search', searchSvg, () => toggleRightPanel('search'), { active: rightPanel === 'search', tip: 'bottom' })}
-                  {barBtn('Download', downloadSvg, () => console.log('download board book'), { tip: 'bottom' })}
-                  {barBtn('Ask AI', aiSvg, () => toggleRightPanel('ai'), { active: rightPanel === 'ai', tip: 'bottom' })}
+                  )}
+                  <div className={styles.barGroup}>
+                    {barBtn('Search', searchSvg, () => toggleRightPanel('search'), { active: rightPanel === 'search', tip: 'bottom' })}
+                    {barBtn('Download', downloadSvg, () => console.log('download board book'), { tip: 'bottom' })}
+                    {barBtn('Ask AI', aiSvg, () => toggleRightPanel('ai'), { active: rightPanel === 'ai', tip: 'bottom' })}
+                  </div>
                 </div>
               </div>
             ) : cards ? (
