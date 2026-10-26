@@ -5,19 +5,28 @@
    but each tab is a separate UI version of the Board book viewer so layouts can
    be compared side by side:
      • Version 1 — Full width: document only, agenda panel hidden
-     • Version 2 — Floating controls: tool palette, zoom cards and page arrows
-       over the document, with or without the agenda panel
-       (BoardBookFilmstripViewer)
+     • Version 2 — Floating controls: agenda open beside the document, zoom /
+       view card left, annotation palette right, one bottom pill with
+       previous / next document around the page controls; on phones the cards
+       fold into a "Document tools" sheet (BoardBookDocNavViewer). Replaced
+       the earlier floating-controls concept (side arrows) on 2026-10-22.
      • Version 3 — Reading mode: full-area document, floating control bar,
        table of content panel, reading progress, focus mode
        (BoardBookReadingViewer)
-     • Version 4 — Version 2 with view controls (left) and tools (right)
-       swapped, and previous / next document around the page pill
-       (BoardBookDocNavViewer)
+     • Version 4 — Version 3 with highlight / comment in the top bar; the
+       bottom bar has page and document navigation, zoom, fit width and focus
+       (BoardBookReadingViewer toolsIn="top", based on Figma 32290-235596)
+     • Version 5 — floating side cards like a document viewer: page / zoom /
+       fullscreen (left bottom), search · Ask AI · annotations (right top);
+       agenda toggle, document stepping and Download in the top bar
+       (BoardBookReadingViewer toolsIn="cards")
+     • Version 6 — every tool in one top bar (pages, zoom, fit / focus,
+       comment · draw · highlight, search · download · Ask AI), no bottom bar
+       (BoardBookReadingViewer toolsIn="single", Figma 32301-237198)
      • Reports — all reports on one page with side navigation (ReportsPage):
        design review (DESIGN_REVIEW.md), usability study (usability-study.json,
        the PPTX is generated from the same file) and UX audit (ux-audit.json)
-   Tabs are labelled by number only (Version 1–4), plus Report and "Only
+   Tabs are labelled by number only (Version 1–6), plus Report and "Only
    document toggle". */
 
 import { useEffect, useState } from 'react'
@@ -33,7 +42,6 @@ import { useBreakpoint } from '../../hooks/useBreakpoint'
 import { functional } from '../../icons/functional'
 import { actions } from '../../icons/actions'
 import BoardBookPageNavViewer from './BoardBookPageNavViewer'
-import BoardBookFilmstripViewer from './BoardBookFilmstripViewer'
 import BoardBookReadingViewer from './BoardBookReadingViewer'
 import BoardBookDocNavViewer from './BoardBookDocNavViewer'
 import ReportsPage from './ReportsPage'
@@ -54,13 +62,15 @@ const USER = {
 
 const initialReportTabs = ['report', 'study', 'audit']
 
-type VersionTab = 'v1' | 'v2' | 'v3' | 'v4' | 'reports'
+type VersionTab = 'v1' | 'v2' | 'v3' | 'v4' | 'v5' | 'v6' | 'reports'
 
 const TABS: TabItem[] = [
   { id: 'v1', label: 'Version 1' },
   { id: 'v2', label: 'Version 2' },
   { id: 'v3', label: 'Version 3' },
   { id: 'v4', label: 'Version 4' },
+  { id: 'v5', label: 'Version 5' },
+  { id: 'v6', label: 'Version 6' },
   { id: 'reports', label: 'Reports' },
 ]
 
@@ -138,9 +148,11 @@ export default function BoardBookPageNavPage() {
 
         <div className={styles.content}>
           {activeTab === 'v1' && <BoardBookPageNavViewer layout="full" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v2' && <BoardBookFilmstripViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v2' && <BoardBookDocNavViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'v3' && <BoardBookReadingViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v4' && <BoardBookDocNavViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v4' && <BoardBookReadingViewer key="v4" toolsIn="top" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v5' && <BoardBookReadingViewer key="v5" toolsIn="cards" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v6' && <BoardBookReadingViewer key="v6" toolsIn="single" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'reports' && <ReportsPage initial={initialReport} onOpenVersion={setActiveTab} />}
         </div>
       </main>

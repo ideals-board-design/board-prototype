@@ -66,6 +66,18 @@
   flex-shrink: 0;
 }
 
+.topBarSingle { gap: var(--space-8); }
+/* Version 6: one bar holds every tool — it takes the room the dropdown leaves
+   and drops the zoom stepper when the viewer gets too narrow for it. */
+.main { container-type: inline-size; }
+.singleActions { margin-left: auto; }
+@container (max-width: 860px) {
+  .topBarSingle .docSelectWrap { display: none; }
+}
+@container (max-width: 720px) {
+  .singleZoom { display: none; }
+}
+
 .docSelectWrap {
   position: relative;
   display: flex;
@@ -138,18 +150,6 @@
   z-index: var(--z-dropdown);
 }
 
-/* ── Reading progress ─────────────────────────────────────────────────────── */
-.progress {
-  flex-shrink: 0;
-  height: 3px;
-  background: var(--color-border);
-}
-
-.progressFill {
-  height: 100%;
-  background: var(--color-brand);
-}
-
 /* ── Canvas ───────────────────────────────────────────────────────────────── */
 .canvasArea {
   flex: 1;
@@ -167,6 +167,12 @@
   overflow: auto;
   display: flex;
   padding: var(--space-24) var(--space-24) calc(var(--space-72) + var(--space-24));
+}
+
+/* Version 5: side gutters clear the 48px floating cards (16 + 48 + 16). */
+.canvasScrollCards {
+  padding-inline: calc(var(--space-72) + var(--space-8));
+  padding-bottom: var(--space-24);
 }
 
 .pageCommenting { cursor: crosshair; }
@@ -244,4 +250,132 @@
 @media (max-width: 1023px) {
   .canvasScroll { padding-inline: var(--space-16); }
   .controlBar { gap: var(--space-4); }
+}
+
+/* ── Version 5: document count in the top bar + floating side cards ───────── */
+.docCount {
+  min-width: 56px;
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.sideCard {
+  position: absolute;
+  z-index: var(--z-dropdown);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
+}
+.cardBottomLeft { bottom: var(--space-16); left: var(--space-16); }
+.cardTopRight { top: var(--space-16); right: var(--space-16); }
+
+.cardTotal {
+  padding: var(--space-4) 0;
+  font-size: var(--text-sm);
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.cardDivider {
+  align-self: stretch;
+  height: 1px;
+  margin: var(--space-6) 0;
+  background: var(--color-border);
+}
+
+/* Zoom % — opens the zoom menu to the right of the card. */
+.zoomMenuWrap { position: relative; }
+.zoomBtn {
+  min-width: 44px;
+  padding: var(--space-6) var(--space-2);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.zoomBtn:hover,
+.zoomBtnOpen { background: var(--color-bg-hover-fill); }
+
+.zoomMenu {
+  position: absolute;
+  left: calc(100% + var(--space-16));
+  bottom: calc(-1 * var(--space-8));
+  width: 240px;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  box-shadow: var(--elevation-100);
+  display: flex;
+  flex-direction: column;
+}
+
+.zoomMenuField { padding: var(--space-8) var(--space-8) var(--space-4); }
+.zoomMenuInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-6) var(--space-12);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  box-shadow: inset 0 0 0 1px var(--stone-500);
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  outline: none;
+}
+.zoomMenuInput:focus { box-shadow: inset 0 0 0 1px var(--color-brand); }
+
+.zoomMenuRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  padding: var(--space-10) var(--space-12);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+.zoomMenuRow:hover,
+.zoomMenuRowSelected { background: var(--color-bg-hover-fill); }
+
+.zoomMenuIcon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-icon-secondary);
+}
+.zoomMenuIcon svg { width: 100%; height: 100%; }
+
+.zoomMenuDivider {
+  height: 1px;
+  margin: var(--space-4) 0;
+  background: var(--color-border);
+}
+
+/* Pressed toggles (agenda, Search, Ask AI, tools) keep the pressed fill while
+   hovered — the DS tertiary :hover rule would otherwise paint over
+   data-state="active" and the button would read as not pressed. */
+.viewer button[aria-pressed='true'][data-state='active']:hover:not(:disabled) {
+  background: var(--color-bg-hover-fill-strong);
+  color: var(--color-text-primary);
 }

@@ -1,0 +1,69 @@
+/* DocumentToolsSheet — DS Droplist layout inside the DS bottom Drawer:
+   4px padding (24px bottom), 48px rows, 20px icon, 16px label.
+   !important: overriding the Drawer's own .body padding/flex through the
+   bodyClassName escape hatch (same as SideNavUserItem's .sheetBody). */
+
+.body {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: var(--space-0) !important;
+  padding: var(--space-4) var(--space-4) var(--space-24) !important;
+}
+
+.row,
+.zoom {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+  padding: var(--space-14) var(--space-12);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font-family: var(--font-family);
+  font-size: var(--text-md);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  text-align: left;
+}
+
+.row { cursor: pointer; }
+.row:hover { background: var(--color-bg-hover-fill); }
+.row:active { background: var(--color-bg-hover-fill-strong); }
+/* Selected = the same fill as hover (not the green selection tint). */
+.rowSelected { background: var(--color-bg-hover-fill); }
+.row:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: -2px;
+}
+
+.icon {
+  display: inline-flex;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.icon svg { width: 100%; height: 100%; }
+
+/* Zoom row: label left, − value + right (tertiary icon buttons, 2px apart). */
+.zoom { padding-block: var(--space-4); }
+.label { flex: 1; }
+.stepper {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.zoomValue {
+  min-width: 48px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.divider {
+  width: 100%;
+  margin: var(--space-4) 0;
+  border: none;
+  border-top: 1px solid var(--color-border);
+}

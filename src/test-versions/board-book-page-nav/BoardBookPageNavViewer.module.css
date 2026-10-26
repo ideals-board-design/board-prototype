@@ -102,13 +102,36 @@
   margin: 0;
 }
 
+/* Description: 2 lines, then a green "…Show more" over the end of line two. */
+.tocDescWrap { position: relative; }
+
+.tocClamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
 .showMore {
   border: none;
   background: none;
   padding: 0;
   cursor: pointer;
-  color: var(--color-text-brand);
+  color: var(--color-text-success);
+  font-family: var(--font-family);
+  font-size: inherit;
+  line-height: var(--line-height-base);
+}
+.showMore:hover { text-decoration: underline; }
+
+.showMoreEnd {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  padding-left: var(--space-4);
   font-size: var(--text-sm);
+  background: var(--color-bg-surface);
 }
 
 .progressTrack {
@@ -555,7 +578,7 @@
 /* ── Side panel (Search / AI) ─────────────────────────────────────────────── */
 .sidePanel {
   flex-shrink: 0;
-  width: 400px;
+  width: 460px;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -563,34 +586,42 @@
   border-left: 1px solid var(--color-border);
 }
 
+/* Side panel header (Figma 12663-210132 / 12594-313871): 56px, 20px title,
+   ✕ icon button, no divider. */
 .sidePanelHead {
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--space-16) var(--space-16) var(--space-16) var(--space-20);
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-12) var(--space-16) var(--space-12) var(--space-24);
 }
 
 .sidePanelTitle {
-  font-size: var(--text-md);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-lg);
   color: var(--color-text-primary);
 }
 
+.searchField {
+  flex-shrink: 0;
+  padding: var(--space-12) var(--space-24);
+}
+
 .sidePanelBody {
+  flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--space-16) var(--space-20);
+  padding: var(--space-16) var(--space-24);
   display: flex;
   flex-direction: column;
   gap: var(--space-16);
 }
 
-.searchHint {
-  font-size: var(--text-sm);
-  color: var(--color-text-secondary);
-  margin: 0;
+/* Empty search — DS EmptyState centred in the remaining height. */
+.searchEmpty {
+  flex: 1;
+  justify-content: center;
 }
 
 .searchResults {
@@ -628,9 +659,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-8);
-  padding: var(--space-12) var(--space-20);
+  padding: var(--space-10) var(--space-24);
   background: var(--color-info-bg);
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 .aiDisclaimerIcon {
@@ -655,7 +687,7 @@
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--space-16) var(--space-20);
+  padding: var(--space-16) var(--space-24);
   display: flex;
   flex-direction: column;
   gap: var(--space-16);
@@ -757,10 +789,10 @@
   position: relative;
   flex-shrink: 0;
   border-top: 1px solid var(--color-border);
-  padding: var(--space-16) var(--space-20);
+  padding: var(--space-16) var(--space-16) var(--space-16) var(--space-24);
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
+  gap: var(--space-16);
   align-items: flex-start;
 }
 .aiInput {
@@ -788,7 +820,7 @@
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-12);
+  gap: var(--space-16);
 }
 
 .suggestHead {
@@ -799,14 +831,16 @@
 
 .suggestTitle {
   font-size: var(--text-md);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 
 .suggestChips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-8);
+  gap: var(--space-8) var(--space-12);
+  padding-right: var(--space-8);
 }
 
 /* Chips are DS secondary buttons (size + hover come from the design system);
@@ -821,7 +855,7 @@
   .sidePanel {
     position: absolute;
     inset: 0 0 0 auto;
-    width: min(400px, 100%);
+    width: min(460px, 100%);
     z-index: var(--z-dropdown);
     box-shadow: var(--elevation-200);
   }
@@ -835,4 +869,12 @@
 @media (max-width: 767px) {
   .toolbar { gap: var(--space-8); padding: var(--space-8) var(--space-12); }
   .toolbarRow { gap: var(--space-8); }
+}
+
+/* Pressed toggles (agenda, Search, Ask AI, tools) keep the pressed fill while
+   hovered — the DS tertiary :hover rule would otherwise paint over
+   data-state="active" and the button would read as not pressed. */
+.viewer button[aria-pressed='true'][data-state='active']:hover:not(:disabled) {
+  background: var(--color-bg-hover-fill-strong);
+  color: var(--color-text-primary);
 }

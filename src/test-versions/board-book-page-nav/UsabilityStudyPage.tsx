@@ -122,8 +122,8 @@ export default function UsabilityStudyPage() {
         <li><BadgeStatus type="danger" label="CRITICAL" /> {study.issues[0].issue} — {study.issues[0].impact}.</li>
         <li><BadgeStatus type="warning" label="HIGH" /> {study.issues[1].issue}.</li>
         <li><BadgeStatus type="warning" label="HIGH" /> {study.issues[2].issue}.</li>
-        <li><BadgeStatus type="positive" label="STRENGTH" /> Version 3 keeps every navigation action in one always-visible bar where reading ends — best SEQ for 3 of 4 personas.</li>
-        <li><BadgeStatus type="positive" label="STRENGTH" /> Version 2's open agenda makes jumping to an agenda item's documents effortless (US04).</li>
+        <li><BadgeStatus type="positive" label="STRENGTH" /> Version 3 keeps every navigation action in one always-visible bar where reading ends — highest task success (94%) and best SEQ for Patricia and Robert.</li>
+        <li><BadgeStatus type="positive" label="STRENGTH" /> With the agenda open by default in every version (product decision 2026-10-23), jumping to an agenda item's documents is effortless for all personas (US04).</li>
       </ul>
 
       {/* 02 Personas */}

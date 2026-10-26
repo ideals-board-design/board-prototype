@@ -72,7 +72,7 @@ const searchSvg     = icon(actions, 'search')
 const aiSvg         = icon(actions, 'sparkles')
 const chevronUpSvg  = icon(arrows, 'angle-up-fill')
 const chevronDownSvg = icon(arrows, 'angle-down-fill')
-const closeSvg      = icon(actions, 'close')
+const closeSvg      = icon(actions, 'multiply')
 const infoSvg       = icon(condition, 'info-circle')
 const sendSvg       = icon(custom, 'send')
 const linkSvg       = icon(actions, 'link')
@@ -160,7 +160,7 @@ export default function BoardBookPageNavViewer({
   const [fullscreen, setFullscreen] = useState(false)
   const [comments, setComments] = useState<CommentPin[]>([])
   /* Small desktop: a side panel collapses the agenda so the page stays readable. */
-  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen)
+  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen, () => setRightPanel(null))
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const commentSeq = useRef(0)
@@ -301,7 +301,7 @@ export default function BoardBookPageNavViewer({
               aria-pressed={tocOpen}
               data-state={tocOpen ? 'active' : undefined}
               iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
-              onClick={() => { markTocManual(); setTocOpen(o => !o) }}
+              onClick={() => { markTocManual(!tocOpen); setTocOpen(o => !o) }}
               aria-label="Toggle table of content"
             />
           </Tooltip>
@@ -509,10 +509,7 @@ function TocItem({ book, item, currentDocId, onSelectItem, onSelectDoc, onAskAi 
   onSelectDoc: (fd: FlatDoc) => void
   onAskAi: () => void
 }) {
-  const [expanded, setExpanded] = useState(false)
   const desc = item.description ?? ''
-  /* Descriptions carry the full copy; long ones collapse to 120 characters. */
-  const isLong = desc.length > 120
 
   const docMenu = (name: string, isLink: boolean): ActionMenuItem[] => [
     { key: 'ask',    label: 'Ask AI',            icon: aiSvg,       onSelect: onAskAi },
@@ -546,14 +543,7 @@ function TocItem({ book, item, currentDocId, onSelectItem, onSelectDoc, onAskAi 
       {desc && (
         <div className={styles.tocBlock}>
           <span className={styles.tocLabel}>Description</span>
-          <p className={styles.tocText}>
-            {expanded || !isLong ? desc : truncate(desc, 120)}
-            {isLong && (
-              <button type="button" className={styles.showMore} onClick={() => setExpanded(e => !e)}>
-                {expanded ? ' Show less' : '…Show more'}
-              </button>
-            )}
-          </p>
+          <TocDescription text={desc} />
         </div>
       )}
 
@@ -664,19 +654,27 @@ export function SearchPanel({ book, onClose, onGoToPage }: {
     <aside className={styles.sidePanel} aria-label="Search">
       <div className={styles.sidePanelHead}>
         <span className={styles.sidePanelTitle}>Search</span>
-        <Button variant="tertiary" intent="neutral" size="s" iconOnly={<Ico svg={closeSvg} />}
+        <Button variant="tertiary" intent="neutral" size="m" iconOnly={<Ico svg={closeSvg} />}
           onClick={onClose} aria-label="Close search" />
       </div>
-      <div className={styles.sidePanelBody}>
+      <div className={styles.searchField}>
         <TextField
           size="m"
-          placeholder="Search in board book"
+          placeholder="Search"
           prefix={<Ico svg={searchSvg} />}
           value={query}
           onChange={e => setQuery(e.target.value)}
+          aria-label="Search the board book"
         />
+      </div>
+      <div className={styles.sidePanelBody}>
         {query.trim() === '' ? (
-          <p className={styles.searchHint}>Search across every document in the board book.</p>
+          <EmptyState
+            className={styles.searchEmpty}
+            illustration="folder-no-results"
+            title="Search documents"
+            description="Type in your keywords to start searching"
+          />
         ) : (
           <div className={styles.searchResults}>
             {results.map((r, i) => (
@@ -694,17 +692,10 @@ export function SearchPanel({ book, onClose, onGoToPage }: {
 
 /* ── Ask AI panel ──────────────────────────────────────────────────────────── */
 type ChatMsg = { role: 'user' | 'ai'; text: string; sources?: number[] }
+/* Opening state (Figma 12594-313871): the AI greets with an open question and
+   the Suggestions panel is already showing. */
 const SEEDED_CHAT: ChatMsg[] = [
-  {
-    role: 'user',
-    text: 'What specific cost management efforts led to the 5% decrease in operating expenses? Are these savings expected to continue in the upcoming quarters?',
-  },
-  {
-    role: 'ai',
-    text:
-      'STAR Enterprises achieved a 5% decrease in operating expenses through measures like:\n\nVendor Negotiations: Secured lower prices from suppliers\nResource Management: Implemented energy-saving and waste reduction practices\nTechnology Integration: Used automation to cut labor costs\nFuture Savings: Some savings, like vendor contracts, may continue, while others could be one-off reductions.',
-    sources: [1, 2, 3],
-  },
+  { role: 'ai', text: 'What would you like to know about the board book?', sources: [1, 2, 3] },
 ]
 
 /* Suggested prompts shown in the Suggestions dropdown — realistic board-book
@@ -721,7 +712,7 @@ const SUGGESTED_QUESTIONS = [
 export function AiPanel({ onClose }: { onClose: () => void }) {
   const [messages, setMessages] = useState<ChatMsg[]>(SEEDED_CHAT)
   const [draft, setDraft] = useState('')
-  const [suggestOpen, setSuggestOpen] = useState(false)
+  const [suggestOpen, setSuggestOpen] = useState(true)
   const footerRef = useRef<HTMLDivElement>(null)
 
   /* Existing question flow — used by the input and the suggestion chips. */
@@ -755,7 +746,7 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
     <aside className={styles.sidePanel} aria-label="Ask AI">
       <div className={styles.sidePanelHead}>
         <span className={styles.sidePanelTitle}>Ask AI</span>
-        <Button variant="tertiary" intent="neutral" size="s" iconOnly={<Ico svg={closeSvg} />}
+        <Button variant="tertiary" intent="neutral" size="m" iconOnly={<Ico svg={closeSvg} />}
           onClick={onClose} aria-label="Close Ask AI" />
       </div>
 
@@ -801,12 +792,12 @@ export function AiPanel({ onClose }: { onClose: () => void }) {
           <div className={styles.suggestPanel} role="dialog" aria-label="Suggested questions">
             <div className={styles.suggestHead}>
               <span className={styles.suggestTitle}>Suggestions</span>
-              <Button variant="tertiary" intent="neutral" size="s" iconOnly={<Ico svg={closeSvg} />}
+              <Button variant="tertiary" intent="neutral" size="m" iconOnly={<Ico svg={closeSvg} />}
                 onClick={() => setSuggestOpen(false)} aria-label="Close suggestions" />
             </div>
             <div className={styles.suggestChips}>
               {SUGGESTED_QUESTIONS.map(q => (
-                <Button key={q} variant="secondary" intent="default" size="s"
+                <Button key={q} variant="secondary" intent="neutral" size="s"
                   className={styles.suggestChip}
                   onClick={() => { submit(q); setSuggestOpen(false) }}>
                   {q}
@@ -932,10 +923,45 @@ function GenericPage({ doc, localPage, globalPage }: { doc: BoardBookDoc; localP
 }
 
 /* ── helpers ───────────────────────────────────────────────────────────────── */
+/** Agenda description clamped to 2 lines; a green "…Show more" sits at the end
+    of the second line, only when the text overflows (same pattern as the
+    Minutes agenda). */
+function TocDescription({ text }: { text: string }) {
+  const ref = useRef<HTMLParagraphElement>(null)
+  const [expanded, setExpanded] = useState(false)
+  const [overflows, setOverflows] = useState(false)
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el || expanded) return
+    const check = () => setOverflows(el.scrollHeight > el.clientHeight + 1)
+    check()
+    const ro = new ResizeObserver(check)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [expanded])
+
+  return (
+    <div className={styles.tocDescWrap}>
+      <p ref={ref} className={[styles.tocText, expanded ? '' : styles.tocClamped].filter(Boolean).join(' ')}>
+        {text}
+        {expanded && (
+          <>
+            {' '}
+            <button type="button" className={styles.showMore} onClick={() => setExpanded(false)}>Show less</button>
+          </>
+        )}
+      </p>
+      {!expanded && overflows && (
+        <button type="button" className={[styles.showMore, styles.showMoreEnd].join(' ')} onClick={() => setExpanded(true)}>
+          …Show more
+        </button>
+      )}
+    </div>
+  )
+}
+
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean)
   return ((parts[0]?.[0] ?? '') + (parts[parts.length - 1]?.[0] ?? '')).toUpperCase() || '?'
-}
-function truncate(s: string, n: number): string {
-  return s.length > n ? s.slice(0, n).trimEnd() + ' ' : s
 }
