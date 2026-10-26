@@ -61,6 +61,7 @@ import {
   MOCK_BOARD_BOOK,
   docAtPage,
   firstDocOfItem,
+  flatDocByName,
   type BoardBook,
   type BoardBookDoc,
   type BoardBookItem,
@@ -156,9 +157,11 @@ export interface BoardBookReadingViewerProps {
       annotations in the top bar (Version 4), floating side cards (Version 5),
       or everything in one top bar (Version 6). */
   toolsIn?: 'bar' | 'top' | 'cards' | 'single'
+  /** Open this document first — a name picked from the agenda (main prototype). */
+  initialDocName?: string | null
 }
 
-export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar' }: BoardBookReadingViewerProps) {
+export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar', initialDocName = null }: BoardBookReadingViewerProps) {
   const isNarrow = useMediaQuery('(max-width: 767px)')
   /* Version 4 on tablet / desktop: annotations in the top bar. */
   const toolsTop = toolsIn === 'top' && !isNarrow
@@ -335,6 +338,15 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
     const fd = firstDocOfItem(book, item.id)
     if (fd) selectDoc(fd)
   }
+
+  /* Opened from the agenda: jump to that document (Board book segment on
+     tablets / phones). */
+  useEffect(() => {
+    if (!initialDocName) return
+    const fd = flatDocByName(book, initialDocName)
+    if (fd) { goToPage(fd.startPage); setSegView('book') }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialDocName, book])
 
   useEffect(() => {
     if (!zoomMenuOpen) return

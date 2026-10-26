@@ -32,6 +32,7 @@ import { functional } from '../icons/functional'
 import { actions }    from '../icons/actions'
 import { AgendaPreview, MEETING_TITLE, type AgendaItem } from './MeetingPage'
 import styles from './MeetingPage.module.css'
+import BoardBookReadingViewer from '../test-versions/board-book-page-nav/BoardBookReadingViewer'
 
 const removeSvg   = actions.find(i => i.name === 'multiply')!.svg
 const bookmarkSvg = functional.find(i => i.name === 'bookmark')!.svg
@@ -238,14 +239,17 @@ export default function BoardMemberPage() {
           )}
 
           {activeTab === 'board-book' && (
-            <EmptyState
-              illustration="clipboard"
-              title={boardBookDoc ?? 'Board book'}
-              description={boardBookDoc
-                ? 'Opened from the agenda. The full document viewer is out of scope for this prototype.'
-                : 'Published agenda documents appear here.'}
-              className={styles.emptyState}
-            />
+            published ? (
+              /* Board book: Version 6 of the board-book test versions. */
+              <BoardBookReadingViewer toolsIn="single" initialDocName={boardBookDoc} />
+            ) : (
+              <EmptyState
+                illustration="clipboard"
+                title="Board book"
+                description="Published agenda documents appear here."
+                className={styles.emptyState}
+              />
+            )
           )}
 
           {activeTab === 'meeting' && (
