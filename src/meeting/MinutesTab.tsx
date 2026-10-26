@@ -21,9 +21,7 @@
 
    Brief version (Figma 32251-171315): an "AI minutes" title with a "Brief
    version" toggle sits above the action-items banner and stays pinned while
-   the pane scrolls; each block's corner also has its own brief / detailed
-   switch (Figma 32229-124889), which overrides that block until the title
-   toggle changes again. Brief swaps the block's paragraphs for a one-line
+   the pane scrolls. Brief swaps each block's paragraphs for a one-line
    summary and drops the motion / result lines; action items stay.
    Transcript segment: see TranscriptPane (Figma 12970-220260). */
 
@@ -40,7 +38,6 @@ import type { ToastContainerHandle } from '../components/ToastContainer/ToastCon
 import { arrows } from '../icons/arrows'
 import { actions } from '../icons/actions'
 import { condition } from '../icons/condition'
-import { custom } from '../icons/custom'
 import { editor } from '../icons/editor'
 import { functional } from '../icons/functional'
 import { MinutesAgenda } from './MinutesAgenda'
@@ -67,8 +64,6 @@ const underlineSvg = editor.find(i => i.name === 'underline')!.svg
 const indentSvg    = editor.find(i => i.name === 'left-indent')!.svg
 const sidebarSvg   = actions.find(i => i.name === 'sidebar-opened')!.svg
 const moreSvg      = functional.find(i => i.name === 'ellipsis-h')!.svg
-const detailedSvg  = custom.find(i => i.name === 'arrow-resize-bigger')!.svg
-const briefSvg     = custom.find(i => i.name === 'arrow-resize-smaller')!.svg
 
 /* Resizable left pane (Figma 13202-77526): drag the divider between 460 and 640px. */
 const PANE_MIN = 460
@@ -265,15 +260,8 @@ export function MinutesTab() {
   const [bannerOpen, setBannerOpen] = useState(true)
   const [outlineExpanded, setOutlineExpanded] = useState(false)
 
-  /* Brief / detailed: the title's "Brief version" toggle sets every block; a
-     block's corner switch overrides just that block. Flipping the title toggle
-     clears the overrides so all blocks follow it again. */
+  /* Brief / detailed version of every block — the title's "Brief version" toggle. */
   const [format, setFormat] = useState<MinutesFormat>('detailed')
-  const [blockFormat, setBlockFormat] = useState<Record<number, MinutesFormat>>({})
-  const formatOf = (num: number) => blockFormat[num] ?? format
-  const changeFormat = (f: MinutesFormat) => { setFormat(f); setBlockFormat({}) }
-  const toggleBlockFormat = (num: number) =>
-    setBlockFormat(prev => ({ ...prev, [num]: formatOf(num) === 'brief' ? 'detailed' : 'brief' }))
 
   /* Ordered list of action items across all blocks — the set the banner steps
      through. */
@@ -368,7 +356,7 @@ export function MinutesTab() {
   const copyAll = async (text: string, message: string) => {
     if (await writeClipboard(text)) toastRef.current?.add({ state: 'success', message })
   }
-  const minutesText = () => BLOCKS.map(b => blockText(b, formatOf(b.num))).join('\n\n')
+  const minutesText = () => BLOCKS.map(b => blockText(b, format)).join('\n\n')
 
   /* Left-pane width. Pointer capture keeps the drag alive outside the 8px grab
      area; width is clamped on every move so it can never leave 460–640. */
@@ -487,7 +475,7 @@ export function MinutesTab() {
                   className={styles.briefToggle}
                   label="Brief version"
                   checked={format === 'brief'}
-                  onChange={e => changeFormat(e.target.checked ? 'brief' : 'detailed')}
+                  onChange={e => setFormat(e.target.checked ? 'brief' : 'detailed')}
                 />
               </div>
 
@@ -534,8 +522,7 @@ export function MinutesTab() {
                   const idx = block.action
                     ? actionItems.findIndex(a => a.id === block.action!.id)
                     : -1
-                  const brief = formatOf(block.num) === 'brief'
-                  const switchLabel = brief ? 'Show detailed version' : 'Show brief version'
+                  const brief = format === 'brief'
                   return (
                     <article key={block.num} ref={el => { blockRefs.current[block.num] = el }} className={styles.block}>
                       <header className={styles.blockHead}>
@@ -544,15 +531,7 @@ export function MinutesTab() {
                       </header>
 
                       <HoverBar label={`Section ${block.num} actions`} placement="corner">
-                        <Tooltip label={switchLabel} position="top">
-                          <Button
-                            variant="tertiary" intent="neutral" size="m"
-                            iconOnly={<Icon svg={brief ? detailedSvg : briefSvg} />}
-                            onClick={() => toggleBlockFormat(block.num)}
-                            aria-label={`${switchLabel} of ${block.num}. ${block.title}`}
-                          />
-                        </Tooltip>
-                        <CopyButton text={blockText(block, formatOf(block.num))} label={`Copy section ${block.num}. ${block.title}`} />
+                        <CopyButton text={blockText(block, format)} label={`Copy section ${block.num}. ${block.title}`} />
                       </HoverBar>
 
                       {brief ? (

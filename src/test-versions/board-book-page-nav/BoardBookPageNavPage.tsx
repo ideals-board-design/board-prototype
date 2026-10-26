@@ -13,10 +13,20 @@
      • Version 3 — Reading mode: full-area document, floating control bar,
        table of content panel, reading progress, focus mode
        (BoardBookReadingViewer)
+     • Version 4 — Version 3 with highlight / comment in the top bar; the
+       bottom bar has page and document navigation, zoom, fit width and focus
+       (BoardBookReadingViewer toolsIn="top", based on Figma 32290-235596)
+     • Version 5 — floating side cards like a document viewer: page / zoom /
+       fullscreen (left bottom), search · Ask AI · annotations (right top);
+       agenda toggle, document stepping and Download in the top bar
+       (BoardBookReadingViewer toolsIn="cards")
+     • Version 6 — every tool in one top bar (pages, zoom, fit / focus,
+       comment · draw · highlight, search · download · Ask AI), no bottom bar
+       (BoardBookReadingViewer toolsIn="single", Figma 32301-237198)
      • Reports — all reports on one page with side navigation (ReportsPage):
        design review (DESIGN_REVIEW.md), usability study (usability-study.json,
        the PPTX is generated from the same file) and UX audit (ux-audit.json)
-   Tabs are labelled by number only (Version 1–3), plus Report and "Only
+   Tabs are labelled by number only (Version 1–6), plus Report and "Only
    document toggle". */
 
 import { useEffect, useState } from 'react'
@@ -52,12 +62,15 @@ const USER = {
 
 const initialReportTabs = ['report', 'study', 'audit']
 
-type VersionTab = 'v1' | 'v2' | 'v3' | 'reports'
+type VersionTab = 'v1' | 'v2' | 'v3' | 'v4' | 'v5' | 'v6' | 'reports'
 
 const TABS: TabItem[] = [
   { id: 'v1', label: 'Version 1' },
   { id: 'v2', label: 'Version 2' },
   { id: 'v3', label: 'Version 3' },
+  { id: 'v4', label: 'Version 4' },
+  { id: 'v5', label: 'Version 5' },
+  { id: 'v6', label: 'Version 6' },
   { id: 'reports', label: 'Reports' },
 ]
 
@@ -74,7 +87,6 @@ export default function BoardBookPageNavPage() {
   const [activeTab, setActiveTab] = useState<VersionTab>(() => {
     const t = new URLSearchParams(window.location.search).get('tab')
     if (initialReportTabs.includes(t ?? '')) return 'reports'
-    if (t === 'v4') return 'v2' // Version 4 became Version 2 (2026-10-22)
     return TABS.some(x => x.id === t) ? (t as VersionTab) : 'v1'
   })
 
@@ -138,6 +150,9 @@ export default function BoardBookPageNavPage() {
           {activeTab === 'v1' && <BoardBookPageNavViewer layout="full" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'v2' && <BoardBookDocNavViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'v3' && <BoardBookReadingViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v4' && <BoardBookReadingViewer key="v4" toolsIn="top" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v5' && <BoardBookReadingViewer key="v5" toolsIn="cards" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v6' && <BoardBookReadingViewer key="v6" toolsIn="single" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'reports' && <ReportsPage initial={initialReport} onOpenVersion={setActiveTab} />}
         </div>
       </main>
