@@ -71,6 +71,9 @@
    and drops the zoom stepper when the viewer gets too narrow for it. */
 .main { container-type: inline-size; }
 .singleActions { margin-left: auto; }
+@container (max-width: 860px) {
+  .topBarSingle .docSelectWrap { display: none; }
+}
 @container (max-width: 720px) {
   .singleZoom { display: none; }
 }
@@ -367,4 +370,12 @@
   height: 1px;
   margin: var(--space-4) 0;
   background: var(--color-border);
+}
+
+/* Pressed toggles (agenda, Search, Ask AI, tools) keep the pressed fill while
+   hovered — the DS tertiary :hover rule would otherwise paint over
+   data-state="active" and the button would read as not pressed. */
+.viewer button[aria-pressed='true'][data-state='active']:hover:not(:disabled) {
+  background: var(--color-bg-hover-fill-strong);
+  color: var(--color-text-primary);
 }

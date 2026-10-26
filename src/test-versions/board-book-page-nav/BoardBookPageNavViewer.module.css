@@ -870,3 +870,11 @@
   .toolbar { gap: var(--space-8); padding: var(--space-8) var(--space-12); }
   .toolbarRow { gap: var(--space-8); }
 }
+
+/* Pressed toggles (agenda, Search, Ask AI, tools) keep the pressed fill while
+   hovered — the DS tertiary :hover rule would otherwise paint over
+   data-state="active" and the button would read as not pressed. */
+.viewer button[aria-pressed='true'][data-state='active']:hover:not(:disabled) {
+  background: var(--color-bg-hover-fill-strong);
+  color: var(--color-text-primary);
+}

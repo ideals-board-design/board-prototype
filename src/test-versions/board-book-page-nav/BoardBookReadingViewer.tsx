@@ -162,7 +162,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   const [focus, setFocus] = useState(false)
   const [toolsOpen, setToolsOpen] = useState(false)
   /* Small desktop: a side panel collapses the agenda so the page stays readable. */
-  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen)
+  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen, () => setRightPanel(null))
   /* Scroll box content size — drives fit width / fit page. */
   const [box, setBox] = useState({ w: 0, h: 0 })
 
@@ -325,7 +325,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 aria-pressed={tocOpen}
                 data-state={tocOpen ? 'active' : undefined}
                 iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
-                onClick={() => { markTocManual(); setTocOpen(o => !o) }}
+                onClick={() => { markTocManual(!tocOpen); setTocOpen(o => !o) }}
                 aria-label="Toggle table of content"
               />
             </Tooltip>

@@ -6,7 +6,8 @@
    panel collapses the agenda; closing the panel restores it — but only if the
    hook collapsed it. Toggling the agenda by hand (call the returned
    `markManual`) hands control back to the reader. Same rule as the Meeting
-   page's BoardBookViewer. */
+   page's BoardBookViewer. It works both ways: opening the agenda by hand
+   below 1800px closes the Search / Ask AI panel (`closeSidePanel`). */
 
 import { useEffect, useRef, useState } from 'react'
 
@@ -15,7 +16,8 @@ const NARROW = '(max-width: 1799px)'
 export function useTocAutoCollapse(
   sidePanelOpen: boolean,
   setTocOpen: (update: (open: boolean) => boolean) => void,
-): () => void {
+  closeSidePanel?: () => void,
+): (opening?: boolean) => void {
   const [narrow, setNarrow] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(NARROW).matches,
   )
@@ -39,5 +41,8 @@ export function useTocAutoCollapse(
     }
   }, [sidePanelOpen, narrow, setTocOpen])
 
-  return () => { autoClosed.current = false }
+  return opening => {
+    autoClosed.current = false
+    if (opening && narrow) closeSidePanel?.()
+  }
 }

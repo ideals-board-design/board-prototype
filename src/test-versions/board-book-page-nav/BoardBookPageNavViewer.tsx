@@ -160,7 +160,7 @@ export default function BoardBookPageNavViewer({
   const [fullscreen, setFullscreen] = useState(false)
   const [comments, setComments] = useState<CommentPin[]>([])
   /* Small desktop: a side panel collapses the agenda so the page stays readable. */
-  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen)
+  const markTocManual = useTocAutoCollapse(rightPanel !== null, setTocOpen, () => setRightPanel(null))
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const commentSeq = useRef(0)
@@ -301,7 +301,7 @@ export default function BoardBookPageNavViewer({
               aria-pressed={tocOpen}
               data-state={tocOpen ? 'active' : undefined}
               iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
-              onClick={() => { markTocManual(); setTocOpen(o => !o) }}
+              onClick={() => { markTocManual(!tocOpen); setTocOpen(o => !o) }}
               aria-label="Toggle table of content"
             />
           </Tooltip>
