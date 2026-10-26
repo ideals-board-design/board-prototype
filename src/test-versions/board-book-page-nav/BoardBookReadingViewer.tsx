@@ -37,11 +37,20 @@
    documents) | prev doc · prev · page / total · next · next doc | zoom out ·
    % · zoom in | fit width · focus mode | comment · drawing · highlight |
    search · download · Ask AI. The top bar stays in focus mode, since it holds
-   the way back. Phones use the Version 3 layout. */
+   the way back. The agenda, Search and Ask AI buttons have no pressed state
+   while their panel is open (the open panel is the feedback); the full-screen
+   button is a toggle — its icon switches to
+   collapse while on (as in the product). Page and document arrows loop (previous on the first goes to
+   the last, next on the last to the first) instead of disabling. Below 1024px (tablet portrait and phones, Figma 31900-61657)
+   an "Agenda | Board book" segment control switches between the agenda, full
+   width, and the document with its toolbar: zoom in · zoom out · fit width ·
+   focus | draw · highlight · comment · download · search · Ask AI. Picking a
+   document in the agenda opens it in the Board book segment. */
 
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { Button } from '../../components/Button/Button'
 import { Tooltip } from '../../components/Tooltip/Tooltip'
+import { SegmentControl } from '../../components/SegmentControl/SegmentControl'
 import { actions } from '../../icons/actions'
 import { arrows } from '../../icons/arrows'
 import { communication } from '../../icons/communication'
@@ -52,6 +61,7 @@ import {
   MOCK_BOARD_BOOK,
   docAtPage,
   firstDocOfItem,
+  flatDocByName,
   type BoardBook,
   type BoardBookDoc,
   type BoardBookItem,
@@ -67,7 +77,7 @@ import styles from './BoardBookReadingViewer.module.css'
 /** Version 6 viewer widths: from SINGLE_BAR_FULL the whole bar fits; between
     SINGLE_BAR_MIN and it, view and annotation tools fold into two dropdowns
     (Figma 32353-31685); below SINGLE_BAR_MIN they fold into the dots sheet. */
-const SINGLE_BAR_FULL = 960
+const SINGLE_BAR_FULL = 920
 const SINGLE_BAR_MIN = 700
 
 const icon = (set: { name: string; svg: string }[], name: string) =>
@@ -77,6 +87,9 @@ const tocOpenSvg    = icon(actions, 'sidebar-opened')
 const tocClosedSvg  = icon(actions, 'sidebar-closed')
 const prevSvg       = icon(arrows, 'angle-left-b')
 const nextSvg       = icon(arrows, 'angle-right-b')
+/* Version 6 page arrows: the smaller DS fill chevrons (7×12). */
+const prevFillSvg   = icon(arrows, 'angle-left-fill')
+const nextFillSvg   = icon(arrows, 'angle-right-fill')
 /* Document stepping = skip icons (|< and >|), distinct from the page chevrons. */
 const prevDocSvg    = icon(custom, 'skip-previous')
 const nextDocSvg    = icon(custom, 'skip-next')
@@ -93,6 +106,8 @@ const focusSvg      = icon(arrows, 'arrow-resize-diagonal')
 const fitPageSvg    = icon(actions, 'fit-page')
 const actualSizeSvg = icon(arrows, 'arrow-resize-back-diagonal')
 const toolsSvg      = icon(functional, 'ellipsis-h')
+const ANNOT_ICON = { comment: commentSvg, draw: drawingSvg, highlight: highlightSvg } as const
+const ANNOT_LABEL = { comment: 'Comment', draw: 'Draw', highlight: 'Highlight' } as const
 const chevronUpSvg  = icon(arrows, 'angle-up-fill')
 const chevronDownSvg = icon(arrows, 'angle-down-fill')
 
@@ -142,16 +157,28 @@ export interface BoardBookReadingViewerProps {
       annotations in the top bar (Version 4), floating side cards (Version 5),
       or everything in one top bar (Version 6). */
   toolsIn?: 'bar' | 'top' | 'cards' | 'single'
+  /** Open this document first — a name picked from the agenda (main prototype). */
+  initialDocName?: string | null
 }
 
-export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar' }: BoardBookReadingViewerProps) {
+export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar', initialDocName = null }: BoardBookReadingViewerProps) {
   const isNarrow = useMediaQuery('(max-width: 767px)')
   /* Version 4 on tablet / desktop: annotations in the top bar. */
   const toolsTop = toolsIn === 'top' && !isNarrow
   /* Version 5 on tablet / desktop: floating side cards instead of the bar. */
   const cards = toolsIn === 'cards' && !isNarrow
   /* Version 6 on tablet / desktop: one top bar, no bottom bar. */
-  const single = toolsIn === 'single' && !isNarrow
+  /* Version 6 below 1024px: Agenda | Board book segments instead of panels. */
+  const isTabletDown = useMediaQuery('(max-width: 1023px)')
+  const segmented = toolsIn === 'single' && isTabletDown
+  const [segView, setSegView] = useState<'agenda' | 'book'>('agenda')
+  /* Version 6 phones (< 640px): their own bar — pages · Search · Ask AI · dots;
+     the dots open the bottom Document tools sheet (Figma breakpoints). */
+  const isMobile = useMediaQuery('(max-width: 639px)')
+  const mobileBar = toolsIn === 'single' && isMobile
+  /* The one-bar layout — desktop, laptop and (inside the Board book segment)
+     tablets. */
+  const single = toolsIn === 'single' && !isMobile
   /* Version 6 when the viewer is too narrow for the whole bar: zoom, fit /
      focus and annotations fold into the dots "Document tools" button, as on
      phones in the other versions. */
@@ -164,10 +191,12 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
     ro.observe(el)
     return () => ro.disconnect()
   }, [])
-  const singleCompact = single && mainWidth > 0 && mainWidth < SINGLE_BAR_MIN
-  const singleGrouped = single && mainWidth >= SINGLE_BAR_MIN && mainWidth < SINGLE_BAR_FULL
-  /* Version 6 grouped bar: which tool dropdown is open. */
-  const [toolMenu, setToolMenu] = useState<null | 'view' | 'annotate'>(null)
+  /* "For tablets": tablets always, laptops when the viewer is < 700px. */
+  const singleCompact = single && (segmented || (mainWidth > 0 && mainWidth < SINGLE_BAR_MIN))
+  const singleGrouped = single && !singleCompact && mainWidth >= SINGLE_BAR_MIN && mainWidth < SINGLE_BAR_FULL
+  /* Version 6 bar: which tool dropdown is open (view options, annotations, or
+     the dots Document tools menu). */
+  const [toolMenu, setToolMenu] = useState<null | 'view' | 'annotate' | 'tools'>(null)
   const toolMenuRef = useRef<HTMLDivElement>(null)
   const [zoomMenuOpen, setZoomMenuOpen] = useState(false)
   const zoomMenuRef = useRef<HTMLDivElement>(null)
@@ -177,6 +206,9 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   const [zoom, setZoom] = useState(100)
   const [fit, setFit] = useState<Fit>('none')
   const [tool, setTool] = useState<Tool>('none')
+  /* Last annotation tool picked — the Version 6 split toggle button shows and
+     toggles it (Google Docs style); the chevron next to it picks another. */
+  const [lastAnnot, setLastAnnot] = useState<Exclude<Tool, 'none'>>('comment')
   const [comments, setComments] = useState<CommentPin[]>([])
   const [rightPanel, setRightPanel] = useState<RightPanel>(null)
   const [tocOpen, setTocOpen] = useState(false)
@@ -217,6 +249,13 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
      besides "next page" on the last page (the document itself can't carry it). */
   const prevDoc = current ? book.flatDocs[current.index - 1] : undefined
   const nextDoc = current ? book.flatDocs[current.index + 1] : undefined
+  /* Version 6 loops instead of disabling at the ends: previous from the first
+     document / page goes to the last, next from the last goes to the first. */
+  const loopNav = toolsIn === 'single'
+  const prevDocLoop = prevDoc ?? (loopNav ? book.flatDocs[book.flatDocs.length - 1] : undefined)
+  const nextDocLoop = nextDoc ?? (loopNav ? book.flatDocs[0] : undefined)
+  const prevPageLoop = page > 1 ? page - 1 : book.totalPages
+  const nextPageLoop = page < book.totalPages ? page + 1 : 1
 
   /* ── Sheet width: fixed zoom, fit width or fit page (from the box size). ── */
   const [ratioW, ratioH] = Q4_PAGE_RATIO.split('/').map(Number)
@@ -289,15 +328,25 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
     setZoom(Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(zoomPct / ZOOM_STEP) * ZOOM_STEP + delta)))
   }
   const toggleFit = (f: Exclude<Fit, 'none'>) => setFit(prev => (prev === f ? 'none' : f))
-  const toggleTool = (t: Exclude<Tool, 'none'>) => setTool(prev => (prev === t ? 'none' : t))
+  const toggleTool = (t: Exclude<Tool, 'none'>) => { setLastAnnot(t); setTool(prev => (prev === t ? 'none' : t)) }
+  const pickTool = (t: Exclude<Tool, 'none'>) => { setLastAnnot(t); setTool(t) }
   const toggleRightPanel = (p: Exclude<RightPanel, null>) =>
     setRightPanel(prev => (prev === p ? null : p))
 
-  const selectDoc = (fd: FlatDoc) => { goToPage(fd.startPage); setNavPopoverOpen(false) }
+  const selectDoc = (fd: FlatDoc) => { goToPage(fd.startPage); setNavPopoverOpen(false); setSegView('book') }
   const selectItem = (item: BoardBookItem) => {
     const fd = firstDocOfItem(book, item.id)
     if (fd) selectDoc(fd)
   }
+
+  /* Opened from the agenda: jump to that document (Board book segment on
+     tablets / phones). */
+  useEffect(() => {
+    if (!initialDocName) return
+    const fd = flatDocByName(book, initialDocName)
+    if (fd) { goToPage(fd.startPage); setSegView('book') }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialDocName, book])
 
   useEffect(() => {
     if (!zoomMenuOpen) return
@@ -315,19 +364,19 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
     document.addEventListener('keydown', onKey)
     return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey) }
   }, [toolMenu])
-  useEffect(() => { if (!singleGrouped) setToolMenu(null) }, [singleGrouped])
+  useEffect(() => { setToolMenu(null) }, [singleGrouped, singleCompact])
 
   const setZoomTo = (pct: number) => { setFit('none'); setZoom(Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, pct))); setZoomMenuOpen(false) }
   const applyZoomDraft = () => { const n = parseInt(zoomDraft.match(/\d+/)?.[0] ?? '', 10); if (n) setZoomTo(n) }
 
-  const barBtn = (label: string, svg: string, onClick: () => void, opts: { active?: boolean; disabled?: boolean; tip?: 'top' | 'bottom' | 'left' | 'right'; small?: boolean } = {}) => (
+  const barBtn = (label: string, svg: string, onClick: () => void, opts: { active?: boolean; disabled?: boolean; tip?: 'top' | 'bottom' | 'left' | 'right' } = {}) => (
     <Tooltip label={label} position={opts.tip ?? 'top'}>
       <Button
         variant="tertiary" intent="neutral" size="m"
         aria-pressed={opts.active}
         data-state={opts.active ? 'active' : undefined}
         disabled={opts.disabled}
-        iconOnly={opts.small ? <span className={styles.iconSmall}><Ico svg={svg} /></span> : <Ico svg={svg} />}
+        iconOnly={<Ico svg={svg} />}
         onClick={onClick}
         aria-label={label}
       />
@@ -358,9 +407,28 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   )
 
   return (
-    <div className={[styles.viewer, focus ? styles.focus : ''].filter(Boolean).join(' ')}>
+    <div className={[styles.viewer, focus ? styles.focus : '', segmented ? styles.segmented : ''].filter(Boolean).join(' ')}>
+      {/* ── Version 6 below 1024px: Agenda | Board book segments ─────────── */}
+      {segmented && !focus && (
+        <>
+          <div className={styles.segBar}>
+            <SegmentControl
+              size="s"
+              items={[{ id: 'agenda', label: 'Agenda' }, { id: 'book', label: 'Board book' }]}
+              value={segView}
+              onChange={id => setSegView(id as 'agenda' | 'book')}
+            />
+          </div>
+          {segView === 'agenda' && (
+            <nav className={styles.segToc} aria-label="Board book contents">
+              <TocPanel book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
+            </nav>
+          )}
+        </>
+      )}
+
       {/* ── Agenda (table of contents) panel — hidden in focus mode ─────── */}
-      {tocOpen && !focus && (
+      {tocOpen && !focus && !segmented && (
         <>
           <nav className={styles.toc} style={{ width: tocWidth }} aria-label="Board book contents">
             <TocPanel book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
@@ -370,19 +438,50 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
         </>
       )}
 
-      <div ref={mainRef} className={styles.main}>
+      <div ref={mainRef} className={[styles.main, segmented && segView === 'agenda' && !focus ? styles.segHidden : ''].filter(Boolean).join(' ')}>
+        {/* ── Version 6 phones: pages · Search · Ask AI · dots ─────────────── */}
+        {mobileBar && (
+          <div className={[styles.topBar, styles.topBarSegmented].join(' ')} role="toolbar" aria-label="Document tools">
+            <div className={styles.barGroup}>
+              {barBtn(prevDocLoop ? `Previous document: ${prevDocLoop.doc.name}` : 'Previous document', prevDocSvg,
+                () => prevDocLoop && goToPage(prevDocLoop.startPage), { disabled: !prevDocLoop, tip: 'bottom' })}
+              {barBtn('Previous page', prevFillSvg, () => goToPage(prevPageLoop), { tip: 'bottom' })}
+              <div className={styles.pageCount}>
+                <input
+                  className={styles.pageInput}
+                  type="text"
+                  inputMode="numeric"
+                  value={page}
+                  aria-label="Current page"
+                  onChange={e => { const n = Number(e.target.value.replace(/\D/g, '')); if (n) goToPage(n) }}
+                />
+                <span className={styles.pageTotal}>/ {book.totalPages}</span>
+              </div>
+              {barBtn('Next page', nextFillSvg, () => goToPage(nextPageLoop), { tip: 'bottom' })}
+              {barBtn(nextDocLoop ? `Next document: ${nextDocLoop.doc.name}` : 'Next document', nextDocSvg,
+                () => nextDocLoop && goToPage(nextDocLoop.startPage), { disabled: !nextDocLoop, tip: 'bottom' })}
+            </div>
+            <div className={styles.barGroup}>
+              {barBtn('Search', searchSvg, () => toggleRightPanel('search'), { tip: 'bottom' })}
+              {barBtn('Ask AI', aiSvg, () => toggleRightPanel('ai'), { tip: 'bottom' })}
+              {barBtn('Document tools', toolsSvg, () => setToolsOpen(true), { active: toolsOpen, tip: 'bottom' })}
+            </div>
+          </div>
+        )}
+
         {/* ── Top bar (hidden in focus mode) ────────────────────────────── */}
-        {(!focus || single) && (
+        {!mobileBar && (!focus || single) && (
           <div className={[styles.topBar, single ? styles.topBarSingle : ''].filter(Boolean).join(' ')}>
             {/* Version 6: agenda toggle + document dropdown form the left column
                 of its three-column bar; elsewhere the wrapper is display: contents. */}
             <div className={single ? styles.singleLeft : styles.contents}>
-            {!focus && (
+            {!focus && !segmented && (
             <Tooltip label="Table of content" position="bottom">
               <Button
                 variant="tertiary" intent="neutral" size="m"
-                aria-pressed={tocOpen}
-                data-state={tocOpen ? 'active' : undefined}
+                aria-pressed={single ? undefined : tocOpen}
+                aria-expanded={single ? tocOpen : undefined}
+                data-state={tocOpen && !single ? 'active' : undefined}
                 iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
                 onClick={() => { markTocManual(!tocOpen); setTocOpen(o => !o) }}
                 aria-label="Toggle table of content"
@@ -390,7 +489,9 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
             </Tooltip>
             )}
 
-            {!(single && focus) && (
+            {/* The agenda lists the documents, so the dropdown is hidden while
+                it is open in the narrow (For tablets) laptop bar. */}
+            {!(single && (focus || (singleCompact && !segmented && tocOpen))) && (
             <div className={styles.docSelectWrap}>
               <button
                 type="button"
@@ -423,9 +524,9 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                  then into the dots sheet. */
               <>
                 <div className={styles.barGroup}>
-                  {barBtn(prevDoc ? `Previous document: ${prevDoc.doc.name}` : 'Previous document', prevDocSvg,
-                    () => prevDoc && goToPage(prevDoc.startPage), { disabled: !prevDoc, tip: 'bottom', small: true })}
-                  {barBtn('Previous page', prevSvg, () => goToPage(page - 1), { disabled: page <= 1, tip: 'bottom', small: true })}
+                  {barBtn(prevDocLoop ? `Previous document: ${prevDocLoop.doc.name}` : 'Previous document', prevDocSvg,
+                    () => prevDocLoop && goToPage(prevDocLoop.startPage), { disabled: !prevDocLoop, tip: 'bottom' })}
+                  {barBtn('Previous page', prevFillSvg, () => goToPage(prevPageLoop), { tip: 'bottom' })}
                   <div className={styles.pageCount}>
                     <input
                       className={styles.pageInput}
@@ -437,9 +538,9 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                     />
                     <span className={styles.pageTotal}>/ {book.totalPages}</span>
                   </div>
-                  {barBtn('Next page', nextSvg, () => goToPage(page + 1), { disabled: page >= book.totalPages, tip: 'bottom', small: true })}
-                  {barBtn(nextDoc ? `Next document: ${nextDoc.doc.name}` : 'Next document', nextDocSvg,
-                    () => nextDoc && goToPage(nextDoc.startPage), { disabled: !nextDoc, tip: 'bottom', small: true })}
+                  {barBtn('Next page', nextFillSvg, () => goToPage(nextPageLoop), { tip: 'bottom' })}
+                  {barBtn(nextDocLoop ? `Next document: ${nextDocLoop.doc.name}` : 'Next document', nextDocSvg,
+                    () => nextDocLoop && goToPage(nextDocLoop.startPage), { disabled: !nextDocLoop, tip: 'bottom' })}
                 </div>
               <div className={styles.singleActions} ref={toolMenuRef}>
                 <div className={styles.barGroup}>
@@ -459,12 +560,45 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                           {menuRow('Fit to page', fitPageSvg, fit === 'page', () => setFit('page'))}
                           {menuRow('Actual size (100%)', actualSizeSvg, fit === 'none' && zoom === 100, () => { setFit('none'); setZoom(100) })}
                           <span className={styles.zoomMenuDivider} aria-hidden="true" />
-                          {menuRow('Focus mode', focusSvg, focus, () => setFocus(f => !f))}
+                          {menuRow(focus ? 'Exit full screen' : 'Full screen', focus ? actualSizeSvg : focusSvg, focus, () => setFocus(f => !f))}
                         </div>
                       )}
                     </div>
                   ) : singleCompact ? (
-                    barBtn('Document tools', toolsSvg, () => setToolsOpen(true), { active: tool !== 'none' || fit !== 'none' || focus, tip: 'bottom' })
+                    /* For tablets: the dots open one menu with view options and
+                       annotation tools (Figma breakpoints, Document tools open). */
+                    <div className={styles.toolMenuWrap}>
+                      <Tooltip label="Document tools" position="bottom">
+                        <Button
+                          variant="tertiary" intent="neutral" size="m"
+                          aria-haspopup="menu"
+                          aria-expanded={toolMenu === 'tools'}
+                          aria-label="Document tools"
+                          data-state={toolMenu === 'tools' ? 'active' : undefined}
+                          iconOnly={<Ico svg={toolsSvg} />}
+                          onClick={() => setToolMenu(m => (m === 'tools' ? null : 'tools'))}
+                        />
+                      </Tooltip>
+                      {toolMenu === 'tools' && (
+                        <div className={[styles.toolMenu, styles.toolMenuEnd].join(' ')} role="menu" aria-label="Document tools">
+                          <div className={styles.toolMenuZoom} role="group" aria-label="Zoom">
+                            <span className={styles.toolMenuLabel}>Zoom</span>
+                            {barBtn('Zoom out', zoomOutSvg, () => zoomBy(-ZOOM_STEP), { disabled: zoomPct <= ZOOM_MIN, tip: 'bottom' })}
+                            <span className={styles.zoomValue} aria-live="polite">{zoomPct}%</span>
+                            {barBtn('Zoom in', zoomInSvg, () => zoomBy(ZOOM_STEP), { disabled: zoomPct >= ZOOM_MAX, tip: 'bottom' })}
+                          </div>
+                          <span className={styles.zoomMenuDivider} aria-hidden="true" />
+                          {menuRow('Fit to width', fitWidthSvg, fit === 'width', () => setFit('width'))}
+                          {menuRow('Fit to page', fitPageSvg, fit === 'page', () => setFit('page'))}
+                          {menuRow('Actual size (100%)', actualSizeSvg, fit === 'none' && zoom === 100, () => { setFit('none'); setZoom(100) })}
+                          {menuRow(focus ? 'Exit full screen' : 'Full screen', focus ? actualSizeSvg : focusSvg, focus, () => setFocus(f => !f))}
+                          <span className={styles.zoomMenuDivider} aria-hidden="true" />
+                          {menuRow('Comment', commentSvg, tool === 'comment', () => toggleTool('comment'))}
+                          {menuRow('Draw', drawingSvg, tool === 'draw', () => toggleTool('draw'))}
+                          {menuRow('Highlight', highlightSvg, tool === 'highlight', () => toggleTool('highlight'))}
+                        </div>
+                      )}
+                    </div>
                   ) : (
                     <>
                       {barBtn('Zoom out', zoomOutSvg, () => zoomBy(-ZOOM_STEP), { disabled: zoomPct <= ZOOM_MIN, tip: 'bottom' })}
@@ -472,7 +606,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                       {barBtn('Zoom in', zoomInSvg, () => zoomBy(ZOOM_STEP), { disabled: zoomPct >= ZOOM_MAX, tip: 'bottom' })}
                       <span className={styles.groupGap} aria-hidden="true" />
                       {barBtn('Fit width', fitWidthSvg, () => toggleFit('width'), { active: fit === 'width', tip: 'bottom' })}
-                      {barBtn(focus ? 'Exit focus mode' : 'Focus mode', focusSvg, () => setFocus(f => !f), { active: focus, tip: 'bottom' })}
+                      {barBtn(focus ? 'Exit full screen' : 'Full screen', focus ? actualSizeSvg : focusSvg, () => setFocus(f => !f), { tip: 'bottom' })}
                     </>
                   )}
                 </div>
@@ -480,12 +614,27 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 <div className={styles.singleRight}>
                   {singleGrouped ? (
                     <div className={styles.toolMenuWrap}>
-                      {menuBtn('annotate', 'Annotations', tool === 'draw' ? drawingSvg : tool === 'highlight' ? highlightSvg : commentSvg, tool !== 'none')}
+                      {/* Split toggle: the button toggles the last-picked tool on / off,
+                          the separate chevron opens the list to pick another one. */}
+                      <div className={styles.splitBtn}>
+                        {barBtn(ANNOT_LABEL[lastAnnot], ANNOT_ICON[lastAnnot], () => toggleTool(lastAnnot), { active: tool === lastAnnot, tip: 'bottom' })}
+                        <Tooltip label="Annotation tools" position="bottom">
+                          <Button
+                            variant="tertiary" intent="neutral" size="m"
+                            aria-haspopup="menu"
+                            aria-expanded={toolMenu === 'annotate'}
+                            aria-label="Annotation tools"
+                            data-state={toolMenu === 'annotate' ? 'active' : undefined}
+                            iconOnly={<Ico svg={toolMenu === 'annotate' ? chevronUpSvg : chevronDownSvg} />}
+                            onClick={() => setToolMenu(m => (m === 'annotate' ? null : 'annotate'))}
+                          />
+                        </Tooltip>
+                      </div>
                       {toolMenu === 'annotate' && (
-                        <div className={styles.toolMenu} role="menu" aria-label="Annotations">
-                          {menuRow('Comment', commentSvg, tool === 'comment', () => toggleTool('comment'))}
-                          {menuRow('Draw', drawingSvg, tool === 'draw', () => toggleTool('draw'))}
-                          {menuRow('Highlight', highlightSvg, tool === 'highlight', () => toggleTool('highlight'))}
+                        <div className={styles.toolMenu} role="menu" aria-label="Annotation tools">
+                          {menuRow('Comment', commentSvg, tool === 'comment', () => pickTool('comment'))}
+                          {menuRow('Draw', drawingSvg, tool === 'draw', () => pickTool('draw'))}
+                          {menuRow('Highlight', highlightSvg, tool === 'highlight', () => pickTool('highlight'))}
                         </div>
                       )}
                     </div>
@@ -497,9 +646,9 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                     </div>
                   )}
                   <div className={styles.barGroup}>
-                    {barBtn('Search', searchSvg, () => toggleRightPanel('search'), { active: rightPanel === 'search', tip: 'bottom' })}
+                    {barBtn('Search', searchSvg, () => toggleRightPanel('search'), { tip: 'bottom' })}
                     {barBtn('Download', downloadSvg, () => console.log('download board book'), { tip: 'bottom' })}
-                    {barBtn('Ask AI', aiSvg, () => toggleRightPanel('ai'), { active: rightPanel === 'ai', tip: 'bottom' })}
+                    {barBtn('Ask AI', aiSvg, () => toggleRightPanel('ai'), { tip: 'bottom' })}
                   </div>
                 </div>
               </div>
@@ -646,7 +795,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
           )}
 
           {/* Floating control bar — always visible (not in Versions 5 / 6 on desktop). */}
-          {!cards && !single && (
+          {!cards && !single && !segmented && (
           <div
             className={styles.controlBar}
             role="toolbar"
@@ -717,7 +866,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
       </div>
 
       {/* Phone "Document tools" sheet (shared with Version 2). */}
-      {(isNarrow || singleCompact) && (
+      {((isNarrow && toolsIn !== 'single') || mobileBar) && (
         <DocumentToolsSheet
           open={toolsOpen}
           onClose={() => setToolsOpen(false)}
@@ -731,7 +880,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
             { key: 'fit-page', label: 'Fit to page', icon: fitPageSvg, selected: fit === 'page', onPick: () => setFit('page') },
             { key: 'actual', label: 'Actual size (100%)', icon: actualSizeSvg, selected: fit === 'none' && zoom === 100,
               onPick: () => { setFit('none'); setZoom(100) } },
-            { key: 'fullscreen', label: 'Fullscreen', icon: focusSvg, selected: focus, onPick: () => setFocus(f => !f) },
+            { key: 'fullscreen', label: toolsIn === 'single' ? 'Full screen' : 'Fullscreen', icon: focusSvg, selected: focus, onPick: () => setFocus(f => !f) },
           ]}
           toolRows={toolsIn === 'single'
             /* Version 6: same order as its top bar — comment · draw · highlight. */
@@ -739,6 +888,8 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
               { key: 'comment', label: 'Add comment', icon: commentSvg, selected: tool === 'comment', onPick: () => toggleTool('comment') },
               { key: 'draw', label: 'Draw', icon: drawingSvg, selected: tool === 'draw', onPick: () => toggleTool('draw') },
               { key: 'highlight', label: 'Highlight', icon: highlightSvg, selected: tool === 'highlight', onPick: () => toggleTool('highlight') },
+              /* Phones: Download moves from the bar into the sheet. */
+              { key: 'download', label: 'Download', icon: downloadSvg, onPick: () => console.log('download board book') },
             ]
             : [
               { key: 'highlight', label: 'Highlight', icon: highlightSvg, selected: tool === 'highlight', onPick: () => toggleTool('highlight') },
