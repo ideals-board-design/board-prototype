@@ -58,6 +58,12 @@ const FEATURES: { id: string; name: string; designer: string; href?: string; vie
     view: 'meeting',
   },
   {
+    id: 'meet-to-vtt',
+    name: 'Convert a Google Meet transcript to VTT',
+    designer: 'Elena Skurtova',
+    href: '/vtt.html',
+  },
+  {
     id: 'public-page',
     name: 'Public page',
     designer: 'Elena Skurtova',
