@@ -1,7 +1,7 @@
 /* VttConverterPage — "Convert a Google Meet transcript to VTT" (hub utility).
 
    Integrates the standalone meet-to-vtt tool (logic in meetToVtt.ts, ported
-   unchanged) into the Board UI. Layout per Figma Meetings 32478-293758 /
+   from it, incl. the Notes by Gemini layout) into the Board UI. Layout per Figma Meetings 32478-293758 /
    Section 5 (32251-171315): Board logo centred on the page, the title inside
    the card, then three steps in one card:
      1. Upload   — how-to steps, drop zone + "Choose .txt file". Gate 1
@@ -40,7 +40,7 @@ const MIN_PROCESSING_MS = 1500
 type Step = 'upload' | 'processing' | 'result'
 
 const HOW_TO = [
-  <>Open the meeting transcript in Google Docs. It’s in the organiser’s Google Drive, in the <strong>Meet Recordings</strong> folder, and linked from the calendar event.</>,
+  <>Open the meeting transcript in Google Docs. It’s in the organiser’s Google Drive, in the <strong>Meet Recordings</strong> folder, and linked from the calendar event. If it’s in a <strong>Notes by Gemini</strong> document, open its <strong>Transcript</strong> tab.</>,
   <>In Google Docs, select <strong>File → Download → Plain text (.txt)</strong>.</>,
   <>Upload the downloaded .txt file below.</>,
 ]

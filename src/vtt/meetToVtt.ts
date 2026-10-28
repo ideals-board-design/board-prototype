@@ -1,5 +1,6 @@
 /* meetToVtt — Google Meet transcript (.txt export) → Zoom-style WebVTT.
-   Ported as-is from the standalone meet-to-vtt tool; no dependencies.
+   Ported from the standalone meet-to-vtt tool (incl. the Notes by Gemini
+   layout); no dependencies.
 
    • parseMeet  — header (title, Attendees), time markers, speaker turns.
    • buildCues  — splits turns into ≤ 20-word cues and interpolates times by
@@ -10,7 +11,8 @@
    • checkFile / checkContent — upload gates (type, size, looks like Meet). */
 
 export const MARKER_RE = /^(\d{1,2}):(\d{2}):(\d{2})$/
-export const ENDED_RE = /^Meeting ended after (\d{1,2}):(\d{2}):(\d{2})\b/
+export const ENDED_RE = /^(?:Meeting|Transcription) ended after (\d{1,2}):(\d{2}):(\d{2})\b/
+export const HEADER_RE = /^(?:Transcript|.+ - Transcript)$/
 const DISCLAIMER_RE = /^This editable transcript was computer generated/
 export const SPEAKER_RE = /^([^:\n]{1,80}):\s+(.*)$/
 const MAX_WORDS_PER_CUE = 20
@@ -66,16 +68,30 @@ export function parseMeet(raw: string): Parsed {
   const lines = raw.replace(/^﻿/, '').replace(/\r\n?/g, '\n').split('\n')
   let title: string | null = null, attendees: string[] = [], start = 0
 
-  const tIdx = lines.findIndex(l => l.trim() === 'Transcript')
-  if (tIdx !== -1 && tIdx < 15) {
-    title = (lines[0] || '').trim().replace(/\s*-\s*Transcript$/, '') || null
-    const aIdx = lines.findIndex((l, i) => i < tIdx && l.trim() === 'Attendees')
-    if (aIdx !== -1 && lines[aIdx + 1]) {
-      attendees = lines[aIdx + 1].split(',').map(s => s.trim()).filter(Boolean)
+  // Two Meet export layouts are supported:
+  //  A) "<Title> - Transcript" / "Attendees" / "<names>" / "Transcript" / body
+  //  B) Gemini notes doc, transcript tab: "<Date>" / "<Title> - Transcript" / body
+  //     (a download may also include the Gemini notes above it, which are skipped)
+  // The body starts after the last header line that precedes the first time marker.
+  const firstMarker = lines.findIndex(l => MARKER_RE.test(l.trim()))
+  let tIdx = -1
+  for (let i = (firstMarker === -1 ? lines.length : firstMarker) - 1; i >= 0; i--) {
+    if (HEADER_RE.test(lines[i].trim())) { tIdx = i; break }
+  }
+  if (tIdx !== -1) {
+    const hdr = lines[tIdx].trim()
+    if (hdr === 'Transcript') {
+      title = (lines[0] || '').trim().replace(/\s*-\s*Transcript$/, '') || null
+      const aIdx = lines.findIndex((l, i) => i < tIdx && l.trim() === 'Attendees')
+      if (aIdx !== -1 && lines[aIdx + 1]) {
+        attendees = lines[aIdx + 1].split(',').map(s => s.trim()).filter(Boolean)
+      }
+    } else {
+      title = hdr.replace(/\s*-\s*Transcript$/, '') || null
     }
     start = tIdx + 1
   } else {
-    warnings.push('No Google Meet header found ("Transcript" line). The whole text was treated as the transcript body.')
+    warnings.push('No Google Meet transcript header found. The whole text was treated as the transcript body.')
   }
   const attendeeSet = new Set(attendees)
 
@@ -254,11 +270,11 @@ export function checkFile(f: { name: string; type: string; size: number }): stri
 /** Gate 2: content must look like a Google Meet transcript export. */
 export function checkContent(text: string): string | null {
   const lines = text.replace(/^﻿/, '').replace(/\r\n?/g, '\n').split('\n').map(l => l.trim())
-  const hasHeader = lines.slice(0, 15).includes('Transcript')
+  const hasHeader = lines.some(l => HEADER_RE.test(l))
   const hasTime = lines.some(l => MARKER_RE.test(l) || ENDED_RE.test(l))
   const hasSpeaker = lines.some(l => SPEAKER_RE.test(l))
   if (!hasHeader || !hasSpeaker || !hasTime)
-    return 'This file doesn’t look like a Google Meet transcript. Use the transcript Google Meet saves to Google Drive after the meeting, downloaded as Plain text (.txt).'
+    return 'This file doesn’t look like a Google Meet transcript. Use the transcript Google Meet saves to Google Drive after the meeting, downloaded as Plain text (.txt). For a Notes by Gemini document, download it from the Transcript tab.'
   return null
 }
 

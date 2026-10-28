@@ -51,6 +51,8 @@
 }
 
 
+.leftPane[hidden] { display: none; }
+
 .leftPane {
   position: relative;
   flex: 0 0 var(--pane-width, 460px);
@@ -515,68 +517,12 @@
   min-height: 0;
 }
 
-.toolbar {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-12) var(--space-16);
-  border-bottom: 1px solid var(--color-border);
-  overflow-x: auto;
-}
 
-.toolBtn {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: var(--space-6);
-  border: none;
-  background: none;
-  border-radius: var(--radius-sm);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-}
 
-.toolBtn:hover {
-  background: var(--color-bg-hover);
-  color: var(--color-text-primary);
-}
 
-.toolBtnFlip {
-  transform: scaleX(-1);
-}
 
-.toolDivider {
-  flex-shrink: 0;
-  width: 1px;
-  height: 20px;
-  margin: 0 var(--space-6);
-  background: var(--color-border);
-}
 
-.toolSelect {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-8);
-  height: 32px;
-  padding: 0 var(--space-8);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-base);
-  color: var(--color-text-primary);
-  cursor: pointer;
-}
 
-.toolSelectChevron {
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-  color: var(--color-text-secondary);
-}
 
 .docScroll {
   flex: 1;
@@ -594,6 +540,16 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
 }
+
+/* Editable document (EditorToolbar): focus ring and the content the toolbar
+   can insert — tables, horizontal lines, preformatted text. */
+.doc:focus { outline: none; }
+.doc:focus-visible { box-shadow: 0 0 0 2px var(--color-border-focus); }
+.doc table { width: 100%; margin: var(--space-12) 0; border-collapse: collapse; }
+.doc td,
+.doc th { min-width: var(--space-40); padding: var(--space-6) var(--space-8); border: 1px solid var(--color-border-strong); vertical-align: top; }
+.doc hr { margin: var(--space-16) 0; border: none; border-top: 1px solid var(--color-border-strong); }
+.doc pre { padding: var(--space-8) var(--space-12); border-radius: var(--radius-sm); background: var(--color-bg-page); white-space: pre-wrap; }
 
 .docTitle {
   margin: 0 0 var(--space-24);
@@ -620,22 +576,18 @@
 /* One grid for the whole list so the name column sizes to the widest name
    (dashes stay aligned) and each role fills the remaining width, wrapping with
    a hanging indent inside its own column (Figma 23864-71908). */
-.docList {
-  list-style: none;
+.doc .docList {
+  width: auto;
   margin: 0;
-  padding: 0;
-  display: grid;
-  grid-template-columns: max-content auto 1fr;
-  column-gap: var(--space-16);
-  row-gap: var(--space-8);
-  align-items: baseline;
-  font-size: var(--text-base);
-  color: var(--color-text-primary);
+  border-collapse: collapse;
 }
-
-.docListRow {
-  display: contents;
+.doc .docList td {
+  min-width: 0;
+  padding: 0 var(--space-16) var(--space-8) 0;
+  border: none;
+  vertical-align: baseline;
 }
+.doc .docList tr:last-child td { padding-bottom: 0; }
 
 .docDash {
   color: var(--color-text-secondary);

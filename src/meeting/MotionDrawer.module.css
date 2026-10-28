@@ -1,5 +1,6 @@
-/* MotionDrawer — Figma Meetings 18636-58546 "Voting". 460px drawer: people
-   pickers, vote progress, members table (Name · RSVP · Vote). */
+/* MotionDrawer — Figma Meetings 18636-58546 "Voting". 460px drawer: motion
+   text, people pickers, vote counts, voter tables (Voters / Absent voters,
+   Name · Vote). */
 
 .body {
   display: flex;
@@ -9,7 +10,7 @@
   color: var(--color-text-primary);
 }
 
-/* ── Proposed by / Seconded by ──────────────────────────────────────────── */
+/* ── Motion text, Moved by / Seconded by ──────────────────────────────────────────── */
 .field {
   display: flex;
   flex-direction: column;
@@ -19,6 +20,13 @@
 .fieldLabel {
   font-size: var(--text-base);
   line-height: var(--line-height-base);
+}
+
+.motionText {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  overflow-wrap: anywhere;
 }
 
 .pickerWrap { position: relative; }
@@ -53,6 +61,7 @@
   cursor: pointer;
 }
 .pickerValue:disabled { cursor: default; color: var(--color-text-primary); }
+.pickerEmpty:disabled { cursor: default; }
 
 .pickerInput {
   background: var(--color-bg-hover);
@@ -81,6 +90,12 @@
   border-radius: var(--radius-md);
   background: var(--color-bg-surface);
   box-shadow: var(--elevation-100);
+}
+
+.optionList {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .option {
@@ -128,6 +143,7 @@
 .segFor     { background: var(--green-500); }
 .segAgainst { background: var(--red-500); }
 .segAbstain { background: var(--stone-900); }
+.segPending { box-shadow: inset 0 0 0 1px var(--color-border-strong); }
 
 .legend {
   display: flex;
@@ -150,8 +166,6 @@
   border-radius: var(--radius-sm);
 }
 
-.count { margin-left: auto; }
-
 /* ── Members table ──────────────────────────────────────────────────────── */
 .table {
   width: 100%;
@@ -173,42 +187,42 @@
 .table td {
   padding: var(--space-12) var(--space-16);
 }
-/* Long names truncate; the vote column keeps its width (its popover must not be clipped). */
-.table td:first-child { overflow: hidden; }
-
+/* Names wrap rather than truncate; role / RSVP / "Entered by secretary" sit
+   on a second line, readable without hovering. */
 .nameCell {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: var(--space-8);
   min-width: 0;
 }
 
-.name {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.nameText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  font-size: var(--text-sm);
+  line-height: var(--line-height-sm);
+  color: var(--color-text-secondary);
+}
+
+.voteCol { width: 140px; }
+.table td.voteCol { padding-right: var(--space-8); vertical-align: top; }
+
+/* Vote cell — icon + text + chevron trigger (Figma "Pending ⌄"); plain text
+   once the vote is completed. */
+.voteWrap { position: relative; }
+
+.voteValue {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-4) 0;
   white-space: nowrap;
 }
-
-.role { color: var(--color-text-secondary); }
-
-.rsvpCol { width: 56px; text-align: center; }
-.table th.rsvpCol { text-align: center; }
-.voteCol { width: 120px; }
-.table td.voteCol { padding-right: var(--space-8); }
-
-.rsvp {
-  display: inline-flex;
-  width: 20px;
-  height: 20px;
-  vertical-align: middle;
-}
-.rsvp svg { width: 100%; height: 100%; }
-.rsvpYes   { color: var(--color-text-success); }
-.rsvpMaybe { color: var(--orange-500); }
-.rsvpNo    { color: var(--red-500); }
-
-/* Vote cell — text + chevron trigger (Figma "Pending ⌄"). */
-.voteWrap { position: relative; }
 
 .voteTrigger {
   display: inline-flex;
@@ -228,6 +242,7 @@
 }
 .voteTrigger:hover,
 .voteTriggerOpen { background: var(--color-bg-hover); }
+.votePending { color: var(--color-text-secondary); }
 
 .chevron {
   display: inline-flex;
@@ -242,7 +257,16 @@
 .votePopover {
   left: auto;
   right: 0;
-  width: 200px;
+  width: 220px;
+}
+
+.voteHelper {
+  margin: var(--space-4) 0 0;
+  padding: var(--space-8);
+  border-top: 1px solid var(--color-border);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-sm);
+  color: var(--color-text-secondary);
 }
 
 .voteIcon {

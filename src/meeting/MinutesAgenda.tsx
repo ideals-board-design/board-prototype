@@ -10,18 +10,24 @@
    attachments. "Manage motion" and the item menu's "Add motion" open
    MotionDrawer (Figma 18636-58546 "Voting"), which runs the whole vote.
 
+   The items live in a module-level store so motions survive leaving and
+   returning to the segment. Coming back while a vote is in progress opens
+   its drawer straight away. While a vote is open a few present members
+   "vote from their own devices" (simulated), so the drawer's rows and
+   counts update live.
+
    Spacing (Figma spec): 16 above the first item, 24 between items, 4 between
    title and time, 16 between blocks, 8 inside the motion block and between
    attachment rows. */
 
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Avatar } from '../components/Avatar/Avatar'
 import { BadgeStatus } from '../components/BadgeStatus/BadgeStatus'
 import { Button } from '../components/Button/Button'
 import { Tooltip } from '../components/Tooltip/Tooltip'
 import { ActionMenu } from './ActionMenu'
 import { MotionDrawer } from './MotionDrawer'
-import { allVotes, newMotion, resultsText, type Motion, type MotionStatus } from './motion'
+import { VOTERS, allForVotes, allVotes, newMotion, resultsText, type Motion, type MotionStatus, type Vote } from './motion'
 import { actions } from '../icons/actions'
 import { condition } from '../icons/condition'
 import { dateTime } from '../icons/dateTime'
@@ -88,14 +94,14 @@ const ITEMS: Item[] = [
     purpose: FOR_VOTING,
     presenters: [CHERYL],
     description:
-      'The Board is asked to review and approve the minutes of the previous meeting to confirm that they accurately reflect the discussions and decisions taken during that meeting, including the Quarterly Meeting of Q1 2024.',
+      'The Board is asked to review and approve the minutes of the previous meeting to confirm that they accurately reflect the discussions and decisions taken during that meeting, including the Quarterly Meeting of Q4 2025.',
     motions: [{
       id: 'motion-previous-minutes',
-      title: "I move to approve the minutes of the Board of Directors: Quarterly meeting Q1'24 board meeting as presented",
+      title: "I move to approve the minutes of the Board of Directors: Quarterly meeting Q4'25 board meeting as presented",
       status: 'completed',
       proposerId: 'olivia',
       seconderId: 'alexander',
-      votes: allVotes('for'),
+      votes: allForVotes(),
     }],
     attachments: [
       { name: 'Minutes of the Previous Meeting.pdf', format: 'pdf' },
@@ -119,8 +125,8 @@ const ITEMS: Item[] = [
       votes: allVotes('pending'),
     }],
     attachments: [
-      { name: 'Q1 2024 Financial Statements.pdf', format: 'pdf' },
-      { name: 'Projections 2024–2025.xlsx', format: 'xlsx' },
+      { name: 'Q4 2025 Financial Statements.pdf', format: 'pdf' },
+      { name: 'Projections 2026–2027.xlsx', format: 'xlsx' },
     ],
   },
   {
@@ -140,6 +146,19 @@ const ITEMS: Item[] = [
     purpose: FOR_INFORMATION,
   },
 ]
+
+/* Survives remounts of the segment (see header). */
+let storedItems = ITEMS
+
+/** True when any agenda motion is being voted on — Minutes then opens on Agenda. */
+export const hasVoteInProgress = () =>
+  storedItems.some(it => it.motions?.some(m => m.status === 'in-progress'))
+
+/* Simulated live votes: every few seconds one present voter who hasn't voted
+   casts a vote, up to LIVE_VOTES_MAX per vote. */
+const LIVE_VOTE_MS = 3000
+const LIVE_VOTES_MAX = 4
+const LIVE_PATTERN: Vote[] = ['for', 'for', 'against', 'for', 'abstain']
 
 const hhmm = (min: number) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`
 
@@ -255,25 +274,62 @@ function AttachmentRow({ file, onNotify }: { file: Attachment; onNotify: (m: str
 /* --------------------------------------------------------------- component */
 
 export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => void }) {
-  const [items, setItems] = useState(ITEMS)
-  /* Drawer target: the item, the motion being edited and whether it is new
-     (not attached to the item until its first save). */
-  const [editing, setEditing] = useState<{ itemId: string; motion: Motion; isNew: boolean } | null>(null)
+  const [items, setItemsState] = useState(storedItems)
+  const setItems = (fn: (prev: Item[]) => Item[]) =>
+    setItemsState(prev => (storedItems = fn(prev)))
+
+  /* Drawer target: the item, the id of the motion being edited (read live
+     from items so incoming votes show) and, while adding, the unsaved motion
+     (attached to the item on "Create"). Opens on a vote in progress. */
+  const [editing, setEditing] = useState<{ itemId: string; motionId: string; draft?: Motion } | null>(() => {
+    const item = storedItems.find(it => it.motions?.some(m => m.status === 'in-progress'))
+    const live = item?.motions?.find(m => m.status === 'in-progress')
+    return item && live ? { itemId: item.id, motionId: live.id } : null
+  })
+  const editingMotion = editing?.draft
+    ?? items.find(it => it.id === editing?.itemId)?.motions?.find(m => m.id === editing?.motionId)
+    ?? null
 
   const updateMotions = (itemId: string, fn: (ms: Motion[]) => Motion[]) =>
     setItems(prev => prev.map(it => (it.id === itemId ? { ...it, motions: fn(it.motions ?? []) } : it)))
 
+  /* Live votes from members while any vote is open. */
+  const liveCount = useRef<Record<string, number>>({})
+  const voting = items.some(it => it.motions?.some(m => m.status === 'in-progress'))
+  useEffect(() => {
+    if (!voting) return
+    const timer = window.setInterval(() => {
+      /* Computed outside the state updater so the counter isn't bumped twice
+         in StrictMode. */
+      const next = storedItems.map(it => ({
+        ...it,
+        motions: it.motions?.map(m => {
+          if (m.status !== 'in-progress') return m
+          const cast = liveCount.current[m.id] ?? 0
+          const voter = VOTERS.find(v => (m.votes[v.id] ?? 'pending') === 'pending' && !m.proxy?.includes(v.id))
+          if (cast >= LIVE_VOTES_MAX || !voter) return m
+          liveCount.current[m.id] = cast + 1
+          return { ...m, votes: { ...m.votes, [voter.id]: LIVE_PATTERN[cast % LIVE_PATTERN.length] } }
+        }),
+      }))
+      setItems(() => next)
+    }, LIVE_VOTE_MS)
+    return () => window.clearInterval(timer)
+  }, [voting])
+
   const onChange = (m: Motion) => {
     if (!editing) return
-    setEditing({ ...editing, motion: m })
-    if (!editing.isNew) updateMotions(editing.itemId, ms => ms.map(x => (x.id === m.id ? m : x)))
+    if (editing.draft) { setEditing({ ...editing, draft: m }); return }
+    /* Starting or resetting a vote lets members vote live again. */
+    if (m.status === 'in-progress' && Object.values(m.votes).every(v => v === 'pending')) liveCount.current[m.id] = 0
+    updateMotions(editing.itemId, ms => ms.map(x => (x.id === m.id ? m : x)))
   }
 
   const onSave = (m: Motion) => {
     if (!editing) return
     updateMotions(editing.itemId, ms => [...ms, m])
-    setEditing({ ...editing, motion: m, isNew: false })
-    onNotify('Motion saved as draft')
+    setEditing({ itemId: editing.itemId, motionId: m.id })
+    onNotify('Motion created')
   }
 
   const onDelete = (m: Motion) => {
@@ -306,7 +362,7 @@ export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => voi
                   align="right"
                   ariaLabel={`Actions for ${item.title}`}
                   items={[
-                    { key: 'motion', label: 'Add motion', icon: thumbSvg, onSelect: () => setEditing({ itemId: item.id, motion: newMotion(), isNew: true }) },
+                    { key: 'motion', label: 'Add motion', icon: thumbSvg, onSelect: () => { const draft = newMotion(); setEditing({ itemId: item.id, motionId: draft.id, draft }) } },
                     { key: 'draft', label: 'Add draft action', icon: tasksSvg, onSelect: () => onNotify('Add draft action') },
                   ]}
                 />
@@ -341,7 +397,7 @@ export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => voi
               <MotionBlock
                 key={m.id}
                 motion={m}
-                onManage={() => setEditing({ itemId: item.id, motion: m, isNew: false })}
+                onManage={() => setEditing({ itemId: item.id, motionId: m.id })}
                 onCopy={() => copyResults(m)}
               />
             ))}
@@ -356,8 +412,8 @@ export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => voi
       </ol>
 
       <MotionDrawer
-        motion={editing?.motion ?? null}
-        isNew={editing?.isNew ?? false}
+        motion={editingMotion}
+        isNew={Boolean(editing?.draft)}
         onChange={onChange}
         onSave={onSave}
         onDelete={onDelete}
