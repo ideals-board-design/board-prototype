@@ -5,7 +5,7 @@
    compared side by side:
      • Version 1 — the current Minutes tab (src/meeting/MinutesTab), the
        baseline new versions are compared against.
-   (Version 2 — an independent copy in ./v2 — was removed on 2026-10-27.) */
+     • Version 2 — an independent copy of that tab (./v2), free to change. */
 
 import { useEffect, useState } from 'react'
 import { SideNavigation, DEFAULT_NAV_ITEMS } from '../../components/SideNavigation/SideNavigation'
@@ -20,6 +20,7 @@ import { useBreakpoint } from '../../hooks/useBreakpoint'
 import { functional } from '../../icons/functional'
 import { actions } from '../../icons/actions'
 import { MinutesTab } from '../../meeting/MinutesTab'
+import { MinutesTab as MinutesTabV2 } from './v2/MinutesTab'
 import styles from './MinutesAiPage.module.css'
 
 const bookmarkSvg = functional.find(i => i.name === 'bookmark')!.svg
@@ -34,10 +35,11 @@ const USER = {
   userEmail: 'thompsonolivia@gmail.com',
 }
 
-type VersionTab = 'v1'
+type VersionTab = 'v1' | 'v2'
 
 const TABS: TabItem[] = [
   { id: 'v1', label: 'Version 1' },
+  { id: 'v2', label: 'Version 2' },
 ]
 
 
@@ -108,6 +110,7 @@ export default function MinutesAiPage() {
 
         <div className={styles.content}>
           {activeTab === 'v1' && <MinutesTab />}
+          {activeTab === 'v2' && <MinutesTabV2 />}
         </div>
       </main>
 

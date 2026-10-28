@@ -38,11 +38,12 @@ import type { ToastContainerHandle } from '../components/ToastContainer/ToastCon
 import { arrows } from '../icons/arrows'
 import { actions } from '../icons/actions'
 import { condition } from '../icons/condition'
-import { MinutesAgenda, hasVoteInProgress } from './MinutesAgenda'
+import { editor } from '../icons/editor'
+import { functional } from '../icons/functional'
+import { MinutesAgenda } from './MinutesAgenda'
 import { CopyButton, HoverBar, Icon, scrollIntoCentre, smoothScrollTo, writeClipboard } from './minutesControls'
 import { TranscriptPane, type TranscriptStatus } from './TranscriptPane'
 import { TRANSCRIPTS, transcriptText } from './transcriptData'
-import { EditorToolbar } from './editor/EditorToolbar'
 import styles from './MinutesTab.module.css'
 
 const angleUpSvg   = arrows.find(i => i.name === 'angle-up-fill')!.svg
@@ -55,6 +56,14 @@ const chevronSvg   = arrows.find(i => i.name === 'angle-down-big')!.svg
 const checkCircleSvg = condition.find(i => i.name === 'check-circle')!.svg
 const closeCircleSvg = actions.find(i => i.name === 'close')!.svg
 
+const undoSvg      = arrows.find(i => i.name === 'undo')!.svg
+const redoSvg      = arrows.find(i => i.name === 'redo')!.svg
+const boldSvg      = editor.find(i => i.name === 'bold')!.svg
+const italicSvg    = editor.find(i => i.name === 'italic')!.svg
+const underlineSvg = editor.find(i => i.name === 'underline')!.svg
+const indentSvg    = editor.find(i => i.name === 'left-indent')!.svg
+const sidebarSvg   = actions.find(i => i.name === 'sidebar-opened')!.svg
+const moreSvg      = functional.find(i => i.name === 'ellipsis-h')!.svg
 
 /* Resizable left pane (Figma 13202-77526): drag the divider between 460 and 640px. */
 const PANE_MIN = 460
@@ -199,38 +208,6 @@ const PRESENT = [
   ['Thomas Sonnenshein', 'Chief Financial Officer'],
 ]
 
-/* Minutes document content. Created once at module level so re-renders of
-   MinutesTab never touch the contentEditable DOM the user is editing. */
-const DOC_CONTENT = (
-  <>
-    <h1 className={styles.docTitle}>Board of Directors / March 2024</h1>
-    <p className={styles.docCenter}>27 March 2024, 11:00 - 15:00, 4hr, (UTC-5) New York, NY</p>
-    <p className={styles.docCenter}>1535 Broadway, New York, NY, 10036, USA</p>
-    <p className={styles.docCenter}>Meeting held via Zoom</p>
-
-    <h2 className={styles.docSection}>Present:</h2>
-    {/* Name – role pairs: a borderless table, not a bulleted list, so the
-        toolbar's Bullet list button doesn't treat it as one. */}
-    <table className={styles.docList}>
-      <tbody>
-        {PRESENT.map(([name, role]) => (
-          <tr key={name}>
-            <td className={styles.docName}>{name}</td>
-            <td className={styles.docDash}>–</td>
-            <td className={styles.docRole}>{role}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-
-    <h2 className={styles.docSection}>Apologies:</h2>
-    <p className={styles.para}>N/A</p>
-
-    <h2 className={styles.docSection}>In attendance:</h2>
-    <p className={styles.para}><br /></p>
-  </>
-)
-
 /* ------------------------------------------------------- hover controls */
 
 /** Plain-text copy of a block in the format it is shown in: title, the
@@ -279,12 +256,7 @@ function ParaBox({ para, timecode, onTime }: { para: Paragraph; timecode: string
 /* --------------------------------------------------------------- component */
 
 export function MinutesTab() {
-  /* Coming back while a motion is being voted on opens Agenda (and its drawer). */
-  /* Editor toolbar's first button shows / hides the left contents panel
-     (AI minutes · Transcript · Agenda); same tooltips as the Board book. */
-  const [contentsOpen, setContentsOpen] = useState(true)
-  const docRef = useRef<HTMLDivElement>(null)
-  const [segment, setSegment] = useState<string | number>(() => (hasVoteInProgress() ? 'agenda' : 'ai-minutes'))
+  const [segment, setSegment] = useState<string | number>('ai-minutes')
   const [bannerOpen, setBannerOpen] = useState(true)
   const [outlineExpanded, setOutlineExpanded] = useState(false)
 
@@ -449,12 +421,7 @@ export function MinutesTab() {
   return (
     <div className={[styles.minutesTab, resizing ? styles.minutesTabResizing : ''].join(' ')}>
       {/* -------------------------------------------------- left: AI minutes */}
-      <section
-        id="minutes-contents"
-        className={styles.leftPane}
-        hidden={!contentsOpen}
-        style={{ '--pane-width': `${paneWidth}px` } as React.CSSProperties}
-      >
+      <section className={styles.leftPane} style={{ '--pane-width': `${paneWidth}px` } as React.CSSProperties}>
         <div className={styles.segmentHeader}>
           <SegmentControl items={SEGMENTS} value={segment} onChange={setSegment} size="s" className={styles.segment} />
         </div>
@@ -683,24 +650,47 @@ export function MinutesTab() {
 
       {/* ------------------------------------------------- right: document */}
       <section className={styles.rightPane}>
-        <EditorToolbar
-          docRef={docRef}
-          contentsOpen={contentsOpen}
-          onToggleContents={() => setContentsOpen(o => !o)}
-        />
+        <div className={styles.toolbar}>
+          <button type="button" className={styles.toolBtn} aria-label="Toggle sidebar"><Icon svg={sidebarSvg} /></button>
+          <span className={styles.toolDivider} />
+          <button type="button" className={styles.toolBtn} aria-label="Undo"><Icon svg={undoSvg} /></button>
+          <button type="button" className={styles.toolBtn} aria-label="Redo"><Icon svg={redoSvg} /></button>
+          <span className={styles.toolDivider} />
+          <button type="button" className={styles.toolBtn} aria-label="Bold"><Icon svg={boldSvg} /></button>
+          <button type="button" className={styles.toolBtn} aria-label="Italic"><Icon svg={italicSvg} /></button>
+          <button type="button" className={styles.toolBtn} aria-label="Underline"><Icon svg={underlineSvg} /></button>
+          <span className={styles.toolDivider} />
+          <div className={styles.toolSelect}>Arial <span className={styles.toolSelectChevron}><Icon svg={chevronSvg} /></span></div>
+          <div className={styles.toolSelect}>13pt <span className={styles.toolSelectChevron}><Icon svg={chevronSvg} /></span></div>
+          <span className={styles.toolDivider} />
+          <button type="button" className={styles.toolBtn} aria-label="Outdent"><Icon svg={indentSvg} /></button>
+          <button type="button" className={[styles.toolBtn, styles.toolBtnFlip].join(' ')} aria-label="Indent"><Icon svg={indentSvg} /></button>
+          <button type="button" className={styles.toolBtn} aria-label="More"><Icon svg={moreSvg} /></button>
+        </div>
 
         <div className={styles.docScroll}>
-          <div
-            ref={docRef}
-            className={styles.doc}
-            contentEditable
-            suppressContentEditableWarning
-            spellCheck
-            role="textbox"
-            aria-multiline="true"
-            aria-label="Meeting minutes document"
-          >
-            {DOC_CONTENT}
+          <div className={styles.doc}>
+            <h1 className={styles.docTitle}>Board of Directors / March 2024</h1>
+            <p className={styles.docCenter}>27 March 2024, 11:00 - 15:00, 4hr, (UTC-5) New York, NY</p>
+            <p className={styles.docCenter}>1535 Broadway, New York, NY, 10036, USA</p>
+            <p className={styles.docCenter}>Meeting held via Zoom</p>
+
+            <h2 className={styles.docSection}>Present:</h2>
+            <ul className={styles.docList}>
+              {PRESENT.map(([name, role]) => (
+                <li key={name} className={styles.docListRow}>
+                  <span className={styles.docName}>{name}</span>
+                  <span className={styles.docDash}>–</span>
+                  <span className={styles.docRole}>{role}</span>
+                </li>
+              ))}
+            </ul>
+
+            <h2 className={styles.docSection}>Apologies:</h2>
+            <p className={styles.para}>N/A</p>
+
+            <h2 className={styles.docSection}>In attendance:</h2>
+            <p className={styles.para}>&nbsp;</p>
           </div>
         </div>
       </section>

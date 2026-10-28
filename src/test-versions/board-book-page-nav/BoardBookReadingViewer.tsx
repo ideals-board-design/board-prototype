@@ -476,7 +476,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 of its three-column bar; elsewhere the wrapper is display: contents. */}
             <div className={single ? styles.singleLeft : styles.contents}>
             {!focus && !segmented && (
-            <Tooltip label={tocOpen ? 'Hide contents' : 'Show contents'} position="bottom">
+            <Tooltip label="Table of content" position="bottom">
               <Button
                 variant="tertiary" intent="neutral" size="m"
                 aria-pressed={single ? undefined : tocOpen}
@@ -484,7 +484,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 data-state={tocOpen && !single ? 'active' : undefined}
                 iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
                 onClick={() => { markTocManual(!tocOpen); setTocOpen(o => !o) }}
-                aria-label={tocOpen ? 'Hide contents' : 'Show contents'}
+                aria-label="Toggle table of content"
               />
             </Tooltip>
             )}

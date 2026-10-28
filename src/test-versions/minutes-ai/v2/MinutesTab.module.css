@@ -1,0 +1,620 @@
+/* MinutesTab — Minutes → AI minutes, two-pane layout with sticky action-items
+   navigation banner. Figma 30567-64045. */
+
+.minutesTab {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------- left pane */
+
+/* Drag handle on the pane's right edge (Figma 13202-77526). The 1px divider is
+   the pane border; the handle is a wider invisible grab area centred on it, and
+   its centre line turns brand-green on hover / drag / keyboard focus. */
+.resizer {
+  position: absolute;
+  top: 0;
+  right: calc(-1 * var(--space-4));
+  bottom: 0;
+  z-index: 4;
+  width: var(--space-8);
+  cursor: col-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.resizer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: var(--space-2);
+  transform: translateX(-50%);
+  background: transparent;
+  transition: background-color var(--dur-snap) var(--ease-out);
+}
+
+.resizer:hover::after,
+.resizer:focus-visible::after,
+.minutesTabResizing .resizer::after {
+  background: var(--color-brand);
+}
+
+/* While dragging: keep the resize cursor everywhere and don't select text. */
+.minutesTabResizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+
+.leftPane {
+  position: relative;
+  flex: 0 0 var(--pane-width, 460px);
+  width: var(--pane-width, 460px);
+  min-width: 460px;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--color-border);
+}
+
+.segmentHeader {
+  flex-shrink: 0;
+  padding: var(--space-16) var(--space-24);
+}
+
+/* Segment control spans the full header width, its options sharing the row
+   equally (Figma). */
+.segment {
+  width: 100%;
+}
+.segment button {
+  flex: 1 1 0;
+}
+
+.leftScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  position: relative;
+  padding: 0 var(--space-24) var(--space-24);
+}
+
+/* outline ---------------------------------------------------------------- */
+
+.outline {
+  padding: var(--space-24) 0 var(--space-16);
+}
+
+.outlineHeading {
+  margin: 0 0 var(--space-12);
+  font-size: var(--text-md);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.outlineList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.outlineRow {
+  font-size: var(--text-base);
+  color: var(--color-text-secondary);
+}
+
+.outlineRow:nth-child(2) {
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.outlineNum {
+  color: var(--color-text-secondary);
+}
+
+.showMore {
+  margin-top: var(--space-12);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-success);
+}
+
+.showMoreIcon {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  transition: transform var(--dur-snap) var(--ease-out);
+}
+
+.showMoreIconUp {
+  transform: rotate(180deg);
+}
+
+/* sticky banner ---------------------------------------------------------- */
+
+.banner {
+  position: sticky;
+  top: var(--space-8);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-32);
+  padding: var(--space-4) var(--space-10) var(--space-4) var(--space-16);
+  margin-bottom: var(--space-16);
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success);
+  border-radius: var(--radius-md);
+}
+
+.bannerLabel {
+  font-size: var(--text-base);
+  font-weight: 400;
+  color: var(--color-text-primary);
+}
+
+.bannerActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* AI summary blocks ------------------------------------------------------ */
+
+/* Layout follows the hover designs: every highlightable element (block,
+   paragraph, action card) carries its own 12px inset, and the negative side
+   margins pull its box out to the pane edge so the text keeps its x position.
+   Boxes sit flush against each other, so the highlight never needs extra room. */
+.summary {
+  display: flex;
+  flex-direction: column;
+}
+
+.block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: 0 calc(-1 * var(--space-12));
+  padding: var(--space-16) var(--space-12);
+  border-radius: var(--radius-md);
+  transition: background-color var(--dur-snap) var(--ease-out);
+}
+
+.blockHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-16);
+}
+
+.blockTitle {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.blockTime {
+  flex-shrink: 0;
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+.para {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+.paraMuted {
+  color: var(--color-text-secondary);
+}
+
+.paraBox {
+  position: relative;
+  margin: 0 calc(-1 * var(--space-12));
+  padding: var(--space-12);
+  border-radius: var(--radius-md);
+  transition: background-color var(--dur-snap) var(--ease-out);
+}
+
+.paraText {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* hover / keyboard-focus highlight ---------------------------------------- */
+
+/* One target at a time: the block only lights up when neither a paragraph nor
+   the action card inside it is the current target, so a block's controls and
+   its children's never show together. :focus-within mirrors :hover so keyboard
+   users get the same highlight + controls. */
+.paraBox:is(:hover, :focus-within),
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) {
+  background: var(--color-bg-hover);
+}
+
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) .blockTime {
+  opacity: 0;
+}
+
+/* Block hover with an extracted action item (Figma 31811-491642): the whole
+   block is one tinted surface, so the green card drops its fill and reads as
+   part of it. It regains its own hover tint when it is the target itself. */
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) .actionCard {
+  background: transparent;
+}
+
+/* Hover controls (Figma 12970-220370 / 31789-469425). Absolutely positioned,
+   so revealing them never moves any text; hidden until their element is the
+   hover / keyboard-focus target. */
+.hoverBar {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-snap) var(--ease-out);
+}
+
+/* Paragraph / action card / transcript entry: a small floating card that
+   straddles the element's bottom edge at the right, over the gap below it. */
+.hoverBarChip {
+  right: var(--space-12);
+  bottom: 0;
+  transform: translateY(50%);
+  padding: var(--space-2);
+  background: var(--color-bg-surface);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elevation-100);
+}
+
+/* Block: plain controls in the top-right corner, where the timestamp was. */
+.hoverBarCorner {
+  top: var(--space-8);
+  right: var(--space-8);
+}
+
+.paraBox:is(:hover, :focus-within) > .hoverBar,
+.actionCard:is(:hover, :focus-within) > .hoverBar,
+.block:is(:hover, :focus-within):not(:has(.paraBox:is(:hover, :focus-within), .actionCard:is(:hover, :focus-within))) > .hoverBar,
+:global([data-entry]):is(:hover, :focus-within) > .hoverBar {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The chip of the hovered element must sit above the next element's tint. */
+.paraBox:is(:hover, :focus-within),
+.actionCard:is(:hover, :focus-within),
+:global([data-entry]):is(:hover, :focus-within) {
+  z-index: 1;
+}
+
+.timeBtn {
+  font-variant-numeric: tabular-nums;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* action item card ------------------------------------------------------- */
+
+.actionCard {
+  container-type: inline-size;
+  position: relative;
+  display: flex;
+  margin: var(--space-8) calc(-1 * var(--space-12));
+  flex-direction: column;
+  gap: var(--space-8);
+  /* 12px inset per the design; the 1px (highlight-pulse) border is taken out of
+     the padding so the card stays 112px tall + text at the same x. */
+  padding: calc(var(--space-12) - 1px);
+  background: var(--color-success-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  scroll-margin-top: var(--space-56);
+  scroll-margin-bottom: var(--space-24);
+  transition: border-color var(--dur-snap) var(--ease-out), background-color var(--dur-snap) var(--ease-out);
+}
+
+/* Hover: the card shifts to the neutral hover tint and reveals its actions
+   (create draft / dismiss / timestamp) inside the card. */
+.actionCard:is(:hover, :focus-within) {
+  background: var(--color-bg-hover);
+}
+
+/* Prev/Next on the banner jumps to an item: the card's green border pulses
+   once — fades in, holds, fades back out — a momentary "you jumped here" cue,
+   not a persistent state. This is a state-to-state highlight, so it uses the DS
+   --ease-in-out curve over the DS --dur-slowest (1600ms, skeleton pulse) window, the same
+   motion primitives the DS uses for its own pulse. The class rides onto a fresh
+   element on every Prev/Next, so the keyframes replay each jump. */
+.actionCardActive {
+  animation: actionHighlight var(--dur-slowest) var(--ease-in-out) forwards;
+}
+
+@keyframes actionHighlight {
+  0%   { border-color: transparent; }
+  30%  { border-color: var(--color-success); }
+  70%  { border-color: var(--color-success); }
+  100% { border-color: transparent; }
+}
+
+/* Respect reduced-motion: no pulse, just a brief static highlight. */
+@media (prefers-reduced-motion: reduce) {
+  .actionCardActive {
+    animation: none;
+    border-color: var(--color-success);
+  }
+}
+
+.actionCardHead {
+  font-size: var(--text-base);
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.actionCardBody {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-12);
+}
+
+.actionCardText {
+  margin: 0;
+  flex: 1;
+  font-size: var(--text-base);
+  line-height: 20px;
+  color: var(--color-text-primary);
+}
+
+/* hover action icons (the bar itself is the shared .hoverBar) ------------- */
+
+.iconSuccess {
+  color: var(--color-success);
+}
+
+.iconDanger {
+  color: var(--color-error);
+}
+
+/* Narrow panels: the three controls no longer fit beside each other, so the
+   two text actions collapse to their icons (labels stay in aria-label/title)
+   instead of the bar growing taller or running out of the card. */
+@container (max-width: 400px) {
+  .btnLabel {
+    display: none;
+  }
+}
+
+/* left footer ------------------------------------------------------------ */
+
+.leftFooter {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--space-16) var(--space-24);
+  border-top: 1px solid var(--color-border);
+}
+
+/* Copy minutes · Give feedback on the left, delete on the right. */
+.footerGroup {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+/* Empty states fill the pane and sit in its middle. */
+.emptyWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-16);
+}
+
+/* ------------------------------------------------------------- right pane */
+
+.rightPane {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.toolbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-12) var(--space-16);
+  border-bottom: 1px solid var(--color-border);
+  overflow-x: auto;
+}
+
+.toolBtn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: var(--space-6);
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+}
+
+.toolBtn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text-primary);
+}
+
+.toolBtnFlip {
+  transform: scaleX(-1);
+}
+
+.toolDivider {
+  flex-shrink: 0;
+  width: 1px;
+  height: 20px;
+  margin: 0 var(--space-6);
+  background: var(--color-border);
+}
+
+.toolSelect {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: 32px;
+  padding: 0 var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.toolSelectChevron {
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  color: var(--color-text-secondary);
+}
+
+.docScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-24);
+  background: var(--color-bg-page);
+}
+
+.doc {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-56) var(--space-56) var(--space-72);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.docTitle {
+  margin: 0 0 var(--space-24);
+  text-align: center;
+  font-size: var(--text-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.docCenter {
+  margin: 0 0 var(--space-4);
+  text-align: center;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.docSection {
+  margin: var(--space-24) 0 var(--space-12);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+/* One grid for the whole list so the name column sizes to the widest name
+   (dashes stay aligned) and each role fills the remaining width, wrapping with
+   a hanging indent inside its own column (Figma 23864-71908). */
+.docList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: max-content auto 1fr;
+  column-gap: var(--space-16);
+  row-gap: var(--space-8);
+  align-items: baseline;
+  font-size: var(--text-base);
+  color: var(--color-text-primary);
+}
+
+.docListRow {
+  display: contents;
+}
+
+.docDash {
+  color: var(--color-text-secondary);
+}
+
+.docRole {
+  min-width: 0;
+}
+
+/* --------------------------------------------------------------- responsive */
+
+@media (max-width: 960px) {
+  .minutesTab {
+    flex-direction: column;
+    overflow-y: auto;
+  }
+
+  .leftPane,
+  .rightPane {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    border-right: none;
+  }
+
+  .resizer {
+    display: none;
+  }
+
+  .leftPane {
+    border-bottom: 1px solid var(--color-border);
+  }
+}
