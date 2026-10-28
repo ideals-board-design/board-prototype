@@ -1,7 +1,7 @@
 /* VttConverterPage — "Convert a Google Meet transcript to VTT" (hub utility).
 
    Integrates the standalone meet-to-vtt tool (logic in meetToVtt.ts, ported
-   unchanged) into the Board UI. Layout per Figma Meetings 32478-293758 /
+   from it, incl. the Notes by Gemini layout) into the Board UI. Layout per Figma Meetings 32478-293758 /
    Section 5 (32251-171315): Board logo centred on the page, the title inside
    the card, then three steps in one card:
      1. Upload   — how-to steps, drop zone + "Choose .txt file". Gate 1

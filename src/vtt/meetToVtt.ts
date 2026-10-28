@@ -1,5 +1,6 @@
 /* meetToVtt — Google Meet transcript (.txt export) → Zoom-style WebVTT.
-   Ported as-is from the standalone meet-to-vtt tool; no dependencies.
+   Ported from the standalone meet-to-vtt tool (incl. the Notes by Gemini
+   layout); no dependencies.
 
    • parseMeet  — header (title, Attendees), time markers, speaker turns.
    • buildCues  — splits turns into ≤ 20-word cues and interpolates times by
