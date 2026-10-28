@@ -1,9 +1,46 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite'
+import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 
+/* Runs the Vercel password gate (middleware.ts) under `npm run dev` too, but
+   only when SITE_PASSWORD is set — e.g. `SITE_PASSWORD=... npm run dev`.
+   Only pages and /api/* are gated; Vite's own module requests pass through. */
+function passwordGate(): Plugin {
+  return {
+    name: 'password-gate',
+    apply: 'serve',
+    configureServer(server) {
+      if (!process.env.SITE_PASSWORD) return
+      server.middlewares.use(async (req, res, next) => {
+        const path = (req.url ?? '/').split('?')[0]
+        if (!(path === '/' || path.endsWith('.html') || path.startsWith('/api/'))) return next()
+
+        const { default: middleware } = await server.ssrLoadModule('/middleware.ts')
+        const chunks: Buffer[] = []
+        for await (const chunk of req) chunks.push(chunk as Buffer)
+        const request = new Request(new URL(req.url ?? '/', `http://${req.headers.host}`), {
+          method: req.method,
+          headers: req.headers as Record<string, string>,
+          body: chunks.length ? Buffer.concat(chunks) : undefined,
+        })
+        const response: Response = await middleware(request)
+
+        if (response.headers.get('x-middleware-next')) return next()
+        const rewrite = response.headers.get('x-middleware-rewrite')
+        if (rewrite) {
+          req.url = new URL(rewrite).pathname
+          return next()
+        }
+        res.statusCode = response.status
+        response.headers.forEach((value, key) => res.setHeader(key, value))
+        res.end(Buffer.from(await response.arrayBuffer()))
+      })
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), passwordGate()],
   test: {
     // jsdom gives the sanitizer/validation tests a real DOMParser + document.
     environment: 'jsdom',
@@ -18,6 +55,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main:             'index.html',
+        login:            'login.html',
         'design-system':  'design-system.html',
         tasks:            'tasks.html',
         dashboard:        'dashboard.html',
