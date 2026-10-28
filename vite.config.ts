@@ -31,6 +31,7 @@ export default defineConfig({
         chats:            'chats.html',
         'board-book-page-nav': 'board-book-page-nav.html',
         'minutes-ai':       'minutes-ai.html',
+        vtt:              'vtt.html',
       },
     },
   },

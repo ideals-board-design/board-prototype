@@ -1,0 +1,231 @@
+/* VttConverterPage — Figma Meetings 32478-293758: Board logo centred on a
+   stone-200 page, 800px card with the title inside. */
+
+.shell {
+  min-height: 100vh;
+  background: var(--stone-200);
+  font-family: var(--font-family);
+  color: var(--color-text-primary);
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  max-width: 800px;
+  margin: 0 auto;
+  padding: var(--space-48) var(--space-24);
+}
+
+/* Logo — DS Logo (Type=Full) scaled to 32px high. */
+.logo {
+  display: flex;
+  align-self: center;
+  margin-bottom: var(--space-32);
+  border-radius: var(--radius-sm);
+}
+.logo > span {
+  width: calc(var(--space-32) * 4.8335);
+  height: var(--space-32);
+}
+.logo:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 4px;
+}
+
+.cardHead {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-md);
+}
+
+.lede,
+.muted {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--line-height-sm);
+  color: var(--color-text-secondary);
+}
+.lede {
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-24);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-surface);
+}
+
+/* ── Step 1: how-to + drop zone ───────────────────────────── */
+.steps {
+  margin: 0;
+  padding-left: var(--space-20);
+  list-style: decimal;
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+}
+
+.drop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-24) var(--space-16);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: border-color var(--dur-snap) var(--ease-out), background var(--dur-snap) var(--ease-out);
+}
+
+.dropIcon {
+  display: inline-flex;
+  width: var(--space-20);
+  height: var(--space-20);
+  color: var(--color-icon-primary);
+}
+.dropIcon svg { width: 100%; height: 100%; }
+
+.dropLabel {
+  margin: 0 0 var(--space-8);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+}
+
+/* Hint sits 8px under the drop zone (card gap is 24). */
+.hint { margin-top: calc(var(--space-16) * -1); }
+
+.dropActive {
+  border-color: var(--color-border-focus);
+  background: var(--color-brand-subtle);
+}
+
+/* Visually hidden; opened by "Choose .txt file". */
+.fileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Step 2: converting ───────────────────────────────────── */
+.processing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-48) 0;
+  text-align: center;
+}
+
+.spinner {
+  display: inline-flex;
+  width: var(--space-40);
+  height: var(--space-40);
+  margin-bottom: var(--space-8);
+  color: var(--color-icon-brand);
+  animation: spin 0.8s linear infinite;
+}
+.spinner svg { width: 100%; height: 100%; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation-duration: 2.4s; }
+}
+
+.processingTitle {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-md);
+}
+
+/* ── Step 3: result ───────────────────────────────────────── */
+.resultTitle {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+}
+
+/* Warnings / errors: DS banner as the heading, full list below it. */
+.notice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.noticeList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding-left: var(--space-24);
+  font-size: var(--text-sm);
+  line-height: var(--line-height-sm);
+  color: var(--color-text-secondary);
+}
+
+.previewBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.previewLabel {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-sm);
+}
+
+.preview {
+  max-height: 420px;
+  margin: 0;
+  padding: var(--space-12) var(--space-16);
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-page);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: var(--text-xs);
+  line-height: var(--line-height-xs);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.preview:focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
+}
+
+.restart {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-16);
+  padding-top: var(--space-16);
+  border-top: 1px solid var(--color-border);
+}
+
+.footnote {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--line-height-xs);
+  color: var(--color-text-secondary);
+  text-align: center;
+}
