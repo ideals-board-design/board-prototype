@@ -86,6 +86,8 @@
 .noBorder.sizeM  .inputWrapper,
 .noBorder.sizeXL .inputWrapper { padding: var(--space-6) var(--space-8); }
 .noBorder.sizeL  .inputWrapper { padding: var(--space-8) var(--space-8); }
+/* Left icon → text spacing: S = 4px (inherited from .sizeS base gap), M/L/XL = 8px.
+   S icon is 16×16. */
 /* No-border WITH a trailing icon-button (suffix) — Figma node 36407-19010 / 36209-4953:
    the row height matches the tertiary icon-only Button's own compact footprint exactly
    (S=28/M=32/L=36), with zero vertical padding, so the button fills the row

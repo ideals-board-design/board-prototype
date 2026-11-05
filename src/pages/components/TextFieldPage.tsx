@@ -119,6 +119,14 @@ export default function TextFieldPage() {
         <TextField size="l" variant="outline" defaultValue="Filled text" placeholder="Prompt text" suffix={<Icon svg={infoIcon} />} />
       </div>
 
+      <h3 className={styles.subsectionTitle}>No border — left icon (S 16×16, M/L/XL 20×20)</h3>
+      <div className={styles.exampleRow}>
+        <TextField size="s" variant="no-border" defaultValue="Filled text" placeholder="Prompt text" prefix={<Icon svg={infoIcon} />} />
+        <TextField size="m" variant="no-border" defaultValue="Filled text" placeholder="Prompt text" prefix={<Icon svg={infoIcon} />} />
+        <TextField size="l" variant="no-border" defaultValue="Filled text" placeholder="Prompt text" prefix={<Icon svg={infoIcon} />} />
+        <TextField size="xl" variant="no-border" defaultValue="Filled text" placeholder="Prompt text" prefix={<Icon svg={infoIcon} />} />
+      </div>
+
       <h3 className={styles.subsectionTitle}>No border — trailing icon button</h3>
       <div className={styles.exampleRow}>
         <ClearInput size="s" />
