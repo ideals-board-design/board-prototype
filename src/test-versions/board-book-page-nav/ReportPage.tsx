@@ -6,15 +6,15 @@
    desktop screenshots from the review sit on top as a side-by-side gallery.
    Rendered inside the Reports tab (ReportsPage owns the scroll + navigation). */
 
-import type { ReactNode } from 'react'
+import { useMemo, type ReactNode } from 'react'
 import { BadgeStatus } from '../../components/BadgeStatus/BadgeStatus'
-import reviewMd from '../../../.design/board-book-page-nav/DESIGN_REVIEW.md?raw'
+import defaultMd from '../../../.design/board-book-page-nav/DESIGN_REVIEW.md?raw'
 import shotV1 from '../../../.design/board-book-page-nav/screenshots/review-v1-desktop-1280.png'
 import shotV2 from '../../../.design/board-book-page-nav/screenshots/review-v2-desktop-1280.png'
 import shotV3 from '../../../.design/board-book-page-nav/screenshots/review-v3-desktop-1280.png'
 import styles from './ReportPage.module.css'
 
-const SHOTS = [
+const DEFAULT_SHOTS = [
   { src: shotV1, label: 'Version 1 — Full width' },
   { src: shotV2, label: 'Version 2 — Floating controls' },
   { src: shotV3, label: 'Version 3 — Reading mode' },
@@ -113,20 +113,19 @@ function renderMarkdown(md: string): ReactNode[] {
   return blocks
 }
 
-const BLOCKS = renderMarkdown(reviewMd)
-
-export default function ReportPage() {
+export default function ReportPage({ md = defaultMd, shots = DEFAULT_SHOTS }: { md?: string; shots?: { src: string; label: string }[] }) {
+  const blocks = useMemo(() => renderMarkdown(md), [md])
   return (
     <article className={styles.article}>
       <div className={styles.gallery}>
-        {SHOTS.map(s => (
+        {shots.map(s => (
           <figure key={s.label} className={styles.shot}>
             <img className={styles.shotImg} src={s.src} alt={`${s.label}, desktop 1280`} />
             <figcaption className={styles.shotCaption}>{s.label}</figcaption>
           </figure>
         ))}
       </div>
-      {BLOCKS}
+      {blocks}
     </article>
   )
 }

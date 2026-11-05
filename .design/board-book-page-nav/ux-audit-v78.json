@@ -1,0 +1,93 @@
+{
+  "title": "Board Book Toolbar — UX Audit (Version 1 vs Version 2)",
+  "date": "2026-11-05",
+  "method": "Board UX audit (manual) · 5 lenses · Board personas (Margaret, David, Patricia, Robert) · grounded in Sauro's Big 4, Laws of UX, Shneiderman's 8 Golden Rules, Nielsen's 5 quality components",
+  "note": "Same method as the 2026-10-23 audit: no board-specific ux-audit skill; Board personas; expert judgement on the prototype plus the simulated task success from the usability study — not measured analytics. No Clarity or NPS data. V1 and V2 share the borderless dropdown, so lens differences come from the tool rail and the labelled Download.",
+  "intent": "Readers must (1) know which document and page they are on, (2) find and use Search, Ask AI, annotations and Download without help, (3) move between documents, and (4) read with as little UI over the page as possible.",
+  "scale": "1 = poor · 3 = acceptable with friction · 5 = excellent",
+  "lenses": [
+    {
+      "id": "intent",
+      "name": "Intent alignment",
+      "question": "Does the layout serve the reader's real job — reading, annotating, finding, saving?",
+      "scores": {
+        "v1": 3,
+        "v2": 4
+      },
+      "evidence": {
+        "v1": "All tools in one bar: familiar PDF-editor pattern, but the annotation tools sit far from the text being read.",
+        "v2": "Tools near the page, bar left for navigation and zoom; the original feedback (Download placement) is addressed."
+      }
+    },
+    {
+      "id": "findability",
+      "name": "Findability",
+      "question": "Can each persona find Search, Ask AI, annotations and Download without help?",
+      "scores": {
+        "v1": 3,
+        "v2": 4
+      },
+      "evidence": {
+        "v1": "Six icon-only tools in a row; Patricia fails Search, highlight and Download (Jakob's law: recognition needs a label).",
+        "v2": "Download labelled; tools grouped in a separate card (Gestalt proximity), Search first. Icon-only inside the rail; the sparkle is ambiguous."
+      }
+    },
+    {
+      "id": "load",
+      "name": "Cognitive load",
+      "question": "How many places must the reader scan, and how much must they remember?",
+      "scores": {
+        "v1": 3,
+        "v2": 3
+      },
+      "evidence": {
+        "v1": "One zone but 17 controls; the right half is a dense icon strip.",
+        "v2": "Two zones (bar 12 controls, rail 5), each easier to scan; icon-only count falls only from 15 to 14."
+      }
+    },
+    {
+      "id": "interaction",
+      "name": "Interaction quality",
+      "question": "Are controls reachable, consistent and giving feedback (desktop, iPad)?",
+      "scores": {
+        "v1": 3,
+        "v2": 4
+      },
+      "evidence": {
+        "v1": "Fitts's law: the annotation tools are at the far top-right, a long way from the reading point; 32px icons packed together mis-tap on iPad.",
+        "v2": "Rail within the right thumb's reach on iPad, tooltips open away from the page; 32px targets, rail not checked above 100% zoom."
+      }
+    },
+    {
+      "id": "outcome",
+      "name": "Outcome quality",
+      "question": "Do readers complete the tasks? (Sauro's Big 4, from the simulated study)",
+      "scores": {
+        "v1": 3,
+        "v2": 4
+      },
+      "evidence": {
+        "v1": "Simulated success 71%, SEQ 4.3 / 7; Patricia fails 3 of 6 tasks.",
+        "v2": "Simulated success 88%, SEQ 5.0 / 7; no failures, Patricia partial on annotate and search."
+      }
+    }
+  ],
+  "verdicts": {
+    "v1": {
+      "label": "Not recommended",
+      "type": "danger",
+      "text": "Clean and familiar, but every tool sits in one icon-only strip; low-proficiency and touch readers cannot find Search, annotations or Download."
+    },
+    "v2": {
+      "label": "Recommended — validate",
+      "type": "positive",
+      "text": "Tools beside the page, a labelled Download and a quieter top bar. Validate R1 (labels in the rail) and R5 (rail vs sheet at higher zoom)."
+    }
+  },
+  "risks": [
+    "The rail is icon-only: Patricia's annotate and search tasks are only partial (study R1).",
+    "The rail was checked at 100% zoom on 1280 and 1024 only — not at higher zoom, with the agenda open, or on tablet portrait (study R5).",
+    "The borderless dropdown is shared by both and unproven against the earlier bar; it may hide the document list from occasional users (study R3).",
+    "The document end is still silent in both — the carried-over Critical issue (study R4)."
+  ]
+}

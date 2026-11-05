@@ -14,11 +14,13 @@ import UsabilityStudyPage from './UsabilityStudyPage'
 import UxAuditPage from './UxAuditPage'
 import styles from './ReportsPage.module.css'
 
-const REPORTS: { id: string; title: string; subtitle: string; Comp: ComponentType }[] = [
-  { id: 'results', title: 'Results', subtitle: 'Winner · summary', Comp: ResultsPage },
-  { id: 'audit',  title: 'UX audit', subtitle: '5 lenses · UXS · EN', Comp: UxAuditPage },
-  { id: 'study',  title: 'Usability study', subtitle: '4 personas · SEQ · EN', Comp: UsabilityStudyPage },
-  { id: 'review', title: 'Design review', subtitle: 'DS & heuristics · EN', Comp: ReportPage },
+export type ReportDef = { id: string; title: string; subtitle: string; Comp: ComponentType<{ onOpenVersion?: (v: string) => void }> }
+
+const CLASSIC_REPORTS: ReportDef[] = [
+  { id: 'results', title: 'Results', subtitle: 'Winner · summary', Comp: ({ onOpenVersion }) => <ResultsPage onOpenVersion={onOpenVersion} /> },
+  { id: 'audit',  title: 'UX audit', subtitle: '5 lenses · UXS · EN', Comp: () => <UxAuditPage /> },
+  { id: 'study',  title: 'Usability study', subtitle: '4 personas · SEQ · EN', Comp: () => <UsabilityStudyPage /> },
+  { id: 'review', title: 'Design review', subtitle: 'DS & heuristics · EN', Comp: () => <ReportPage /> },
 ]
 
 type NavItem = { id: string; report: string; label: string }
@@ -35,11 +37,14 @@ const labelOf = (h: HTMLElement) => {
 /** Offset (px) under the scroll box's top edge at which a section counts as current. */
 const SPY_OFFSET = 96
 
-export default function ReportsPage({ initial, onOpenVersion }: {
+export default function ReportsPage({ initial, onOpenVersion, reports = CLASSIC_REPORTS }: {
   initial?: string
   /** Passed to the Results page: its podium cards open a version's tab. */
-  onOpenVersion?: (version: 'v1' | 'v2' | 'v3') => void
+  onOpenVersion?: (version: string) => void
+  /** Which set of reports to show (defaults to the Version 1–3 reports). */
+  reports?: ReportDef[]
 }) {
+  const REPORTS = reports
   const scrollRef = useRef<HTMLDivElement>(null)
   const [items, setItems] = useState<NavItem[]>([])
   const [active, setActive] = useState<string>(initial ?? REPORTS[0].id)
@@ -121,7 +126,7 @@ export default function ReportsPage({ initial, onOpenVersion }: {
       <div ref={scrollRef} className={styles.content} onScroll={onScroll}>
         {REPORTS.map(({ id, Comp }) => (
           <section key={id} id={id} data-report={id} className={styles.report}>
-            {id === 'results' ? <ResultsPage onOpenVersion={onOpenVersion} /> : <Comp />}
+            <Comp onOpenVersion={onOpenVersion} />
           </section>
         ))}
       </div>

@@ -5,23 +5,24 @@
    the mean lens score (1–5) scaled to 0–100. */
 
 import { BadgeStatus } from '../../components/BadgeStatus/BadgeStatus'
-import audit from '../../../.design/board-book-page-nav/ux-audit.json'
-import study from '../../../.design/board-book-page-nav/usability-study.json'
+import defaultAudit from '../../../.design/board-book-page-nav/ux-audit.json'
+import defaultStudy from '../../../.design/board-book-page-nav/usability-study.json'
 import styles from './StudyPage.module.css'
 
-type VariantId = 'v1' | 'v2' | 'v3'
-const VARIANTS: VariantId[] = ['v1', 'v2', 'v3']
-const variantName = (v: VariantId) => study.variants.find(x => x.id === v)!.name
+type VariantId = string
 type Lens = { id: string; name: string; question: string; scores: Record<VariantId, number>; evidence: Record<VariantId, string> }
-const lenses = audit.lenses as Lens[]
-const verdicts = audit.verdicts as Record<VariantId, { label: string; type: 'danger' | 'warning' | 'positive'; text: string }>
+type Verdict = { label: string; type: 'danger' | 'warning' | 'positive'; text: string }
+export type AuditData = typeof defaultAudit
 
-const uxs = Object.fromEntries(VARIANTS.map(v => [v,
-  Math.round((lenses.reduce((sum, l) => sum + l.scores[v], 0) / lenses.length / 5) * 100),
-])) as Record<VariantId, number>
-const best = [...VARIANTS].sort((a, b) => uxs[b] - uxs[a])[0]
-
-export default function UxAuditPage() {
+export default function UxAuditPage({ audit = defaultAudit, study = defaultStudy }: { audit?: AuditData; study?: { variants: { id: string; name: string }[] } }) {
+  const VARIANTS: VariantId[] = study.variants.map(v => v.id)
+  const variantName = (v: VariantId) => study.variants.find(x => x.id === v)!.name
+  const lenses = audit.lenses as unknown as Lens[]
+  const verdicts = audit.verdicts as unknown as Record<VariantId, Verdict>
+  const uxs = Object.fromEntries(VARIANTS.map(v => [v,
+    Math.round((lenses.reduce((sum, l) => sum + l.scores[v], 0) / lenses.length / 5) * 100),
+  ])) as Record<VariantId, number>
+  const best = [...VARIANTS].sort((a, b) => uxs[b] - uxs[a])[0]
   return (
     <article className={styles.article}>
       <p className={styles.eyebrow}>UX audit · Board Portal</p>

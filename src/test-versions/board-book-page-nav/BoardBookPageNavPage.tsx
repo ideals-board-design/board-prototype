@@ -4,30 +4,13 @@
    Same shell as the Meeting prototype (side navigation, meeting header, tabs),
    but each tab is a separate UI version of the Board book viewer so layouts can
    be compared side by side:
-     • Version 1 — Full width: document only, agenda panel hidden
-     • Version 2 — Floating controls: agenda open beside the document, zoom /
-       view card left, annotation palette right, one bottom pill with
-       previous / next document around the page controls; on phones the cards
-       fold into a "Document tools" sheet (BoardBookDocNavViewer). Replaced
-       the earlier floating-controls concept (side arrows) on 2026-10-22.
-     • Version 3 — Reading mode: full-area document, floating control bar,
-       table of content panel, reading progress, focus mode
-       (BoardBookReadingViewer)
-     • Version 4 — Version 3 with highlight / comment in the top bar; the
-       bottom bar has page and document navigation, zoom, fit width and focus
-       (BoardBookReadingViewer toolsIn="top", based on Figma 32290-235596)
-     • Version 5 — floating side cards like a document viewer: page / zoom /
-       fullscreen (left bottom), search · Ask AI · annotations (right top);
-       agenda toggle, document stepping and Download in the top bar
-       (BoardBookReadingViewer toolsIn="cards")
-     • Version 6 — every tool in one top bar (pages, zoom, fit / focus,
-       comment · draw · highlight, search · download · Ask AI), no bottom bar
-       (BoardBookReadingViewer toolsIn="single", Figma 32301-237198)
-     • Reports — all reports on one page with side navigation (ReportsPage):
-       design review (DESIGN_REVIEW.md), usability study (usability-study.json,
-       the PPTX is generated from the same file) and UX audit (ux-audit.json)
-   Tabs are labelled by number only (Version 1–6), plus Report and "Only
-   document toggle". */
+     • Version 1 — the board book viewer with a borderless document dropdown
+       (BoardBookReadingViewer toolsIn="single" borderlessDocSelect)
+     • Version 2 — Version 1 with Search · Ask AI · annotations in a floating
+       tool rail and a labelled Download in the top bar (railTools, Figma 32957-307272)
+     • Reports (1,2) — the reports comparing Version 1 vs Version 2
+       (Reports78Page: usability-study-v78.json, ux-audit-v78.json, DESIGN_REVIEW_V78.md)
+   Tabs: Version 1, Version 2, Reports (1,2). */
 
 import { useEffect, useState } from 'react'
 import { SideNavigation, DEFAULT_NAV_ITEMS } from '../../components/SideNavigation/SideNavigation'
@@ -41,10 +24,8 @@ import { Tabs, type TabItem } from '../../components/Tabs/Tabs'
 import { useBreakpoint } from '../../hooks/useBreakpoint'
 import { functional } from '../../icons/functional'
 import { actions } from '../../icons/actions'
-import BoardBookPageNavViewer from './BoardBookPageNavViewer'
 import BoardBookReadingViewer from './BoardBookReadingViewer'
-import BoardBookDocNavViewer from './BoardBookDocNavViewer'
-import ReportsPage from './ReportsPage'
+import Reports78Page from './Reports78Page'
 import { Q4_BOARD_BOOK, q4PageImage } from './q4BoardPack'
 import styles from './BoardBookPageNavPage.module.css'
 
@@ -60,33 +41,21 @@ const USER = {
   userEmail: 'thompsonolivia@gmail.com',
 }
 
-const initialReportTabs = ['report', 'study', 'audit']
-
-type VersionTab = 'v1' | 'v2' | 'v3' | 'v4' | 'v5' | 'v6' | 'reports'
+type VersionTab = 'v1' | 'v2' | 'reports78'
 
 const TABS: TabItem[] = [
   { id: 'v1', label: 'Version 1' },
   { id: 'v2', label: 'Version 2' },
-  { id: 'v3', label: 'Version 3' },
-  { id: 'v4', label: 'Version 4' },
-  { id: 'v5', label: 'Version 5' },
-  { id: 'v6', label: 'Version 6' },
-  { id: 'reports', label: 'Reports' },
+  { id: 'reports78', label: 'Reports (1,2)' },
 ]
 
 
 export default function BoardBookPageNavPage() {
   const [navItem,   setNavItem]   = useState<NavMenuItemKey>('meetings')
   const [workspace, setWorkspace] = useState('star')
-  /* `?tab=v2` (etc.) opens a version directly — handy for sharing and screenshots.
-     The old report tabs (?tab=report | study | audit) open Reports at that report. */
-  const [initialReport] = useState(() => {
-    const t = new URLSearchParams(window.location.search).get('tab')
-    return ({ report: 'review', study: 'study', audit: 'audit' } as Record<string, string>)[t ?? '']
-  })
+  /* `?tab=v2` (etc.) opens a version directly — handy for sharing and screenshots. */
   const [activeTab, setActiveTab] = useState<VersionTab>(() => {
     const t = new URLSearchParams(window.location.search).get('tab')
-    if (initialReportTabs.includes(t ?? '')) return 'reports'
     return TABS.some(x => x.id === t) ? (t as VersionTab) : 'v1'
   })
 
@@ -147,13 +116,9 @@ export default function BoardBookPageNavPage() {
         />
 
         <div className={styles.content}>
-          {activeTab === 'v1' && <BoardBookPageNavViewer layout="full" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v2' && <BoardBookDocNavViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v3' && <BoardBookReadingViewer book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v4' && <BoardBookReadingViewer key="v4" toolsIn="top" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v5' && <BoardBookReadingViewer key="v5" toolsIn="cards" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'v6' && <BoardBookReadingViewer key="v6" toolsIn="single" book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
-          {activeTab === 'reports' && <ReportsPage initial={initialReport} onOpenVersion={setActiveTab} />}
+          {activeTab === 'v1' && <BoardBookReadingViewer key="v1" toolsIn="single" borderlessDocSelect book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'v2' && <BoardBookReadingViewer key="v2" toolsIn="single" borderlessDocSelect railTools book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {activeTab === 'reports78' && <Reports78Page onOpenVersion={v => setActiveTab(v as VersionTab)} />}
         </div>
       </main>
 

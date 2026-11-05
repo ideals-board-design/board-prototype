@@ -5,51 +5,58 @@
    (the PPTX report is generated from the same file). All metrics below are
    computed here from the simulated task records — nothing is hand-typed. */
 
-import { Fragment } from 'react'
+import { Fragment, useMemo } from 'react'
 import { BadgeStatus } from '../../components/BadgeStatus/BadgeStatus'
-import study from '../../../.design/board-book-page-nav/usability-study.json'
+import defaultStudy from '../../../.design/board-book-page-nav/usability-study.json'
 import styles from './StudyPage.module.css'
 
-type VariantId = 'v1' | 'v2' | 'v3'
+export type StudyData = typeof defaultStudy & { strengths?: { type: string; label: string; text: string }[] }
+
+type VariantId = string
 type Outcome = 'S' | 'P' | 'F'
-const VARIANTS: VariantId[] = ['v1', 'v2', 'v3']
 const SCORE: Record<Outcome, number> = { S: 1, P: 0.5, F: 0 }
 const OUTCOME_LABEL: Record<Outcome, string> = { S: '✔ Success', P: '⚠ Partial', F: '✗ Failure' }
 const OUTCOME_BADGE: Record<Outcome, 'positive' | 'warning' | 'danger'> = { S: 'positive', P: 'warning', F: 'danger' }
 const TIER_BADGE: Record<string, 'danger' | 'warning' | 'neutral' | 'disable'> = { Critical: 'danger', High: 'warning', Medium: 'neutral', Low: 'disable' }
 const HEUR_BADGE: Record<string, 'danger' | 'warning' | 'positive'> = { VIOLATED: 'danger', PARTIAL: 'warning', PASS: 'positive' }
+const SERIES = ['series1', 'series2', 'series3'] as const
 
 type Task = {
   story: string; scenario: string; behaviour: string; friction: string
   seq: Record<VariantId, number>; outcome: Record<VariantId, Outcome>
 }
-const sims = study.simulations as Record<string, Task[]>
 const avg = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0)
 const fmt = (n: number) => n.toFixed(1)
 const pct = (n: number) => `${Math.round(n * 100)}%`
-const variantName = (v: VariantId) => study.variants.find(x => x.id === v)!.name
 
-/* ── Metrics ─────────────────────────────────────────────────────────────── */
-const allTasks = Object.values(sims).flat()
-const byVariant = Object.fromEntries(VARIANTS.map(v => [v, {
-  seq: avg(allTasks.map(t => t.seq[v])),
-  success: avg(allTasks.map(t => SCORE[t.outcome[v]])),
-}])) as Record<VariantId, { seq: number; success: number }>
-const byPersona = Object.fromEntries(study.personas.map(p => [p.id, Object.fromEntries(VARIANTS.map(v => [v, {
-  seq: avg(sims[p.id].map(t => t.seq[v])),
-  success: avg(sims[p.id].map(t => SCORE[t.outcome[v]])),
-}]))])) as Record<string, Record<VariantId, { seq: number; success: number }>>
-const storyIds = study.stories.map(s => s.id).filter(id => allTasks.some(t => t.story === id))
-const byStory = Object.fromEntries(storyIds.map(id => [id, Object.fromEntries(VARIANTS.map(v => [v,
-  avg(allTasks.filter(t => t.story === id).map(t => t.seq[v])),
-]))])) as Record<string, Record<VariantId, number>>
-const best = [...VARIANTS].sort((a, b) => byVariant[b].seq - byVariant[a].seq)[0]
-const tierCount = (t: string) => study.issues.filter(i => i.tier === t).length
-const violated = study.heuristics.filter(h => h.status === 'VIOLATED').length
+/* ── Metrics (computed from the simulated task records) ─────────────────── */
+function compute(study: StudyData) {
+  const VARIANTS: VariantId[] = study.variants.map(v => v.id)
+  const sims = study.simulations as unknown as Record<string, Task[]>
+  const variantName = (v: VariantId) => study.variants.find(x => x.id === v)!.name
+  const allTasks = Object.values(sims).flat()
+  const byVariant = Object.fromEntries(VARIANTS.map(v => [v, {
+    seq: avg(allTasks.map(t => t.seq[v])),
+    success: avg(allTasks.map(t => SCORE[t.outcome[v]])),
+  }])) as Record<VariantId, { seq: number; success: number }>
+  const byPersona = Object.fromEntries(study.personas.map(p => [p.id, Object.fromEntries(VARIANTS.map(v => [v, {
+    seq: avg(sims[p.id].map(t => t.seq[v])),
+    success: avg(sims[p.id].map(t => SCORE[t.outcome[v]])),
+  }]))])) as Record<string, Record<VariantId, { seq: number; success: number }>>
+  const storyIds = study.stories.map(s => s.id).filter(id => allTasks.some(t => t.story === id))
+  const byStory = Object.fromEntries(storyIds.map(id => [id, Object.fromEntries(VARIANTS.map(v => [v,
+    avg(allTasks.filter(t => t.story === id).map(t => t.seq[v])),
+  ]))])) as Record<string, Record<VariantId, number>>
+  const best = [...VARIANTS].sort((a, b) => byVariant[b].seq - byVariant[a].seq)[0]
+  const tierCount = (t: string) => study.issues.filter(i => i.tier === t).length
+  const violated = study.heuristics.filter(h => h.status === 'VIOLATED').length
+  return { VARIANTS, sims, variantName, byVariant, byPersona, storyIds, byStory, best, tierCount, violated }
+}
 
 /* ── Grouped bar chart: avg SEQ per story × variant (1–7) ────────────────── */
-function SeqChart() {
-  const SERIES_CLASS: Record<VariantId, string> = { v1: styles.series1, v2: styles.series2, v3: styles.series3 }
+function SeqChart({ m }: { m: ReturnType<typeof compute> }) {
+  const { VARIANTS, variantName, storyIds, byStory } = m
+  const SERIES_CLASS: Record<VariantId, string> = Object.fromEntries(VARIANTS.map((v, i) => [v, styles[SERIES[i]]]))
   return (
     <figure className={styles.chart} aria-label="Average SEQ per user story and variant (simulated)">
       <div className={styles.legend}>
@@ -93,7 +100,10 @@ function SeqChart() {
   )
 }
 
-export default function UsabilityStudyPage() {
+export default function UsabilityStudyPage({ study = defaultStudy as StudyData }: { study?: StudyData }) {
+  const m = useMemo(() => compute(study), [study])
+  const { VARIANTS, sims, variantName, byVariant, byPersona, storyIds, byStory, best, tierCount, violated } = m
+  const vList = (sep: string) => VARIANTS.map(v => v.toUpperCase()).join(sep)
   return (
     <article className={styles.article}>
       <p className={styles.eyebrow}>Usability evaluation report · Board Portal</p>
@@ -122,8 +132,7 @@ export default function UsabilityStudyPage() {
         <li><BadgeStatus type="danger" label="CRITICAL" /> {study.issues[0].issue} — {study.issues[0].impact}.</li>
         <li><BadgeStatus type="warning" label="HIGH" /> {study.issues[1].issue}.</li>
         <li><BadgeStatus type="warning" label="HIGH" /> {study.issues[2].issue}.</li>
-        <li><BadgeStatus type="positive" label="STRENGTH" /> Version 3 keeps every navigation action in one always-visible bar where reading ends — highest task success (94%) and best SEQ for Patricia and Robert.</li>
-        <li><BadgeStatus type="positive" label="STRENGTH" /> With the agenda open by default in every version (product decision 2026-10-23), jumping to an agenda item's documents is effortless for all personas (US04).</li>
+        {(study.strengths ?? []).map(x => <li key={x.text}><BadgeStatus type={x.type as 'positive' | 'warning' | 'danger'} label={x.label} /> {x.text}</li>)}
       </ul>
 
       {/* 02 Personas */}
@@ -139,8 +148,8 @@ export default function UsabilityStudyPage() {
               </span>
             </div>
             <dl className={styles.dl}>
-              <dt>SEQ V1 / V2 / V3</dt><dd>{VARIANTS.map(v => fmt(byPersona[p.id][v].seq)).join(' / ')}</dd>
-              <dt>Success V1 / V2 / V3</dt><dd>{VARIANTS.map(v => pct(byPersona[p.id][v].success)).join(' / ')}</dd>
+              <dt>SEQ {vList(' / ')}</dt><dd>{VARIANTS.map(v => fmt(byPersona[p.id][v].seq)).join(' / ')}</dd>
+              <dt>Success {vList(' / ')}</dt><dd>{VARIANTS.map(v => pct(byPersona[p.id][v].success)).join(' / ')}</dd>
               <dt>Goal</dt><dd>{p.goal}</dd>
               <dt>Mental model</dt><dd>{p.mentalModel}</dd>
               <dt>Risk behaviour</dt><dd>{p.risk}</dd>
@@ -167,7 +176,7 @@ export default function UsabilityStudyPage() {
           <h3 className={styles.h3}>{p.name} <span className={styles.muted}>— {p.role}, {p.proficiency}</span></h3>
           <div className={styles.tableWrap}>
             <table className={styles.table}>
-              <thead><tr><th>Task</th><th>Scenario</th><th>Behaviour observed</th><th>Friction</th><th>SEQ V1 / V2 / V3</th><th>Outcome V1 / V2 / V3</th></tr></thead>
+              <thead><tr><th>Task</th><th>Scenario</th><th>Behaviour observed</th><th>Friction</th><th>SEQ {vList(' / ')}</th><th>Outcome {vList(' / ')}</th></tr></thead>
               <tbody>
                 {sims[p.id].map(t => (
                   <tr key={t.story}>
@@ -189,7 +198,7 @@ export default function UsabilityStudyPage() {
 
       {/* 05 Metrics */}
       <h2 className={styles.h2}><span className={styles.num}>05</span>Simulated metrics</h2>
-      <SeqChart />
+      <SeqChart m={m} />
       <div className={styles.tableWrap}>
         <table className={styles.table}>
           <thead><tr><th>Story</th>{VARIANTS.map(v => <th key={v}>{variantName(v)}</th>)}</tr></thead>
