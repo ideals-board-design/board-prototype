@@ -903,5 +903,17 @@
     "The document boundary is the critical moment — the fix belongs in the navigation panel, not the document.",
     "Labels and position (local + global) matter more than more controls.",
     "Validate with real directors on iPad before committing — the gap is small and the study is simulated."
+  ],
+  "strengths": [
+    {
+      "type": "positive",
+      "label": "STRENGTH",
+      "text": "Version 3 keeps every navigation action in one always-visible bar where reading ends — highest task success (94%) and best SEQ for Patricia and Robert."
+    },
+    {
+      "type": "positive",
+      "label": "STRENGTH",
+      "text": "With the agenda open by default in every version (product decision 2026-10-23), jumping to an agenda item's documents is effortless for all personas (US04)."
+    }
   ]
 }

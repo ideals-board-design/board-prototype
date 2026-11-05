@@ -13,6 +13,7 @@
    Podium cards are buttons: hover lifts them with a shadow, click opens that
    version's tab. */
 
+import { useMemo } from 'react'
 import { BadgeStatus } from '../../components/BadgeStatus/BadgeStatus'
 import { actions } from '../../icons/actions'
 import { condition } from '../../icons/condition'
@@ -20,20 +21,15 @@ import { files } from '../../icons/files'
 import { functional } from '../../icons/functional'
 import { media } from '../../icons/media'
 import { navigation } from '../../icons/navigation'
-import reviewMd from '../../../.design/board-book-page-nav/DESIGN_REVIEW.md?raw'
-import study from '../../../.design/board-book-page-nav/usability-study.json'
-import audit from '../../../.design/board-book-page-nav/ux-audit.json'
+import defaultReviewMd from '../../../.design/board-book-page-nav/DESIGN_REVIEW.md?raw'
+import defaultStudy from '../../../.design/board-book-page-nav/usability-study.json'
+import defaultAudit from '../../../.design/board-book-page-nav/ux-audit.json'
 import shotV1 from '../../../.design/board-book-page-nav/screenshots/review-v1-desktop-1280.png'
 import shotV2 from '../../../.design/board-book-page-nav/screenshots/review-v2-desktop-1280.png'
 import shotV3 from '../../../.design/board-book-page-nav/screenshots/updated-v3-desktop-1280.png'
 import styles from './ResultsPage.module.css'
 
-type VariantId = 'v1' | 'v2' | 'v3'
-const VARIANTS: VariantId[] = ['v1', 'v2', 'v3']
-const NAME: Record<VariantId, string> = { v1: 'Version 1', v2: 'Version 2', v3: 'Version 3' }
-const SHORT: Record<VariantId, string> = { v1: 'V1', v2: 'V2', v3: 'V3' }
-const KIND: Record<VariantId, string> = { v1: 'Full width', v2: 'Floating controls', v3: 'Reading mode' }
-const SHOT: Record<VariantId, string> = { v1: shotV1, v2: shotV2, v3: shotV3 }
+type VariantId = string
 
 const svg = (set: { name: string; svg: string }[], name: string) => set.find(i => i.name === name)!.svg
 const ICON = {
@@ -49,94 +45,138 @@ const Ico = ({ icon, className }: { icon: string; className?: string }) => (
   <span className={className} aria-hidden="true" dangerouslySetInnerHTML={{ __html: icon }} />
 )
 
-/* ── Design review scores (parsed from the markdown tables) ─────────────── */
-const rowNumbers = (re: RegExp): number[] => {
-  const line = reviewMd.split('\n').find(l => re.test(l)) ?? ''
-  return (line.match(/\d+/g) ?? []).map(Number)
+type WhyItem = { icon: keyof typeof ICON; title: string; text: string }
+type Ctx = { winner: VariantId; tie: boolean; leaders: VariantId[]; overall: Record<VariantId, number>; success: Record<VariantId, number>; bestAt: (v: VariantId) => string[]; sweep: boolean; leads: number; total: number }
+
+export interface ResultsConfig {
+  eyebrow: string
+  variants: { id: VariantId; name: string; kind: string; shot: string }[]
+  reviewMd: string
+  study: typeof defaultStudy
+  audit: typeof defaultAudit
+  /** Copy for the "Why …" block; defaults to the Version 1–3 wording. */
+  why?: (ctx: Ctx) => WhyItem[]
+  note: string
 }
-const reviewTotal = rowNumbers(/^\| \*\*Total\*\* \|/) // of 30 (6 criteria × 5)
-const boundary = rowNumbers(/^\| Score \|/)             // of 5
 
-/* ── Study metrics ─────────────────────────────────────────────────────── */
-type Task = { seq: Record<VariantId, number>; outcome: Record<VariantId, 'S' | 'P' | 'F'> }
-const tasks = Object.values(study.simulations as Record<string, Task[]>).flat()
-const SCORE = { S: 1, P: 0.5, F: 0 }
-const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
-const seq = Object.fromEntries(VARIANTS.map(v => [v, avg(tasks.map(t => t.seq[v]))])) as Record<VariantId, number>
-const success = Object.fromEntries(VARIANTS.map(v => [v, avg(tasks.map(t => SCORE[t.outcome[v]]))])) as Record<VariantId, number>
+const DEFAULT_CONFIG: ResultsConfig = {
+  eyebrow: 'Board book navigation · comparison results',
+  variants: [
+    { id: 'v1', name: 'Version 1', kind: 'Full width',        shot: shotV1 },
+    { id: 'v2', name: 'Version 2', kind: 'Floating controls', shot: shotV2 },
+    { id: 'v3', name: 'Version 3', kind: 'Reading mode',      shot: shotV3 },
+  ],
+  reviewMd: defaultReviewMd,
+  study: defaultStudy,
+  audit: defaultAudit,
+  note: 'Version 2 (former Version 4) was re-scored on 2026-10-22 and Version 3, without its progress bar, on 2026-10-23 — both as built; Version 1 reflects its state before the 2026-10-19 fixes. Agenda open by default and the phone "Document tools" sheet count for every version (product decision 2026-10-23). All scores are simulated — validate with directors.',
+}
 
-/* ── UX audit ──────────────────────────────────────────────────────────── */
-const lenses = audit.lenses as { scores: Record<VariantId, number> }[]
-const uxs = Object.fromEntries(VARIANTS.map(v => [v,
-  Math.round((avg(lenses.map(l => l.scores[v])) / 5) * 100),
-])) as Record<VariantId, number>
+function build(cfg: ResultsConfig) {
+  const { reviewMd, study, audit } = cfg
+  const VARIANTS = cfg.variants.map(v => v.id)
+  const NAME = Object.fromEntries(cfg.variants.map(v => [v.id, v.name])) as Record<VariantId, string>
+  const SHORT = Object.fromEntries(cfg.variants.map(v => [v.id, v.id.toUpperCase()])) as Record<VariantId, string>
+  const KIND = Object.fromEntries(cfg.variants.map(v => [v.id, v.kind])) as Record<VariantId, string>
+  const SHOT = Object.fromEntries(cfg.variants.map(v => [v.id, v.shot])) as Record<VariantId, string>
 
-/* ── Criteria + overall ranking ────────────────────────────────────────── */
-type Criterion = { name: string; scale: string; icon: string; raw: (v: VariantId, i: number) => string; norm: (v: VariantId, i: number) => number }
-const CRITERIA: Criterion[] = [
-  { name: 'Design review',       scale: 'of 30',  icon: ICON.review,     raw: (_, i) => `${reviewTotal[i]}`,           norm: (_, i) => (reviewTotal[i] / 30) * 100 },
-  { name: 'Document boundaries', scale: 'of 5',   icon: ICON.boundaries, raw: (_, i) => `${boundary[i]}`,              norm: (_, i) => (boundary[i] / 5) * 100 },
-  { name: 'Ease of use (SEQ)',   scale: 'of 7',   icon: ICON.ease,       raw: v => seq[v].toFixed(1),                  norm: v => (seq[v] / 7) * 100 },
-  { name: 'Task success',        scale: '%',      icon: ICON.success,    raw: v => `${Math.round(success[v] * 100)}%`, norm: v => success[v] * 100 },
-  { name: 'UX score (UXS)',      scale: 'of 100', icon: ICON.uxs,        raw: v => `${uxs[v]}`,                        norm: v => uxs[v] },
-]
-const overall = Object.fromEntries(VARIANTS.map((v, i) => [v,
-  Math.round(avg(CRITERIA.map(c => c.norm(v, i)))),
-])) as Record<VariantId, number>
-const ranked = [...VARIANTS].sort((a, b) => overall[b] - overall[a])
-/* Dense rank: equal overall scores share a place (a tie shows two "1"s). */
-const rank = Object.fromEntries(VARIANTS.map(v => [v, 1 + VARIANTS.filter(o => overall[o] > overall[v]).length])) as Record<VariantId, number>
-const winner = ranked[0]
-const tie = overall[ranked[0]] === overall[ranked[1]]
-/* Tied leaders in version order, e.g. "Version 2 and Version 3". */
-const leaders = tie ? VARIANTS.filter(v => overall[v] === overall[winner]) : [winner]
-const leaderNames = leaders.map(v => NAME[v]).join(' and ')
-const PODIUM: VariantId[] = [ranked[1], ranked[0], ranked[2]]
-const ROWS: Criterion[] = [
-  ...CRITERIA,
-  { name: 'Overall', scale: 'mean, 0–100', icon: ICON.overall, raw: v => `${overall[v]}`, norm: v => overall[v] },
-]
+  /* Design review scores (parsed from the markdown tables) */
+  const rowNumbers = (re: RegExp): number[] => {
+    const line = reviewMd.split('\n').find(l => re.test(l)) ?? ''
+    return (line.match(/\d+/g) ?? []).map(Number)
+  }
+  const reviewTotal = rowNumbers(/^\| \*\*Total\*\* \|/) // of 30 (6 criteria × 5)
+  const boundary = rowNumbers(/^\| Score \|/)             // of 5
 
-/* Criteria the winner leads (ties count as leading) — the copy below states
-   the real number instead of assuming a clean sweep. */
-const winnerIdx = VARIANTS.indexOf(winner)
-const leads = CRITERIA.filter(c =>
-  VARIANTS.every((v, j) => c.norm(winner, winnerIdx) >= c.norm(v, j) - 1e-9),
-).length
-/* A clean sweep means strictly best everywhere; ties make it "best or tied". */
-const strictLeads = CRITERIA.filter(c =>
-  VARIANTS.every((v, j) => v === winner || c.norm(winner, winnerIdx) > c.norm(v, j) + 1e-9),
-).length
-const sweep = strictLeads === CRITERIA.length
+  /* Study metrics */
+  type Task = { seq: Record<VariantId, number>; outcome: Record<VariantId, 'S' | 'P' | 'F'> }
+  const tasks = Object.values(study.simulations as unknown as Record<string, Task[]>).flat()
+  const SCORE = { S: 1, P: 0.5, F: 0 }
+  const avg = (a: number[]) => a.reduce((x, y) => x + y, 0) / a.length
+  const seq = Object.fromEntries(VARIANTS.map(v => [v, avg(tasks.map(t => t.seq[v]))])) as Record<VariantId, number>
+  const success = Object.fromEntries(VARIANTS.map(v => [v, avg(tasks.map(t => SCORE[t.outcome[v]]))])) as Record<VariantId, number>
 
-/* Criterion each variant leads outright (for the tie explanation). */
-const bestAt = (v: VariantId) => CRITERIA.filter(c =>
-  VARIANTS.every((o, j) => o === v || c.norm(v, VARIANTS.indexOf(v)) > c.norm(o, j) + 1e-9),
-).map(c => c.name)
+  /* UX audit */
+  const lenses = audit.lenses as unknown as { scores: Record<VariantId, number> }[]
+  const uxs = Object.fromEntries(VARIANTS.map(v => [v,
+    Math.round((avg(lenses.map(l => l.scores[v])) / 5) * 100),
+  ])) as Record<VariantId, number>
 
-const WHY = tie && leaders.join() === 'v2,v3' ? [
-  { icon: ICON.boundaries, title: 'Both put next / previous where a document ends', text: 'Page and document buttons (|< ‹ › >|) sit in one bar under the page in both versions.' },
-  { icon: ICON.ease,       title: 'Version 2 — agenda first', text: `Agenda open beside the document and a labelled phone sheet. Leads on ${bestAt('v2').join(', ') || 'no single criterion'}.` },
-  { icon: ICON.uxs,        title: 'Version 3 — reading first', text: `One control zone and a quiet top bar, the lowest cognitive load. Leads on ${bestAt('v3').join(', ') || 'no single criterion'}.` },
-] : [
-  { icon: ICON.boundaries, title: 'Next / previous sits exactly where a document ends', text: 'Page and document buttons (|< ‹ › >|) live in one bar under the page — no change of focus.' },
-  { icon: ICON.uxs,        title: 'One control zone',                                   text: 'Every reading action in one always-visible bar keeps cognitive load low.' },
-  { icon: ICON.success,    title: sweep ? `Best on all ${CRITERIA.length} criteria` : `Best or tied on ${leads === CRITERIA.length ? 'all' : leads} of ${CRITERIA.length} criteria`,
-    text: `Highest overall score (${overall[winner]}) with ${Math.round(success[winner] * 100)}% task success.` },
-]
+  /* Criteria + overall ranking */
+  type Criterion = { name: string; scale: string; icon: string; raw: (v: VariantId, i: number) => string; norm: (v: VariantId, i: number) => number }
+  const CRITERIA: Criterion[] = [
+    { name: 'Design review',       scale: 'of 30',  icon: ICON.review,     raw: (_, i) => `${reviewTotal[i]}`,           norm: (_, i) => (reviewTotal[i] / 30) * 100 },
+    { name: 'Document boundaries', scale: 'of 5',   icon: ICON.boundaries, raw: (_, i) => `${boundary[i]}`,              norm: (_, i) => (boundary[i] / 5) * 100 },
+    { name: 'Ease of use (SEQ)',   scale: 'of 7',   icon: ICON.ease,       raw: v => seq[v].toFixed(1),                  norm: v => (seq[v] / 7) * 100 },
+    { name: 'Task success',        scale: '%',      icon: ICON.success,    raw: v => `${Math.round(success[v] * 100)}%`, norm: v => success[v] * 100 },
+    { name: 'UX score (UXS)',      scale: 'of 100', icon: ICON.uxs,        raw: v => `${uxs[v]}`,                        norm: v => uxs[v] },
+  ]
+  const overall = Object.fromEntries(VARIANTS.map((v, i) => [v,
+    Math.round(avg(CRITERIA.map(c => c.norm(v, i)))),
+  ])) as Record<VariantId, number>
+  const ranked = [...VARIANTS].sort((a, b) => overall[b] - overall[a])
+  /* Dense rank: equal overall scores share a place (a tie shows two "1"s). */
+  const rank = Object.fromEntries(VARIANTS.map(v => [v, 1 + VARIANTS.filter(o => overall[o] > overall[v]).length])) as Record<VariantId, number>
+  const winner = ranked[0]
+  const tie = overall[ranked[0]] === overall[ranked[1]]
+  /* Tied leaders in version order, e.g. "Version 2 and Version 3". */
+  const leaders = tie ? VARIANTS.filter(v => overall[v] === overall[winner]) : [winner]
+  const leaderNames = leaders.map(v => NAME[v]).join(' and ')
+  /* Podium order: 2nd · 1st · 3rd (with two versions: 2nd · 1st). */
+  const PODIUM = ranked.length >= 3 ? [ranked[1], ranked[0], ranked[2]] : [ranked[1], ranked[0]]
+  const ROWS: Criterion[] = [
+    ...CRITERIA,
+    { name: 'Overall', scale: 'mean, 0–100', icon: ICON.overall, raw: v => `${overall[v]}`, norm: v => overall[v] },
+  ]
+
+  /* Criteria the winner leads (ties count as leading). */
+  const winnerIdx = VARIANTS.indexOf(winner)
+  const leads = CRITERIA.filter(c =>
+    VARIANTS.every((v, j) => c.norm(winner, winnerIdx) >= c.norm(v, j) - 1e-9),
+  ).length
+  /* A clean sweep means strictly best everywhere; ties make it "best or tied". */
+  const strictLeads = CRITERIA.filter(c =>
+    VARIANTS.every((v, j) => v === winner || c.norm(winner, winnerIdx) > c.norm(v, j) + 1e-9),
+  ).length
+  const sweep = strictLeads === CRITERIA.length
+
+  /* Criterion each variant leads outright (for the tie explanation). */
+  const bestAt = (v: VariantId) => CRITERIA.filter(c =>
+    VARIANTS.every((o, j) => o === v || c.norm(v, VARIANTS.indexOf(v)) > c.norm(o, j) + 1e-9),
+  ).map(c => c.name)
+
+  const ctx: Ctx = { winner, tie, leaders, overall, success, bestAt, sweep, leads, total: CRITERIA.length }
+  const defaultWhy = (): WhyItem[] => tie && leaders.join() === 'v2,v3' ? [
+    { icon: 'boundaries', title: 'Both put next / previous where a document ends', text: 'Page and document buttons (|< ‹ › >|) sit in one bar under the page in both versions.' },
+    { icon: 'ease',       title: 'Version 2 — agenda first', text: `Agenda open beside the document and a labelled phone sheet. Leads on ${bestAt('v2').join(', ') || 'no single criterion'}.` },
+    { icon: 'uxs',        title: 'Version 3 — reading first', text: `One control zone and a quiet top bar, the lowest cognitive load. Leads on ${bestAt('v3').join(', ') || 'no single criterion'}.` },
+  ] : [
+    { icon: 'boundaries', title: 'Next / previous sits exactly where a document ends', text: 'Page and document buttons (|< ‹ › >|) live in one bar under the page — no change of focus.' },
+    { icon: 'uxs',        title: 'One control zone',                                   text: 'Every reading action in one always-visible bar keeps cognitive load low.' },
+    { icon: 'success',    title: sweep ? `Best on all ${CRITERIA.length} criteria` : `Best or tied on ${leads === CRITERIA.length ? 'all' : leads} of ${CRITERIA.length} criteria`,
+      text: `Highest overall score (${overall[winner]}) with ${Math.round(success[winner] * 100)}% task success.` },
+  ]
+  const WHY = (cfg.why ? cfg.why(ctx) : defaultWhy()).map(w => ({ ...w, iconSvg: ICON[w.icon] }))
+
+  return { VARIANTS, NAME, SHORT, KIND, SHOT, overall, ranked, rank, winner, tie, leaders, leaderNames, PODIUM, ROWS, sweep, leads, total: CRITERIA.length, WHY, success }
+}
 
 export interface ResultsPageProps {
   /** Opens a version's tab when its podium card is clicked. */
   onOpenVersion?: (v: VariantId) => void
+  /** Defaults to the Version 1–3 comparison. */
+  config?: ResultsConfig
 }
 
-export default function ResultsPage({ onOpenVersion }: ResultsPageProps) {
+export default function ResultsPage({ onOpenVersion, config = DEFAULT_CONFIG }: ResultsPageProps) {
+  const r = useMemo(() => build(config), [config])
+  const { VARIANTS, NAME, SHORT, KIND, SHOT, overall, ranked, rank, winner, tie, leaders, leaderNames, PODIUM, ROWS, sweep, leads, total, WHY } = r
   return (
     <div className={styles.page}>
       {/* ── Header ─────────────────────────────────────────────────── */}
       <header className={styles.head}>
         <div>
-          <p className={styles.eyebrow}>Board book navigation · comparison results</p>
+          <p className={styles.eyebrow}>{config.eyebrow}</p>
           <h1 className={styles.title}>{tie ? `${leaderNames} are tied` : `${NAME[winner]} wins the comparison`}</h1>
           <p className={styles.subtitle}>{tie
             ? `Both score ${overall[winner]} / 100 — the choice is a priority call (${leaders.map(v => KIND[v]).join(' vs ')}), not a clear winner.`
@@ -146,7 +186,7 @@ export default function ResultsPage({ onOpenVersion }: ResultsPageProps) {
           <span className={styles.calloutTag}><Ico icon={ICON.recommended} className={styles.calloutIcon} />{tie ? 'Tie' : 'Recommended'}</span>
           <span className={styles.calloutText}>{tie
             ? 'Combine their strengths and validate both with real directors — the gap is within the error of a simulated study.'
-            : `${NAME[winner]} gives the best overall experience${sweep ? ' and leads on every key criterion' : ` and leads or ties on ${leads === CRITERIA.length ? 'all' : leads} of ${CRITERIA.length} criteria`}.`}</span>
+            : `${NAME[winner]} gives the best overall experience${sweep ? ' and leads on every key criterion' : ` and leads or ties on ${leads === total ? 'all' : leads} of ${total} criteria`}.`}</span>
         </div>
       </header>
 
@@ -228,7 +268,7 @@ export default function ResultsPage({ onOpenVersion }: ResultsPageProps) {
         <div className={styles.whyGrid}>
           {WHY.map(w => (
             <div key={w.title} className={styles.whyItem}>
-              <Ico icon={w.icon} className={styles.whyIcon} />
+              <Ico icon={w.iconSvg} className={styles.whyIcon} />
               <span>
                 <span className={styles.whyTitle}>{w.title}</span>
                 <span className={styles.whyText}>{w.text}</span>
@@ -237,7 +277,7 @@ export default function ResultsPage({ onOpenVersion }: ResultsPageProps) {
           ))}
         </div>
         <p className={styles.note}>
-          <BadgeStatus type="neutral" label="Next" /> Version 2 (former Version 4) was re-scored on 2026-10-22 and Version 3, without its progress bar, on 2026-10-23 — both as built; Version 1 reflects its state before the 2026-10-19 fixes. Agenda open by default and the phone "Document tools" sheet count for every version (product decision 2026-10-23). All scores are simulated — validate with directors.
+          <BadgeStatus type="neutral" label="Note" /> {config.note}
         </p>
       </section>
     </div>

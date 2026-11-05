@@ -1,0 +1,812 @@
+{
+  "title": "Board Book Toolbar — Usability Evaluation Report (Version 1 vs Version 2)",
+  "feature": "Board book viewer toolbar (Version 1 Borderless dropdown · Version 2 Tool rail + labelled Download)",
+  "date": "2026-11-05",
+  "method": "Synthetic Persona Usability Study | NN/G Methodology | 4 Personas | 11 User Stories | 2 Variants",
+  "disclaimer": "All results come from simulated think-aloud sessions with synthetic personas. Numbers are simulated, not measured user data, and must be validated with real users.",
+  "context": "Prototype at localhost:5173/board-book-page-nav.html?tab=v1 and ?tab=v2 with the real Q4 board pack (5 agenda items, 6 documents, 7 pages). Version 1 is the earlier all-tools-in-one-bar version with a borderless, hug-content document dropdown (max 200px, ellipsis). Version 2 is Version 1 with Search · Ask AI · Comment / Draw / Highlight moved into a floating vertical tool rail at the top-right of the document and a labelled 'Download' button in the top bar (Figma 32957:307272; it answers the UX feedback that the Search → Download → Ask AI order feels off). Both share the borderless dropdown, so this study isolates the rail and the labelled Download; the effect of the borderless dropdown itself (the earlier bar vs V1) is not isolated. Same personas and rules as the Version 1–3 study of 2026-10-23, with one new story (US11, download) because it was the subject of the feedback. Desktop (1280) and laptop / iPad landscape (1024) were screenshotted; below 1024 the viewer sits behind the Agenda / Board book segment and phones (<640px) keep the Document tools sheet, so those sizes were rated from the shared behaviour, not re-checked. Product decision 2026-10-23 (agenda open by default) is not built into either prototype; it does not differ between the two versions.",
+  "variants": [
+    {
+      "id": "v1",
+      "name": "V1 Borderless dropdown",
+      "summary": "Single top bar: contents toggle · borderless document dropdown (hug content, max 200px, ellipsis) · |< ‹ N / 7 › >| · zoom − % + · fit width · fullscreen · Comment · Draw · Highlight · Search · Download · Ask AI (all icon-only, tooltips on hover). Phone (<640px): the the earlier version Document tools sheet."
+    },
+    {
+      "id": "v2",
+      "name": "V2 Tool rail",
+      "summary": "Top bar: contents toggle · borderless dropdown · |< ‹ N / 7 › >| · zoom − % + · fit width · fullscreen · a labelled 'Download' button. Floating vertical rail at the top-right of the document: Search · Ask AI, then (16px gap) Comment · Draw · Highlight, with tooltips opening to the left. Phone (<640px): unchanged the earlier version sheet."
+    }
+  ],
+  "goals": [
+    {
+      "id": "G1",
+      "text": "Assess discoverability: can each persona find Search, Ask AI, the annotation tools and Download without help."
+    },
+    {
+      "id": "G2",
+      "text": "Compare the load of one crowded top bar (V1) with two control zones (V2: bar + rail)."
+    },
+    {
+      "id": "G3",
+      "text": "Evaluate control placement: distance from the reading point to the annotation tools, on desktop and iPad."
+    },
+    {
+      "id": "G4",
+      "text": "Check whether a text label on Download (V2) changes success for low-proficiency and touch users."
+    },
+    {
+      "id": "G5",
+      "text": "Quantify simulated task success and SEQ per user story, persona and variant."
+    }
+  ],
+  "stories": [
+    {
+      "id": "US01",
+      "text": "As a reader, I want to see which document and page I am on, so I don't lose my place.",
+      "goals": [
+        "G1"
+      ]
+    },
+    {
+      "id": "US02",
+      "text": "As a reader, I want to read a document page by page without hunting for controls.",
+      "goals": [
+        "G3",
+        "G4"
+      ]
+    },
+    {
+      "id": "US03",
+      "text": "As a reader, I want to continue to the next document when I reach the end of the current one.",
+      "goals": [
+        "G2",
+        "G3"
+      ]
+    },
+    {
+      "id": "US04",
+      "text": "As a reader, I want to jump straight to the documents of a specific agenda item.",
+      "goals": [
+        "G4"
+      ]
+    },
+    {
+      "id": "US05",
+      "text": "As a reader, I want to go to a page number someone mentions in the meeting.",
+      "goals": [
+        "G1",
+        "G5"
+      ]
+    },
+    {
+      "id": "US06",
+      "text": "As a reader, I want to zoom or fit a dense table so I can read the figures.",
+      "goals": [
+        "G4"
+      ]
+    },
+    {
+      "id": "US07",
+      "text": "As a reader, I want to highlight or comment on a passage to discuss it later.",
+      "goals": [
+        "G4"
+      ]
+    },
+    {
+      "id": "US08",
+      "text": "As a reader, I want to search the board book for a term.",
+      "goals": [
+        "G4"
+      ]
+    },
+    {
+      "id": "US09",
+      "text": "As a reader, I want to read comfortably on a tablet or phone.",
+      "goals": [
+        "G3",
+        "G4"
+      ]
+    },
+    {
+      "id": "US10",
+      "text": "As a reader, I want to go back to the previous document.",
+      "goals": [
+        "G2"
+      ]
+    },
+    {
+      "id": "US11",
+      "text": "As a reader, I want to download the board book so I can keep or annotate it offline.",
+      "goals": [
+        "G4"
+      ]
+    }
+  ],
+  "personas": [
+    {
+      "id": "MC",
+      "name": "Margaret Chen",
+      "role": "Corporate Secretary",
+      "proficiency": "High",
+      "goal": "Check the final board pack end to end before it goes to directors.",
+      "mentalModel": "Keyboard shortcuts, dense toolbars, Notion/Acrobat-like patterns.",
+      "risk": "Impatient with extra steps; skims past labels.",
+      "emotion": "Methodical; low tolerance for ambiguity."
+    },
+    {
+      "id": "DO",
+      "name": "David Okafor",
+      "role": "Corporate Secretary",
+      "proficiency": "Medium",
+      "goal": "Review the pack and annotate items that need the Chair's attention.",
+      "mentalModel": "Explicit toolbar buttons and labelled Next / Previous.",
+      "risk": "Hesitates when something changes without explanation.",
+      "emotion": "Cautious; fears missing a document in a legal pack."
+    },
+    {
+      "id": "PR",
+      "name": "Patricia Reyes",
+      "role": "Corporate Secretary",
+      "proficiency": "Low",
+      "goal": "Open the pack and read the documents for one agenda item.",
+      "mentalModel": "A visible, labelled button for every action; step by step.",
+      "risk": "Ignores icon-only controls; never opens ⋯ menus.",
+      "emotion": "Anxious; needs plain language."
+    },
+    {
+      "id": "DIR",
+      "name": "Robert Hale",
+      "role": "Director / Board Member",
+      "proficiency": "Occasional",
+      "goal": "Read the pack on iPad the evening before the meeting and mark questions.",
+      "mentalModel": "Reading app: swipe or tap to turn pages, everything within thumb reach.",
+      "risk": "No keyboard; low patience for admin-style UI.",
+      "emotion": "Time-poor; wants the right document fast."
+    }
+  ],
+  "simulations": {
+    "MC": [
+      {
+        "story": "US01",
+        "scenario": "Opens the pack to spot-check the cover.",
+        "behaviour": "Reads the document name and N / 7 at once in both.",
+        "friction": "The borderless dropdown reads as a title; only the chevron and the hover fill say it is a menu.",
+        "seq": {
+          "v1": 6,
+          "v2": 6
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US03",
+        "scenario": "Gets to the end of the minutes document.",
+        "behaviour": "Presses → on the keyboard; no friction in either version.",
+        "friction": "|< >| are icon-only; their tooltips name the document but need hover.",
+        "seq": {
+          "v1": 6,
+          "v2": 6
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US05",
+        "scenario": "Goes to the page the Chair mentions.",
+        "behaviour": "Types the number in the page field.",
+        "friction": "None.",
+        "seq": {
+          "v1": 6,
+          "v2": 6
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US06",
+        "scenario": "Zooms in on a dense table.",
+        "behaviour": "V1: finds − 100% + at once, hovers the fit-width and fullscreen icons next to it to read their names. V2: same controls, more air around them.",
+        "friction": "V1: zoom shares the bar with 12 other icons.",
+        "seq": {
+          "v1": 5,
+          "v2": 6
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US07",
+        "scenario": "Highlights a passage to raise in the meeting.",
+        "behaviour": "V1: scans the right end of the bar and finds highlight as the 3rd of 6 icons. V2: spots the rail beside the page and goes straight to it.",
+        "friction": "V1: tools sit far from the text she is reading.",
+        "seq": {
+          "v1": 5,
+          "v2": 6
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US11",
+        "scenario": "Downloads the board book.",
+        "behaviour": "V1: knows the tray icon and finds it between Search and Ask AI. V2: reads the labelled button at the far right.",
+        "friction": "V1: icon-only; the position between two other icons is the only cue.",
+        "seq": {
+          "v1": 5,
+          "v2": 7
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      }
+    ],
+    "DO": [
+      {
+        "story": "US01",
+        "scenario": "Confirms which document is open.",
+        "behaviour": "Reads the name and N / 7 in both.",
+        "friction": "The name is no longer in a field, so he is unsure if it is clickable.",
+        "seq": {
+          "v1": 5,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US03",
+        "scenario": "Moves on to the next document.",
+        "behaviour": "Finds >| after a pause in both; hovers to read the document name.",
+        "friction": "The end of a document is silent; nothing says another one follows.",
+        "seq": {
+          "v1": 5,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US07",
+        "scenario": "Comments on a figure for the Chair.",
+        "behaviour": "V1: hovers three of the six right-end icons before finding the comment bubble. V2: looks at the top bar first, then notices the rail.",
+        "friction": "V1: icon-only row. V2: tools live in two zones (bar + rail).",
+        "seq": {
+          "v1": 4,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "P",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US08",
+        "scenario": "Searches the pack for \"EBITDA\".",
+        "behaviour": "V1: hovers Search, Download and Ask AI to tell them apart. V2: Search is the first icon in the rail.",
+        "friction": "V1: three similar icons side by side.",
+        "seq": {
+          "v1": 4,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US10",
+        "scenario": "Goes back to the previous document.",
+        "behaviour": "Uses |< in both.",
+        "friction": "Same as US03.",
+        "seq": {
+          "v1": 5,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US11",
+        "scenario": "Downloads the pack for the file.",
+        "behaviour": "V1: recognises the tray icon after hovering. V2: clicks \"Download\".",
+        "friction": "V1: icon-only.",
+        "seq": {
+          "v1": 4,
+          "v2": 6
+        },
+        "outcome": {
+          "v1": "P",
+          "v2": "S"
+        }
+      }
+    ],
+    "PR": [
+      {
+        "story": "US01",
+        "scenario": "Opens the pack and reads the first page.",
+        "behaviour": "Reads the file name and 1 / 7 without interacting.",
+        "friction": "Page counter is global (N / 7), not per document.",
+        "seq": {
+          "v1": 5,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US03",
+        "scenario": "Gets to the end of the minutes document.",
+        "behaviour": "Notices >| after a long pause and tries it in both.",
+        "friction": "The end is silent; |< >| are icon-only.",
+        "seq": {
+          "v1": 4,
+          "v2": 4
+        },
+        "outcome": {
+          "v1": "P",
+          "v2": "P"
+        }
+      },
+      {
+        "story": "US04",
+        "scenario": "Looks for the documents of agenda item 3.",
+        "behaviour": "Does not click the borderless document name (reads as a title) and never opens the contents panel; asks for help.",
+        "friction": "Borderless dropdown has no field outline; the contents toggle is an unlabeled icon.",
+        "seq": {
+          "v1": 3,
+          "v2": 3
+        },
+        "outcome": {
+          "v1": "P",
+          "v2": "P"
+        }
+      },
+      {
+        "story": "US07",
+        "scenario": "Highlights a passage.",
+        "behaviour": "V1: ignores the row of icons at the right end of the bar and gives up. V2: sees a separate white card beside the page and tries its icons one by one.",
+        "friction": "Icon-only in both; in V2 the card at least separates annotation tools from the bar.",
+        "seq": {
+          "v1": 2,
+          "v2": 3
+        },
+        "outcome": {
+          "v1": "F",
+          "v2": "P"
+        }
+      },
+      {
+        "story": "US08",
+        "scenario": "Searches the pack for a name.",
+        "behaviour": "V1: does not find Search among six identical icons. V2: tries the first icon in the rail and finds Search; the sparkle (Ask AI) next to it confuses her.",
+        "friction": "Icon-only; Ask AI sparkle has no label.",
+        "seq": {
+          "v1": 2,
+          "v2": 3
+        },
+        "outcome": {
+          "v1": "F",
+          "v2": "P"
+        }
+      },
+      {
+        "story": "US11",
+        "scenario": "Downloads the pack.",
+        "behaviour": "V1: ignores the tray icon and looks for the word \"Download\". V2: clicks the labelled button.",
+        "friction": "V1: no text label anywhere.",
+        "seq": {
+          "v1": 2,
+          "v2": 6
+        },
+        "outcome": {
+          "v1": "F",
+          "v2": "S"
+        }
+      }
+    ],
+    "DIR": [
+      {
+        "story": "US01",
+        "scenario": "Opens the pack on iPad (landscape) in the evening.",
+        "behaviour": "Reads name and N / 7 in both.",
+        "friction": "None.",
+        "seq": {
+          "v1": 5,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US03",
+        "scenario": "Continues to the next document.",
+        "behaviour": "Taps >| after looking for a swipe; both work after a pause.",
+        "friction": "No swipe between documents; 32px targets at the top, far from a resting thumb.",
+        "seq": {
+          "v1": 4,
+          "v2": 4
+        },
+        "outcome": {
+          "v1": "P",
+          "v2": "P"
+        }
+      },
+      {
+        "story": "US07",
+        "scenario": "Marks a question on a figure.",
+        "behaviour": "V1: stretches to the top-right corner of the bar and mis-taps the neighbouring icon once. V2: the rail on the right edge is under the right thumb.",
+        "friction": "V1: 32px icons packed in a row. V2: rail icons also 32px.",
+        "seq": {
+          "v1": 4,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "P",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US08",
+        "scenario": "Searches for \"dividend\".",
+        "behaviour": "V1: taps Search after trial and error. V2: Search is the top icon of the rail.",
+        "friction": "Tooltips do not show on touch.",
+        "seq": {
+          "v1": 4,
+          "v2": 5
+        },
+        "outcome": {
+          "v1": "S",
+          "v2": "S"
+        }
+      },
+      {
+        "story": "US09",
+        "scenario": "Reads on a phone on the train.",
+        "behaviour": "Same Document tools sheet in both (existing behaviour, below 640px); not a differentiator.",
+        "friction": "The dots trigger is unlabeled.",
+        "seq": {
+          "v1": 4,
+          "v2": 4
+        },
+        "outcome": {
+          "v1": "P",
+          "v2": "P"
+        }
+      },
+      {
+        "story": "US11",
+        "scenario": "Saves the pack to Files.",
+        "behaviour": "V1: guesses the tray icon, no tooltip on touch. V2: taps \"Download\".",
+        "friction": "V1: no label and no hover on touch.",
+        "seq": {
+          "v1": 4,
+          "v2": 6
+        },
+        "outcome": {
+          "v1": "P",
+          "v2": "S"
+        }
+      }
+    ]
+  },
+  "time": {
+    "MC": {
+      "v1": [
+        5,
+        1,
+        0
+      ],
+      "v2": [
+        6,
+        0,
+        0
+      ]
+    },
+    "DO": {
+      "v1": [
+        2,
+        3,
+        1
+      ],
+      "v2": [
+        4,
+        2,
+        0
+      ]
+    },
+    "PR": {
+      "v1": [
+        1,
+        2,
+        3
+      ],
+      "v2": [
+        2,
+        3,
+        1
+      ]
+    },
+    "DIR": {
+      "v1": [
+        2,
+        2,
+        2
+      ],
+      "v2": [
+        3,
+        2,
+        1
+      ]
+    }
+  },
+  "shared": [
+    "The end of a document is still silent in both: |< >| are icon-only and name the document only in a tooltip, so Patricia and Robert pause or stall at US03.",
+    "The borderless document dropdown has no field outline; it reads as a title for Patricia (US04) and leaves David unsure that it is clickable. Both versions share it.",
+    "Most controls are still icon-only in both (V1: all 15 buttons, V2: 14 of 15); tooltips need hover, which does not exist on iPad."
+  ],
+  "divergent": [
+    {
+      "feature": "Download",
+      "MC": "Recognises the tray icon (V1); reads the label (V2)",
+      "DO": "V1: hovers to confirm; V2: clicks the label",
+      "PR": "V1: ignores the icon; V2: clicks the word",
+      "DIR": "V1: no tooltip on touch; V2: taps the label"
+    },
+    {
+      "feature": "Annotate (comment · draw · highlight)",
+      "MC": "V2 rail is faster than scanning the bar",
+      "DO": "V1: hovers three icons; V2: finds the rail after the bar",
+      "PR": "V1: gives up; V2: tries the rail's icons one by one",
+      "DIR": "V2 rail sits under the right thumb"
+    },
+    {
+      "feature": "Search / Ask AI",
+      "MC": "Any variant",
+      "DO": "V2: Search is the first icon in the rail",
+      "PR": "V1: not found; V2: finds Search, unsure about the sparkle",
+      "DIR": "Tooltips do not show on touch"
+    },
+    {
+      "feature": "Document dropdown (borderless, shared)",
+      "MC": "Fine — knows it is a menu",
+      "DO": "Unsure it is clickable",
+      "PR": "Does not click it (US04)",
+      "DIR": "Uses the name only to read"
+    }
+  ],
+  "heuristics": [
+    {
+      "id": "H1",
+      "name": "Visibility of system status",
+      "status": "VIOLATED",
+      "evidence": "The document end is silent; global N / 7 is read as document length (US03) — carried over from the Version 1–3 study."
+    },
+    {
+      "id": "H2",
+      "name": "Match with the real world",
+      "status": "PARTIAL",
+      "evidence": "The sparkle (Ask AI) has no label; the borderless dropdown reads as a title (US04, US08)."
+    },
+    {
+      "id": "H3",
+      "name": "User control and freedom",
+      "status": "PASS",
+      "evidence": "Previous page on the first page returns to the previous document; Esc leaves focus mode; the rail tools toggle off."
+    },
+    {
+      "id": "H4",
+      "name": "Consistency and standards",
+      "status": "PASS",
+      "evidence": "Same icons for the same actions in both; V2 uses one pattern (rail) for tools and one labelled button for Download."
+    },
+    {
+      "id": "H6",
+      "name": "Recognition rather than recall",
+      "status": "VIOLATED",
+      "evidence": "V1: 15 icon-only buttons in one bar (US07, US08, US11). V2 labels one of them and groups the rest, a partial fix."
+    },
+    {
+      "id": "H7",
+      "name": "Flexibility and efficiency",
+      "status": "PASS",
+      "evidence": "Keyboard ← → crosses documents; the page field accepts direct input (US03, US05)."
+    },
+    {
+      "id": "H8",
+      "name": "Aesthetic and minimalist design",
+      "status": "PARTIAL",
+      "evidence": "V1 is crowded at the right end of the bar; V2 relieves the bar but adds a second zone."
+    },
+    {
+      "id": "H9",
+      "name": "Help users recover from errors",
+      "status": "PARTIAL",
+      "evidence": "When Patricia believes the pack ended or a tool is missing, nothing helps her recover (US03, US07)."
+    }
+  ],
+  "issues": [
+    {
+      "id": "I-01",
+      "tier": "Critical",
+      "issue": "Document end is silent and the way on is an icon-only |< >| button whose name needs hover (carried over from the earlier study)",
+      "frequency": "2/4",
+      "impact": "Patricia and Robert pause or stall at the document boundary",
+      "persistence": "Retries",
+      "personas": "PR, DIR",
+      "heuristics": "H1, H9"
+    },
+    {
+      "id": "I-02",
+      "tier": "High",
+      "issue": "V1 puts 15 icon-only buttons in one top bar; Search, Download and Ask AI sit side by side with no label",
+      "frequency": "3/4",
+      "impact": "Patricia cannot find Search, annotate or download; David hovers every icon",
+      "persistence": "Stays stuck (PR)",
+      "personas": "DO, PR, DIR",
+      "heuristics": "H6, H8"
+    },
+    {
+      "id": "I-03",
+      "tier": "High",
+      "issue": "Borderless document dropdown reads as a static title (both)",
+      "frequency": "2/4",
+      "impact": "Patricia does not open it to reach an agenda item's documents (US04)",
+      "persistence": "Stays stuck (PR)",
+      "personas": "DO, PR",
+      "heuristics": "H2, H6"
+    },
+    {
+      "id": "I-04",
+      "tier": "High",
+      "issue": "V2 rail is still icon-only; the Ask AI sparkle and Draw / Highlight icons carry no label",
+      "frequency": "2/4",
+      "impact": "Patricia only partly succeeds on US07 / US08",
+      "persistence": "Retries",
+      "personas": "DO, PR",
+      "heuristics": "H2, H6"
+    },
+    {
+      "id": "I-05",
+      "tier": "Medium",
+      "issue": "V2 splits tools across two zones (top bar + right rail)",
+      "frequency": "1/4",
+      "impact": "David first looks for Comment in the top bar",
+      "persistence": "Self-recovers",
+      "personas": "DO",
+      "heuristics": "H8"
+    },
+    {
+      "id": "I-06",
+      "tier": "Medium",
+      "issue": "Tooltips are the only names for rail and bar icons; touch has no hover",
+      "frequency": "1/4",
+      "impact": "Robert guesses on iPad",
+      "persistence": "Retries",
+      "personas": "DIR",
+      "heuristics": "H6"
+    },
+    {
+      "id": "I-07",
+      "tier": "Low",
+      "issue": "Contents toggle is an unlabeled icon and closed by default in either prototype (product decision 2026-10-23 says open)",
+      "frequency": "2/4",
+      "impact": "Agenda items are reachable only through the dropdown",
+      "persistence": "Retries",
+      "personas": "PR, DIR",
+      "heuristics": "H6"
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "R1",
+      "title": "Keep the labelled Download and extend labels to the rail on wide screens",
+      "effort": "Low",
+      "impact": "PR, DO, DIR",
+      "fix": "Adopt V2's text button for Download. At ≥1280px let the rail expand to icon + text (Search, Ask AI, Comment, Draw, Highlight) or show persistent labels on touch.",
+      "target": "PR task success 67% → 83%+; PR US07 / US08 SEQ 3 → 5"
+    },
+    {
+      "id": "R2",
+      "title": "Use V2 as the base",
+      "effort": "Low",
+      "impact": "All",
+      "fix": "Tools move next to the reading point and the top bar keeps navigation and zoom only.",
+      "target": "Overall SEQ 5.0 → 5.5+"
+    },
+    {
+      "id": "R3",
+      "title": "Give the borderless dropdown an affordance and test the earlier bar vs V1",
+      "effort": "Low",
+      "impact": "DO, PR",
+      "fix": "Show a hairline border on hover / focus (or keep it visible below 1280px) and run a separate the earlier bar vs V1 comparison, because this study cannot isolate it.",
+      "target": "US04 PR SEQ 3 → 5"
+    },
+    {
+      "id": "R4",
+      "title": "Make the document boundary visible",
+      "effort": "Low",
+      "impact": "PR, DIR",
+      "fix": "On the last page the next control reads 'Next document: <name>'; show local position ('Page 1 of 2 · 4 / 7') (carried over from the earlier study R1 / R3).",
+      "target": "US03 PR SEQ 4 → 5.5"
+    },
+    {
+      "id": "R5",
+      "title": "Check the rail against the sheet at zoom above Fit and on tablet",
+      "effort": "Med",
+      "impact": "All",
+      "fix": "It sits in the gutter at 100% on 1280 and 1024; verify it does not cover the sheet at higher zoom or under the open agenda, and keep it out of the way while panning.",
+      "target": "No overlap at any zoom; rail stays reachable"
+    },
+    {
+      "id": "R6",
+      "title": "Enlarge touch targets for the rail",
+      "effort": "Low",
+      "impact": "DIR",
+      "fix": "Use 40–44px hit areas for the rail on touch devices; hold the 2px tertiary gap visually.",
+      "target": "DIR US07 SEQ 5 → 6"
+    }
+  ],
+  "iteration": {
+    "phases": [
+      {
+        "name": "Phase 1 — Validation",
+        "text": "Re-run V2 with R1 (labelled rail) against V2 as is, with the same persona types."
+      },
+      {
+        "name": "Phase 2 — Isolate the dropdown",
+        "text": "Run the earlier bar vs V1 (same bar, bordered vs borderless dropdown) on US04 / US01 with Patricia- and David-type users."
+      },
+      {
+        "name": "Phase 3 — Real users",
+        "text": "2 real users per persona type incl. 2 directors on iPad landscape; tablet portrait and phone with the Agenda / Board book segment."
+      }
+    ],
+    "questions": [
+      "Do readers expect annotation tools near the document (rail) or with the other controls (bar)?",
+      "Is one labelled button (Download) enough, or do readers also expect text on Search and Ask AI?",
+      "Does a borderless dropdown lower the discovery of the document list for occasional users?",
+      "Does the rail ever cover content on a dense table at higher zoom?",
+      "Which share of directors annotates on iPad vs desktop?"
+    ]
+  },
+  "takeaways": [
+    "Version 2 leads: the rail puts annotation next to the page and a labelled Download answers the original feedback — the biggest gains are for Patricia and Robert.",
+    "The gain comes from placement and one label, not from fewer controls: V2 still has 14 icon-only buttons, so labels remain the main fix.",
+    "The borderless dropdown is shared and unproven — test it on its own against the earlier version.",
+    "The document boundary is still the critical moment in both versions.",
+    "Validate with real directors on iPad before committing — the study is simulated and V2's rail was not checked above 100% zoom."
+  ],
+  "strengths": [
+    {
+      "type": "positive",
+      "label": "STRENGTH",
+      "text": "Version 2's labelled Download is found by every persona (US11 SEQ 6–7); in Version 1 Patricia fails it and Robert and David only get partial success."
+    },
+    {
+      "type": "positive",
+      "label": "STRENGTH",
+      "text": "Version 2's rail puts Comment / Draw / Highlight beside the page — highlight is faster for Margaret, and it is the only variant where Patricia gets any partial success on annotating (US07)."
+    }
+  ]
+}

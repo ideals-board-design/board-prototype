@@ -151,6 +151,14 @@
   cursor: pointer;
 }
 .docSelect:hover { background: var(--color-bg-hover); }
+/* Version 7: no border, transparent until hover. */
+.docSelectBorderless { background: transparent; box-shadow: none; }
+.docSelectBorderless:hover { background: var(--color-bg-hover); }
+/* Version 7: hug content — the chevron sits right next to the name; the name
+   is capped (3 × --space-72) and ellipsised, the chevron never shrinks. */
+.docSelectWrapHug { flex: 0 1 auto; }
+.docSelectWrapHug .docSelect { flex: 0 1 auto; }
+.docSelectWrapHug .docSelectName { flex: 0 1 auto; max-width: calc(var(--space-72) * 3); }
 
 .docSelectIcon {
   display: inline-flex;
@@ -325,6 +333,9 @@
 }
 .cardBottomLeft { bottom: var(--space-16); left: var(--space-16); }
 .cardTopRight { top: var(--space-16); right: var(--space-16); }
+/* Version 8 tool rail: two groups (Search · Ask AI / annotations) 16px apart. */
+.railCard { gap: var(--space-16); padding: var(--space-4) var(--space-8); }
+.railGroup { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); }
 
 .cardTotal {
   padding: var(--space-4) 0;

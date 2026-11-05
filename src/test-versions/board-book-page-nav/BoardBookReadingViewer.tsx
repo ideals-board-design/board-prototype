@@ -159,9 +159,15 @@ export interface BoardBookReadingViewerProps {
   toolsIn?: 'bar' | 'top' | 'cards' | 'single'
   /** Open this document first — a name picked from the agenda (main prototype). */
   initialDocName?: string | null
+  /** Version 1: the document dropdown has no border (feedback: lighter element). */
+  borderlessDocSelect?: boolean
+  /** Version 2 (on top of Version 1): Search · Ask AI · annotations move into a
+      floating vertical card at the top right of the document; the top bar
+      keeps a labelled Download button after the view options. */
+  railTools?: boolean
 }
 
-export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar', initialDocName = null }: BoardBookReadingViewerProps) {
+export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar', initialDocName = null, borderlessDocSelect = false, railTools = false }: BoardBookReadingViewerProps) {
   const isNarrow = useMediaQuery('(max-width: 767px)')
   /* Version 4 on tablet / desktop: annotations in the top bar. */
   const toolsTop = toolsIn === 'top' && !isNarrow
@@ -179,6 +185,8 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
   /* The one-bar layout — desktop, laptop and (inside the Board book segment)
      tablets. */
   const single = toolsIn === 'single' && !isMobile
+  /* Version 2: floating tool rail instead of the right half of the top bar. */
+  const rail = railTools && single
   /* Version 6 when the viewer is too narrow for the whole bar: zoom, fit /
      focus and annotations fold into the dots "Document tools" button, as on
      phones in the other versions. */
@@ -476,7 +484,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 of its three-column bar; elsewhere the wrapper is display: contents. */}
             <div className={single ? styles.singleLeft : styles.contents}>
             {!focus && !segmented && (
-            <Tooltip label="Table of content" position="bottom">
+            <Tooltip label={tocOpen ? 'Hide contents' : 'Show contents'} position="bottom">
               <Button
                 variant="tertiary" intent="neutral" size="m"
                 aria-pressed={single ? undefined : tocOpen}
@@ -484,7 +492,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 data-state={tocOpen && !single ? 'active' : undefined}
                 iconOnly={<Ico svg={tocOpen ? tocOpenSvg : tocClosedSvg} />}
                 onClick={() => { markTocManual(!tocOpen); setTocOpen(o => !o) }}
-                aria-label="Toggle table of content"
+                aria-label={tocOpen ? 'Hide contents' : 'Show contents'}
               />
             </Tooltip>
             )}
@@ -492,10 +500,10 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
             {/* The agenda lists the documents, so the dropdown is hidden while
                 it is open in the narrow (For tablets) laptop bar. */}
             {!(single && (focus || (singleCompact && !segmented && tocOpen))) && (
-            <div className={styles.docSelectWrap}>
+            <div className={[styles.docSelectWrap, borderlessDocSelect ? styles.docSelectWrapHug : ''].filter(Boolean).join(' ')}>
               <button
                 type="button"
-                className={styles.docSelect}
+                className={[styles.docSelect, borderlessDocSelect ? styles.docSelectBorderless : ''].filter(Boolean).join(' ')}
                 onClick={() => setNavPopoverOpen(o => !o)}
                 aria-haspopup="menu"
                 aria-expanded={navPopoverOpen}
@@ -592,10 +600,14 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                           {menuRow('Fit to page', fitPageSvg, fit === 'page', () => setFit('page'))}
                           {menuRow('Actual size (100%)', actualSizeSvg, fit === 'none' && zoom === 100, () => { setFit('none'); setZoom(100) })}
                           {menuRow(focus ? 'Exit full screen' : 'Full screen', focus ? actualSizeSvg : focusSvg, focus, () => setFocus(f => !f))}
-                          <span className={styles.zoomMenuDivider} aria-hidden="true" />
-                          {menuRow('Comment', commentSvg, tool === 'comment', () => toggleTool('comment'))}
-                          {menuRow('Draw', drawingSvg, tool === 'draw', () => toggleTool('draw'))}
-                          {menuRow('Highlight', highlightSvg, tool === 'highlight', () => toggleTool('highlight'))}
+                          {!rail && (
+                            <>
+                              <span className={styles.zoomMenuDivider} aria-hidden="true" />
+                              {menuRow('Comment', commentSvg, tool === 'comment', () => toggleTool('comment'))}
+                              {menuRow('Draw', drawingSvg, tool === 'draw', () => toggleTool('draw'))}
+                              {menuRow('Highlight', highlightSvg, tool === 'highlight', () => toggleTool('highlight'))}
+                            </>
+                          )}
                         </div>
                       )}
                     </div>
@@ -612,7 +624,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 </div>
 
                 <div className={styles.singleRight}>
-                  {singleGrouped ? (
+                  {rail ? null : singleGrouped ? (
                     <div className={styles.toolMenuWrap}>
                       {/* Split toggle: the button toggles the last-picked tool on / off,
                           the separate chevron opens the list to pick another one. */}
@@ -645,11 +657,18 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                       {barBtn('Highlight', highlightSvg, () => toggleTool('highlight'), { active: tool === 'highlight', tip: 'bottom' })}
                     </div>
                   )}
+                  {rail ? (
+                    <Button variant="tertiary" intent="neutral" size="m" iconLeft={<Ico svg={downloadSvg} />}
+                      onClick={() => console.log('download board book')}>
+                      Download
+                    </Button>
+                  ) : (
                   <div className={styles.barGroup}>
                     {barBtn('Search', searchSvg, () => toggleRightPanel('search'), { tip: 'bottom' })}
                     {barBtn('Download', downloadSvg, () => console.log('download board book'), { tip: 'bottom' })}
                     {barBtn('Ask AI', aiSvg, () => toggleRightPanel('ai'), { tip: 'bottom' })}
                   </div>
+                  )}
                 </div>
               </div>
               </>
@@ -724,6 +743,21 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
               )}
             />
           </div>
+
+          {/* Version 2: floating tool rail — Search · Ask AI | Comment · Draw · Highlight. */}
+          {rail && (
+            <div className={[styles.sideCard, styles.cardTopRight, styles.railCard].join(' ')} role="toolbar" aria-orientation="vertical" aria-label="Search, AI and annotations">
+              <div className={styles.railGroup}>
+                {barBtn('Search', searchSvg, () => toggleRightPanel('search'), { active: rightPanel === 'search', tip: 'left' })}
+                {barBtn('Ask AI', aiSvg, () => toggleRightPanel('ai'), { active: rightPanel === 'ai', tip: 'left' })}
+              </div>
+              <div className={styles.railGroup}>
+                {barBtn('Comment', commentSvg, () => toggleTool('comment'), { active: tool === 'comment', tip: 'left' })}
+                {barBtn('Draw', drawingSvg, () => toggleTool('draw'), { active: tool === 'draw', tip: 'left' })}
+                {barBtn('Highlight', highlightSvg, () => toggleTool('highlight'), { active: tool === 'highlight', tip: 'left' })}
+              </div>
+            </div>
+          )}
 
           {/* Version 5: floating side cards. */}
           {cards && (
