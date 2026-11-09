@@ -240,8 +240,8 @@ export default function BoardMemberPage() {
 
           {activeTab === 'board-book' && (
             published ? (
-              /* Board book: Version 6 of the board-book test versions. */
-              <BoardBookReadingViewer toolsIn="single" initialDocName={boardBookDoc} />
+              /* Board book: Version 2 of the board-book test versions. */
+              <BoardBookReadingViewer toolsIn="single" borderlessDocSelect railTools initialDocName={boardBookDoc} />
             ) : (
               <EmptyState
                 illustration="clipboard"
