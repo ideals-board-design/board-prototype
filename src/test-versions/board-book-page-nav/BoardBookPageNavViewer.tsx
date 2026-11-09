@@ -558,11 +558,6 @@ function TocItem({ book, item, currentDocId, onSelectItem, onSelectDoc, onAskAi 
             />
           </span>
           <p className={styles.tocText}>{m.text}</p>
-          {(m.status === 'completed' || m.status === 'in-progress') && m.progress != null && (
-            <div className={styles.progressTrack} aria-hidden="true">
-              <div className={styles.progressFill} style={{ width: `${m.progress}%` }} />
-            </div>
-          )}
         </div>
       ))}
 
