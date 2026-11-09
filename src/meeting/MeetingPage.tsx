@@ -37,7 +37,7 @@ import { AttachmentsField, AttachmentsReadOnly, formatFromFileName, type Attachm
 import { CopyDocumentModal } from './CopyDocumentModal'
 import { AddLinkModal } from './AddLinkModal'
 import { DocumentRequestDrawer, submittedAttachment, type DocRequestData } from './DocumentRequestDrawer'
-/* Board book: Version 6 of the board-book test versions (one top bar). */
+/* Board book: Version 2 of the board-book test versions.(one top bar). */
 import BoardBookReadingViewer from '../test-versions/board-book-page-nav/BoardBookReadingViewer'
 import { MinutesTab } from './MinutesTab'
 import { ToastContainer, type ToastContainerHandle } from '../components/ToastContainer/ToastContainer'
@@ -2722,7 +2722,7 @@ export default function MeetingPage() {
           {activeTab === 'meeting' && <MeetingDetailsTab />}
           {activeTab === 'agenda' && <AgendaTab onOpenInBoardBook={openInBoardBook} onViewBoardBook={viewBoardBook} />}
           {activeTab === 'board-book' && (
-            <BoardBookReadingViewer toolsIn="single" initialDocName={boardBookDoc} />
+            <BoardBookReadingViewer toolsIn="single" borderlessDocSelect railTools initialDocName={boardBookDoc} />
           )}
           {activeTab === 'minutes' && <MinutesTab />}
         </div>

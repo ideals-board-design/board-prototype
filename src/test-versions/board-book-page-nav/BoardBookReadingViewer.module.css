@@ -76,6 +76,10 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
   column-gap: var(--space-24);
+  /* Fixed 56px including the bottom border (the labelled Download is 40px). */
+  box-sizing: border-box;
+  height: var(--space-56);
+  padding-block: 0;
 }
 .singleLeft {
   min-width: 0;
