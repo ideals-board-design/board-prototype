@@ -195,19 +195,19 @@
    "*Restricted*" placeholder (Figma 12025-114417). It keeps its number + time
    slot so the sequence reads correctly, but title and meta grey out. */
 .outlineRowRestricted .outlineLabel {
-  color: var(--color-text-secondary);
+  opacity: 0.4;
 }
 
 .detailItemRestricted .detailTitle,
-.detailItemRestricted .detailNumber {
-  color: var(--color-text-secondary);
+.detailItemRestricted .detailMeta {
+  opacity: 0.4;
 }
 
 /* ── Outline column ────────────────────────────────────── */
 
 .previewOutline {
-  /* Fixed outline column (Table of content) — Figma 17506-146085/86. */
-  width: 432px;
+  /* Fixed outline column (Table of content) — Figma 31679:306299 (360). */
+  width: 360px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -238,17 +238,17 @@
 .outlineItems {
   display: flex;
   flex-direction: column;
-  padding: 0 var(--space-16);
+  padding: 0 var(--space-12);
 }
 
 .outlineRow {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  gap: var(--space-4);
+  gap: var(--space-8);
   width: 100%;
-  height: var(--size-s);
-  padding: 0 var(--space-8);
+  height: var(--size-m);
+  padding: 0 var(--space-10) 0 var(--space-12);
   border: none;
   border-radius: var(--radius-sm);
   background: none;
@@ -374,6 +374,14 @@
   overflow: hidden;
 }
 
+/* Read-only (board member / preview) card — Figma 31679:306304: 4px radius,
+   16px top and bottom padding, no resting border. */
+.detailItemReadOnly {
+  padding-bottom: var(--space-16);
+  border-radius: var(--radius-md);
+  border-color: transparent;
+}
+
 .detailItemActive {
   position: relative;
   border-color: var(--color-border-focus);
@@ -486,7 +494,7 @@
 }
 
 .collapsedTitle {
-  font-size: var(--text-md);
+  font-size: var(--text-lg);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
 }
@@ -527,14 +535,23 @@
 }
 
 .detailTitle {
-  font-size: var(--text-md);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  font-size: var(--text-lg);
+  line-height: var(--line-height-lg);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
   margin: 0;
-  /* Read-only preview title: share the 24px left inset of the meta row and the
-     sections below, so the item number lines up with everything under it
-     (Figma 12310-124323). */
-  padding: 0 var(--space-24);
+  /* Read-only preview title: 24px left inset shared with the meta row and the
+     sections below; 6px top/bottom makes the 36px title row (Figma 31679:306304). */
+  padding: var(--space-6) var(--space-24);
+}
+
+.detailTitleText {
+  /* Text sits in a no-border field: 8px inner padding on the left. */
+  padding-left: var(--space-8);
+  min-width: 0;
 }
 
 /* Builder — editable title row (number label + no-border TextField) */
@@ -548,7 +565,10 @@
 
 .detailNumber {
   flex-shrink: 0;
-  font-size: var(--text-md);
+  min-width: 19px;
+  font-size: var(--text-lg);
+  line-height: var(--line-height-lg);
+  letter-spacing: 0.2px;
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
 }
@@ -556,8 +576,16 @@
 /* Active item title — same font size (16px) and weight as the number and the
    collapsed title; the active state must NOT enlarge the title (Figma 30013-207761).
    size="l" gives text-md; this only lifts the weight to medium to match the number. */
-.titleField input {
+/* Doubled class: must outrank the DS size-L input rule (.sizeL .input). Title is
+   20px / 24px with a 36px field (6px vertical padding) — Figma 31679:306304. */
+.titleField.titleField input {
+  font-size: var(--text-lg);
+  line-height: var(--line-height-lg);
   font-weight: var(--font-weight-medium);
+}
+.titleField.titleField.titleField [class*='inputWrapper'] {
+  padding-top: var(--space-6);
+  padding-bottom: var(--space-6);
 }
 
 .detailMeta {
@@ -596,8 +624,14 @@
 .detailTime,
 .detailDuration {
   font-size: var(--text-base);
-  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
 }
+
+/* Time slot is a fixed 89px column; duration carries the dropdown's 8px
+   inner padding and a 32px row (Figma 31679:306304). */
+.detailTime { flex-shrink: 0; min-width: 89px; }
+.detailDuration { padding: var(--space-6) var(--space-8); }
 
 /* Read-only purpose tag (AgendaPreview) — coloured label glyph + name */
 .purposeTag {
@@ -631,8 +665,15 @@
   padding: 0 var(--space-24);
 }
 
+/* Presenter autocomplete — the DS no-border field draws a 6px fill around a 20px
+   line; this slot gives it the 32px layout row from Figma (11874:54966). */
+.fieldSlot {
+  padding: var(--space-6) 0;
+}
+
 .detailLabel {
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
 }

@@ -7,12 +7,14 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-4);
-  padding: var(--space-4) var(--space-8);
+  height: var(--size-s);
+  padding: 0 var(--space-8);
   border: none;
   border-radius: var(--radius-sm);
   background: none;
   font-family: var(--font-family);
   font-size: var(--text-base);
+  line-height: var(--line-height-base);
   color: var(--color-text-secondary);
   cursor: pointer;
   white-space: nowrap;
@@ -65,11 +67,18 @@
 .itemSelected { background: var(--color-bg-selected); }
 
 /* ── Custom minutes input ───────────────────────────────────────────────── */
+/* Same 32px footprint as the chip so swapping to the input never shifts the
+   row; filled with the hover tint to read as an active field. */
 .customWrap {
   display: inline-flex;
   align-items: center;
   gap: var(--space-4);
-  padding: var(--space-4) var(--space-8);
+  box-sizing: border-box;
+  height: var(--size-s);
+  min-width: 92px;
+  padding: 0 var(--space-8);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-hover-fill);
 }
 
 .customInput {
@@ -79,9 +88,9 @@
   background: transparent;
   font-family: var(--font-family);
   font-size: var(--text-base);
+  line-height: var(--line-height-base);
   color: var(--color-text-primary);
   padding: 0;
-  border-bottom: 1px solid var(--accent-500);
 }
 
 /* Hide the native number spinners — the chip stays visually minimal */
@@ -94,5 +103,6 @@
 
 .customSuffix {
   font-size: var(--text-base);
+  line-height: var(--line-height-base);
   color: var(--color-text-secondary);
 }

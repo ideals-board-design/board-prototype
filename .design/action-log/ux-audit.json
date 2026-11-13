@@ -1,0 +1,79 @@
+{
+ "title": "Action log — UX Audit (Version 1)",
+ "date": "2026-11-10",
+ "method": "Board UX audit (manual) · 5 lenses · Board personas (Margaret, David, Patricia, Robert) · grounded in Sauro's Big 4, Laws of UX, Shneiderman's 8 Golden Rules, Nielsen's 5 quality components",
+ "note": "Expert judgement on the prototype plus the simulated task success from the usability study — not measured analytics. No Clarity or NPS data, and no PRD was available, so intent is inferred from the Figma mockups. One variant only, so the UXS is absolute, not comparative.",
+ "intent": "Readers must (1) see which actions are overdue and who owns them, (2) narrow the list by status and assignee, (3) open an action and update it, and (4) do the same on iPad and phone.",
+ "scale": "1 = poor · 3 = acceptable with friction · 5 = excellent",
+ "lenses": [
+  {
+   "id": "intent",
+   "name": "Intent alignment",
+   "question": "Does the layout serve the reader's real job — see what is late, whose it is, and act on it?",
+   "scores": {
+    "v1": 4
+   },
+   "evidence": {
+    "v1": "Table grouped by meeting with status, owner and due date answers the core questions; the drawer holds the rest. No search or 'My actions' view."
+   }
+  },
+  {
+   "id": "findability",
+   "name": "Findability",
+   "question": "Can each persona find filters, expand-all, export and the detail view?",
+   "scores": {
+    "v1": 3
+   },
+   "evidence": {
+    "v1": "Filters and Export are labelled; expand-all and mark-done are icon-only; Patricia misses the filters at first and cannot tell three identical meeting names apart."
+   }
+  },
+  {
+   "id": "load",
+   "name": "Cognitive load",
+   "question": "How many places must the reader scan, and how much must they remember?",
+   "scores": {
+    "v1": 4
+   },
+   "evidence": {
+    "v1": "Three columns, one filter row, details in the drawer. '2 selected' makes the reader remember what they chose."
+   }
+  },
+  {
+   "id": "interaction",
+   "name": "Interaction quality",
+   "question": "Are controls reachable, consistent and giving feedback (desktop, iPad, phone)?",
+   "scores": {
+    "v1": 3
+   },
+   "evidence": {
+    "v1": "Consistent row-opens-drawer pattern and a phone list. Delete without confirmation, no export feedback, 32px mark-done target, Assignee hidden below 800px."
+   }
+  },
+  {
+   "id": "outcome",
+   "name": "Outcome quality",
+   "question": "Do readers complete the tasks? (Sauro's Big 4, from the simulated study)",
+   "scores": {
+    "v1": 4
+   },
+   "evidence": {
+    "v1": "Simulated success 85%, SEQ 5.1 / 7; delete is the weak task (partial for all 3 personas who tried it)."
+   }
+  }
+ ],
+ "verdicts": {
+  "v1": {
+   "label": "Ready with fixes",
+   "type": "warning",
+   "text": "Clear and consistent on desktop. Add a delete confirmation, show the meeting date and keep the owner visible on narrow panes before ship."
+  }
+ },
+ "risks": [
+  "Deleting an action is immediate and cannot be undone (study R1).",
+  "Repeated meeting titles make groups indistinguishable (study R2).",
+  "Assignee disappears below 800px, including when the drawer is open on a laptop (study R3).",
+  "Mark-done and expand-all are icon-only; touch users get no tooltip (study R5).",
+  "All scores are simulated — validate with directors on iPad."
+ ]
+}

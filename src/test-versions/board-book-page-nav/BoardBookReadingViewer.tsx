@@ -67,7 +67,7 @@ import {
   type BoardBookItem,
   type FlatDoc,
 } from '../../meeting/BoardBook/boardBookData'
-import { AiPanel, CompactNav, PdfPage, SearchPanel, TocPanel } from './BoardBookPageNavViewer'
+import { AiPanel, CompactNav, PdfPage, SearchPanel, TocPanel, type TocVariant } from './BoardBookPageNavViewer'
 import { PageStack, pageAtScroll, scrollToPage, type CommentPin } from './PageStack'
 import { useTocAutoCollapse } from './useTocAutoCollapse'
 import { DocumentToolsSheet } from './DocumentToolsSheet'
@@ -165,9 +165,12 @@ export interface BoardBookReadingViewerProps {
       floating vertical card at the top right of the document; the top bar
       keeps a labelled Download button after the view options. */
   railTools?: boolean
+  /** Agenda panel spacing variant: tc1 (default), tc2 (tighter inside, looser
+      between items), tc3 (grouped cards). */
+  tocVariant?: TocVariant
 }
 
-export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar', initialDocName = null, borderlessDocSelect = false, railTools = false }: BoardBookReadingViewerProps) {
+export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar', initialDocName = null, borderlessDocSelect = false, railTools = false, tocVariant = 'tc1' }: BoardBookReadingViewerProps) {
   const isNarrow = useMediaQuery('(max-width: 767px)')
   /* Version 4 on tablet / desktop: annotations in the top bar. */
   const toolsTop = toolsIn === 'top' && !isNarrow
@@ -429,7 +432,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
           </div>
           {segView === 'agenda' && (
             <nav className={styles.segToc} aria-label="Board book contents">
-              <TocPanel book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
+              <TocPanel variant={tocVariant} book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
             </nav>
           )}
         </>
@@ -439,7 +442,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
       {tocOpen && !focus && !segmented && (
         <>
           <nav className={styles.toc} style={{ width: tocWidth }} aria-label="Board book contents">
-            <TocPanel book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
+            <TocPanel variant={tocVariant} book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
           </nav>
           <div className={styles.resizer} role="separator" aria-orientation="vertical"
             aria-label="Resize contents panel" onPointerDown={startResize} />
