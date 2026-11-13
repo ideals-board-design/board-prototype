@@ -58,7 +58,10 @@
 .addBtn {
   align-self: stretch;
   text-align: left;
-  padding: 0;
+  /* 32px row: text aligned with the section label, fill 8px past it each side. */
+  height: var(--size-s);
+  margin: 0 calc(-1 * var(--space-8));
+  padding: 0 var(--space-8);
   border: none;
   border-radius: var(--radius-sm);
   background: none;
@@ -67,10 +70,9 @@
   line-height: var(--line-height-base);
   color: var(--color-text-secondary);
   cursor: pointer;
-  transition: background var(--dur-snap) var(--ease-out), box-shadow var(--dur-snap) var(--ease-out);
+  transition: background var(--dur-snap) var(--ease-out);
 }
 .addBtn:hover {
   background: var(--color-bg-hover-fill);
-  box-shadow: 0 0 0 var(--space-4) var(--color-bg-hover-fill);
 }
-.addBtnIndented { margin-left: calc(20px + var(--space-8)); }
+.addBtnIndented { margin-left: 20px; }

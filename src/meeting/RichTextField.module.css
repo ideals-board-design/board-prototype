@@ -127,3 +127,17 @@
 }
 .editable strong,
 .editable b { font-weight: var(--font-weight-medium); }
+
+/* Builder section field — idle = 32px row (1px border + 5px + 20px line + 5px + 1px),
+   text aligned with the label, fill reaching 8px past the text on both sides. */
+.sectionField .wrap:not(.focused):not(.hasError) {
+  margin: 0 calc(-1 * var(--space-8));
+  padding: calc(var(--space-6) - 1px) calc(var(--space-8) - 1px);
+}
+.sectionField .wrap:not(.focused):not(.hasError):hover {
+  box-shadow: none;
+}
+.sectionField .wrap:not(.focused):not(.hasError) .editable {
+  min-height: var(--line-height-base);
+  padding: 0;
+}

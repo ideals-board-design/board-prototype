@@ -18,6 +18,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import { Avatar } from '../components/Avatar/Avatar'
 import { BadgeStatus } from '../components/BadgeStatus/BadgeStatus'
 import { Button } from '../components/Button/Button'
+import { TextField } from '../components/TextField/TextField'
 import { Tooltip } from '../components/Tooltip/Tooltip'
 import { ActionMenu } from './ActionMenu'
 import { MotionDrawer } from './MotionDrawer'
@@ -37,6 +38,8 @@ const thumbSvg    = icon(functional, 'thumbs-up')
 const tasksSvg    = icon(dateTime, 'tasks')
 const downloadSvg = icon(actions, 'download-alt')
 const eyeSvg      = icon(actions, 'eye-opened')
+const closeSvg    = icon(actions, 'multiply')
+const checkSvg    = icon(condition, 'check')
 
 const Icon = ({ svg }: { svg: string }) => (
   <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: svg }} />
@@ -252,10 +255,66 @@ function AttachmentRow({ file, onNotify }: { file: Attachment; onNotify: (m: str
   )
 }
 
+/** Inline "Add draft action" row (Figma Draft actions: input empty / with text):
+ *  text field + Cancel (×) + Create draft (✓), as in Figma Draft actions. Saved drafts keep a single ×. Enter creates, Esc cancels. The
+ *  row closes once a draft is created. */
+function DraftInput({ onCreate, onCancel }: { onCreate: (text: string) => void; onCancel: () => void }) {
+  const [text, setText] = useState('')
+  const trimmed = text.trim()
+
+  const create = () => {
+    if (!trimmed) return
+    onCreate(trimmed)
+  }
+
+  return (
+    <div className={styles.draftInput}>
+      <TextField
+        size="s"
+        className={styles.draftField}
+        placeholder="Add new draft action"
+        aria-label="New draft action"
+        value={text}
+        autoFocus
+        onChange={e => setText(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') { e.preventDefault(); create() }
+          if (e.key === 'Escape') onCancel()
+        }}
+      />
+      <Tooltip label="Cancel" position="top">
+        <Button variant="secondary" intent="neutral" size="s" iconOnly={<Icon svg={closeSvg} />} onClick={onCancel} aria-label="Cancel" />
+      </Tooltip>
+      <Tooltip label="Create draft" position="top">
+        <Button size="s" iconOnly={<Icon svg={checkSvg} />} onClick={create} disabled={!trimmed} aria-label="Create draft" />
+      </Tooltip>
+    </div>
+  )
+}
+
 /* --------------------------------------------------------------- component */
 
 export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => void }) {
   const [items, setItems] = useState(ITEMS)
+  /* Item whose inline "Add draft action" input is open. */
+  const [addingDraftFor, setAddingDraftFor] = useState<string | null>(null)
+
+  const addDraft = (itemId: string, text: string) => {
+    setItems(prev => prev.map(it => (it.id === itemId ? { ...it, draftActions: [...(it.draftActions ?? []), text] } : it)))
+    onNotify('Draft action created')
+  }
+
+  const editDraft = (itemId: string, index: number, text: string) =>
+    setItems(prev => prev.map(it => (it.id === itemId
+      ? { ...it, draftActions: (it.draftActions ?? []).map((d, i) => (i === index ? text : d)) }
+      : it)))
+
+  const removeDraft = (itemId: string, index: number) => {
+    setItems(prev => prev.map(it => (it.id === itemId
+      ? { ...it, draftActions: (it.draftActions ?? []).filter((_, i) => i !== index) }
+      : it)))
+    onNotify('Draft action removed')
+  }
   /* Drawer target: the item, the motion being edited and whether it is new
      (not attached to the item until its first save). */
   const [editing, setEditing] = useState<{ itemId: string; motion: Motion; isNew: boolean } | null>(null)
@@ -307,7 +366,7 @@ export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => voi
                   ariaLabel={`Actions for ${item.title}`}
                   items={[
                     { key: 'motion', label: 'Add motion', icon: thumbSvg, onSelect: () => setEditing({ itemId: item.id, motion: newMotion(), isNew: true }) },
-                    { key: 'draft', label: 'Add draft action', icon: tasksSvg, onSelect: () => onNotify('Add draft action') },
+                    { key: 'draft', label: 'Add draft action', icon: tasksSvg, onSelect: () => setAddingDraftFor(item.id) },
                   ]}
                 />
               </div>
@@ -328,12 +387,38 @@ export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => voi
 
             {item.description && <Description text={item.description} />}
 
-            {item.draftActions && (
+            {(item.draftActions?.length || addingDraftFor === item.id) && (
               <div className={styles.block}>
                 <h4 className={styles.blockLabel}>Draft actions</h4>
-                <ul className={styles.drafts}>
-                  {item.draftActions.map(a => <li key={a} className={styles.text}>{a}</li>)}
-                </ul>
+                {item.draftActions && item.draftActions.length > 0 && (
+                  <ul className={styles.drafts}>
+                    {item.draftActions.map((a, di) => (
+                      <li key={di} className={styles.draftInput}>
+                        <TextField
+                          size="s"
+                          className={styles.draftField}
+                          aria-label={`Draft action ${di + 1}`}
+                          value={a}
+                          onChange={e => editDraft(item.id, di, e.target.value)}
+                        />
+                        <Tooltip label="Remove draft action" position="top">
+                          <Button
+                            variant="secondary" intent="neutral" size="s"
+                            iconOnly={<Icon svg={closeSvg} />}
+                            onClick={() => removeDraft(item.id, di)}
+                            aria-label={`Remove draft action ${di + 1}`}
+                          />
+                        </Tooltip>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {addingDraftFor === item.id && (
+                  <DraftInput
+                    onCreate={text => { addDraft(item.id, text); setAddingDraftFor(null) }}
+                    onCancel={() => setAddingDraftFor(null)}
+                  />
+                )}
               </div>
             )}
 

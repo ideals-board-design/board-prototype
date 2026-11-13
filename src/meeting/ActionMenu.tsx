@@ -117,7 +117,7 @@ export function ActionMenu({
         <Button
           variant="secondary"
           intent="neutral"
-          size="m"
+          size={size}
           disabled={disabled}
           iconLeft={triggerIcon ? <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: triggerIcon }} /> : undefined}
           onClick={() => (open ? closeMenu() : openMenu())}

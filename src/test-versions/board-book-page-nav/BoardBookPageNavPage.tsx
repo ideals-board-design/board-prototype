@@ -10,7 +10,10 @@
        tool rail and a labelled Download in the top bar (railTools, Figma 32957-307272)
      • Reports (1,2) — the reports comparing Version 1 vs Version 2
        (Reports78Page: usability-study-v78.json, ux-audit-v78.json, DESIGN_REVIEW_V78.md)
-   Tabs: Version 1, Version 2, Reports (1,2). */
+        • TC1 / TC2 / TC3 — Version 2 with three agenda (table of contents) spacing
+       variants: TC1 current, TC2 tighter inside + looser between items,
+       TC3 grouped cards (Figma 33291-309726)
+   Tabs: Version 1, Version 2, TC1, TC2, TC3, Reports (1,2). */
 
 import { useEffect, useState } from 'react'
 import { SideNavigation, DEFAULT_NAV_ITEMS } from '../../components/SideNavigation/SideNavigation'
@@ -41,11 +44,14 @@ const USER = {
   userEmail: 'thompsonolivia@gmail.com',
 }
 
-type VersionTab = 'v1' | 'v2' | 'reports78'
+type VersionTab = 'v1' | 'v2' | 'tc1' | 'tc2' | 'tc3' | 'reports78'
 
 const TABS: TabItem[] = [
   { id: 'v1', label: 'Version 1' },
   { id: 'v2', label: 'Version 2' },
+  { id: 'tc1', label: 'TC1' },
+  { id: 'tc2', label: 'TC2' },
+  { id: 'tc3', label: 'TC3' },
   { id: 'reports78', label: 'Reports (1,2)' },
 ]
 
@@ -118,6 +124,9 @@ export default function BoardBookPageNavPage() {
         <div className={styles.content}>
           {activeTab === 'v1' && <BoardBookReadingViewer key="v1" toolsIn="single" borderlessDocSelect book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
           {activeTab === 'v2' && <BoardBookReadingViewer key="v2" toolsIn="single" borderlessDocSelect railTools book={Q4_BOARD_BOOK} pageImage={q4PageImage} />}
+          {(['tc1', 'tc2', 'tc3'] as const).map(v => activeTab === v && (
+            <BoardBookReadingViewer key={v} toolsIn="single" borderlessDocSelect railTools tocVariant={v} book={Q4_BOARD_BOOK} pageImage={q4PageImage} />
+          ))}
           {activeTab === 'reports78' && <Reports78Page onOpenVersion={v => setActiveTab(v as VersionTab)} />}
         </div>
       </main>

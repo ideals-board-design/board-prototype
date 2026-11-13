@@ -33,16 +33,17 @@
 .tocScroll {
   min-height: 0;
   overflow-y: auto;
-  padding: var(--space-20) var(--space-16) var(--space-40);
+  padding: var(--space-16) var(--space-24) var(--space-40);
   display: flex;
   flex-direction: column;
   gap: var(--space-24);
 }
 
+/* TC1 (Figma 33291-311135): 16 between blocks, 8 title → time, 8 label → text. */
 .tocItem {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-16);
 }
 
 .tocItemHead {
@@ -72,6 +73,7 @@
 
 .tocMeta {
   display: flex;
+  margin-top: calc(-1 * var(--space-8));
   gap: var(--space-16);
   font-size: var(--text-sm);
   color: var(--color-text-secondary);
@@ -80,8 +82,10 @@
 .tocBlock {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-8);
 }
+
+.tocBlockMotion { gap: var(--space-6); }
 
 .tocLabel {
   font-size: var(--text-sm);
@@ -137,9 +141,36 @@
 .tocDocs {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-  margin-top: var(--space-4);
+  gap: var(--space-8);
 }
+
+/* ── Agenda spacing variants (TC1 = default above) ───────────────────────── */
+/* TC2 (Figma 33291-313005) — tighter inside an item, looser between items:
+   40 between items, 20 between blocks, 4 title → time / label → text / docs. */
+.tocScrollTc2 { gap: var(--space-40); }
+.tocScrollTc2 .tocItem { gap: var(--space-20); }
+.tocScrollTc2 .tocMeta { margin-top: calc(-1 * var(--space-16)); }
+.tocScrollTc2 .tocBlock,
+.tocScrollTc2 .tocBlockMotion,
+.tocScrollTc2 .tocDocs { gap: var(--space-4); }
+
+/* TC3 (Figma 33291-316745) — each agenda item is a grouped card, no border:
+   8 side padding, 12 between cards, 16 inside, 12 between blocks. */
+.tocScrollTc3 {
+  padding: var(--space-20) var(--space-8) var(--space-40);
+  gap: var(--space-12);
+}
+.tocScrollTc3 .tocItem {
+  gap: var(--space-12);
+  padding: var(--space-16);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-page);
+}
+.tocScrollTc3 .tocMeta { margin-top: calc(-1 * var(--space-8)); }
+.tocScrollTc3 .tocBlock { gap: var(--space-4); }
+.tocScrollTc3 .tocBlockMotion { gap: var(--space-6); }
+.tocScrollTc3 .tocDocs { gap: var(--space-4); }
+.tocScrollTc3 .showMoreEnd { background: var(--color-bg-page); }
 
 /* ── Document rows (shared TOC + compact) ─────────────────────────────────── */
 /* Document item — size S (32px), a clickable main region + trailing "…" menu. */

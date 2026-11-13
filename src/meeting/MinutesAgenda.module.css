@@ -181,3 +181,12 @@
 .fileMenu { opacity: 0; }
 .attachment:hover .fileMenu,
 .attachment:focus-within .fileMenu { opacity: 1; }
+
+/* Inline "Add draft action" row: field fills, 8 to the Cancel / Create buttons. */
+.draftInput {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.draftField { flex: 1; min-width: 0; }

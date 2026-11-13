@@ -40,6 +40,7 @@ import { DocumentRequestDrawer, submittedAttachment, type DocRequestData } from 
 /* Board book: Version 2 of the board-book test versions.(one top bar). */
 import BoardBookReadingViewer from '../test-versions/board-book-page-nav/BoardBookReadingViewer'
 import { MinutesTab } from './MinutesTab'
+import { ActionLogTab } from './ActionLogTab'
 import { ToastContainer, type ToastContainerHandle } from '../components/ToastContainer/ToastContainer'
 import { functional }  from '../icons/functional'
 import { actions }     from '../icons/actions'
@@ -126,7 +127,7 @@ const TABS: TabItem[] = [
   { id: 'meeting',    label: 'Meeting',    icon: checkCircleSvg },
   { id: 'agenda',     label: 'Agenda',     icon: draftCircleSvg },
   { id: 'board-book', label: 'Board book', icon: draftCircleSvg },
-  { id: 'tasks',      label: 'Tasks' },
+  { id: 'tasks',      label: 'Action log' },
   { id: 'minutes',    label: 'Minutes' },
 ]
 
@@ -357,10 +358,9 @@ const BLANK_BUILDER_ITEMS: AgendaItem[] = [
   },
 ]
 
-function AgendaBuilder({ initialItems, onOpenInBoardBook, onViewBoardBook }: {
+function AgendaBuilder({ initialItems, onOpenInBoardBook }: {
   initialItems: AgendaItem[]
   onOpenInBoardBook: (name: string) => void
-  onViewBoardBook: () => void
 }) {
   const [items, setItems] = useState(initialItems)
   const [activeId, setActiveId] = useState(initialItems[0]?.id)
@@ -890,7 +890,7 @@ function AgendaBuilder({ initialItems, onOpenInBoardBook, onViewBoardBook }: {
                       groupEnd ? styles.outlineRowGroupEnd : '',
                     ].filter(Boolean).join(' ')}
                     /* Each nesting level indents the row by 12px (Figma note). */
-                    style={{ paddingLeft: `calc(var(--space-8) + ${item.path.length - 1} * var(--space-12))` }}
+                    style={{ paddingLeft: `calc(var(--space-12) + ${item.path.length - 1} * var(--space-12))` }}
                     onClick={() => { setActiveId(item.id); setMobileView('agenda') }}
                     onDragOver={onSbRowDragOver(i)}
                   >
@@ -1115,6 +1115,7 @@ function AgendaBuilder({ initialItems, onOpenInBoardBook, onViewBoardBook }: {
                         </Tooltip>
                       </div>
                     ))}
+                    <div className={styles.fieldSlot}>
                     <Autocomplete
                       variant="no-border"
                       size="m"
@@ -1134,6 +1135,7 @@ function AgendaBuilder({ initialItems, onOpenInBoardBook, onViewBoardBook }: {
                         updateItem(item.id, { presenters })
                       }}
                     />
+                    </div>
                   </div>
 
                   <div className={styles.detailSection}>
@@ -1141,6 +1143,7 @@ function AgendaBuilder({ initialItems, onOpenInBoardBook, onViewBoardBook }: {
                     <RichTextField
                       value={item.description ?? ''}
                       placeholder="Add description"
+                      sectionField
                       onChange={html => updateItem(item.id, { description: html })}
                     />
                   </div>
@@ -1234,7 +1237,6 @@ function AgendaBuilder({ initialItems, onOpenInBoardBook, onViewBoardBook }: {
           left={
             <>
               <Button variant="primary" size="m" onClick={() => console.log('publish')}>Publish agenda</Button>
-              <Button variant="secondary" intent="neutral" size="m" onClick={onViewBoardBook}>View Boardbook</Button>
               <Button variant="secondary" intent="neutral" size="m" onClick={() => console.log('download')}>Download</Button>
               <Button variant="secondary" intent="neutral" size="m" onClick={() => setPreviewOpen(true)}>Preview</Button>
             </>
@@ -1348,8 +1350,8 @@ export function AgendaPreview({ items, header, footer, purposeOptions = PURPOSE_
   /** Board-member documents: no rename / reorder / copy / delete — only Download
       (attachments only, never links). Rows still open in the Board book. */
   documentsReadOnly?: boolean
-  /** Label shown for a restricted item in the outline and card. Defaults to the
-      builder's "*Restricted*"; the board-member view passes a plain "Restricted". */
+  /** Label shown for a restricted item in the outline and card. Defaults to
+      "*Restricted*" (Figma 31679:306299), same for the board-member view. */
   restrictedLabel?: string
   /** Wires the document rows' open / rename / download / copy / delete actions to
       the owning surface (the builder mutates its items). Unused in the
@@ -1397,7 +1399,7 @@ export function AgendaPreview({ items, header, footer, purposeOptions = PURPOSE_
                     restricted ? styles.outlineRowRestricted : '',
                   ].filter(Boolean).join(' ')}
                   /* Indent by nesting depth, matching the builder outline. */
-                  style={{ paddingLeft: `calc(var(--space-8) + ${item.path.length - 1} * var(--space-12))` }}
+                  style={{ paddingLeft: `calc(var(--space-12) + ${item.path.length - 1} * var(--space-12))` }}
                   onClick={() => goToItem(item.id)}
                 >
                   <span className={styles.outlineLabel}>{formatItemNumber(item.path)} {restricted ? restrictedLabel : (item.title || 'Untitled agenda item')}</span>
@@ -1425,8 +1427,11 @@ export function AgendaPreview({ items, header, footer, purposeOptions = PURPOSE_
             if (isRestricted(item)) {
               return (
                 <div key={item.id} className={styles.detailItemGroup} ref={el => { cardRefs.current[item.id] = el }}>
-                  <div className={[styles.detailItem, styles.detailItemRestricted].join(' ')}>
-                    <h3 className={styles.detailTitle}>{formatItemNumber(item.path)} {restrictedLabel}</h3>
+                  <div className={[styles.detailItem, styles.detailItemReadOnly, styles.detailItemRestricted].join(' ')}>
+                    <h3 className={styles.detailTitle}>
+                      <span className={styles.detailNumber}>{formatItemNumber(item.path)}</span>
+                      <span className={styles.detailTitleText}>{restrictedLabel}</span>
+                    </h3>
                     <div className={styles.detailMeta}>{timeMeta}</div>
                   </div>
                 </div>
@@ -1435,8 +1440,11 @@ export function AgendaPreview({ items, header, footer, purposeOptions = PURPOSE_
 
             return (
             <div key={item.id} className={styles.detailItemGroup} ref={el => { cardRefs.current[item.id] = el }}>
-            <div className={styles.detailItem}>
-              <h3 className={styles.detailTitle}>{formatItemNumber(item.path)} {item.title}</h3>
+            <div className={[styles.detailItem, styles.detailItemReadOnly].join(' ')}>
+              <h3 className={styles.detailTitle}>
+                <span className={styles.detailNumber}>{formatItemNumber(item.path)}</span>
+                <span className={styles.detailTitleText}>{item.title}</span>
+              </h3>
 
               <div className={styles.detailMeta}>
                 {timeMeta}
@@ -1527,7 +1535,7 @@ export function AgendaPreview({ items, header, footer, purposeOptions = PURPOSE_
 
 type BuilderSource = 'duplicate' | 'scratch'
 
-function AgendaTab({ onOpenInBoardBook, onViewBoardBook }: { onOpenInBoardBook: (name: string) => void; onViewBoardBook: () => void }) {
+function AgendaTab({ onOpenInBoardBook }: { onOpenInBoardBook: (name: string) => void }) {
   const [pastMeeting, setPastMeeting] = useState('')
   const [builderSource, setBuilderSource] = useState<BuilderSource | null>(null)
   const selectedLabel = PAST_MEETINGS.find(o => o.value === pastMeeting)?.label
@@ -1538,7 +1546,6 @@ function AgendaTab({ onOpenInBoardBook, onViewBoardBook }: { onOpenInBoardBook: 
         key={builderSource}
         initialItems={builderSource === 'duplicate' ? DUPLICATED_BUILDER_ITEMS : BLANK_BUILDER_ITEMS}
         onOpenInBoardBook={onOpenInBoardBook}
-        onViewBoardBook={onViewBoardBook}
       />
     )
   }
@@ -2648,7 +2655,6 @@ export default function MeetingPage() {
 
   const openInBoardBook = (name: string) => { setBoardBookDoc(name); setActiveTab('board-book') }
   /* "View Boardbook" from the agenda — open the board book at its first page. */
-  const viewBoardBook = () => { setBoardBookDoc(null); setActiveTab('board-book') }
 
   const onMenuClick = tier === 'mobile' ? () => setNavOpen(true) : undefined
   const menuTier: 'tablet' | 'mobile' = isCompact ? 'tablet' : 'mobile'
@@ -2720,10 +2726,11 @@ export default function MeetingPage() {
 
         <div className={styles.content}>
           {activeTab === 'meeting' && <MeetingDetailsTab />}
-          {activeTab === 'agenda' && <AgendaTab onOpenInBoardBook={openInBoardBook} onViewBoardBook={viewBoardBook} />}
+          {activeTab === 'agenda' && <AgendaTab onOpenInBoardBook={openInBoardBook} />}
           {activeTab === 'board-book' && (
             <BoardBookReadingViewer toolsIn="single" borderlessDocSelect railTools initialDocName={boardBookDoc} />
           )}
+          {activeTab === 'tasks' && <ActionLogTab />}
           {activeTab === 'minutes' && <MinutesTab />}
         </div>
       </main>
