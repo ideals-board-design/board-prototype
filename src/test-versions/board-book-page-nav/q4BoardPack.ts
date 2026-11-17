@@ -8,7 +8,9 @@
 
      p1  cover & agenda             p4–5  3. Financial report, Q3 2026
      p2  1. Opening, quorum, minutes p6    4. Audit committee report
-     p3  2. CEO report               p7    5. Any other business and close */
+     p3  2. CEO report               p7    5. Any other business and close
+                                   p8–83 6. Strategy and risk review (placeholder
+                                         pages, no rendered images) */
 
 import { buildBoardBook, type BoardBookItem } from '../../meeting/BoardBook/boardBookData'
 
@@ -140,6 +142,21 @@ const Q4_ITEMS: BoardBookItem[] = [
     ],
     links: [
       { id: 'q4-link-evaluation', name: 'Board evaluation questionnaire 2026', url: 'https://example.com/board-evaluation-2026' },
+    ],
+  },
+  {
+    id: 'q4-item-6',
+    number: '6',
+    title: 'Strategy and risk review',
+    timeRange: '11:40 - 12:20',
+    duration: '40min',
+    presenter: CEO,
+    description:
+      'Management presents the draft three-year strategic plan, the refreshed enterprise risk register and the full cyber resilience review. These documents are long by design: the board is asked to read them before the meeting, and to bring questions on the top ten risks and on the capital allocation scenarios in the plan. Pages 8 onwards of the book are illustrative placeholders, so the reading progress of each document can be tried by scrolling.',
+    documents: [
+      { id: 'q4-risk', name: 'Risk register.pdf', sourceFormat: 'pdf', pages: 12 },
+      { id: 'q4-strategy', name: 'Strategic plan 2027–2029, draft for board discussion.pdf', sourceFormat: 'pdf', pages: 24 },
+      { id: 'q4-cyber', name: 'Cyber resilience review, full report with appendices A–F and management responses.pdf', sourceFormat: 'pdf', pages: 40 },
     ],
   },
 ]

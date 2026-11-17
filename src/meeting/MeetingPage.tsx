@@ -1055,6 +1055,7 @@ function AgendaBuilder({ initialItems, onOpenInBoardBook }: {
                           className={styles.titleField}
                           value={item.title}
                           placeholder="Untitled agenda item"
+                          error={item.title.length > AGENDA_TITLE_MAX ? `Text exceeds ${AGENDA_TITLE_MAX} character limit` : false}
                           aria-label={`Agenda item ${formatItemNumber(item.path)} title`}
                           onChange={e => updateItem(item.id, { title: e.target.value })}
                         />
@@ -2345,6 +2346,10 @@ function formatDurationLabel(start: string, end: string): string {
   const h = Math.floor(d / 60), mm = d % 60
   return [h ? `${h}hr` : '', mm ? `${mm}min` : ''].filter(Boolean).join(' ')
 }
+
+/** Agenda item title limit (Figma 33424-218974). Over it the field shows the error
+ *  message; typing is not blocked. */
+const AGENDA_TITLE_MAX = 300
 
 /** Meeting description limit (IBP-12096 rich-text ticket). Counts visible text. */
 const DESCRIPTION_MAX = 3900
