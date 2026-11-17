@@ -20,7 +20,6 @@ import { useEffect, useState } from 'react'
 import { SideNavigation, DEFAULT_NAV_ITEMS } from '../components/SideNavigation/SideNavigation'
 import type { NavMenuItemKey } from '../components/SideNavigationItem/SideNavigationItem'
 import { PageHeader }  from '../components/PageHeader/PageHeader'
-import { BadgeStatus } from '../components/BadgeStatus/BadgeStatus'
 import { Button }      from '../components/Button/Button'
 import { Tooltip }     from '../components/Tooltip/Tooltip'
 import { Drawer }      from '../components/Drawer/Drawer'
@@ -54,7 +53,7 @@ const TABS: TabItem[] = [
   { id: 'meeting',    label: 'Meeting',    icon: checkCircleSvg },
   { id: 'agenda',     label: 'Agenda',     icon: draftCircleSvg },
   { id: 'board-book', label: 'Board book', icon: draftCircleSvg },
-  { id: 'tasks',      label: 'Tasks' },
+  { id: 'tasks',      label: 'Action log' },
   { id: 'minutes',    label: 'Minutes' },
 ]
 type BoardTab = 'meeting' | 'agenda' | 'board-book' | 'tasks' | 'minutes'
@@ -79,8 +78,7 @@ const PUBLISHED_ITEMS: AgendaItem[] = [
     purpose: 'approval',
     presenters: [{ name: 'Alexander Anderson', avatar: 'https://i.pravatar.cc/40?img=12' }],
     description:
-      '<p>The minutes from the Board meeting held on <strong>January 20, 2026</strong> were distributed to members on January 27, 2026.</p>' +
-      '<p>No amendments have been submitted prior to this meeting. Members will be invited to raise any final corrections before approval.</p>',
+      '<p>The minutes from the Board meeting held on January 20, 2026 were distributed to members on January 27, 2026. No amendments have been submitted to the Company Secretary prior to this meeting. Members will be invited to raise any final corrections before approval.</p>',
     motions: [
       'That the minutes of the meeting held on 20 January 2026 be approved.',
       'That the minutes of the Board of Directors meeting held on 20 January 2026, having been previously circulated to all members and with no further amendments submitted, be approved and adopted as a true and accurate record of the proceedings.',
@@ -170,9 +168,6 @@ export default function BoardMemberPage() {
           menuTier={menuTier}
           onBack={() => { window.location.href = '/' }}
           title={MEETING_TITLE}
-          badge={published
-            ? <BadgeStatus type="positive" label="Agenda published" />
-            : <BadgeStatus type="neutral" label="Agenda not published" />}
           className={styles.pageHeader}
           actions={
             <Tooltip label="Bookmark" position="bottom">
@@ -201,7 +196,7 @@ export default function BoardMemberPage() {
               <AgendaPreview
                 items={PUBLISHED_ITEMS}
                 maskRestricted
-                restrictedLabel="Restricted"
+                restrictedLabel="*Restricted*"
                 documentsReadOnly
                 attachmentHandlers={{
                   onChange:          () => {},
@@ -222,7 +217,7 @@ export default function BoardMemberPage() {
                         iconLeft={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: downloadSvg }} />}
                         onClick={() => console.log('download agenda')}
                       >
-                        Download agenda
+                        Download
                       </Button>
                     }
                   />
@@ -262,7 +257,7 @@ export default function BoardMemberPage() {
           )}
 
           {activeTab === 'tasks' && (
-            <EmptyState illustration="clipboard" title="Tasks" description="Your meeting tasks appear here." className={styles.emptyState} />
+            <EmptyState illustration="clipboard" title="Action log" description="Your meeting tasks appear here." className={styles.emptyState} />
           )}
           {activeTab === 'minutes' && (
             <EmptyState illustration="clipboard" title="Minutes" description="Published minutes appear here." className={styles.emptyState} />

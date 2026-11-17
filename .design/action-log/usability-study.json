@@ -1,0 +1,731 @@
+{
+ "title": "Action log — Usability Evaluation Report (Version 1)",
+ "feature": "Action log tab of a meeting (Version 1)",
+ "date": "2026-11-10",
+ "method": "Synthetic Persona Usability Study | NN/G Methodology | 4 Personas | 11 User Stories | 1 Variant",
+ "disclaimer": "All results come from simulated think-aloud sessions with synthetic personas about the current prototype. Numbers are simulated, not measured user data, and must be validated with real users.",
+ "context": "Prototype at localhost:5173/action-log.html (Version 1) with seed data: 5 meetings, 22 actions, 11 users. The simulation covers desktop (1280, with and without the drawer), iPad landscape (1024), iPad portrait (800) and phone (390). Source: Figma Meetings › Action log (33037:404462), adapted to the Tasks and Reports responsive patterns.",
+ "variants": [
+  {
+   "id": "v1",
+   "name": "Version 1",
+   "summary": "Action log tab of a meeting: toolbar (Status and Assignee multi-filters, Clear filters, Export CSV) over a table grouped by meeting (chevron + name + count, expand-all in the header). Columns Status · Assignee · Due date collapse by pane width (Due <960px, Assignee <800px); on phone (<480px) rows become a list with 'status • assignee' under the title and the filters fold into a Filters button + modal. A row opens a detail drawer (inline ≥1024px, overlay below): per-assignee completion toggles, Choose user, due date, linked to, description, attachments, Complete and Delete."
+  }
+ ],
+ "goals": [
+  {
+   "id": "G1",
+   "text": "Assess scanability: can each persona see which actions are late, whose they are and which meeting they belong to."
+  },
+  {
+   "id": "G2",
+   "text": "Evaluate filtering, clearing and export on desktop and touch."
+  },
+  {
+   "id": "G3",
+   "text": "Check the detail drawer: reading, marking done, assigning and deleting."
+  },
+  {
+   "id": "G4",
+   "text": "Check the responsive behaviour: columns collapsing by pane width, and the phone list."
+  },
+  {
+   "id": "G5",
+   "text": "Quantify simulated task success and SEQ per user story and persona."
+  }
+ ],
+ "stories": [
+  {
+   "id": "US01",
+   "text": "As a reader, I want to see which actions are overdue at a glance.",
+   "goals": [
+    "G1"
+   ]
+  },
+  {
+   "id": "US02",
+   "text": "As a reader, I want to filter the log by status.",
+   "goals": [
+    "G1",
+    "G2"
+   ]
+  },
+  {
+   "id": "US03",
+   "text": "As a reader, I want to filter the log by assignee to see my own actions.",
+   "goals": [
+    "G1",
+    "G2"
+   ]
+  },
+  {
+   "id": "US04",
+   "text": "As a reader, I want to open an action and read its details.",
+   "goals": [
+    "G3"
+   ]
+  },
+  {
+   "id": "US05",
+   "text": "As an assignee, I want to mark my part of an action as done.",
+   "goals": [
+    "G3"
+   ]
+  },
+  {
+   "id": "US06",
+   "text": "As a secretary, I want to add another assignee to an action.",
+   "goals": [
+    "G3"
+   ]
+  },
+  {
+   "id": "US07",
+   "text": "As a reader, I want to expand or collapse meetings to find an older action.",
+   "goals": [
+    "G1",
+    "G4"
+   ]
+  },
+  {
+   "id": "US08",
+   "text": "As a secretary, I want to export the visible actions.",
+   "goals": [
+    "G2"
+   ]
+  },
+  {
+   "id": "US09",
+   "text": "As a reader, I want to use the log on a phone without losing status or owner.",
+   "goals": [
+    "G4"
+   ]
+  },
+  {
+   "id": "US10",
+   "text": "As a secretary, I want to delete a wrong action without losing others by mistake.",
+   "goals": [
+    "G3"
+   ]
+  },
+  {
+   "id": "US11",
+   "text": "As a reader, I want to clear filters and get back to the full list.",
+   "goals": [
+    "G2"
+   ]
+  }
+ ],
+ "personas": [
+  {
+   "id": "MC",
+   "name": "Margaret Chen",
+   "role": "Corporate Secretary",
+   "proficiency": "High",
+   "goal": "Before the meeting, see what is overdue and chase owners; export the list for the pack.",
+   "mentalModel": "Spreadsheet-like tables, filters and CSV export; keyboard first.",
+   "risk": "Impatient with extra clicks; skims past icon-only controls.",
+   "emotion": "Methodical; wants totals and certainty."
+  },
+  {
+   "id": "DO",
+   "name": "David Okafor",
+   "role": "Corporate Secretary",
+   "proficiency": "Medium",
+   "goal": "Record who owns each action from the last meeting and tick off what is done.",
+   "mentalModel": "Task lists with explicit buttons and labels.",
+   "risk": "Hovers every icon; hesitates before destructive actions.",
+   "emotion": "Careful; worried about changing the wrong item."
+  },
+  {
+   "id": "PR",
+   "name": "Patricia Reyes",
+   "role": "Non-executive director",
+   "proficiency": "Low",
+   "goal": "Find the actions assigned to her and see which are late.",
+   "mentalModel": "Email and paper lists; reads words, not icons.",
+   "risk": "Gives up when a control has no label; avoids dense tables.",
+   "emotion": "Anxious about getting it wrong."
+  },
+  {
+   "id": "DIR",
+   "name": "Robert Hale",
+   "role": "Chair (iPad, phone)",
+   "proficiency": "Medium",
+   "goal": "Glance at open actions on iPad and phone, open one to read details.",
+   "mentalModel": "Touch lists; tap a row to open it.",
+   "risk": "No hover, so tooltips are invisible; narrow screens hide columns.",
+   "emotion": "Time-pressed; wants one clear answer."
+  }
+ ],
+ "simulations": {
+  "MC": [
+   {
+    "story": "US01",
+    "scenario": "Scans the list for red items before the call.",
+    "behaviour": "Spots the red due dates and Overdue badges in one pass.",
+    "friction": "Overdue is shown by badge and red date; colour is backed by a label.",
+    "seq": {
+     "v1": 7
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US02",
+    "scenario": "Filters to Overdue and Pending review.",
+    "behaviour": "Opens the Status dropdown, ticks two values.",
+    "friction": "The control then reads '2 selected', so the chosen values are not visible without reopening it.",
+    "seq": {
+     "v1": 6
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US07",
+    "scenario": "Looks for an action from an older meeting.",
+    "behaviour": "Uses the expand-all icon in the header.",
+    "friction": "Icon-only; she finds it because the tooltip appears on hover.",
+    "seq": {
+     "v1": 6
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US08",
+    "scenario": "Exports the filtered list for the pack.",
+    "behaviour": "Clicks Export; a CSV downloads.",
+    "friction": "No confirmation, so it is unclear whether the filters were applied to the file.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US10",
+    "scenario": "Removes a duplicate action.",
+    "behaviour": "Opens the row, clicks the trash icon in the drawer footer.",
+    "friction": "Deletes immediately with no confirmation or undo.",
+    "seq": {
+     "v1": 4
+    },
+    "outcome": {
+     "v1": "P"
+    }
+   },
+   {
+    "story": "US11",
+    "scenario": "Resets after a filter session.",
+    "behaviour": "Uses Clear filters next to the toolbar.",
+    "friction": "None; the first two meetings reopen, which she expects.",
+    "seq": {
+     "v1": 7
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   }
+  ],
+  "DO": [
+   {
+    "story": "US04",
+    "scenario": "Opens the Deed of Variation action.",
+    "behaviour": "Clicks the row; the drawer opens on the right.",
+    "friction": "The table narrows when the drawer opens, so Assignee is hidden at 1280px.",
+    "seq": {
+     "v1": 6
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US05",
+    "scenario": "Marks Liam's part as done.",
+    "behaviour": "Hovers the circle beside the name for a tooltip, then clicks it.",
+    "friction": "The toggle is an icon only; 'Completed 1/4' is the only text feedback.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US06",
+    "scenario": "Adds a second assignee.",
+    "behaviour": "Finds 'Choose user' under the people list and picks a name.",
+    "friction": "The field reads as a placeholder, not as a button.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US03",
+    "scenario": "Filters by Michael Donaldson.",
+    "behaviour": "Opens Assignee and scrolls a long list of 11 names.",
+    "friction": "The dropdown has no search; the control then reads '1 selected'.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US10",
+    "scenario": "Deletes the wrong action.",
+    "behaviour": "Reaches for the trash icon, hesitates, closes the drawer.",
+    "friction": "No confirmation, so he does not risk it.",
+    "seq": {
+     "v1": 3
+    },
+    "outcome": {
+     "v1": "P"
+    }
+   },
+   {
+    "story": "US01",
+    "scenario": "Checks which items are late.",
+    "behaviour": "Reads Status badges row by row.",
+    "friction": "Statuses and dates are equally weighted, so overdue does not stand out from a distance.",
+    "seq": {
+     "v1": 6
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   }
+  ],
+  "PR": [
+   {
+    "story": "US03",
+    "scenario": "Looks for her own actions.",
+    "behaviour": "Does not notice the Assignee filter at first, then opens it.",
+    "friction": "Both filters read 'All statuses / All assignees'; she expects a Search box.",
+    "seq": {
+     "v1": 4
+    },
+    "outcome": {
+     "v1": "P"
+    }
+   },
+   {
+    "story": "US01",
+    "scenario": "Finds late actions.",
+    "behaviour": "Reads Overdue badges but ignores the red date.",
+    "friction": "None; the word Overdue helps.",
+    "seq": {
+     "v1": 6
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US07",
+    "scenario": "Opens an older meeting.",
+    "behaviour": "Clicks the chevron on a group row.",
+    "friction": "Three meetings are all called 'Board of Directors / February 2026', so she cannot tell them apart.",
+    "seq": {
+     "v1": 3
+    },
+    "outcome": {
+     "v1": "P"
+    }
+   },
+   {
+    "story": "US04",
+    "scenario": "Opens an action to read it.",
+    "behaviour": "Clicks the title; the drawer opens.",
+    "friction": "Description is empty for most actions, so the drawer shows little beyond status and people.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US08",
+    "scenario": "Looks for a way to export.",
+    "behaviour": "Finds Export (a labelled button at desktop width).",
+    "friction": "None on desktop; icon-only below 640px.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US11",
+    "scenario": "Clears her filter.",
+    "behaviour": "Looks for a reset and finds Clear filters.",
+    "friction": "The button only appears after a filter is set.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   }
+  ],
+  "DIR": [
+   {
+    "story": "US09",
+    "scenario": "Opens the log on iPhone.",
+    "behaviour": "Reads rows as a list with status and owner under the title.",
+    "friction": "Due date is not shown on a phone row; he opens the row to see it.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "P"
+    }
+   },
+   {
+    "story": "US02",
+    "scenario": "Filters by status on iPad portrait (800px).",
+    "behaviour": "Taps Filters, picks a status in the modal, taps Done.",
+    "friction": "Assignee is hidden in the table at this width, so the owner cannot be seen after filtering.",
+    "seq": {
+     "v1": 4
+    },
+    "outcome": {
+     "v1": "P"
+    }
+   },
+   {
+    "story": "US04",
+    "scenario": "Opens an action on iPad landscape.",
+    "behaviour": "Taps the row; the drawer opens beside the table.",
+    "friction": "The drawer is 360px at 1024px; long titles wrap over several lines.",
+    "seq": {
+     "v1": 6
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US05",
+    "scenario": "Marks his own part done.",
+    "behaviour": "Taps the circle beside his name.",
+    "friction": "The target is 32px, below the 44px touch minimum.",
+    "seq": {
+     "v1": 5
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US07",
+    "scenario": "Expands a meeting.",
+    "behaviour": "Taps the group row.",
+    "friction": "None; the whole row is the target.",
+    "seq": {
+     "v1": 7
+    },
+    "outcome": {
+     "v1": "S"
+    }
+   },
+   {
+    "story": "US10",
+    "scenario": "Deletes on phone.",
+    "behaviour": "Taps the trash icon in the drawer footer.",
+    "friction": "No confirmation sheet on phone.",
+    "seq": {
+     "v1": 3
+    },
+    "outcome": {
+     "v1": "P"
+    }
+   }
+  ]
+ },
+ "time": {
+  "MC": {
+   "v1": [
+    5,
+    1,
+    0
+   ]
+  },
+  "DO": {
+   "v1": [
+    3,
+    2,
+    1
+   ]
+  },
+  "PR": {
+   "v1": [
+    2,
+    3,
+    1
+   ]
+  },
+  "DIR": {
+   "v1": [
+    2,
+    3,
+    1
+   ]
+  }
+ },
+ "shared": [
+  "Delete has no confirmation or undo: David hesitates and avoids it, Robert has no confirmation sheet on phone.",
+  "Selected filter values and the icon-only expand-all / mark-done controls depend on hover or reopening the dropdown; touch readers cannot use tooltips.",
+  "Meeting names repeat ('Board of Directors / February 2026' ×3), so readers cannot tell groups apart without opening them.",
+  "When the pane narrows (iPad, drawer open) the owner disappears from the table."
+ ],
+ "divergent": [
+  {
+   "feature": "Filtering",
+   "MC": "Fast; reopens a dropdown to check '2 selected'",
+   "DO": "Scrolls 11 names, wants search",
+   "PR": "Does not notice the filters at first",
+   "DIR": "Uses the Filters button + modal on phone and iPad portrait"
+  },
+  {
+   "feature": "Opening an action",
+   "MC": "Clicks the row",
+   "DO": "Clicks the row",
+   "PR": "Clicks the title",
+   "DIR": "Taps the row; drawer overlays on phone"
+  },
+  {
+   "feature": "Delete",
+   "MC": "Deletes a duplicate; wants undo",
+   "DO": "Hesitates and leaves",
+   "PR": "Does not try",
+   "DIR": "Taps the trash on phone; no confirmation"
+  }
+ ],
+ "heuristics": [
+  {
+   "id": "H1",
+   "name": "Visibility of system status",
+   "status": "PARTIAL",
+   "evidence": "Overdue is badge + red date and 'Completed N/M' tracks assignees; but Export gives no confirmation and filter values read '2 selected'."
+  },
+  {
+   "id": "H2",
+   "name": "Match with the real world",
+   "status": "PARTIAL",
+   "evidence": "'Linked to' and 'Pending review' are clear; three meetings share the title 'Board of Directors / February 2026'."
+  },
+  {
+   "id": "H3",
+   "name": "User control and freedom",
+   "status": "VIOLATED",
+   "evidence": "Delete is immediate with no confirmation or undo, on desktop and phone."
+  },
+  {
+   "id": "H4",
+   "name": "Consistency and standards",
+   "status": "PASS",
+   "evidence": "One pattern: row opens the drawer; DS Dropdown, Button, Tooltip, StickyFooter throughout."
+  },
+  {
+   "id": "H5",
+   "name": "Error prevention",
+   "status": "VIOLATED",
+   "evidence": "Delete without confirmation; a Complete button next to Delete."
+  },
+  {
+   "id": "H6",
+   "name": "Recognition rather than recall",
+   "status": "PARTIAL",
+   "evidence": "Expand-all and mark-done are icon-only and need a tooltip; selected filter values are hidden behind '2 selected'."
+  },
+  {
+   "id": "H7",
+   "name": "Flexibility and efficiency",
+   "status": "PARTIAL",
+   "evidence": "Filters, expand-all and CSV export help power users; no search, sorting or bulk actions."
+  },
+  {
+   "id": "H8",
+   "name": "Aesthetic and minimalist design",
+   "status": "PASS",
+   "evidence": "Three columns, calm table, details moved into the drawer."
+  },
+  {
+   "id": "H9",
+   "name": "Help users recover from errors",
+   "status": "PARTIAL",
+   "evidence": "Clear filters resets; there is no undo for delete."
+  },
+  {
+   "id": "H10",
+   "name": "Accessibility",
+   "status": "PARTIAL",
+   "evidence": "Labels on icon buttons, tooltips and focus rings; touch targets 32px, Assignee/Due hidden below 800/960px."
+  }
+ ],
+ "issues": [
+  {
+   "id": "I-01",
+   "tier": "Critical",
+   "issue": "Delete has no confirmation or undo (drawer footer, desktop and phone)",
+   "frequency": "2/4",
+   "impact": "David avoids deleting; Margaret removes a duplicate she cannot restore",
+   "persistence": "Stays stuck (DO)",
+   "personas": "MC, DO, DIR",
+   "heuristics": "H3, H5, H9"
+  },
+  {
+   "id": "I-02",
+   "tier": "High",
+   "issue": "Three meetings share one name, 'Board of Directors / February 2026', so groups cannot be told apart",
+   "frequency": "2/4",
+   "impact": "Patricia and Robert expand the wrong meeting",
+   "persistence": "Retries",
+   "personas": "PR, DIR",
+   "heuristics": "H2"
+  },
+  {
+   "id": "I-03",
+   "tier": "High",
+   "issue": "Assignee column is hidden below 800px and Due date below 960px; the drawer narrows the table further",
+   "frequency": "3/4",
+   "impact": "Owner is lost after filtering on iPad and beside the drawer",
+   "persistence": "Stays stuck (DIR)",
+   "personas": "DO, PR, DIR",
+   "heuristics": "H1, H10"
+  },
+  {
+   "id": "I-04",
+   "tier": "Medium",
+   "issue": "Selected filter values read '2 selected', not the names",
+   "frequency": "3/4",
+   "impact": "Margaret and David reopen the dropdown to check",
+   "persistence": "Retries",
+   "personas": "MC, DO, DIR",
+   "heuristics": "H1, H6"
+  },
+  {
+   "id": "I-05",
+   "tier": "Medium",
+   "issue": "Expand-all and Mark-as-done are icon-only; tooltips need hover",
+   "frequency": "3/4",
+   "impact": "David hovers each icon; touch users do not see tooltips",
+   "persistence": "Retries",
+   "personas": "DO, PR, DIR",
+   "heuristics": "H6, H10"
+  },
+  {
+   "id": "I-06",
+   "tier": "Low",
+   "issue": "Export has no confirmation and its scope (filtered or all) is not stated",
+   "frequency": "2/4",
+   "impact": "Margaret is unsure the filters were applied",
+   "persistence": "Retries",
+   "personas": "MC",
+   "heuristics": "H1"
+  }
+ ],
+ "recommendations": [
+  {
+   "id": "R1",
+   "title": "Confirm before deleting and offer Undo",
+   "effort": "Low",
+   "impact": "MC, DO, DIR",
+   "fix": "Show a confirmation modal (a bottom sheet on phone) naming the action, or delete with a Toast that has Undo.",
+   "target": "I-01 resolved; US10 SEQ 3.5 → 6"
+  },
+  {
+   "id": "R2",
+   "title": "Give meetings a date and a distinct title",
+   "effort": "Low",
+   "impact": "PR, DIR",
+   "fix": "Show the meeting date in the group row ('Feb 12, 2026') and sort groups by date.",
+   "target": "US07 PR SEQ 3 → 5"
+  },
+  {
+   "id": "R3",
+   "title": "Keep the owner visible when columns collapse",
+   "effort": "Medium",
+   "impact": "DO, PR, DIR",
+   "fix": "Show 'status • assignee' under the title below 800px, as on phone, instead of hiding Assignee entirely.",
+   "target": "US02 DIR SEQ 4 → 6"
+  },
+  {
+   "id": "R4",
+   "title": "Show selected filters as chips or names",
+   "effort": "Medium",
+   "impact": "MC, DO",
+   "fix": "Replace '2 selected' with the value names (truncate with +N) or chips under the toolbar.",
+   "target": "I-04 resolved; US02 SEQ 6 → 7"
+  },
+  {
+   "id": "R5",
+   "title": "Label the expand-all and mark-done controls on touch",
+   "effort": "Low",
+   "impact": "DO, PR, DIR",
+   "fix": "Keep the tooltip on hover and add a persistent text label or aria-visible state on touch.",
+   "target": "US05 DIR SEQ 5 → 6"
+  },
+  {
+   "id": "R6",
+   "title": "Confirm exports with a Toast",
+   "effort": "Low",
+   "impact": "MC",
+   "fix": "Toast 'Exported 14 actions (filtered)' after download.",
+   "target": "I-06 resolved"
+  }
+ ],
+ "iteration": {
+  "phases": [
+   {
+    "name": "Phase 1 — Fix the blockers",
+    "text": "Apply R1–R3, then re-run the same six tasks per persona."
+   },
+   {
+    "name": "Phase 2 — Touch",
+    "text": "Test iPad portrait and phone with real directors; check the 44px touch minimum for mark-done."
+   },
+   {
+    "name": "Phase 3 — Real users",
+    "text": "2 real users per persona type, including 2 directors on iPad."
+   }
+  ],
+  "questions": [
+   "Do readers expect to find their own actions through a filter, a search box, or a 'My actions' view?",
+   "Is the date of the meeting enough to tell groups apart, or do they need the agenda item too?",
+   "Should the Complete button sit beside Delete in the drawer footer?"
+  ]
+ },
+ "takeaways": [
+  "The Action log reads well on desktop: scanning, filtering and opening an action succeed for most personas.",
+  "The biggest risk is deleting without confirmation; it is also the lowest-effort fix.",
+  "Repeated meeting names and the vanishing Assignee column make the list harder to read on iPad.",
+  "Validate with real directors; every score here is simulated."
+ ],
+ "strengths": [
+  {
+   "type": "positive",
+   "label": "STRENGTH",
+   "text": "Overdue is shown by a badge and a red date, so colour is never the only signal (US01 SEQ 6–7)."
+  },
+  {
+   "type": "positive",
+   "label": "STRENGTH",
+   "text": "On phone the table becomes a list with status and owner under the title, and the filters fold into one Filters button."
+  }
+ ]
+}

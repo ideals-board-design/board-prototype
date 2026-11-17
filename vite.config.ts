@@ -69,6 +69,7 @@ export default defineConfig({
         chats:            'chats.html',
         'board-book-page-nav': 'board-book-page-nav.html',
         'minutes-ai':       'minutes-ai.html',
+        'action-log':       'action-log.html',
         vtt:              'vtt.html',
       },
     },

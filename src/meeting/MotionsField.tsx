@@ -16,6 +16,10 @@ import styles from './MotionsField.module.css'
 const dragSvg   = functional.find(i => i.name === 'drag')!.svg
 const removeSvg  = actions.find(i => i.name === 'multiply')!.svg
 
+/** Max characters per motion (Figma 33424-218974). Over the limit the field shows
+ *  the error state + message; typing is not blocked. */
+export const MOTION_MAX = 1000
+
 export interface MotionsFieldProps {
   motions:  string[]
   onChange: (motions: string[]) => void
@@ -115,6 +119,7 @@ export function MotionsField({ motions, onChange }: MotionsFieldProps) {
               multiline
               value={motion}
               placeholder="Motion"
+              error={motion.length > MOTION_MAX ? `Text exceeds ${MOTION_MAX} character limit` : false}
               aria-label={`Motion ${i + 1}`}
               onChange={e => updateMotion(i, e.target.value)}
               onBlur={() => commitMotion(i)}

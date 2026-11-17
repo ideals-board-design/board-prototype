@@ -58,6 +58,9 @@ export interface RichTextFieldProps {
       shift the box up on focus so the toolbar lines up with that icon instead of
       pushing the content down (no icon "jump"). */
   tightenFocus?: boolean
+  /** Builder section field: idle state is a 32px row whose text lines up with the
+      section label and whose hover fill spans 8px beyond it (Figma 29649:120011). */
+  sectionField?: boolean
 }
 
 export function RichTextField({
@@ -68,6 +71,7 @@ export function RichTextField({
   error,
   onValidityChange,
   tightenFocus = false,
+  sectionField = false,
 }: RichTextFieldProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [focused, setFocused] = useState(false)
@@ -121,7 +125,7 @@ export function RichTextField({
   const empty = isHtmlEmpty(value)
 
   return (
-    <div className={[styles.field, tightenFocus && focused ? styles.tightenActive : ''].filter(Boolean).join(' ')}>
+    <div className={[styles.field, tightenFocus && focused ? styles.tightenActive : '', sectionField ? styles.sectionField : ''].filter(Boolean).join(' ')}>
     <div className={[styles.wrap, focused ? styles.focused : '', errorMsg ? styles.hasError : ''].filter(Boolean).join(' ')}>
       {focused && (
         <div className={styles.toolbar}>

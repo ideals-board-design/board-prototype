@@ -133,20 +133,21 @@
   align-items: center;
   gap: var(--space-16);
   padding: var(--space-24);
-  border: 1px dashed var(--color-border);
+  border: 1px dashed var(--color-border-strong);
   border-radius: var(--radius-md);
   transition: border-color var(--dur-snap) var(--ease-out), background var(--dur-snap) var(--ease-out);
 }
 
 .dropzoneText {
   font-size: var(--text-base);
-  color: var(--color-text-secondary);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
 }
 
 .dropzoneActions {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-16);
 }
 
 .hiddenInput {

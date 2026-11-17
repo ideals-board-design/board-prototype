@@ -27,7 +27,6 @@ import styles from './AttachmentsField.module.css'
 const dragSvg     = functional.find(i => i.name === 'drag')!.svg
 const loaderSvg   = condition.find(i => i.name === 'loader-round')!.svg
 const uploadSvg   = actions.find(i => i.name === 'upload-alt')!.svg
-const linkSvg     = actions.find(i => i.name === 'link')!.svg
 const renameSvg   = actions.find(i => i.name === 'edit-alt')!.svg
 const downloadSvg = actions.find(i => i.name === 'download-alt')!.svg
 const copySvg     = actions.find(i => i.name === 'copy')!.svg
@@ -290,6 +289,19 @@ export function AttachmentsField({
                         <span className={styles.spinner} aria-label="Uploading" role="status">
                           <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: loaderSvg }} />
                         </span>
+                      ) : readOnly ? (
+                        /* Board member: a single Download icon button, no "…" menu
+                           (Figma 31679:306304); links carry no action. */
+                        a.format === 'link' ? null : (
+                          <Button
+                            variant="tertiary"
+                            intent="neutral"
+                            size="s"
+                            iconOnly={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: downloadSvg }} />}
+                            onClick={() => onDownload(a)}
+                            aria-label={`Download ${a.name}`}
+                          />
+                        )
                       ) : rowMenuItems(a).length > 0 ? (
                         <ActionMenu items={rowMenuItems(a)} ariaLabel={`Options for ${a.name}`} />
                       ) : null}
@@ -352,6 +364,7 @@ export function AttachmentsField({
         <div className={styles.dropzoneActions}>
           <ActionMenu
             trigger="button"
+            size="s"
             triggerLabel="Add document"
             align="left"
             items={[
@@ -363,8 +376,7 @@ export function AttachmentsField({
           <Button
             variant="secondary"
             intent="neutral"
-            size="m"
-            iconLeft={<span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: linkSvg }} />}
+            size="s"
             onClick={() => onAddLink?.()}
           >
             Add link

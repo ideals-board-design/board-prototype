@@ -1,0 +1,364 @@
+/* ActionLogTab — Figma Meetings 33037:404462 */
+
+.root {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  overflow: hidden;
+  background: var(--color-bg-surface);
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  /* Columns respond to the width of this pane (it shrinks when the drawer opens). */
+  container-type: inline-size;
+}
+
+/* ── Toolbar — 88px (24 + 40 + 24) ─────────────────────────── */
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+  padding: var(--space-24);
+  flex-shrink: 0;
+}
+
+.filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+  min-width: 0;
+}
+
+.filter {
+  width: 240px;
+}
+
+.filtersInline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-16);
+}
+
+.filtersBtn { display: none; }
+
+.filtersPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+}
+
+.filtersPanel .filter { width: 100%; }
+
+.metaCell { display: none; }
+
+.dot {
+  display: inline-block;
+  width: var(--space-4);
+  height: var(--space-4);
+  margin: 0 var(--space-8);
+  border-radius: 50%;
+  background: var(--color-border);
+  vertical-align: middle;
+}
+
+/* ── Table ─────────────────────────────────────────────────── */
+
+.tableScroll {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding: 0 var(--space-24) var(--space-24);
+}
+
+.table {
+  width: 100%;
+  min-width: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+}
+
+.colStatus   { width: 168px; }
+.colAssignee { width: 200px; }
+.colDue      { width: 144px; }
+
+.table thead tr { background: var(--stone-200); }
+.table th:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.table th:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+
+.expandTh {
+  padding: 0;
+  text-align: left;
+}
+
+.expandInner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: var(--size-l);
+  padding: 0 var(--space-16) 0 var(--space-12);
+}
+
+.expandAll {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-24);
+  height: var(--space-24);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-icon-secondary);
+  cursor: pointer;
+}
+
+.expandAll svg { width: var(--space-20); height: var(--space-20); }
+.expandAll:hover:not(:disabled) { background: var(--color-bg-hover); }
+.expandAll:focus-visible { outline: 2px solid var(--color-brand); outline-offset: -2px; }
+.expandAll:disabled { color: var(--color-icon-disabled); cursor: default; }
+
+.thLabel {
+  white-space: nowrap;
+  font-family: var(--font-family);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+/* Meeting group row */
+.groupTd {
+  padding: 0;
+  background: var(--stone-200);
+  /* 8px gap above every meeting (Figma Meetings 33161:531311): a surface-coloured
+     border, with the fill clipped to the padding box so the gap stays white. */
+  background-clip: padding-box;
+  border-top: var(--space-8) solid var(--color-bg-surface);
+  border-radius: var(--radius-sm);
+}
+
+.groupBtn {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  width: 100%;
+  min-height: var(--size-l);
+  padding: 0 var(--space-16) 0 var(--space-16);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-family);
+}
+
+.groupBtn:focus-visible { outline: 2px solid var(--color-brand); outline-offset: -2px; }
+
+.chevron {
+  display: inline-flex;
+  width: var(--space-20);
+  height: var(--space-20);
+  color: var(--color-icon-primary);
+}
+
+.chevron svg { width: 100%; height: 100%; }
+
+.groupName {
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--space-16);
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-surface);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-sm);
+  color: var(--color-text-primary);
+}
+
+/* Action rows — indented 52px under their meeting */
+.row { cursor: pointer; background: var(--color-bg-surface); }
+.row td:first-child { padding-left: calc(var(--space-24) + var(--space-28)); border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
+.row td:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
+.titleTd { overflow: hidden; }
+
+.rowSelected { background: var(--color-bg-selected); }
+
+@media (hover: hover) {
+  .row:hover { background: var(--color-bg-hover); }
+}
+
+/* Empty state fills the area under the header row */
+.empty {
+  flex: 1;
+}
+
+/* ── Responsive columns — Tasks pattern: the last columns drop out first ──
+   Widths are the pane's, so opening the drawer collapses columns too. */
+/* Filters collapse into one button when the pane can't fit them inline. */
+@container (max-width: 799px) {
+  .filtersInline { display: none; }
+  .filtersBtn { display: inline-flex; }
+}
+
+@container (max-width: 959px) {
+  /* Columns collapse (not display:none) so the group rows' colSpan stays whole. */
+  col.dueCol { visibility: collapse; width: 0; }
+  .table .dueCol:not(col) { display: none; }
+}
+
+@container (max-width: 799px) {
+  col.assigneeCol { visibility: collapse; width: 0; }
+  .table .assigneeCol:not(col) { display: none; }
+}
+
+/* Mobile: full-bleed single-column list, no header row; status sits under the title. */
+@container (max-width: 479px) {
+  .toolbar { padding: var(--space-16); }
+  .filters { flex: 1; gap: var(--space-8); }
+  .clearBtn { display: none; }
+  .tableScroll { padding: 0; }
+  .table, .table tbody, .table tr, .table td { display: block; }
+  .table thead, .table colgroup { display: none; }
+  .table td.assigneeCol, .table td.dueCol { display: none; }
+  .groupTd, .groupBtn { border-radius: 0; }
+  .groupBtn { padding-inline: var(--space-16); }
+  .row { display: flex; flex-wrap: wrap; align-items: center; padding: var(--space-8) var(--space-16); }
+  .row td > div { height: auto; padding: var(--space-4) 0; }
+  .row td:first-child { flex: 1 1 100%; padding-left: 0; border-radius: 0; }
+  .row td.statusCell { display: none; }
+  .row td.metaCell {
+    display: block;
+    flex: 1 1 100%;
+    padding: 0 0 var(--space-4);
+    font-family: var(--font-family);
+    font-size: var(--text-base);
+    line-height: var(--line-height-base);
+    color: var(--color-text-secondary);
+  }
+  .row td.metaOverdue { color: var(--color-text-error); }
+}
+
+/* ── Drawer body ───────────────────────────────────────────── */
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: var(--space-16) var(--space-24) var(--space-24);
+  font-family: var(--font-family);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.value {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.people {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--space-32);
+}
+
+.personName {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.done { color: var(--color-success); }
+
+.file {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-8);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.fileIcon {
+  display: inline-flex;
+  width: var(--space-20);
+  height: var(--space-20);
+  flex-shrink: 0;
+  color: var(--color-text-error);
+}
+
+.fileIcon svg { width: 100%; height: 100%; }
+
+.fileName {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.upload {
+  padding: var(--space-14) var(--space-16);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: var(--text-sm);
+  line-height: var(--line-height-sm);
+  color: var(--color-text-secondary);
+}

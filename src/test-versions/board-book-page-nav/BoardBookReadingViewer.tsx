@@ -67,7 +67,7 @@ import {
   type BoardBookItem,
   type FlatDoc,
 } from '../../meeting/BoardBook/boardBookData'
-import { AiPanel, CompactNav, PdfPage, SearchPanel, TocPanel } from './BoardBookPageNavViewer'
+import { AiPanel, CompactNav, PdfPage, SearchPanel, TocPanel, type TocVariant } from './BoardBookPageNavViewer'
 import { PageStack, pageAtScroll, scrollToPage, type CommentPin } from './PageStack'
 import { useTocAutoCollapse } from './useTocAutoCollapse'
 import { DocumentToolsSheet } from './DocumentToolsSheet'
@@ -165,9 +165,12 @@ export interface BoardBookReadingViewerProps {
       floating vertical card at the top right of the document; the top bar
       keeps a labelled Download button after the view options. */
   railTools?: boolean
+  /** Agenda panel spacing variant: tc1 (default), tc2 (tighter inside, looser
+      between items), tc3 (grouped cards). */
+  tocVariant?: TocVariant
 }
 
-export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar', initialDocName = null, borderlessDocSelect = false, railTools = false }: BoardBookReadingViewerProps) {
+export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageImage, toolsIn = 'bar', initialDocName = null, borderlessDocSelect = false, railTools = false, tocVariant = 'tc1' }: BoardBookReadingViewerProps) {
   const isNarrow = useMediaQuery('(max-width: 767px)')
   /* Version 4 on tablet / desktop: annotations in the top bar. */
   const toolsTop = toolsIn === 'top' && !isNarrow
@@ -311,10 +314,44 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
     window.addEventListener('pointerup', onUp)
   }
 
+  /* Reading progress per DOCUMENT (not the whole board book): how far down the
+     open document the reader has seen, 0–1. Only ever grows, so scrolling back
+     up keeps what was already read; each document keeps its own value. */
+  const [readByDoc, setReadByDoc] = useState<Record<string, number>>({})
+  const currentDocId = current?.doc.id
+  const fitTimer = useRef<number>(undefined)
+  const recordRead = useCallback(() => {
+    const el = scrollRef.current
+    if (!el || !currentDocId || el.scrollHeight <= 0) return
+    /* 0 at the top of the document, 1 once its end has been reached. A document
+       that fits without scrolling is fully seen, but only once its pages have
+       laid out (before that scrollHeight equals clientHeight). */
+    const room = el.scrollHeight - el.clientHeight
+    if (room <= 1) {
+      /* Looks non-scrollable — confirm after the pages have had time to load
+         (a document that is still laying out briefly reports no overflow). */
+      window.clearTimeout(fitTimer.current)
+      fitTimer.current = window.setTimeout(() => {
+        const box = scrollRef.current
+        if (!box || box.scrollHeight - box.clientHeight > 1) return
+        setReadByDoc(prev => (prev[currentDocId] === 1 ? prev : { ...prev, [currentDocId]: 1 }))
+      }, 600)
+      return
+    }
+    window.clearTimeout(fitTimer.current)
+    const seen = Math.min(1, el.scrollTop / room)
+    setReadByDoc(prev => (seen > (prev[currentDocId] ?? 0) ? { ...prev, [currentDocId]: seen } : prev))
+  }, [currentDocId])
+  useEffect(() => () => window.clearTimeout(fitTimer.current), [])
+  /* A newly opened document (or a zoom / fit change) counts what is visible
+     right away, before any scroll event. */
+  useEffect(() => { recordRead() }, [recordRead, zoom, fit, box.w, box.h])
+
   const onCanvasScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const el = e.currentTarget
     const p = pageAtScroll(el)
     if (p && p !== pageRef.current) setPage(p)
+    recordRead()
   }
 
   /* ── Keyboard: ← / → pages, Esc leaves focus mode. ─────────────────────── */
@@ -429,7 +466,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
           </div>
           {segView === 'agenda' && (
             <nav className={styles.segToc} aria-label="Board book contents">
-              <TocPanel book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
+              <TocPanel variant={tocVariant} book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
             </nav>
           )}
         </>
@@ -439,7 +476,7 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
       {tocOpen && !focus && !segmented && (
         <>
           <nav className={styles.toc} style={{ width: tocWidth }} aria-label="Board book contents">
-            <TocPanel book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
+            <TocPanel variant={tocVariant} book={book} currentDocId={current?.doc.id} onSelectItem={selectItem} onSelectDoc={selectDoc} onAskAi={() => setRightPanel('ai')} />
           </nav>
           <div className={styles.resizer} role="separator" aria-orientation="vertical"
             aria-label="Resize contents panel" onPointerDown={startResize} />
@@ -509,7 +546,16 @@ export default function BoardBookReadingViewer({ book = MOCK_BOARD_BOOK, pageIma
                 aria-expanded={navPopoverOpen}
               >
                 {current && <span className={styles.docSelectIcon} aria-hidden="true"><Ico svg={FORMAT_ICON[current.doc.sourceFormat]} /></span>}
-                <span className={styles.docSelectName}>{current?.doc.name}</span>
+                <span className={styles.docSelectNameWrap}>
+                  <span className={styles.docSelectName}>{current?.doc.name}</span>
+                  {/* Reading progress of THIS document (Figma 33424-221067): a 2px track
+                      as wide as the name — short names hug, long ones stop at the cap. */}
+                  {borderlessDocSelect && current && (
+                    <span className={styles.readTrack} aria-hidden="true">
+                      <span className={styles.readFill} style={{ width: `${Math.round((readByDoc[current.doc.id] ?? 0) * 100)}%` }} />
+                    </span>
+                  )}
+                </span>
                 <span className={styles.docSelectChevron} aria-hidden="true"><Ico svg={navPopoverOpen ? chevronUpSvg : chevronDownSvg} /></span>
               </button>
               {navPopoverOpen && (

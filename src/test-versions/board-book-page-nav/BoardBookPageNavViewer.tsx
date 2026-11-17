@@ -484,7 +484,10 @@ export default function BoardBookPageNavViewer({
 }
 
 /* ── Table-of-content panel (rich, web) ────────────────────────────────────── */
-export function TocPanel({ book, currentDocId, onSelectItem, onSelectDoc, onAskAi }: {
+export type TocVariant = 'tc1' | 'tc2' | 'tc3'
+
+export function TocPanel({ book, currentDocId, onSelectItem, onSelectDoc, onAskAi, variant = 'tc1' }: {
+  variant?: TocVariant
   book: BoardBook
   currentDocId?: string
   onSelectItem: (item: BoardBookItem) => void
@@ -492,7 +495,7 @@ export function TocPanel({ book, currentDocId, onSelectItem, onSelectDoc, onAskA
   onAskAi: () => void
 }) {
   return (
-    <div className={styles.tocScroll}>
+    <div className={[styles.tocScroll, variant === 'tc2' ? styles.tocScrollTc2 : '', variant === 'tc3' ? styles.tocScrollTc3 : ''].filter(Boolean).join(' ')}>
       {book.items.map(item => (
         <TocItem key={item.id} book={book} item={item} currentDocId={currentDocId}
           onSelectItem={onSelectItem} onSelectDoc={onSelectDoc} onAskAi={onAskAi} />
@@ -548,7 +551,7 @@ function TocItem({ book, item, currentDocId, onSelectItem, onSelectDoc, onAskAi 
       )}
 
       {item.motions?.map((m, i) => (
-        <div key={i} className={styles.tocBlock}>
+        <div key={i} className={[styles.tocBlock, styles.tocBlockMotion].join(' ')}>
           <span className={styles.tocLabelRow}>
             <span className={styles.tocLabel}>Motion</span>
             <BadgeStatus

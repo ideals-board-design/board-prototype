@@ -1,6 +1,6 @@
-/* MinutesAgenda — Minutes → Agenda segment. Spacing per Figma 32081-108682:
-   16 top, 24 between items, 4 title → time, 16 between blocks, 8 inside the
-   motion block and between attachment rows. */
+/* MinutesAgenda — Minutes → Agenda segment. Spacing per Figma 32556-61747:
+   16 top, 32 between items, 8 title → time, 16 between blocks, 8 label → text,
+   6 motion label → text, 8 motion text → actions and between attachment rows. */
 
 .list {
   list-style: none;
@@ -8,7 +8,7 @@
   padding: var(--space-16) 0 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-24);
+  gap: var(--space-32);
 }
 
 .item {
@@ -18,12 +18,12 @@
   color: var(--color-text-primary);
 }
 
-/* Title row + time row read as one unit (4px apart). */
+/* Title row + time row read as one unit (8px apart). */
 .head {
   display: flex;
   align-items: flex-start;
   gap: var(--space-8);
-  margin-bottom: calc(var(--space-4) - var(--space-16));
+  margin-bottom: calc(var(--space-8) - var(--space-16));
 }
 
 .title {
@@ -129,6 +129,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-8);
+  /* 6 to the motion text (block gap 8 − 2). */
+  margin-bottom: calc(-1 * var(--space-2));
 }
 
 .motionActions {
@@ -181,3 +183,12 @@
 .fileMenu { opacity: 0; }
 .attachment:hover .fileMenu,
 .attachment:focus-within .fileMenu { opacity: 1; }
+
+/* Inline "Add draft action" row: field fills, 8 to the Cancel / Create buttons. */
+.draftInput {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.draftField { flex: 1; min-width: 0; }

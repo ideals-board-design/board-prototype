@@ -182,6 +182,33 @@
   white-space: nowrap;
 }
 
+/* Name + its reading-progress track (Figma 33424-221067). The wrap hugs the name,
+   so the track is exactly as wide as the text; it sits on the button's bottom
+   edge (the 2px track overhangs it, like the 34px-tall frame in Figma). */
+.docSelectNameWrap {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+.docSelectWrapHug .docSelectNameWrap { flex: 0 1 auto; max-width: calc(var(--space-72) * 3); }
+.docSelectWrapHug .docSelectNameWrap .docSelectName { max-width: none; }
+
+.readTrack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(-1 * (var(--space-6) + var(--space-2)));
+  height: var(--space-2);
+  background: var(--color-bg-hover);
+}
+.readFill {
+  display: block;
+  height: 100%;
+  background: var(--accent-700);
+  transition: width 150ms ease-out;
+}
+
 .docSelectChevron {
   display: inline-flex;
   width: 20px;
