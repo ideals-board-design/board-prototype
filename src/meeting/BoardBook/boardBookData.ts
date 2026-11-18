@@ -132,7 +132,17 @@ export const BOARD_BOOK_ITEMS: BoardBookItem[] = [
     title: 'Call to order',
     timeRange: '11:00 - 11:01',
     duration: '5min',
-    documents: [],
+    /* Name-length edge cases for the document dropdown / agenda rows:
+       a 3-letter name and a very long one. */
+    documents: [
+      { id: 'doc-short-name', name: 'FAQ.pdf', sourceFormat: 'pdf', pages: 3 },
+      {
+        id: 'doc-long-name',
+        name: 'Annual General Meeting of Shareholders and Board of Directors — Consolidated Financial Statements, Auditor’s Report and Management Discussion for the Fiscal Year Ended 31 December 2025 (Final Draft for Approval).pdf',
+        sourceFormat: 'pdf',
+        pages: 5,
+      },
+    ],
   },
   {
     id: 'item-2',
