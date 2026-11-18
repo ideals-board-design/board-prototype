@@ -292,6 +292,55 @@ function DraftInput({ onCreate, onCancel }: { onCreate: (text: string) => void; 
   )
 }
 
+/** Saved draft row (Figma Draft actions: One added, editing). Clean row shows a single × (remove).
+ *  Once the text is changed, ✓ Save appears and × turns into Cancel (reverts). Enter saves, Esc reverts. */
+function DraftRow({ text, index, onSave, onRemove }: {
+  text: string
+  index: number
+  onSave: (text: string) => void
+  onRemove: () => void
+}) {
+  const [value, setValue] = useState(text)
+  const trimmed = value.trim()
+  const dirty = trimmed !== text
+
+  const save = () => {
+    if (!trimmed || !dirty) return
+    onSave(trimmed)
+    setValue(trimmed)
+  }
+  const revert = () => setValue(text)
+
+  return (
+    <li className={styles.draftInput}>
+      <TextField
+        size="s"
+        className={styles.draftField}
+        aria-label={`Draft action ${index + 1}`}
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter') { e.preventDefault(); save() }
+          if (e.key === 'Escape') revert()
+        }}
+      />
+      {dirty && (
+        <Tooltip label="Save changes" position="top">
+          <Button size="s" iconOnly={<Icon svg={checkSvg} />} onClick={save} disabled={!trimmed} aria-label="Save changes" />
+        </Tooltip>
+      )}
+      <Tooltip label={dirty ? 'Cancel' : 'Remove draft action'} position="top">
+        <Button
+          variant="secondary" intent="neutral" size="s"
+          iconOnly={<Icon svg={closeSvg} />}
+          onClick={dirty ? revert : onRemove}
+          aria-label={dirty ? 'Cancel changes' : `Remove draft action ${index + 1}`}
+        />
+      </Tooltip>
+    </li>
+  )
+}
+
 /* --------------------------------------------------------------- component */
 
 export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => void }) {
@@ -304,10 +353,12 @@ export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => voi
     onNotify('Draft action created')
   }
 
-  const editDraft = (itemId: string, index: number, text: string) =>
+  const editDraft = (itemId: string, index: number, text: string) => {
     setItems(prev => prev.map(it => (it.id === itemId
       ? { ...it, draftActions: (it.draftActions ?? []).map((d, i) => (i === index ? text : d)) }
       : it)))
+    onNotify('Draft action saved')
+  }
 
   const removeDraft = (itemId: string, index: number) => {
     setItems(prev => prev.map(it => (it.id === itemId
@@ -393,23 +444,13 @@ export function MinutesAgenda({ onNotify }: { onNotify: (message: string) => voi
                 {item.draftActions && item.draftActions.length > 0 && (
                   <ul className={styles.drafts}>
                     {item.draftActions.map((a, di) => (
-                      <li key={di} className={styles.draftInput}>
-                        <TextField
-                          size="s"
-                          className={styles.draftField}
-                          aria-label={`Draft action ${di + 1}`}
-                          value={a}
-                          onChange={e => editDraft(item.id, di, e.target.value)}
-                        />
-                        <Tooltip label="Remove draft action" position="top">
-                          <Button
-                            variant="secondary" intent="neutral" size="s"
-                            iconOnly={<Icon svg={closeSvg} />}
-                            onClick={() => removeDraft(item.id, di)}
-                            aria-label={`Remove draft action ${di + 1}`}
-                          />
-                        </Tooltip>
-                      </li>
+                      <DraftRow
+                        key={`${di}-${a}`}
+                        text={a}
+                        index={di}
+                        onSave={t => editDraft(item.id, di, t)}
+                        onRemove={() => removeDraft(item.id, di)}
+                      />
                     ))}
                   </ul>
                 )}
