@@ -148,7 +148,7 @@ export function TableCell({
         {children != null && !dropdown && truncate && (
           <TruncationHint
             text={typeof children === 'string' ? children : ''}
-            className={styles.truncationHintFlex}
+            className={[styles.truncationHintFlex, styles.label].join(' ')}
           >
             {children}
           </TruncationHint>

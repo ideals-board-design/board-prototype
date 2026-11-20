@@ -30,6 +30,8 @@ export interface ActionMenuProps {
   /** 'kebab' = icon-only "…" trigger; 'button' = labelled secondary button. */
   trigger?: 'kebab' | 'button'
   triggerLabel?: string
+  /** Button trigger style. Default 'secondary'. */
+  triggerVariant?: 'primary' | 'secondary'
   /** Leading icon for a 'button' trigger. */
   triggerIcon?: string
   /** Trigger button size (S=32px kebab for compact rows). */
@@ -45,6 +47,7 @@ export function ActionMenu({
   placement = 'bottom',
   trigger = 'kebab',
   triggerLabel,
+  triggerVariant = 'secondary',
   triggerIcon,
   size = 'm',
   ariaLabel,
@@ -115,8 +118,8 @@ export function ActionMenu({
         />
       ) : (
         <Button
-          variant="secondary"
-          intent="neutral"
+          variant={triggerVariant}
+          {...(triggerVariant === 'secondary' ? { intent: 'neutral' as const } : {})}
           size={size}
           disabled={disabled}
           iconLeft={triggerIcon ? <span style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: triggerIcon }} /> : undefined}

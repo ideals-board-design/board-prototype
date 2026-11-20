@@ -19,6 +19,12 @@ export interface DrawerHeaderProps {
   /** View-only title — renders plain text (not an editable field). */
   readOnly?:      boolean
   type?:          string       // shows the "+ type" icon+text meta when provided
+  /** Raw SVG for the type meta icon. Defaults to the plus icon. */
+  typeIcon?:      string
+  /** Placeholder for the editable title (shown while empty). */
+  titlePlaceholder?: string
+  /** Focus the editable title on mount — for create flows. */
+  titleAutoFocus?: boolean
   badge?:         ReactNode    // status badge slot (right of type)
   className?:     string
 }
@@ -29,6 +35,9 @@ export function DrawerHeader({
   onTitleChange,
   readOnly = false,
   type,
+  typeIcon,
+  titlePlaceholder,
+  titleAutoFocus,
   badge,
   className,
 }: DrawerHeaderProps) {
@@ -54,6 +63,8 @@ export function DrawerHeader({
             className={styles.titleField}
             aria-label="Drawer title"
             spellCheck={false}
+            placeholder={titlePlaceholder}
+            autoFocus={titleAutoFocus}
             {...titleProps}
           />
         )}
@@ -80,7 +91,7 @@ export function DrawerHeader({
               <span
                 className={styles.typeIcon}
                 aria-hidden="true"
-                dangerouslySetInnerHTML={{ __html: plusSvg }}
+                dangerouslySetInnerHTML={{ __html: typeIcon ?? plusSvg }}
               />
               {type}
             </span>

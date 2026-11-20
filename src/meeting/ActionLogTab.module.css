@@ -87,13 +87,44 @@
   border-collapse: separate;
   border-spacing: 0;
   table-layout: fixed;
+  /* Name column floor + every shown column's width → below this, scroll. */
+  --w-name: 320px; --w-status: 0px; --w-assignee: 0px; --w-due: 0px;
+  min-width: calc(var(--w-name) + var(--w-status) + var(--w-assignee) + var(--w-due));
 }
+.hasStatus   { --w-status: 168px; }
+.hasAssignee { --w-assignee: 200px; }
+.hasDue      { --w-due: 144px; }
+
+/* First column stays put while the rest scrolls sideways. */
+.table th:first-child,
+.table .row td:first-child { position: sticky; left: 0; z-index: 1; background: inherit; }
+.table thead tr th:first-child { background: var(--stone-200); }
 
 .colStatus   { width: 168px; }
 .colAssignee { width: 200px; }
 .colDue      { width: 144px; }
 
 .table thead tr { background: var(--stone-200); }
+/* Columns menu trigger sits at the right end of the header row. */
+.tableWrap { position: relative; min-width: fit-content; }
+/* Zero-height sticky anchor keeps the button in view while the table scrolls. */
+.columnsAnchor {
+  position: sticky;
+  right: var(--space-24);
+  z-index: 2;
+  height: 0;
+  /* Narrower than its parent, or sticky has no room to move. */
+  width: fit-content;
+  margin-left: auto;
+}
+.columnsBtn {
+  height: var(--size-l);
+  padding: 0 var(--space-10);
+  align-items: center;
+  background: var(--stone-200);
+  border-radius: var(--radius-sm);
+}
+
 .table th:first-child { border-radius: var(--radius-sm) 0 0 var(--radius-sm); }
 .table th:last-child  { border-radius: 0 var(--radius-sm) var(--radius-sm) 0; }
 
@@ -105,29 +136,10 @@
 .expandInner {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-10);
   height: var(--size-l);
-  padding: 0 var(--space-16) 0 var(--space-12);
+  padding: 0 var(--space-16) 0 var(--space-10);
 }
-
-.expandAll {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: var(--space-24);
-  height: var(--space-24);
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--color-icon-secondary);
-  cursor: pointer;
-}
-
-.expandAll svg { width: var(--space-20); height: var(--space-20); }
-.expandAll:hover:not(:disabled) { background: var(--color-bg-hover); }
-.expandAll:focus-visible { outline: 2px solid var(--color-brand); outline-offset: -2px; }
-.expandAll:disabled { color: var(--color-icon-disabled); cursor: default; }
 
 .thLabel {
   white-space: nowrap;
@@ -153,7 +165,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-8);
-  width: 100%;
+  /* Pinned to the visible pane while the table scrolls sideways. */
+  position: sticky;
+  left: 0;
+  width: min(100%, calc(100cqw - var(--space-48)));
   min-height: var(--size-l);
   padding: 0 var(--space-16) 0 var(--space-16);
   border: 0;
@@ -163,6 +178,9 @@
   text-align: left;
   font-family: var(--font-family);
 }
+
+/* Hover — Figma Meetings 33572:404697 (hover-background fill) */
+.groupBtn:hover { background: var(--color-bg-hover); }
 
 .groupBtn:focus-visible { outline: 2px solid var(--color-brand); outline-offset: -2px; }
 
@@ -221,16 +239,8 @@
   .filtersBtn { display: inline-flex; }
 }
 
-@container (max-width: 959px) {
-  /* Columns collapse (not display:none) so the group rows' colSpan stays whole. */
-  col.dueCol { visibility: collapse; width: 0; }
-  .table .dueCol:not(col) { display: none; }
-}
-
-@container (max-width: 799px) {
-  col.assigneeCol { visibility: collapse; width: 0; }
-  .table .assigneeCol:not(col) { display: none; }
-}
+/* Columns never auto-hide: the user's Customize-columns choice wins. When the
+   pane (e.g. with the drawer open) can't fit them, the table scrolls sideways. */
 
 /* Mobile: full-bleed single-column list, no header row; status sits under the title. */
 @container (max-width: 479px) {
@@ -240,6 +250,9 @@
   .tableScroll { padding: 0; }
   .table, .table tbody, .table tr, .table td { display: block; }
   .table thead, .table colgroup { display: none; }
+  .columnsBtn { display: none; }
+  .table { min-width: 0; }
+  .table .row td:first-child { position: static; }
   .table td.assigneeCol, .table td.dueCol { display: none; }
   .groupTd, .groupBtn { border-radius: 0; }
   .groupBtn { padding-inline: var(--space-16); }
@@ -259,20 +272,31 @@
   .row td.metaOverdue { color: var(--color-text-error); }
 }
 
-/* ── Drawer body ───────────────────────────────────────────── */
+/* ── Drawer body — mirrors the Tasks drawer (Figma 11804:12188) ───── */
+
+/* Drawer body owns no padding here: the form and attachments blocks set their
+   own insets (16/18 and 24) exactly as the Tasks drawer does. */
+.drawerBody { padding: 0; }
 
 .details {
   display: flex;
   flex-direction: column;
   gap: var(--space-24);
-  padding: var(--space-16) var(--space-24) var(--space-24);
+  padding: var(--space-8) 0;
   font-family: var(--font-family);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-24);
+  padding: 0 var(--space-18) 0 var(--space-16);
 }
 
 .section {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-2);
   min-width: 0;
 }
 
@@ -281,10 +305,21 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-8);
+  padding: 0 var(--space-6) 0 var(--space-8);
 }
 
 .sectionTitle {
   margin: 0;
+  padding: 0 var(--space-8);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+}
+
+.sectionHead .sectionTitle { padding: 0; }
+
+.sectionMeta {
   font-size: var(--text-base);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-base);
@@ -292,7 +327,12 @@
 }
 
 .value {
+  display: flex;
+  align-items: center;
+  min-height: var(--size-s);
   margin: 0;
+  padding: var(--space-4) var(--space-8);
+  box-sizing: border-box;
   font-size: var(--text-base);
   line-height: var(--line-height-base);
   color: var(--color-text-primary);
@@ -310,7 +350,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-8);
-  min-height: var(--space-32);
+  min-height: var(--size-s);
+  padding: 0 var(--space-2) 0 var(--space-8);
 }
 
 .personName {
@@ -323,11 +364,20 @@
 
 .done { color: var(--color-success); }
 
+.attachments {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: 0 var(--space-24);
+}
+
+.attachments .sectionTitle { padding: 0; }
+
 .file {
   display: flex;
   align-items: center;
   gap: var(--space-8);
-  padding: var(--space-4) var(--space-4) var(--space-4) var(--space-8);
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-8);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
 }
@@ -348,17 +398,60 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: var(--text-sm);
+  line-height: var(--line-height-sm);
+  color: var(--color-text-primary);
+}
+
+.upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-16);
+  min-height: 96px;
+  padding: var(--space-24);
+  box-sizing: border-box;
+  border: 1px dashed var(--stone-500);
+  border-radius: var(--radius-sm);
   font-size: var(--text-base);
   line-height: var(--line-height-base);
   color: var(--color-text-primary);
 }
 
-.upload {
-  padding: var(--space-14) var(--space-16);
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-sm);
-  text-align: center;
-  font-size: var(--text-sm);
-  line-height: var(--line-height-sm);
-  color: var(--color-text-secondary);
+/* Survey "Anonymous responses" row — Figma 11609:47437 */
+.checkRow {
+  display: flex;
+  align-items: center;
+  padding: var(--space-6) 0 var(--space-6) var(--space-8);
 }
+
+/* Meeting + agenda item rows sit flush (Figma Tasks 12015:30629: gap 0). */
+.linkedFields { display: flex; flex-direction: column; }
+
+/* Draft assignee rows (Figma Tasks 4359:65010): 32px rows, 2px apart; the
+   remove (×) is hidden until the row is hovered or focused. */
+.draftPeople {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.draftPerson {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: var(--size-s);
+  padding: 0 0 0 var(--space-8);
+  border-radius: var(--radius-sm);
+}
+
+.draftPerson:hover,
+.draftPerson:focus-within { background: var(--color-bg-hover-fill); }
+
+.draftRemove { opacity: 0; transition: opacity var(--dur-snap) var(--ease-out); }
+.draftPerson:hover .draftRemove,
+.draftPerson:focus-within .draftRemove { opacity: 1; }

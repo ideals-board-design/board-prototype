@@ -15,12 +15,19 @@ import { Avatar }          from '../components/Avatar/Avatar'
 import { EmptyState }      from '../components/EmptyState/EmptyState'
 import { TableCell, TableHeaderCell } from '../components/TableCell/TableCell'
 import { TableAvatarCell } from '../components/TableAvatarCell/TableAvatarCell'
-import { TextArea }        from '../components/TextArea/TextArea'
+import { TextField }       from '../components/TextField/TextField'
+import { DatePicker }      from '../components/DatePicker/DatePicker'
+import { Checkbox }        from '../components/Checkbox/Checkbox'
+import { Autocomplete, type AutocompleteOption } from '../components/Autocomplete/Autocomplete'
+import { ActionMenu }      from './ActionMenu'
+import { ColumnsMenu }     from './ColumnsMenu'
 import { useBreakpoint }   from '../hooks/useBreakpoint'
 import { arrows }          from '../icons/arrows'
 import { actions }         from '../icons/actions'
 import { condition }       from '../icons/condition'
 import { fileFormat }      from '../icons/fileFormat'
+import { files }           from '../icons/files'
+import { dateTime }        from '../icons/dateTime'
 import {
   SEED_GROUPS, STATUSES, STATUS_COLOR, USERS, NO_FILTERS,
   filterGroups, hasFilters, formatDue, toCsv, userById,
@@ -34,6 +41,10 @@ const sortingSvg     = svgOf(arrows,     'expand')
 const chevronDownSvg = svgOf(arrows,     'angle-down-fill')
 const chevronRightSvg = svgOf(arrows,    'angle-right-fill')
 const multiplySvg    = svgOf(actions,    'multiply')
+const plusSvg        = svgOf(actions,    'plus')
+const actionSvg      = svgOf(dateTime,   'tasks')
+const signatureSvg   = svgOf(files,      'file-signature')
+const surveySvg      = svgOf(files,      'file0-survey')
 const trashSvg       = svgOf(actions,    'trash-alt')
 const downloadSvg    = svgOf(actions,    'download-alt')
 const filterOffSvg   = svgOf(actions,    'filter-slash')
@@ -56,8 +67,42 @@ const ASSIGNEE_OPTIONS: DropdownOption[] = USERS.map(u => ({
   avatar: { src: u.photo ? avatarUrl(u.id) : undefined, initials: initialsOf(u.name) },
 }))
 
+/* Assignee picker options (Figma Tasks 4354:64992): groups, then users. */
+const GROUP_OPTIONS: AutocompleteOption[] = [
+  { value: 'g-audit', label: 'Audit Committee',   avatar: { type: 'group', initials: 'A' } },
+  { value: 'g-board', label: 'Board of Directors', avatar: { type: 'group', initials: 'B' } },
+]
+const USER_OPTIONS: AutocompleteOption[] = USERS.map(u => ({
+  value: u.id,
+  label: u.name,
+  avatar: { src: u.photo ? avatarUrl(u.id) : undefined, initials: initialsOf(u.name) },
+}))
+const PEOPLE_OPTIONS: AutocompleteOption[] = [...GROUP_OPTIONS, ...USER_OPTIONS]
+
+/* Agenda items for the "Linked to" picker (Figma Tasks 4354:66800). */
+const AGENDA_OPTIONS: AutocompleteOption[] = [
+  '1. Call to Order',
+  '2. Results of 2023 Q1',
+  '2.1. Financial Performance: Growth Indicators',
+  '3. CEO Report to Shareholders',
+  '4. Committee Reports',
+].map(l => ({ value: l, label: l }))
+
 const statusBadgeType = (s: ActionStatus) =>
-  s === 'Completed' ? 'positive' : s === 'Overdue' ? 'danger' : s === 'Draft' ? 'warning' : s === 'Pending review' ? 'pending' : 'neutral'
+  s === 'Completed' ? 'positive' : s === 'Overdue' ? 'danger' : s === 'Draft' ? 'warning' : 'neutral'
+
+/* ── Table columns — customisable via the header "columns" menu ── */
+type ColKey = 'status' | 'assignee' | 'due'
+const COLUMN_LABEL: Record<ColKey, string> = { status: 'Status', assignee: 'Assignee', due: 'Due date' }
+const DEFAULT_COLUMN_ORDER: ColKey[] = ['status', 'assignee', 'due']
+
+/* ── New request (Request ▾ menu) — empty drafts as in the Tasks drawer ── */
+type RequestKind = 'action' | 'signature' | 'survey'
+const REQUEST_KINDS: Record<RequestKind, { label: string; icon: string; titlePlaceholder: string }> = {
+  action:    { label: 'Action',            icon: actionSvg,    titlePlaceholder: 'Add title' },
+  signature: { label: 'Signature request', icon: signatureSvg, titlePlaceholder: 'Task title' },
+  survey:    { label: 'Survey',            icon: surveySvg,    titlePlaceholder: 'Add title' },
+}
 
 /* ── Component ─────────────────────────────────────────────── */
 export interface ActionLogTabProps {
@@ -71,6 +116,19 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
   /* The first two meetings start open, as in the mockups. */
   const [open,     setOpen]     = useState<Set<string>>(() => new Set(seed.slice(0, 2).map(g => g.id)))
   const [selected, setSelected] = useState<string | null>(null)
+  /* A new, empty request being drafted (Request ▾ menu). Mutually exclusive with `selected`. */
+  const [creating, setCreating] = useState<{ kind: RequestKind; key: number } | null>(null)
+  const [draftTitle, setDraftTitle] = useState('')
+  const [colOrder, setColOrder] = useState<ColKey[]>(DEFAULT_COLUMN_ORDER)
+  const [colHidden, setColHidden] = useState<ReadonlySet<string>>(new Set())
+  const shownCols = colOrder.filter(k => !colHidden.has(k))
+  const lastKind = useRef<RequestKind>('action')
+  if (creating) lastKind.current = creating.kind
+  function startRequest(kind: RequestKind) {
+    setSelected(null)
+    setDraftTitle('')
+    setCreating(c => ({ kind, key: (c?.key ?? 0) + 1 }))
+  }
   const [filtersOpen, setFiltersOpen] = useState(false)
 
   /* Tasks responsive pattern: inline drawer ≥1024 (460 desktop / 360 laptop),
@@ -150,6 +208,21 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
     </>
   )
 
+  const columnsMenu = (
+    <ColumnsMenu
+      className={styles.columnsBtn}
+      items={[
+        { key: 'name', label: 'Meeting and actions', locked: true },
+        ...colOrder.map(k => ({ key: k, label: COLUMN_LABEL[k] })),
+      ]}
+      hidden={colHidden}
+      onChange={(order, hidden) => {
+        setColOrder(order.filter((k): k is ColKey => k !== 'name'))
+        setColHidden(hidden)
+      }}
+    />
+  )
+
   return (
     <div className={styles.root}>
       <div className={styles.main}>
@@ -157,6 +230,18 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
         {/* Toolbar */}
         <div className={styles.toolbar}>
           <div className={styles.filters}>
+            <ActionMenu
+              trigger="button"
+              triggerVariant="primary"
+              triggerLabel="Request"
+              triggerIcon={plusSvg}
+              align="left"
+              items={[
+                { key: 'action',    label: 'Action',    icon: actionSvg,    onSelect: () => startRequest('action') },
+                { key: 'signature', label: 'Signature', icon: signatureSvg, onSelect: () => startRequest('signature') },
+                { key: 'survey',    label: 'Survey',    icon: surveySvg,    onSelect: () => startRequest('survey') },
+              ]}
+            />
             {/* Wide pane: filters inline. Narrow pane (Reports pattern): one Filters button. */}
             <div className={styles.filtersInline}>
               {filterControls}
@@ -200,34 +285,49 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
 
         {/* Table */}
         <div className={styles.tableScroll}>
-          <table className={styles.table}>
+          <div className={styles.tableWrap}>
+          {visible.length > 0 && <div className={styles.columnsAnchor}>{columnsMenu}</div>}
+          <table className={[
+            styles.table,
+            shownCols.includes('status') ? styles.hasStatus : '',
+            shownCols.includes('assignee') ? styles.hasAssignee : '',
+            shownCols.includes('due') ? styles.hasDue : '',
+          ].filter(Boolean).join(' ')}>
             <colgroup>
               <col />
-              <col className={styles.colStatus} />
-              <col className={[styles.colAssignee, styles.assigneeCol].join(' ')} />
-              <col className={[styles.colDue, styles.dueCol].join(' ')} />
+              {shownCols.map(k => (
+                <col
+                  key={k}
+                  className={[
+                    k === 'status' ? styles.colStatus : k === 'assignee' ? styles.colAssignee : styles.colDue,
+                    k === 'assignee' ? styles.assigneeCol : k === 'due' ? styles.dueCol : '',
+                  ].filter(Boolean).join(' ')}
+                />
+              ))}
             </colgroup>
             <thead>
               <tr>
                 <th className={styles.expandTh}>
                   <div className={styles.expandInner}>
                     <Tooltip label={allOpen ? 'Collapse all' : 'Expand all'} position="bottom">
-                      <button
-                        type="button"
-                        className={styles.expandAll}
+                      <Button
+                        variant="tertiary"
+                        intent="neutral"
+                        size="m"
+                        iconOnly={<Icon svg={sortingSvg} />}
                         onClick={toggleAll}
                         disabled={visible.length === 0}
                         aria-label={allOpen ? 'Collapse all meetings' : 'Expand all meetings'}
-                      >
-                        <Icon svg={sortingSvg} />
-                      </button>
+                      />
                     </Tooltip>
                     <span className={styles.thLabel}>Meeting and actions</span>
                   </div>
                 </th>
-                <TableHeaderCell>Status</TableHeaderCell>
-                <TableHeaderCell className={styles.assigneeCol}>Assignee</TableHeaderCell>
-                <TableHeaderCell className={styles.dueCol}>Due date</TableHeaderCell>
+                {shownCols.map(k => (
+                  <TableHeaderCell key={k} className={k === 'assignee' ? styles.assigneeCol : k === 'due' ? styles.dueCol : undefined}>
+                    {COLUMN_LABEL[k]}
+                  </TableHeaderCell>
+                ))}
               </tr>
             </thead>
             {visible.length > 0 && (
@@ -236,7 +336,7 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
                   const isOpen = open.has(g.id)
                   return [
                     <tr key={g.id} className={styles.groupRow}>
-                      <td colSpan={4} className={styles.groupTd}>
+                      <td colSpan={1 + shownCols.length} className={styles.groupTd}>
                         <button
                           type="button"
                           className={styles.groupBtn}
@@ -255,17 +355,22 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
                         <tr
                           key={a.id}
                           className={[styles.row, selected === a.id ? styles.rowSelected : ''].filter(Boolean).join(' ')}
-                          onClick={() => setSelected(id => (id === a.id ? null : a.id))}
+                          onClick={() => { setCreating(null); setSelected(id => (id === a.id ? null : a.id)) }}
                         >
                           <TableCell error={a.status === 'Overdue'} truncate className={styles.titleTd}>{a.title}</TableCell>
-                          <TableCell badge={a.status} badgeColor={STATUS_COLOR[a.status]} className={styles.statusCell} />
-                          <TableAvatarCell
-                            name={lead.name}
-                            src={lead.photo ? avatarUrl(lead.id) : undefined}
-                            className={styles.assigneeCol}
-                            extra={a.assignees.length > 1 ? a.assignees.length - 1 : undefined}
-                          />
-                          <TableCell error={a.status === 'Overdue'} className={styles.dueCol}>{formatDue(a.due)}</TableCell>
+                          {shownCols.map(k => k === 'status' ? (
+                            <TableCell key={k} badge={a.status} badgeColor={STATUS_COLOR[a.status]} className={styles.statusCell} />
+                          ) : k === 'assignee' ? (
+                            <TableAvatarCell
+                              key={k}
+                              name={lead.name}
+                              src={lead.photo ? avatarUrl(lead.id) : undefined}
+                              className={styles.assigneeCol}
+                              extra={a.assignees.length > 1 ? a.assignees.length - 1 : undefined}
+                            />
+                          ) : (
+                            <TableCell key={k} error={a.status === 'Overdue'} className={styles.dueCol}>{formatDue(a.due)}</TableCell>
+                          ))}
                           {/* Phone: status • assignee under the title (replaces the columns). */}
                           <td className={[styles.metaCell, a.status === 'Overdue' ? styles.metaOverdue : ''].filter(Boolean).join(' ')}>
                             {a.status}<span className={styles.dot} aria-hidden="true" />{lead.name}{a.assignees.length > 1 ? ` +${a.assignees.length - 1}` : ''}
@@ -278,6 +383,7 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
               </tbody>
             )}
           </table>
+          </div>
 
           {visible.length === 0 && (
             totalActions === 0 ? (
@@ -314,17 +420,43 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
         <div className={styles.filtersPanel}>{filterControls}</div>
       </Modal>
 
-      {/* Task drawer */}
+      {/* Task drawer — an existing task, or an empty draft from the Request menu */}
       <Drawer
         variant={drawerOverlay ? 'overlay' : 'inline'}
         width={drawerWidth}
-        open={selectedItem !== null}
-        onClose={() => setSelected(null)}
-        title={drawerItem?.title ?? ''}
-        titleReadOnly
-        headerType="Action request"
-        headerBadge={drawerItem ? <BadgeStatus type={statusBadgeType(drawerItem.status)} label={drawerItem.status} /> : undefined}
-        footer={drawerItem && (
+        open={selectedItem !== null || creating !== null}
+        onClose={() => { setSelected(null); setCreating(null) }}
+        bodyClassName={styles.drawerBody}
+        {...(creating
+          ? {
+              key: `new-${creating.key}`,
+              title: draftTitle,
+              onTitleChange: setDraftTitle,
+              titlePlaceholder: REQUEST_KINDS[creating.kind].titlePlaceholder,
+              titleAutoFocus: true,
+              headerType: REQUEST_KINDS[creating.kind].label,
+              headerTypeIcon: REQUEST_KINDS[creating.kind].icon,
+              headerBadge: creating.kind === 'survey' ? <BadgeStatus type="warning" label="Draft" /> : undefined,
+            }
+          : {
+              title: drawerItem?.title ?? '',
+              titleReadOnly: true,
+              headerType: 'Action',
+              headerBadge: drawerItem ? <BadgeStatus type={statusBadgeType(drawerItem.status)} label={drawerItem.status} /> : undefined,
+            })}
+        footer={creating ? (
+          creating.kind === 'survey' && (
+            <StickyFooter
+              variant="drawer"
+              left={<Button variant="primary" size="m">View</Button>}
+              right={
+                <Tooltip label="Delete" position="top">
+                  <Button variant="secondary" intent="danger" size="m" iconOnly={<Icon svg={trashSvg} />} aria-label="Delete draft" onClick={() => setCreating(null)} />
+                </Tooltip>
+              }
+            />
+          )
+        ) : drawerItem && (
           <StickyFooter
             variant="drawer"
             left={
@@ -352,7 +484,9 @@ export function ActionLogTab({ groups: seed = SEED_GROUPS }: ActionLogTabProps =
           />
         )}
       >
-        {drawerItem && <TaskDetails item={drawerItem} onChange={patch => updateItem(drawerItem.id, patch)} />}
+        {creating
+          ? <NewRequestForm key={creating.key} kind={creating.kind} meetings={groups.map(g => g.name)} />
+          : drawerItem && <TaskDetails item={drawerItem} onChange={patch => updateItem(drawerItem.id, patch)} />}
       </Drawer>
     </div>
   )
@@ -378,67 +512,71 @@ function TaskDetails({ item, onChange }: { item: ActionItem; onChange: (patch: (
 
   return (
     <div className={styles.details}>
-      <section className={styles.section}>
-        <div className={styles.sectionHead}>
-          <h3 className={styles.sectionTitle}>Assignee</h3>
-          <span className={styles.sectionTitle}>Completed {doneCount}/{item.assignees.length}</span>
-        </div>
-        <ul className={styles.people}>
-          {item.assignees.map(id => {
-            const u = userById(id)
-            const done = item.doneBy.includes(id)
-            return (
-              <li key={id} className={styles.person}>
-                <Avatar size="s" variant={u.photo ? 'picture' : 'letters'} src={u.photo ? avatarUrl(u.id) : undefined} initials={initialsOf(u.name)} alt={u.name} />
-                <span className={styles.personName}>{u.name}</span>
-                <Tooltip label={done ? 'Mark as not done' : 'Mark as done'} position="top">
-                  <Button
-                    variant="tertiary"
-                    intent="neutral"
-                    size="s"
-                    iconOnly={<span className={done ? styles.done : undefined} style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: checkCircleSvg }} />}
-                    aria-label={`${done ? 'Mark as not done' : 'Mark as done'}: ${u.name}`}
-                    aria-pressed={done}
-                    onClick={() => toggleDone(id)}
-                  />
-                </Tooltip>
-              </li>
-            )
-          })}
-        </ul>
-        {addable.length > 0 && (
-          <Dropdown
+      <div className={styles.form}>
+        <section className={styles.section}>
+          <div className={styles.sectionHead}>
+            <h3 className={styles.sectionTitle}>Assignee</h3>
+            <span className={styles.sectionMeta}>Completed {doneCount}/{item.assignees.length}</span>
+          </div>
+          <ul className={styles.people}>
+            {item.assignees.map(id => {
+              const u = userById(id)
+              const done = item.doneBy.includes(id)
+              return (
+                <li key={id} className={styles.person}>
+                  <Avatar size="s" variant={u.photo ? 'picture' : 'letters'} src={u.photo ? avatarUrl(u.id) : undefined} initials={initialsOf(u.name)} alt={u.name} />
+                  <span className={styles.personName}>{u.name}</span>
+                  <Tooltip label={done ? 'Mark as not done' : 'Mark as done'} position="top">
+                    <Button
+                      variant="tertiary"
+                      intent="neutral"
+                      size="m"
+                      iconOnly={<span className={done ? styles.done : undefined} style={{ display: 'contents' }} dangerouslySetInnerHTML={{ __html: checkCircleSvg }} />}
+                      aria-label={`${done ? 'Mark as not done' : 'Mark as done'}: ${u.name}`}
+                      aria-pressed={done}
+                      onClick={() => toggleDone(id)}
+                    />
+                  </Tooltip>
+                </li>
+              )
+            })}
+          </ul>
+          {addable.length > 0 && (
+            <Dropdown
+              variant="no-border"
+              size="m"
+              placeholder="Choose user"
+              options={addable}
+              onChange={v => onChange(a => ({ ...a, assignees: [...a.assignees, v as string] }))}
+            />
+          )}
+        </section>
+
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Due date</h3>
+          <p className={styles.value}>{formatDue(item.due)}</p>
+        </section>
+
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Linked to</h3>
+          {item.linkedTo.map(l => <p key={l} className={styles.value}>{l}</p>)}
+        </section>
+
+        <section className={styles.section}>
+          <h3 className={styles.sectionTitle}>Description</h3>
+          <TextField
+            multiline
             variant="no-border"
             size="m"
-            placeholder="Choose user"
-            options={addable}
-            onChange={v => onChange(a => ({ ...a, assignees: [...a.assignees, v as string] }))}
+            placeholder="Add details about task"
+            value={item.description}
+            onChange={e => onChange(a => ({ ...a, description: e.target.value }))}
+            aria-label="Description"
           />
-        )}
-      </section>
+        </section>
+      </div>
 
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>Due date</h3>
-        <p className={styles.value}>{formatDue(item.due)}</p>
-      </section>
-
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>Linked to</h3>
-        {item.linkedTo.map(l => <p key={l} className={styles.value}>{l}</p>)}
-      </section>
-
-      <section className={styles.section}>
-        <h3 className={styles.sectionTitle}>Description</h3>
-        <TextArea
-          size="m"
-          placeholder="Add details about task"
-          value={item.description}
-          onChange={e => onChange(a => ({ ...a, description: e.target.value }))}
-          aria-label="Description"
-        />
-      </section>
-
-      <section className={styles.section}>
+      <section className={styles.attachments}>
         <h3 className={styles.sectionTitle}>Attachments</h3>
         {item.attachments.map(f => (
           <div key={f.id} className={styles.file}>
@@ -447,15 +585,176 @@ function TaskDetails({ item, onChange }: { item: ActionItem; onChange: (patch: (
             <Button
               variant="tertiary"
               intent="neutral"
-              size="s"
+              size="m"
               iconOnly={<Icon svg={multiplySvg} />}
               aria-label={`Remove ${f.name}`}
               onClick={() => onChange(a => ({ ...a, attachments: a.attachments.filter(x => x.id !== f.id) }))}
             />
           </div>
         ))}
-        <div className={styles.upload}>Upload document or drag and drop</div>
+        <div className={styles.upload}>
+          <span>Upload document or drag and drop</span>
+          <Button variant="secondary" intent="neutral" size="m">Upload</Button>
+        </div>
       </section>
+    </div>
+  )
+}
+
+/* ── New request form — empty draft (Figma Tasks drawer: Action 11674:20143,
+      Survey 12401:29718, Signature request) ────────────────── */
+function NewRequestForm({ kind, meetings }: { kind: RequestKind; meetings: string[] }) {
+  const [assignees, setAssignees] = useState<string[]>([])
+  const [signer, setSigner] = useState<string>('')
+  const [due, setDue] = useState<Date | null>(null)
+  const [meeting, setMeeting] = useState<string>('')
+  const [agendaItem, setAgendaItem] = useState<string>('')
+  const [description, setDescription] = useState('')
+
+  const hasAssignee = kind === 'signature' ? signer !== '' : assignees.length > 0
+
+  const userField = (title: string) => (
+    <section className={styles.section}>
+      <h3 className={styles.sectionTitle}>{title}</h3>
+      {kind === 'signature' ? (
+        <Autocomplete
+          variant="no-border"
+          clearable
+          options={USER_OPTIONS}
+          value={signer}
+          placeholder="Choose user"
+          aria-label={title}
+          onChange={v => setSigner(v as string)}
+        />
+      ) : (
+        <Autocomplete
+          variant="no-border"
+          clearable
+          multiple
+          options={PEOPLE_OPTIONS}
+          value={assignees}
+          placeholder="Choose user"
+          aria-label={title}
+          onChange={v => setAssignees(v as string[])}
+        />
+      )}
+      {kind !== 'signature' && assignees.length > 0 && (
+        <ul className={styles.draftPeople}>
+          {assignees.map(id => {
+            const o = PEOPLE_OPTIONS.find(x => x.value === id)
+            if (!o) return null
+            return (
+              <li key={id} className={styles.draftPerson}>
+                <Avatar
+                  size="s"
+                  type={o.avatar?.type ?? 'user'}
+                  variant={o.avatar?.src ? 'picture' : 'letters'}
+                  src={o.avatar?.src}
+                  initials={o.avatar?.initials}
+                  alt={o.label}
+                />
+                <span className={styles.personName}>{o.label}</span>
+                <Button
+                  className={styles.draftRemove}
+                  variant="tertiary"
+                  intent="neutral"
+                  size="m"
+                  iconOnly={<Icon svg={multiplySvg} />}
+                  aria-label={`Remove ${o.label}`}
+                  onClick={() => setAssignees(a => a.filter(x => x !== id))}
+                />
+              </li>
+            )
+          })}
+        </ul>
+      )}
+      {kind === 'survey' && (
+        <div className={styles.checkRow}>
+          <Checkbox label="Anonymous responses" disabled={!hasAssignee} />
+        </div>
+      )}
+    </section>
+  )
+
+  const dueField = (
+    <section className={styles.section}>
+      <h3 className={styles.sectionTitle}>Due date</h3>
+      <DatePicker variant="no-border" size="m" placeholder="Set due date" value={due} onChange={setDue} />
+    </section>
+  )
+
+  const descField = (title: string, placeholder: string) => (
+    <section className={styles.section}>
+      <h3 className={styles.sectionTitle}>{title}</h3>
+      <TextField
+        multiline
+        variant="no-border"
+        size="m"
+        placeholder={placeholder}
+        value={description}
+        onChange={e => setDescription(e.target.value)}
+        aria-label={title}
+      />
+    </section>
+  )
+
+  const upload = (
+    <div className={styles.upload}>
+      <span>Upload document or drag and drop</span>
+      <Button variant="secondary" intent="neutral" size="m">Upload</Button>
+    </div>
+  )
+
+  return (
+    <div className={styles.details}>
+      {kind === 'signature' && (
+        <section className={styles.attachments}>
+          <h3 className={styles.sectionTitle}>Document to sign</h3>
+          {upload}
+        </section>
+      )}
+
+      <div className={styles.form}>
+        {userField(kind === 'signature' ? 'Signer' : 'Assignee')}
+        {dueField}
+        {kind === 'action' && (
+          <section className={styles.section}>
+            <h3 className={styles.sectionTitle}>Linked to</h3>
+            <div className={styles.linkedFields}>
+              <Autocomplete
+                variant="no-border"
+                clearable
+                options={meetings.map(m => ({ value: m, label: m }))}
+                value={meeting}
+                placeholder="Choose meeting"
+                aria-label="Meeting"
+                onChange={v => { setMeeting(v as string); setAgendaItem('') }}
+              />
+              {meeting && (
+                <Autocomplete
+                  variant="no-border"
+                  clearable
+                  options={AGENDA_OPTIONS}
+                  value={agendaItem}
+                  placeholder="Choose agenda item"
+                  aria-label="Agenda item"
+                  onChange={v => setAgendaItem(v as string)}
+                />
+              )}
+            </div>
+          </section>
+        )}
+        {kind === 'action' && descField('Description', 'Add details about task')}
+        {kind === 'signature' && descField('Description', 'Add any details')}
+        {kind === 'survey' && descField('Additional information', 'Add any extra details and context')}
+      </div>
+
+      {kind === 'action' && (
+        <section className={styles.attachments}>
+          <h3 className={styles.sectionTitle}>Attachments</h3>
+          {upload}
+        </section>
+      )}
     </div>
   )
 }

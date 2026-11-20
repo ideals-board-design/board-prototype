@@ -1,15 +1,14 @@
 /* Action log — seed data and pure helpers (filtering, export).
    Figma: Meetings › Action log (33037:404462). */
 
-export type ActionStatus = 'Draft' | 'In progress' | 'Overdue' | 'Pending review' | 'Completed'
+export type ActionStatus = 'Draft' | 'In progress' | 'Overdue' | 'Completed'
 
-export const STATUSES: ActionStatus[] = ['Draft', 'In progress', 'Overdue', 'Pending review', 'Completed']
+export const STATUSES: ActionStatus[] = ['Draft', 'In progress', 'Overdue', 'Completed']
 
 export const STATUS_COLOR: Record<ActionStatus, string> = {
   Draft:            'var(--yellow-50)',
   'In progress':    'var(--blue-50)',
   Overdue:          'var(--red-50)',
-  'Pending review': 'var(--orange-50)',
   Completed:        'var(--green-50)',
 }
 
@@ -101,7 +100,7 @@ export const SEED_GROUPS: ActionGroup[] = [
     name: 'Board of Directors / February 2026',
     actions: [
       item('b1', 'Board - Approval to sign Deed of Variation from the Commonwealth', 'In progress', ['liam', 'christopher', 'joshua', 'anna']),
-      item('b2', 'Review the draft annual report before circulation', 'Pending review', ['olivia']),
+      item('b2', 'Review the draft annual report before circulation', 'In progress', ['olivia']),
       item('b3', 'Confirm venue for the April offsite', 'Completed', ['alexander']),
     ],
   },
@@ -112,7 +111,7 @@ export const SEED_GROUPS: ActionGroup[] = [
       item('c1', 'Board - Approval to sign Deed of Variation from the Commonwealth', 'In progress', ['liam']),
       item('c2', 'Update the conflicts of interest register', 'Draft', ['christopher']),
       item('c3', 'Circulate revised terms of reference', 'Completed', ['joshua']),
-      item('c4', 'Prepare the risk appetite statement', 'Pending review', ['bella-m']),
+      item('c4', 'Prepare the risk appetite statement', 'In progress', ['bella-m']),
       item('c5', 'Collect director skills matrix responses', 'Overdue', ['anna']),
       item('c6', 'Schedule the committee chair handover', 'Draft', ['sophia']),
     ],
@@ -126,7 +125,7 @@ export const SEED_GROUPS: ActionGroup[] = [
       item('d3', 'Share the sustainability disclosure draft', 'Draft', ['alexander']),
       item('d4', 'Renew director and officer insurance', 'Overdue', ['bella-s']),
       item('d5', 'Collect apologies for the March meeting', 'Completed', ['logan']),
-      item('d6', 'Publish the updated delegations register', 'Pending review', ['christopher']),
+      item('d6', 'Publish the updated delegations register', 'In progress', ['christopher']),
     ],
   },
 ]

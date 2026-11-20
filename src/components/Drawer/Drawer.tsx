@@ -70,6 +70,12 @@ export interface DrawerProps {
   titleReadOnly?: boolean
   /** `DrawerHeader` type meta. */
   headerType?:    string
+  /** `DrawerHeader` type icon (raw SVG). */
+  headerTypeIcon?: string
+  /** Placeholder for an editable, empty title. */
+  titlePlaceholder?: string
+  /** Focus the editable title on mount. */
+  titleAutoFocus?: boolean
   /** `DrawerHeader` badge slot. */
   headerBadge?:   ReactNode
   /** Replaces the whole header — use for anything `DrawerHeader` can't express. */
@@ -94,6 +100,9 @@ export function Drawer({
   onTitleChange,
   titleReadOnly,
   headerType,
+  headerTypeIcon,
+  titlePlaceholder,
+  titleAutoFocus,
   headerBadge,
   header,
   footer,
@@ -192,6 +201,9 @@ export function Drawer({
             onTitleChange={onTitleChange}
             readOnly={titleReadOnly}
             type={headerType}
+            typeIcon={headerTypeIcon}
+            titlePlaceholder={titlePlaceholder}
+            titleAutoFocus={titleAutoFocus}
             badge={headerBadge}
           />
         ))}
