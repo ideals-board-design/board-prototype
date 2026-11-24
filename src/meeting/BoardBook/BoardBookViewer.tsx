@@ -699,7 +699,6 @@ function TocItem({ book, item, currentDocId, onSelectItem, onSelectDoc, onAskAi 
 
       {desc && (
         <div className={styles.tocBlock}>
-          <span className={styles.tocLabel}>Description</span>
           <p className={styles.tocText}>
             {expanded || !isLong ? fullDesc : truncate(desc, 120)}
             {isLong && (

@@ -1,6 +1,6 @@
-/* MinutesAgenda — Minutes → Agenda segment. Spacing per Figma 32556-61747:
-   16 top, 32 between items, 8 title → time, 16 between blocks, 8 label → text,
-   6 motion label → text, 8 motion text → actions and between attachment rows. */
+/* MinutesAgenda — Minutes → Agenda segment. Spacing: 16 top, 40 between items,
+   4 title → time, 12 between blocks, 8 label → text, 6 motion label → text,
+   8 motion text → actions, 6 between attachment rows. Description has no label. */
 
 .list {
   list-style: none;
@@ -8,22 +8,22 @@
   padding: var(--space-16) 0 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-32);
+  gap: var(--space-40);
 }
 
 .item {
   display: flex;
   flex-direction: column;
-  gap: var(--space-16);
+  gap: var(--space-12);
   color: var(--color-text-primary);
 }
 
-/* Title row + time row read as one unit (8px apart). */
+/* Title row + time row read as one unit (4px apart). */
 .head {
   display: flex;
   align-items: flex-start;
   gap: var(--space-8);
-  margin-bottom: calc(var(--space-8) - var(--space-16));
+  margin-bottom: calc(var(--space-4) - var(--space-12));
 }
 
 .title {
@@ -31,8 +31,8 @@
   min-width: 0;
   margin: 0;
   font-size: var(--text-md);
-  line-height: var(--line-height-lg);
-  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-md);
+  font-weight: var(--font-weight-medium);
 }
 
 .headActions {
@@ -76,7 +76,7 @@
   margin: 0;
   font-size: var(--text-base);
   line-height: var(--line-height-base);
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-medium);
 }
 
 .text {
@@ -102,7 +102,7 @@
   font-family: var(--font-family);
   font-size: var(--text-base);
   line-height: var(--line-height-base);
-  color: var(--color-text-success);
+  color: var(--color-text-brand);
   cursor: pointer;
 }
 .link:hover { text-decoration: underline; }
@@ -146,7 +146,7 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--space-6);
 }
 
 .attachment {
@@ -166,8 +166,8 @@
 .fileIcon {
   display: flex;
   flex-shrink: 0;
-  width: 16px;
-  height: 16px;
+  width: 20px;
+  height: 20px;
 }
 .fileIcon svg { width: 100%; height: 100%; }
 
