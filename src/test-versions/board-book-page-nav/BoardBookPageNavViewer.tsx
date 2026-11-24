@@ -545,7 +545,6 @@ function TocItem({ book, item, currentDocId, onSelectItem, onSelectDoc, onAskAi 
 
       {desc && (
         <div className={styles.tocBlock}>
-          <span className={styles.tocLabel}>Description</span>
           <TocDescription text={desc} />
         </div>
       )}

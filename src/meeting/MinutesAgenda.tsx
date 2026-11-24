@@ -181,7 +181,6 @@ function Description({ text }: { text: string }) {
 
   return (
     <div className={styles.block}>
-      <h4 className={styles.blockLabel}>Description</h4>
       <div className={styles.descWrap}>
         <p ref={ref} className={[styles.text, expanded ? '' : styles.clamped].filter(Boolean).join(' ')}>
           {text}
